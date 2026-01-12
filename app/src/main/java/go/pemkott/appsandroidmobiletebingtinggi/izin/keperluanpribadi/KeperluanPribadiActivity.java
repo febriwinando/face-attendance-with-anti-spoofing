@@ -13,8 +13,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-import go.pemkott.appsandroidmobiletebingtinggi.DeteksiWajah.DetectorActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.R;
+import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraxActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import go.pemkott.appsandroidmobiletebingtinggi.model.Kegiatan;
@@ -102,7 +102,8 @@ public class KeperluanPribadiActivity extends AppCompatActivity {
 
         }else {
 
-            Intent intentTL = new Intent(KeperluanPribadiActivity.this, DetectorActivity.class);
+            Intent intentTL = new Intent(KeperluanPribadiActivity.this, CameraxActivity.class);
+            intentTL.putExtra("aktivitas", 6);
             startActivity(intentTL);
 
         }

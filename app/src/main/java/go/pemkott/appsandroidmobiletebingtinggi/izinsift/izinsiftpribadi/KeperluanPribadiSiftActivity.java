@@ -17,9 +17,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-import go.pemkott.appsandroidmobiletebingtinggi.DeteksiWajah.DetectorActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.NewDashboard.DashboardVersiOne;
 import go.pemkott.appsandroidmobiletebingtinggi.R;
+import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraxActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.izin.keperluanpribadi.KpAdapter;
 import go.pemkott.appsandroidmobiletebingtinggi.kehadiransift.JadwalSiftActivity;
@@ -124,8 +124,9 @@ public class KeperluanPribadiSiftActivity extends AppCompatActivity {
             showMessage("Peringatan!", "Anda Harus Mengisi Kegiatan Yang Dilaksanakan.");
         }else {
 
-            Intent intentTL = new Intent(KeperluanPribadiSiftActivity.this, DetectorActivity.class);
+            Intent intentTL = new Intent(KeperluanPribadiSiftActivity.this, CameraxActivity.class);
             intentTL.putExtra("title", "Isi Data Keperluan Pribadi");
+            intentTL.putExtra("aktivitas", 16);
             startActivity(intentTL);
 
         }

@@ -16,8 +16,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
-import go.pemkott.appsandroidmobiletebingtinggi.DeteksiWajah.DetectorActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.R;
+import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraxActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.izin.cuti.CutiAdapter;
 import go.pemkott.appsandroidmobiletebingtinggi.model.Kegiatan;
@@ -144,7 +144,8 @@ public class CutiSiftActivity extends AppCompatActivity {
             showMessage("Peringatan!", "Anda Harus Mengisi Kegiatan Yang Dilaksanakan.");
         }else {
 
-            Intent intentTL = new Intent(CutiSiftActivity.this, DetectorActivity.class);
+            Intent intentTL = new Intent(CutiSiftActivity.this, CameraxActivity.class);
+            intentTL.putExtra("lampiran", 31);
             startActivity(intentTL);
 
         }

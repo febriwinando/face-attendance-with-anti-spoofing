@@ -93,11 +93,12 @@ import go.pemkott.appsandroidmobiletebingtinggi.NewDashboard.DashboardVersiOne;
 import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.api.ResponsePOJO;
 import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
+import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraxActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import go.pemkott.appsandroidmobiletebingtinggi.izinsift.JadwalIzinSiftActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.izinsift.izinsiftsakit.IzinSakitSiftFinalActivity;
-import go.pemkott.appsandroidmobiletebingtinggi.kameralampiran.CameraLampiranActivity;
+
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFoto;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFotoLampiran;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.Lokasi;
@@ -488,6 +489,7 @@ public class IzinCutiSiftFinalActivity extends AppCompatActivity implements OnMa
     public void viewLampiran(){
         Dialog dialogLampiran = new Dialog(IzinCutiSiftFinalActivity.this, R.style.DialogStyle);
         dialogLampiran.setContentView(R.layout.view_add_lampiran);
+
         LinearLayout llFileManager = dialogLampiran.findViewById(R.id.llFileManager);
         LinearLayout llKamera = dialogLampiran.findViewById(R.id.llKamera);
         LinearLayout llDokumen = dialogLampiran.findViewById(R.id.llDokumen);
@@ -512,7 +514,8 @@ public class IzinCutiSiftFinalActivity extends AppCompatActivity implements OnMa
         });
 
         llKamera.setOnClickListener(v -> {
-            Intent intent = new Intent(IzinCutiSiftFinalActivity.this, CameraLampiranActivity.class);
+            Intent intent = new Intent(IzinCutiSiftFinalActivity.this, CameraxActivity.class);
+            intent.putExtra("aktivitas", 15);
             startActivityForResult(intent, REQUEST_CODE_LAMPIRAN);
             dialogLampiran.dismiss();
         });

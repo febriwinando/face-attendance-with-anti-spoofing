@@ -17,8 +17,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-import go.pemkott.appsandroidmobiletebingtinggi.DeteksiWajah.DetectorActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.R;
+import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraxActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import go.pemkott.appsandroidmobiletebingtinggi.model.Kegiatan;
@@ -128,7 +128,8 @@ public class SakitActivity extends AppCompatActivity {
 
 
         }else {
-            Intent intentTL = new Intent(SakitActivity.this, DetectorActivity.class);
+            Intent intentTL = new Intent(SakitActivity.this, CameraxActivity.class);
+            intentTL.putExtra("lampiran", 23);
             intentTL.putExtra("title", "Isi Data Kondisi Kesehatan");
             startActivity(intentTL);
         }

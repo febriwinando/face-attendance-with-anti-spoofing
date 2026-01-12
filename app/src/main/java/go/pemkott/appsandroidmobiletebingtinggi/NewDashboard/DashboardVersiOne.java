@@ -187,7 +187,9 @@ public class DashboardVersiOne extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 jenisabsensi = 1;
-                startActivity(new Intent(DashboardVersiOne.this, CameraxActivity.class));
+                Intent kehadiranIntent = new Intent(DashboardVersiOne.this, CameraxActivity.class);
+                kehadiranIntent.putExtra("aktivitas", 1);
+                startActivity(kehadiranIntent);
             }
         });
 

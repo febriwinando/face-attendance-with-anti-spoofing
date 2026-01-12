@@ -16,8 +16,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-import go.pemkott.appsandroidmobiletebingtinggi.DeteksiWajah.DetectorActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.R;
+import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraxActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.izin.sakit.SakitAdapter;
 import go.pemkott.appsandroidmobiletebingtinggi.model.Kegiatan;
@@ -112,7 +112,8 @@ public class SakitSiftActivity extends AppCompatActivity {
         }
 
         if (!kegiatanCheckedSakit.isEmpty() || !etkegiatanSakitLainnya.getText().toString().isEmpty()){
-            Intent intentTL = new Intent(SakitSiftActivity.this, DetectorActivity.class);
+            Intent intentTL = new Intent(SakitSiftActivity.this, CameraxActivity.class);
+            intentTL.putExtra("aktivitas", 14);
             startActivity(intentTL);
         }else {
             showMessage("Peringatan!", "Anda Harus Mengisi Kegiatan Yang Dilaksanakan.");

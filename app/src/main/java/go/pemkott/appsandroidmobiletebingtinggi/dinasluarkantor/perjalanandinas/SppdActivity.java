@@ -15,8 +15,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-import go.pemkott.appsandroidmobiletebingtinggi.DeteksiWajah.DetectorActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.R;
+import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraxActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import go.pemkott.appsandroidmobiletebingtinggi.model.Kegiatan;
@@ -100,7 +100,8 @@ public class SppdActivity extends AppCompatActivity {
             dialogView.viewNotifKosong(SppdActivity.this,
                     "Anda Harus Mengisi Kegiatan Yang Dilaksanakan.", "");
         } else {
-            Intent intentPd = new Intent(SppdActivity.this, DetectorActivity.class);
+            Intent intentPd = new Intent(SppdActivity.this, CameraxActivity.class);
+            intentPd.putExtra("aktivitas", 3);
             intentPd.putExtra("title", "Isi Data Perjalanan Dinas");
             startActivity(intentPd);
         }

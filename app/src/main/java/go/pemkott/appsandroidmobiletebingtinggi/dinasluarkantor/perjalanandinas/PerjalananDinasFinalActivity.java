@@ -96,9 +96,9 @@ import java.util.Objects;
 import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.api.ResponsePOJO;
 import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
+import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraxActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
-import go.pemkott.appsandroidmobiletebingtinggi.kameralampiran.CameraLampiranActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFoto;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFotoLampiran;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.Lokasi;
@@ -478,7 +478,8 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
         });
 
         llKamera.setOnClickListener(v -> {
-            Intent intent = new Intent(PerjalananDinasFinalActivity.this, CameraLampiranActivity.class);
+            Intent intent = new Intent(PerjalananDinasFinalActivity.this, CameraxActivity.class);
+            intent.putExtra("lampiran", 22);
             startActivityForResult(intent, REQUEST_CODE_LAMPIRAN);
             dialogLampiran.dismiss();
 

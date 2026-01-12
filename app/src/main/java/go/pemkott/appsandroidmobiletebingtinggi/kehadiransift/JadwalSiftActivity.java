@@ -29,9 +29,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import go.pemkott.appsandroidmobiletebingtinggi.DeteksiWajah.DetectorActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.api.HttpService;
+import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraxActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat;
@@ -375,7 +375,8 @@ public class JadwalSiftActivity extends AppCompatActivity {
         }
 
         txtAbsen.setOnClickListener(view -> {
-            Intent absensift = new Intent(JadwalSiftActivity.this, DetectorActivity.class);
+            Intent absensift = new Intent(JadwalSiftActivity.this, CameraxActivity.class);
+            absensift.putExtra("aktivitas", 11);
             startActivity(absensift);
         });
 

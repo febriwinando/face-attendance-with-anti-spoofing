@@ -95,10 +95,10 @@ import java.util.Objects;
 import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.api.ResponsePOJO;
 import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
+import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraxActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import go.pemkott.appsandroidmobiletebingtinggi.geolocation.GetLocation;
-import go.pemkott.appsandroidmobiletebingtinggi.kameralampiran.CameraLampiranActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFoto;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFotoLampiran;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.Lokasi;
@@ -691,7 +691,8 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
 //            ambilFoto("surat");
 
 
-            Intent intent = new Intent(TugasLapanganFinalActivity.this, CameraLampiranActivity.class);
+            Intent intent = new Intent(TugasLapanganFinalActivity.this, CameraxActivity.class);
+            intent.putExtra("lampiran", 21);
             startActivityForResult(intent, REQUEST_CODE_LAMPIRAN);
             dialogLampiran.dismiss();
         });

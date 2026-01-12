@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/masukvalidasi"
+        android:icon="@drawable/one_more"
+        android:title="Masuk"
+        />
+
+    <item
+        android:id="@+id/pulangvalidasi"
+        android:icon="@drawable/one_less"
+        android:title="Pulang"
+        />
+
+</menu>

@@ -43,6 +43,7 @@ public class ValidasiNewActivity extends AppCompatActivity {
         contentView = findViewById(R.id.containervalidasi);
         menuvalidasi = findViewById(R.id.menuvalidasi);
         shortAnimationDuration = 1000;
+
         crossfade();
         getSupportFragmentManager().beginTransaction().replace(R.id.containervalidasi, masukFragment).commit();
 

@@ -13,8 +13,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-import go.pemkott.appsandroidmobiletebingtinggi.DeteksiWajah.DetectorActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.R;
+import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraxActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import go.pemkott.appsandroidmobiletebingtinggi.model.Kegiatan;
@@ -107,7 +107,8 @@ public class TugasLapanganActivity extends AppCompatActivity {
 
         }else {
 
-            Intent intentTL = new Intent(TugasLapanganActivity.this, DetectorActivity.class);
+            Intent intentTL = new Intent(TugasLapanganActivity.this, CameraxActivity.class);
+            intentTL.putExtra("aktivitas", 2);
             intentTL.putExtra("title", "Isi Data Tugas Lapangan");
             startActivity(intentTL);
 

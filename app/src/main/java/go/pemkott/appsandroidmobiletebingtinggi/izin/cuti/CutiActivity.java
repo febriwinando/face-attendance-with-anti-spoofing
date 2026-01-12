@@ -15,8 +15,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
-import go.pemkott.appsandroidmobiletebingtinggi.DeteksiWajah.DetectorActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.R;
+import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraxActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import go.pemkott.appsandroidmobiletebingtinggi.model.Kegiatan;
@@ -142,7 +142,8 @@ public class CutiActivity extends AppCompatActivity {
 
         }else {
 
-            Intent intentTL = new Intent(CutiActivity.this, DetectorActivity.class);
+            Intent intentTL = new Intent(CutiActivity.this, CameraxActivity.class);
+            intentTL.putExtra("aktivitas", 5);
             startActivity(intentTL);
 
         }

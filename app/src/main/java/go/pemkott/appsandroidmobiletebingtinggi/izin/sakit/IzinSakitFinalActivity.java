@@ -97,10 +97,10 @@ import go.pemkott.appsandroidmobiletebingtinggi.NewDashboard.DashboardVersiOne;
 import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.api.ResponsePOJO;
 import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
+import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraxActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import go.pemkott.appsandroidmobiletebingtinggi.dinasluarkantor.perjalanandinas.PerjalananDinasFinalActivity;
-import go.pemkott.appsandroidmobiletebingtinggi.kameralampiran.CameraLampiranActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFoto;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFotoLampiran;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.Lokasi;
@@ -697,7 +697,8 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
         });
 
         llKamera.setOnClickListener(v -> {
-            Intent intent = new Intent(IzinSakitFinalActivity.this, CameraLampiranActivity.class);
+            Intent intent = new Intent(IzinSakitFinalActivity.this, CameraxActivity.class);
+            intent.putExtra("lampiran", 23);
             startActivityForResult(intent, REQUEST_CODE_LAMPIRAN);
             dialogLampiran.dismiss();
         });
