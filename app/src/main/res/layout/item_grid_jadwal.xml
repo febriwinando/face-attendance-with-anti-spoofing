@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@color/putih"
+    android:id="@+id/llTanggalGridJadwal"
+    android:layout_margin="2dp">
+
+    <RelativeLayout
+        android:id="@+id/rlTanggalSift"
+        android:layout_width="match_parent"
+        android:layout_height="90dp"
+        android:scaleType="centerCrop"
+        android:background="@drawable/backgroundwhitedatesifts"
+        android:orientation="vertical"
+        android:clickable="true"
+        style="@style/ImageStyle2"
+        android:foreground="?attr/selectableItemBackground"
+        android:focusable="true"
+        tools:ignore="UselessParent">
+
+        <TextView
+            android:id="@+id/txtTanggal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            android:text="@string/_10"
+
+            android:textColor="#757575"
+            android:textFontWeight="200"
+            android:textSize="14sp"
+            tools:ignore="RelativeOverlap" />
+
+        <LinearLayout
+            android:id="@+id/txtTanggalJadwalSift"
+            android:background="@drawable/backgoundovalputih"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:visibility="invisible">
+
+            <TextView
+                android:id="@+id/tanggalJadwal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_hitam"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                />
+
+        </LinearLayout>
+
+        <View
+            android:id="@+id/llTodayJadwal"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:layout_margin="10dp"
+            android:layout_alignParentBottom="true"
+            android:visibility="gone"
+            android:elevation="5dp"
+            android:clickable="true"
+            android:contextClickable="true"
+            android:background="@drawable/backgoundovalkuning"
+            android:orientation="vertical"
+            android:focusable="true" />
+    </RelativeLayout>
+</LinearLayout>

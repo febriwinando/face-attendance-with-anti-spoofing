@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/background_color"
+    tools:context=".kehadiransift.JadwalSiftActivity"
+
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/titleHeaderPd"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp">
+
+        <ImageView
+            android:layout_marginStart="10dp"
+            android:id="@+id/ivBack"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_centerVertical="true"
+            app:srcCompat="@drawable/one_left"
+            android:contentDescription="@string/todo"/>
+
+        <TextView
+            android:layout_toEndOf="@+id/ivBack"
+            android:id="@+id/titleSift"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:elevation="10dp"
+            android:outlineAmbientShadowColor="@color/font"
+            android:outlineSpotShadowColor="@color/font"
+            android:text="@string/jadwal_sift"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_hitam"
+            tools:ignore="UnusedAttribute" />
+
+        <ImageView
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            app:srcCompat="@drawable/one_sync"
+            android:layout_marginEnd="10dp"
+            app:tint="@color/biru_putih"
+            android:contentDescription="@string/todo"
+            android:id="@+id/ivSyncJadwalSift"/>
+    </RelativeLayout>
+
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/shimmerJadwalSift"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:shimmer_base_color="#CACACA"
+        app:shimmer_colored="true"
+        >
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvJadwalSifting"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="5dp"
+                    tools:listitem="@layout/item_grid_jadwal" />
+
+                <LinearLayout
+                    android:layout_below="@+id/rvJadwalSifting"
+                    android:id="@+id/tvNb"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp"
+                    >
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Keterangan:"
+                        android:textColor="@color/text_hitam"
+                        android:textStyle="bold"
+                        android:textSize="18sp"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="P: Pagi"
+                        android:textColor="@color/text_hitam"
+                        android:textSize="16sp"/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="S: Sore"
+                        android:textColor="@color/text_hitam"
+                        android:textSize="16sp"/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="M: Malam"
+                        android:textColor="@color/text_hitam"
+                        android:textSize="16sp"/>
+                </LinearLayout>
+
+            </LinearLayout>
+        </ScrollView>
+
+    </com.facebook.shimmer.ShimmerFrameLayout>
+
+</LinearLayout>

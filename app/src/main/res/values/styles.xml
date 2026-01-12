@@ -1,0 +1,158 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme.ObjectDetection" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/tfe_color_primary</item>
+        <item name="colorPrimaryDark">@color/tfe_color_primary_dark</item>
+        <item name="colorAccent">@color/tfe_color_accent</item>
+    </style>
+
+
+    <style name="TextLabel"  >
+        <item name="android:textColorHint">@color/font</item>
+        <item name="colorAccent">@color/biru</item>
+        <item name="colorControlNormal">@color/biru</item>
+        <item name="colorControlActivated">@color/kuning</item>
+
+    </style>
+    <style name="ImageStyle10">
+        <item name="cornerSize">10%</item>
+    </style>
+
+    <style name="ImageStyleBottom50">
+        <item name="cornerSizeBottomLeft">35%</item>
+        <item name="cornerSizeBottomRight">35%</item>
+    </style>
+
+
+    <style name="ImageStyleBottomDashOne">
+        <item name="cornerSizeBottomLeft">50dp</item>
+        <item name="cornerSizeBottomRight">50dp</item>
+    </style>
+
+    <style name="mapsCornerRounded">
+        <item name="cornerSizeTopLeft">35%</item>
+        <item name="cornerSizeTopRight">35%</item>
+    </style>
+
+    <style name="ImageStyleBottom5010">
+        <item name="cornerSizeBottomLeft">35%</item>
+        <item name="cornerSizeTopLeft">10%</item>
+        <item name="cornerSizeTopRight">35%</item>
+        <item name="cornerSizeBottomRight">10%</item>
+    </style>
+
+    <style name="ImageStyle2">
+        <item name="cornerSize">10%</item>
+    </style>
+    <style name="NavigationViewStyle">
+        <item name="android:textSize">10sp</item> <!-- menu item text size-->
+        <item name="listPreferredItemHeightSmall">20dp</item><!-- menu item height-->
+    </style>
+    <style name="menu_home">
+        <item name="cornerSize">10%</item>
+    </style>
+
+    <style name="photo_profile">
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <style name="ImageStyleBtn">
+        <item name="cornerSize">10%</item>
+    </style>
+
+    <style name="ImageStyle50s">
+        <item name="cornerSize">40%</item>
+    </style>
+
+    <style name="DialogStyle" parent="Theme.AppCompat.Dialog">
+        <item name="android:windowMinWidthMinor">100%</item>
+        <item name="android:windowMinWidthMajor">100%</item>
+        <item name="android:windowBackground">#00437B94</item>
+    </style>
+
+
+    <style name="MaterialAlertDialog.App" parent="MaterialAlertDialog.MaterialComponents">
+        <item name="shapeAppearance">@style/ShapeAppearance.App.MediumComponent</item>
+
+    </style>
+
+    <style name="MaterialAlertDialog.App.Title.Text" parent="MaterialAlertDialog.MaterialComponents.Title.Text">
+        <item name="android:textColor">@color/kuning</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:textStyle">bold</item>
+
+    </style>
+    <style name="MaterialAlertDialog.App.Title.TextHijau" parent="MaterialAlertDialog.MaterialComponents.Title.Text">
+        <item name="android:textColor">@color/kuning</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:textStyle">bold</item>
+
+    </style>
+
+    <style name="AppCompatAlertDialogStyle" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">@color/kuning</item>
+        <item name="android:textColorPrimary">@color/font_highlight</item>
+        <item name="background">@color/putih</item>
+        <item name="android:textColor">@color/biru</item>
+        <item name="android:textStyle">bold</item>
+
+    </style>
+
+
+    <style name="MaterialAlertDialog.App.Title.TextMerah" parent="MaterialAlertDialog.MaterialComponents.Title.Text">
+        <item name="android:textColor">@color/merah</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:textStyle">bold</item>
+
+    </style>
+
+    <style name="Widget.App.Button" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textAlignment">textEnd</item>
+        <item name="android:textColor">@color/font_highlight</item>
+        <item name="android:layout_marginEnd">10dp</item>
+
+    </style>
+
+    <style name="ThemeOverlay.App.Button" parent="">
+        <item name="colorPrimary">@color/biru</item>
+
+    </style>
+
+    <style name="ShapeAppearance.App.MediumComponent" parent="ShapeAppearance.MaterialComponents.MediumComponent">
+        <item name="cornerFamily">cut</item>
+        <item name="cornerSize">40dp</item>
+        <item name="android:textSize">16sp</item>
+
+    </style>
+
+    <style name="ShapeAppearance.App.SmallComponent" parent="ShapeAppearance.MaterialComponents.SmallComponent">
+        <item name="cornerFamily">cut</item>
+        <item name="cornerSize">8dp</item>
+
+
+    </style>
+
+    <style name="TextStyleInputLogin" parent="Theme.AppPemko">
+        <item name="android:textSize">12sp</item>
+        <item name="android:translationY">-10dp</item>
+        <item name="background">@color/biru</item>
+
+    </style>
+
+    <style name="ShapeAppearanceOverlay.MyApp.Dialog.Rounded" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">8dp</item>
+
+    </style>
+
+    <style name="ListFont" parent="@android:style/Widget.ListView">
+        <item name="android:textColor">#FFFFFF</item>
+
+    </style>
+
+
+</resources>

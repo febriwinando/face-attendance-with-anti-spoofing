@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".dinasluarkantor.tugaslapangan.TugasLapanganActivity"
+    android:background="@color/background_color"
+    >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/titleHeader"
+            >
+            <RelativeLayout
+                android:id="@+id/rlBackSakit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:clickable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:layout_centerVertical="true"
+                android:focusable="true"
+                tools:ignore="UsingOnClickInXml">
+
+
+                <ImageView
+                    android:id="@+id/ivBack"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="5dp"
+                    app:srcCompat="@drawable/one_left"
+                    android:contentDescription="@string/todo" />
+
+
+            </RelativeLayout>
+
+            <TextView
+                android:layout_toEndOf="@+id/rlBackSakit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:elevation="10dp"
+                android:textStyle="bold"
+                android:textColor="@color/text_hitam"
+                android:text="@string/sakit"
+                android:textSize="18sp"/>
+
+        </RelativeLayout>
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/titleHeader"
+            >
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:paddingBottom="10dp"
+                android:overScrollMode="ifContentScrolls"
+                android:isScrollContainer="true"
+                android:scrollbarAlwaysDrawVerticalTrack="true"
+                android:nestedScrollingEnabled="true">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toTopOf="@+id/tvKeteranganTambahan"
+                    android:id="@+id/rvKegiatanSakit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:listitem="@layout/list_row_kegiatan" />
+
+                <TextView
+                    android:id="@+id/tvKeteranganTambahan"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/kegiatan_lainnya_opsional"
+                    android:textColor="@color/font"
+                    android:textSize="16sp"
+                    android:padding="10dp"
+                    app:layout_constraintTop_toBottomOf="@+id/rvKegiatanSakit"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginTop="10dp"
+                    />
+
+                <EditText
+                    android:id="@+id/etKegiatanSakitLainmya"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:background="@drawable/backgroundwhiteradius"
+                    android:inputType="textMultiLine"
+                    android:padding="15dp"
+                    android:gravity="top"
+                    android:textSize="14sp"
+                    android:singleLine="false"
+                    app:layout_constraintTop_toBottomOf="@+id/tvKeteranganTambahan"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toTopOf="@+id/tvSelanjutnya"
+                    android:layout_marginBottom="20dp"
+                    />
+
+                <TextView
+
+                    android:id="@+id/tvSelanjutnya"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="SELANJUTNYA"
+                    android:padding="10dp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_putih"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_marginBottom="5dp"
+                    android:background="@drawable/backgoundovalbirusift"
+                    />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.core.widget.NestedScrollView>
+
+    </RelativeLayout>
+</RelativeLayout>

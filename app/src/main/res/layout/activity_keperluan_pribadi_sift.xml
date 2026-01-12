@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_color"
+    tools:context=".izinsift.izinsiftpribadi.KeperluanPribadiSiftActivity">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_marginTop="30dp"
+            android:id="@+id/titleHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp">
+
+            <ImageView
+                android:layout_marginStart="20dp"
+                android:id="@+id/ivBack"
+                android:onClick="backKp"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_centerVertical="true"
+                app:srcCompat="@drawable/one_left" />
+
+            <TextView
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@+id/ivBack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:elevation="10dp"
+                android:text="KEPERLUAN PRIBADI"
+                android:textStyle="bold"
+                android:textColor="@color/text_hitam"
+                android:textSize="18sp"/>
+        </RelativeLayout>
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_below="@+id/titleHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:orientation="vertical">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvKegiatanKp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    tools:listitem="@layout/list_row_kegiatan" />
+
+                <TextView
+                    android:id="@+id/tvlistCheckedKp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:visibility="gone"
+                    android:padding="10dp"
+                    />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    android:text="Kegiatan Lainnya: (Opsional) "
+                    android:textColor="@color/font"
+                    android:textSize="16sp"
+                    />
+
+                <EditText
+                    android:id="@+id/etKegiatanKpLainnya"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:background="@drawable/backgroundwhiteradius"
+                    android:gravity="top"
+                    android:inputType="textMultiLine"
+                    android:padding="15dp"
+                    android:pointerIcon="grab"
+                    android:textAlignment="textStart"
+                    tools:ignore="RtlCompat"
+                    android:textSize="14sp"
+                    android:layout_marginBottom="20dp"
+                    />
+
+
+                <TextView
+
+                    android:id="@+id/tvSelanjutnya"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="SELANJUTNYA"
+                    android:padding="10dp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_putih"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_marginBottom="5dp"
+                    android:background="@drawable/backgoundovalbirusift"
+                    android:onClick="nextKegiatanKp"
+                    android:layout_gravity="center_horizontal"
+                    />
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+    </RelativeLayout>
+</RelativeLayout>

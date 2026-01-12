@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".izinsift.izinsiftsakit.IzinSakitSiftFinalActivity">
+
+
+    <RelativeLayout
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="30dp"
+        android:id="@+id/titleHeaderFinalKp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+            <ImageView
+                android:id="@+id/ivBack"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_centerVertical="true"
+                android:contentDescription="@string/todo"
+                android:elevation="10dp"
+                app:srcCompat="@drawable/one_left"
+                android:clickable="true"
+                android:focusable="true"
+                android:onClick="backFinalDinasLuar"
+                />
+
+
+        <TextView
+            android:layout_toEndOf="@+id/ivBack"
+            android:id="@+id/title_contentsakit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:elevation="10dp"
+            android:textStyle="bold"
+            android:textColor="@color/text_hitam"
+            android:textSize="18sp"/>
+
+    </RelativeLayout>
+
+
+    <androidx.fragment.app.FragmentContainerView
+        app:layout_constraintBottom_toTopOf="@+id/llKeteranganIzinSakit"
+        app:layout_constraintTop_toBottomOf="@+id/titleHeaderFinalKp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="20dp"
+        class="com.google.android.gms.maps.SupportMapFragment"
+        />
+
+
+
+    <ImageView
+        app:layout_constraintEnd_toEndOf="@+id/map"
+        app:layout_constraintBottom_toBottomOf="@+id/map"
+        android:visibility="visible"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:padding="2dp"
+        app:srcCompat="@drawable/ic_search_location"
+        android:layout_alignParentEnd="true"
+        android:clickable="true"
+        android:layout_centerVertical="true"
+        android:foreground="?attr/selectableItemBackground"
+        android:focusable="true"
+        android:onClick="fokusLokasi"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/backgroundtranshitam"
+        />
+
+    <LinearLayout
+        android:id="@+id/llKeteranganIzinSakit"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:orientation="vertical">
+
+
+
+        <View
+            android:layout_width="25dp"
+            android:layout_height="5dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/backgroundnavbar"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_weight="2"
+                android:textAlignment="center"
+                android:textColor="#444"
+                android:textSize="18sp"
+
+                android:id="@+id/titleDinasLuar"/>
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/tvKegiatanFinal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/backgoundovalkuning"
+            android:textColor="@color/putih"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:textSize="14sp"
+
+            android:layout_marginBottom="5dp"/>
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="center">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical"
+                    android:layout_marginEnd="5dp"
+                    >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Foto Absen"
+                        android:layout_marginBottom="5dp"
+                        android:textColor="@color/font"
+                        />
+                    <LinearLayout
+                        android:layout_width="150dp"
+                        android:layout_height="200dp"
+                        android:orientation="vertical"
+                        android:gravity="center_horizontal"
+                        android:background="@drawable/backgroundnavbarputih"
+                        android:clickable="true"
+                        android:foreground="?attr/selectableItemBackground"
+                        android:onClick="addFotoKegiatan"
+                        android:focusable="true">
+
+                        <com.google.android.material.imageview.ShapeableImageView
+                            android:id="@+id/ivFinalKegiatanSakit"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            android:visibility="visible"
+                            app:shapeAppearance="@style/ImageStyle2"
+                            />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_marginStart="2dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical"
+                    android:id="@+id/llLampiranDinasLuarHead"
+                    >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Surat Sakit"
+                        android:layout_marginBottom="5dp"
+                        android:textColor="@color/font"
+                        />
+
+                    <LinearLayout
+                        android:layout_width="150dp"
+                        android:layout_height="200dp"
+                        android:orientation="vertical"
+                        android:gravity="center_horizontal"
+                        android:background="@drawable/backgroundnavbarputih"
+                        android:id="@+id/llLampiranDinasLuarSakit"
+                        android:clickable="true"
+                        android:foreground="?attr/selectableItemBackground"
+                        android:onClick="addFotoSuratPerintah"
+                        android:focusable="true">
+
+
+                        <com.google.android.material.imageview.ShapeableImageView
+                            android:layout_width="50dp"
+                            android:layout_height="match_parent"
+                            android:id="@+id/iconLampiranSakit"
+                            android:src="@drawable/ic_document_scanner"/>
+
+                        <com.google.android.material.imageview.ShapeableImageView
+                            android:id="@+id/ivSuratPerintahFinalSakit"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            android:visibility="gone"
+                            app:shapeAppearance="@style/ImageStyle2"/>
+
+
+
+                    </LinearLayout>
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+        </HorizontalScrollView>
+
+        <LinearLayout
+            android:clickable="true"
+            android:foreground="?attr/selectableItemBackground"
+            android:onClick="addFotoSuratPerintah"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/backgoundovalkuning"
+            android:gravity="center_vertical"
+            android:layout_marginTop="10dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:layout_gravity="center"
+            android:id="@+id/llPdfDinasLuarSakit"
+            android:visibility="gone"
+            android:focusable="true">
+
+            <ImageView
+                android:layout_gravity="center_vertical"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                app:srcCompat="@drawable/ic_document_scanner"
+                android:contentDescription="@string/todo" />
+
+            <TextView
+                android:layout_gravity="center_vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:textAlignment="inherit"
+                android:textColor="@color/putih"
+                android:textSize="12sp"
+
+                android:id="@+id/tvSuratPerintah"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginTop="10dp"
+            >
+            <RadioGroup
+                android:id="@+id/rgKehadiran"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+
+                <RadioButton
+                    android:id="@+id/rbtnMasuk"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/masuk"
+                    android:textColor="@color/font"
+                    android:theme="@style/TextLabel"
+                    android:textSize="18sp"
+                    android:layout_margin="5dp"
+                    android:checked="true"
+                    />
+
+                <RadioButton
+                    android:id="@+id/rbtnPulang"
+                    android:layout_margin="5dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/pulang"
+                    android:textColor="@color/font"
+                    android:textSize="18sp"
+                    android:theme="@style/TextLabel"
+                    />
+
+            </RadioGroup>
+
+        </LinearLayout>
+
+
+
+        <LinearLayout
+            android:layout_marginBottom="50dp"
+            android:layout_gravity="center"
+            android:id="@+id/llUpload"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/backgroundnavbar"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:clickable="true"
+            android:foreground="?attr/selectableItemBackground"
+            android:onClick="kirimDataDinasLuar"
+            android:gravity="center_vertical"
+            android:focusable="true">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/kirim"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/putih"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

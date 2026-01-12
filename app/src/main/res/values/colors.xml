@@ -1,5 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <color name="tfe_color_primary">#ffa800</color>
+    <color name="tfe_color_primary_dark">#ff6f00</color>
+    <color name="tfe_color_accent">#425066</color>
+    <color name="tfe_semi_transparent">#66000000</color>
+
+    <color name="biru">#008DDA</color>
+    <color name="putih">#fff</color>
+    <color name="hitam">#303642</color>
+    <color name="black">#171717</color>
+    <color name="font_highlight">#303642</color>
+    <color name="font">#87888c</color>
+    <color name="background_color">#f4f4f4</color>
+    <color name="background_profil">#f4f4f4</color>
+    <color name="background_layout">#fff</color>
+    <color name="background_layout_lampiran">#fff</color>
+    <color name="biru_putih">#008DDA</color>
+    <color name="abuabu_font">#87888c</color>
+
+
+    <color name="abuabu">#FCF4F4F4</color>
+    <color name="kuning">#F7B620</color>
+    <color name="white">#fff</color>
+    <color name="hijau">#4CAF50</color>
+    <color name="merah">#C11515</color>
+
+    <color name="text_putih">#fff</color>
+    <color name="text_hitam">#171717</color>
+
+
+
+
+
+
+<!--    -->
+<!--    <color name="dark_soft">#080f15</color>-->
+<!--    <color name="purple_200">#FFBB86FC</color>-->
+<!--    <color name="purple_500">#FF6200EE</color>-->
+<!--    <color name="purple_700">#FF3700B3</color>-->
+<!--    <color name="teal_200">#FF03DAC5</color>-->
+<!--    <color name="teal_700">#FF018786</color>-->
+<!--    <color name="black">#FF000000</color>-->
+<!--    <color name="background_color">#FFFFFFFF</color>-->
+<!--    <color name="red">#C11515</color>-->
+<!--    <color name="colorPrimaryDark">#3262C4</color>-->
+<!--    <color name="font">#87888c</color>-->
+<!--    <color name="font_highlight">#303642</color>-->
+<!--    <color name="btnbgt1">#00BCD4</color>-->
+<!--    <color name="btncorak2transparan">#32998DF5</color>-->
+<!--    <color name="icon1">#452db8</color>-->
+<!--    <color name="icon2">#1877f2</color>-->
+<!--    <color name="kuning">#F7B620</color>-->
+<!--    <color name="hijau">#4CAF50</color>-->
+<!--    <color name="darkblue">#150485</color>-->
+<!--    <color name="blue">#1877f2</color>-->
+<!--    <color name="blue_a">#2480F6</color>-->
+<!--    <color name="blue_b">#3186F3</color>-->
+<!--    <color name="biru">#EAEAEA</color>-->
+<!--    <color name="putih">#f4f4f4</color>-->
+<!--    <color name="putihTransparan">#C3FFFFFF</color>-->
+<!--    <color name="black">#2d2d2d</color>-->
+<!--&lt;!&ndash;    <color name="biru">#006DA4</color>&ndash;&gt;-->
+<!--    <color name="biru">#008DDA</color>-->
+<!--    <color name="biru_2">#5699b4</color>-->
+<!--    <color name="biru_3">#79c3e0</color>-->
+<!--    <color name="biru_4">#5b7df6</color>-->
+<!--    <color name="kuning">#F7B620</color>-->
+<!--    <color name="brown">#c1a540</color>-->
+<!--    <color name="berakhlak">#ae2a29</color>-->
+<!--    <color name="berakhlak_gradasi">#731133</color>-->
 </resources>

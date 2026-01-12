@@ -1,9 +1,29 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.Absensi" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    <style name="Base.Theme.AppPemko" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/biru</item>
+        <item name="colorPrimaryVariant">@color/biru</item>
+        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorSecondary">@color/biru</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <item name="android:statusBarColor">@color/biru</item>
     </style>
 
-    <style name="Theme.Absensi" parent="Base.Theme.Absensi" />
+    <style name="Theme.AppPemko" parent="Base.Theme.AppPemko">
+        <item name="android:textColor">@color/putih</item>
+    </style>
+
+
+    <style name="ThemeOverlay.App.MaterialAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="android:textColorPrimary">@color/black</item>
+        <item name="colorSecondary">@color/biru</item>
+        <item name="colorSurface">@color/black</item>
+        <item name="colorOnSurface">@color/font_highlight</item>
+        <item name="alertDialogStyle">@style/MaterialAlertDialog.App</item>
+        <item name="materialAlertDialogTitleTextStyle">@style/MaterialAlertDialog.App.Title.Text</item>
+        <item name="buttonBarPositiveButtonStyle">@style/Widget.App.Button</item>
+        <item name="buttonBarNeutralButtonStyle">@style/Widget.App.Button</item>
+        <item name="buttonBarNegativeButtonStyle">@style/Widget.App.Button</item>
+    </style>
+
 </resources>

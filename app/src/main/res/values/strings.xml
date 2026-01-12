@@ -1,3 +1,90 @@
 <resources>
     <string name="app_name">Absensi</string>
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyDpoOACMXG6YJoY-OD1z9JhPD56z-efFpE</string>
+    <string name="action_settings">Settings</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="already_have_an_account">Already Have An Account?</string>
+    <string name="title_activity_menu">Menu</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">"Welcome !"</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
+
+
+    <string name="title_dashboard">Beranda</string>
+    <string name="title_rekap">Rekap</string>
+    <string name="title_jadwal">Jadwal</string>
+    <string name="title_profil">Profil</string>
+
+    <string name="agenda">Agenda</string>
+    <string name="sift">Jadwal Sift</string>
+    <string name="izin">Izin</string>
+    <string name="perjalanan_dinas">PERJALANAN DINAS</string>
+    <string name="kehadiran">Kehadiran</string>
+
+    <string name="empty">--</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Mmmmh, no</string>
+    <string name="error">Error</string>
+
+    <string name="mockLocationMessage">Stop\nMocking\nMe</string>
+    <string name="todo">TODO</string>
+    <string name="_0">0</string>
+    <string name="timenol">--:--</string>
+    <string name="_09_februari_2022">09 Februari 2022</string>
+
+    <string name="ttkehadiran">KEHADIRAN</string>
+    <string name="beranda">Beranda</string>
+    <string name="rekap">Rekap</string>
+    <string name="jadwal">Jadwal</string>
+    <string name="profil">Profil</string>
+    <string name="tltitle">TUGAS LAPANGAN</string>
+    <string name="masuk">MASUK</string>
+    <string name="kirim">KIRIM</string>
+    <string name="pulang">PULANG</string>
+    <string name="titlepd">PERJALANAN DINAS</string>
+    <string name="versiapp">Versi: 1.1.8</string>
+    <string name="eabsensi">eAbsensi</string>
+    <string name="nip_nik">NIP/NIK</string>
+    <string name="silahkan_masuk_ke_akun_anda">Silahkan Masuk ke Akun Anda</string>
+    <string name="password">Password</string>
+    <string name="cttan">Jika anda belum memiliki akun pegawai, silahkan hubungi bagian umum OPD anda.</string>
+    <string name="dokumen_surat_perintah">Dokumen Surat Perintah</string>
+    <string name="kegiatan">Kegiatan</string>
+    <string name="data_perjalanan_dinas">Data Perjalanan Dinas</string>
+    <string name="kegiatan_lainnya_opsional">Kegiatan Lainnya: (Opsional)</string>
+    <string name="cuti">CUTI</string>
+    <string name="_10">10</string>
+    <string name="keperluan_pribadi">KEPERLUAN PRIBADI</string>
+    <string name="sakit">SAKIT</string>
+    <string name="penyakit_opsional">Penyakit: (Opsional)</string>
+    <string name="jadwal_sift">JADWAL SIFT</string>
+    <string name="singkronkan_kegiatan">Singkronkan Kegiatan</string>
+    <string name="singkronkan_lokasi">Singkronkan Lokasi</string>
+    <string name="singkronkan_jadwal_sift">Singkronkan Jadwal Sift</string>
+    <string name="berhasil">Berhasil!</string>
+    <string name="x">x</string>
+    <string name="kembali">Kembali</string>
+    <string name="tugas_lapangan">TUGAS LAPANGAN</string>
+    <string name="download_info">download info</string>
+    <string name="unduh_data">Unduh Data</string>
+    <string name="m_malam">M: Malam</string>
+    <string name="s_sore">S: Sore</string>
+    <string name="p_pagi">P: Pagi</string>
+    <string name="keterangan">Keterangan:</string>
+
+    <string name="tfe_od_app_name" translation_description="Object Detection demo app [CHAR_LIMIT=40]">TFL Detect</string>
+    <string name="tfe_od_camera_error" translation_description="Error regarding camera support[CHAR_LIMIT=40]">This device doesn\'t support Camera2 API.</string>
+    <string name="cari_rekap_kehadiran">Cari Rekap Kehadiran</string>
 </resources>

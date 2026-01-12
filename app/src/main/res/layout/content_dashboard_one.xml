@@ -1,0 +1,618 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_color"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:showIn="@layout/activity_dashboard_versi_one"
+    android:orientation="vertical"
+    android:id="@+id/swipeRefreshLayout"
+    >
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="vertical">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintHeight_percent="0.3"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:src="@drawable/tebingtinggikota"
+            android:scaleType="centerCrop"
+            app:shapeAppearance="@style/ImageStyleBottomDashOne"
+            />
+
+        <View
+            android:id="@+id/llBagroundHeaderGambar"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintHeight_percent="0.3"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:background="@drawable/backgroundbirutransparan"
+            />
+
+        <RelativeLayout
+            android:id="@+id/rlHeaderDashboardOne"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/clVerifikasi"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="10dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:id="@+id/ivIconNotif"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/one_notif"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:tint="@color/white" />
+
+                <View
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:layout_marginStart="5dp"
+                    android:background="@drawable/backgoundovalmerah"
+                    app:layout_constraintStart_toStartOf="@+id/ivIconNotif"
+                    app:layout_constraintTop_toTopOf="@+id/ivIconNotif" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            <TextView
+                android:id="@+id/tvNamaUser"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toStartOf="@+id/ciUser"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/ciUser"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="10dp"
+                android:src="@drawable/one_person"
+                app:tint="@color/background_color" />
+
+        </RelativeLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clTanggalToday"
+            app:layout_constraintTop_toBottomOf="@+id/llBagroundHeaderGambar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
+            android:layout_marginTop="-55dp"
+            android:background="@drawable/backgoundovalabuabu"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            >
+
+            <LinearLayout
+                android:id="@+id/llTanggalToday"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:gravity="center_horizontal|center_vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+
+                >
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/one_calendar"
+                    android:layout_marginEnd="5dp"
+                    />
+
+                <TextView
+                    android:id="@+id/tvTanggalHariIni"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textColor="@color/text_hitam"
+                    android:text="Rabu, 09 Februari 1994"/>
+
+
+            </LinearLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@+id/llTanggalToday"
+                >
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintWidth_percent="0.50"
+                    android:orientation="vertical"
+                    >
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/cvJamMasuk"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:cardCornerRadius="20dp"
+                        app:cardElevation="4dp"
+                        android:layout_margin="5dp"
+                        tools:layout_editor_absoluteY="0dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:backgroundTint="@color/biru"
+                        android:foreground="?attr/selectableItemBackground">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="10dp"
+                            android:gravity="center">
+
+                            <ImageView
+                                android:layout_width="30dp"
+                                android:layout_height="30dp"
+                                android:src="@drawable/one_more"
+                                app:tint="@color/text_putih"/>
+
+                            <TextView
+                                android:layout_marginStart="5dp"
+                                android:id="@+id/tvJamMasuk"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:text="__:__"
+                                android:textColor="@color/text_putih"
+                                />
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintWidth_percent="0.50"
+                    android:orientation="vertical"
+                    >
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/cvJamPulang"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:cardCornerRadius="20dp"
+                        app:cardElevation="4dp"
+                        android:layout_margin="5dp"
+                        tools:layout_editor_absoluteY="0dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:backgroundTint="@color/biru"
+                        android:foreground="?attr/selectableItemBackground">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="10dp"
+                            android:gravity="center">
+
+                            <TextView
+                                android:id="@+id/tvJamPulang"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textSize="16sp"
+                                android:text="__:__"
+                                android:textStyle="bold"
+                                android:textColor="@color/text_putih"
+                                android:layout_marginEnd="5dp"
+                                />
+                            <ImageView
+                                android:layout_width="30dp"
+                                android:layout_height="30dp"
+                                android:src="@drawable/one_less"
+                                app:tint="@color/text_putih"
+                                android:contentDescription="@string/todo" />
+
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+                </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clCariRekap"
+            app:layout_constraintTop_toBottomOf="@+id/llBagroundHeaderGambar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:padding="10dp"
+            android:background="@drawable/backgroundborderabuabu"
+            >
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:padding="2dp"
+                >
+                <TextView
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textColor="@color/abuabu_font"
+                    android:text="@string/cari_rekap_kehadiran"/>
+
+                <ImageView
+                    android:layout_alignParentEnd="true"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/one_search"
+                    android:layout_gravity="center_vertical|end"
+                    app:tint="@color/biru"
+                    android:contentDescription="@string/todo" />
+            </RelativeLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clPresensi"
+            app:layout_constraintTop_toBottomOf="@+id/clCariRekap"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_margin="10dp"
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+            <LinearLayout
+                android:id="@+id/llKehadiran"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintWidth_percent="0.33">
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/biru"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="2dp"
+                    android:layout_margin="4dp"
+                    android:clickable="true"
+                    android:id="@+id/cvKehadiran"
+                    android:focusable="true">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:src="@drawable/one_kehadiran"
+                            app:tint="@color/white"
+                            android:background="@drawable/backgoundputihtransparan"
+                            />
+                        <TextView
+                            android:layout_marginTop="5dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Kehadiran"
+                            android:textSize="16sp"
+                            android:textColor="@color/text_putih"/>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llPerjalananDinas"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toEndOf="@id/llKehadiran"
+                app:layout_constraintEnd_toStartOf="@+id/llIzin"
+                app:layout_constraintWidth_percent="0.33"
+                app:layout_constraintBottom_toBottomOf="parent"
+                >
+
+                <androidx.cardview.widget.CardView
+                    android:clickable="true"
+                    android:id="@+id/cvMenuPerjalananDinas"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/biru"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="2dp"
+                    android:layout_margin="4dp"
+                    >
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp"
+                        android:orientation="vertical"
+                        android:gravity="center">
+                        <ImageView
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:src="@drawable/one_perjalanan_dinas"
+                            app:tint="@color/white"
+                            android:background="@drawable/backgoundputihtransparan"
+                            android:padding="5dp"
+                            />
+                        <TextView
+                            android:layout_marginTop="5dp"
+                            android:textAlignment="center"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Perjalanan Dinas"
+                            android:textSize="16sp"
+                            android:textColor="@color/text_putih"/>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llIzin"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintWidth_percent="0.33">
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cvMenuIzin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/biru"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="2dp"
+                    android:layout_margin="4dp"
+                    >
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp"
+                        android:orientation="vertical"
+                        android:gravity="center">
+                        <ImageView
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:src="@drawable/one_izin"
+                            app:tint="@color/white"
+                            android:background="@drawable/backgoundputihtransparan"
+                            android:padding="5dp"
+                            />
+                        <TextView
+                            android:layout_marginTop="5dp"
+                            android:textAlignment="center"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Izin"
+                            android:textSize="16sp"
+                            android:textColor="@color/text_putih"/>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/clPresensi"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:padding="10dp">
+
+            <RelativeLayout
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cvJadwal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="2dp"
+                    android:backgroundTint="@color/background_layout"
+                    android:layout_margin="10dp"
+                    android:clickable="true"
+                    android:focusable="true">
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp"
+                        >
+                        <TextView
+                            android:layout_centerVertical="true"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Singkronkan Jadwal"
+                            android:textColor="@color/text_hitam"
+                            android:textSize="16sp"/>
+
+                        <ImageView
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:src="@drawable/one_jadwal"
+                            android:layout_alignParentEnd="true"
+                            android:background="@drawable/backgoundovalmerah"
+                            android:padding="5dp"
+                            app:tint="@color/white"/>
+                    </RelativeLayout>
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cvLokasi"
+                    android:layout_below="@+id/cvJadwal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="2dp"
+                    android:backgroundTint="@color/background_layout"
+                    android:layout_margin="10dp">
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp"
+                        >
+                        <TextView
+                            android:layout_centerVertical="true"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Singkronkan Lokasi"
+                            android:textColor="@color/text_hitam"
+                            android:textSize="16sp"/>
+
+                        <ImageView
+                            android:src="@drawable/one_lokasi"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_alignParentEnd="true"
+                            android:background="@drawable/backgoundovalkuning"
+                            android:layout_centerVertical="true"
+                            app:tint="@color/white"
+                            android:padding="5dp"
+                            android:id="@+id/ivSingkronLokasi"
+                            />
+
+                        <ProgressBar
+                            android:id="@+id/pgSingkronLokasi"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_centerVertical="true"
+                            android:layout_alignParentEnd="true"
+                            android:indeterminateTint="@color/kuning"
+                            android:visibility="gone"
+                            />
+
+                    </RelativeLayout>
+                </androidx.cardview.widget.CardView>
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cvKegiatan"
+                    android:layout_below="@+id/cvLokasi"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="2dp"
+                    android:backgroundTint="@color/background_layout"
+                    android:layout_margin="10dp">
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp"
+                        >
+                        <TextView
+                            android:layout_centerVertical="true"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Singkronkan Kegiatan"
+                            android:textColor="@color/text_hitam"
+                            android:textSize="16sp"/>
+
+                        <ImageView
+                            android:src="@drawable/one_kegiatan"
+                            android:padding="5dp"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_alignParentEnd="true"
+                            android:background="@drawable/backgoundovalhijau"
+                            android:layout_centerVertical="true"
+                            app:tint="@color/white"
+                            android:id="@+id/ivSingkronKegiatan"
+                            />
+
+                        <ProgressBar
+                            android:id="@+id/pgSingkronKegiatan"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_centerVertical="true"
+                            android:layout_alignParentEnd="true"
+                            android:indeterminateTint="@color/hijau"
+                            android:visibility="gone"
+                            />
+
+                    </RelativeLayout>
+                </androidx.cardview.widget.CardView>
+
+            </RelativeLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#5B000000"
+            android:visibility="gone"
+            android:id="@+id/vOpenBottomSheet"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#5B000000"
+            android:visibility="gone"
+            android:id="@+id/vOpenBottomSheetIzin"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

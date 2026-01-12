@@ -1,0 +1,464 @@
+package go.pemkott.appsandroidmobiletebingtinggi.api;
+
+import go.pemkott.appsandroidmobiletebingtinggi.model.CheckAbsensi;
+import go.pemkott.appsandroidmobiletebingtinggi.model.DataEmployee;
+import retrofit2.Call;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.POST;
+
+public interface ApiAddProduk {
+
+    @FormUrlEncoded
+    @POST("baseee")
+    Call<ResponsePOJO> uploadImage(
+            @Field("fileup") String encodedImage
+    );
+
+    @FormUrlEncoded
+    @POST("kehadiran/masuk")
+    Call<ResponsePOJO> uploadAbsenKehadiranMasuk(
+            @Field("fototaging") String encodedImage,
+            @Field("absensi") String absensi,
+            @Field("eselon") String eselon,
+            @Field("employee_id") String id,
+            @Field("timetable_id") String time,
+            @Field("tanggal") String tanggal,
+            @Field("jam_masuk") String jammasuk,
+            @Field("posisi_masuk") String posisimasuk,
+            @Field("status_masuk") String statusmasuk,
+            @Field("lat_masuk") String latmasuk,
+            @Field("lng_masuk") String lngmasuk,
+            @Field("ket_masuk") String ketmasuk,
+            @Field("terlambat") int terlambat,
+            @Field("opd") String opd,
+            @Field("jam_kantor") String jamkantor,
+            @Field("valid_masuk") String validasi,
+            @Field("fakegps") String fakegps,
+            @Field("batas_waktu") String batas_waktu,
+            @Field("berakhlak") String berakhlak
+    );
+
+    @FormUrlEncoded
+    @POST("kehadiran/pulang")
+    Call<ResponsePOJO> uploadAbsenKehadiranPulang(
+            @Field("fototaging") String encodedImage,
+            @Field("absensi") String absensi,
+            @Field("eselon") String eselon,
+            @Field("employee_id") String id,
+            @Field("timetable_id") String time,
+            @Field("tanggal") String tanggal,
+            @Field("jam_pulang") String jam_pulang,
+            @Field("posisi_pulang") String posisi_pulang,
+            @Field("status_pulang") String status_pulang,
+            @Field("lat_pulang") String lat_pulang,
+            @Field("lng_pulang") String lng_pulang,
+            @Field("ket_pulang") String ket_pulang,
+            @Field("kecepatan") int kecepatan,
+            @Field("opd") String opd,
+            @Field("jam_kantor") String jamkantor,
+            @Field("valid_pulang") String valid_pulang,
+            @Field("fakegps") String fakegps,
+            @Field("batas_waktu") String batas_waktu,
+            @Field("berakhlak") String berakhlak
+    );
+
+    @FormUrlEncoded
+    @POST("sift/masuk/pagi")
+    Call<ResponsePOJO> absensiftMasukPagi(
+            @Field("fototaging") String fototaging,
+            @Field("absensi") String absensi,
+            @Field("eselon") String eselon,
+            @Field("employee_id") String employee_id,
+            @Field("timetable_id") String timetable_id,
+            @Field("tanggal") String tanggal,
+            @Field("jam_masuk") String jam_masuk,
+            @Field("posisi_masuk") String posisi_masuk,
+            @Field("status_masuk") String status_masuk,
+            @Field("lat_masuk") String lat_masuk,
+            @Field("lng_masuk") String lng_masuk,
+            @Field("opd") String opd,
+            @Field("jam_kantor") String jam_kantor,
+            @Field("valid_masuk") String valid_masuk,
+            @Field("fakegps") String fakegps,
+            @Field("batas_waktu") String batas_waktu,
+            @Field("masuksift") String masuksift,
+            @Field("pulangsift") String pulangsift,
+            @Field("inisialsift") String inisialsift,
+            @Field("tipesift") String tipesift,
+            @Field("idsift") String idsift,
+            @Field("keterangan") String keterangan,
+            @Field("terlambat") int terlambat
+    );
+
+    @FormUrlEncoded
+    @POST("sift/pulang/pagi")
+    Call<ResponsePOJO> absensiftPulangPagi(
+            @Field("fototaging") String fototaging,
+            @Field("absensi") String absensi,
+            @Field("eselon") String eselon,
+            @Field("employee_id") String employee_id,
+            @Field("timetable_id") String timetable_id,
+            @Field("tanggal") String tanggal,
+            @Field("jam_masuk") String jam_masuk,
+            @Field("posisi_masuk") String posisi_masuk,
+            @Field("status_masuk") String status_masuk,
+            @Field("lat_masuk") String lat_masuk,
+            @Field("lng_masuk") String lng_masuk,
+            @Field("opd") String opd,
+            @Field("jam_kantor") String jam_kantor,
+            @Field("valid_masuk") String valid_masuk,
+            @Field("fakegps") String fakegps,
+            @Field("batas_waktu") String batas_waktu,
+            @Field("masuksift") String masuksift,
+            @Field("pulangsift") String pulangsift,
+            @Field("inisialsift") String inisialsift,
+            @Field("tipesift") String tipesift,
+            @Field("idsift") String idsift,
+            @Field("keterangan") String keterangan,
+            @Field("terlambat") int terlambat
+    );
+
+
+    @FormUrlEncoded
+    @POST("sift/masuk/malam")
+    Call<ResponsePOJO> absensiftMasukMalam(
+            @Field("fototaging") String fototaging,
+            @Field("absensi") String absensi,
+            @Field("eselon") String eselon,
+            @Field("employee_id") String employee_id,
+            @Field("timetable_id") String timetable_id,
+            @Field("tanggal") String tanggal,
+            @Field("jam_masuk") String jam_masuk,
+            @Field("posisi_masuk") String posisi_masuk,
+            @Field("status_masuk") String status_masuk,
+            @Field("lat_masuk") String lat_masuk,
+            @Field("lng_masuk") String lng_masuk,
+            @Field("opd") String opd,
+            @Field("jam_kantor") String jam_kantor,
+            @Field("valid_masuk") String valid_masuk,
+            @Field("fakegps") String fakegps,
+            @Field("batas_waktu") String batas_waktu,
+            @Field("masuksift") String masuksift,
+            @Field("pulangsift") String pulangsift,
+            @Field("inisialsift") String inisialsift,
+            @Field("tipesift") String tipesift,
+            @Field("idsift") String idsift,
+            @Field("keterangan") String keterangan,
+            @Field("terlambat") int terlambat
+    );
+
+    @FormUrlEncoded
+    @POST("sift/pulang/malam")
+    Call<ResponsePOJO> absensiftPulangMalam(
+            @Field("fototaging") String fototaging,
+            @Field("absensi") String absensi,
+            @Field("eselon") String eselon,
+            @Field("employee_id") String employee_id,
+            @Field("timetable_id") String timetable_id,
+            @Field("tanggal") String tanggal,
+            @Field("jam_masuk") String jam_masuk,
+            @Field("posisi_masuk") String posisi_masuk,
+            @Field("status_masuk") String status_masuk,
+            @Field("lat_masuk") String lat_masuk,
+            @Field("lng_masuk") String lng_masuk,
+            @Field("opd") String opd,
+            @Field("jam_kantor") String jam_kantor,
+            @Field("valid_masuk") String valid_masuk,
+            @Field("fakegps") String fakegps,
+            @Field("batas_waktu") String batas_waktu,
+            @Field("masuksift") String masuksift,
+            @Field("pulangsift") String pulangsift,
+            @Field("inisialsift") String inisialsift,
+            @Field("tipesift") String tipesift,
+            @Field("idsift") String idsift,
+            @Field("keterangan") String keterangan,
+            @Field("terlambat") int terlambat
+    );
+    @FormUrlEncoded
+    @POST("infoabsensitest")
+    Call<CheckAbsensi> checkabsensi(
+            @Field("tanggal") String absen,
+            @Field("id_employee") String ide
+    );
+
+    @FormUrlEncoded
+    @POST("infoabsensitestsiftmalam")
+    Call<CheckAbsensi> checkabsensisiftmalam(
+            @Field("tanggal") String absen,
+            @Field("id_employee") String ide
+
+    );
+
+    @FormUrlEncoded
+    @POST("dataEmployee")
+    Call<DataEmployee> dataEmployee(
+            @Field("id") String id
+
+    );
+
+    @FormUrlEncoded
+    @POST("tl/masuk")
+    Call<ResponsePOJO> uploadTLMasuk(
+            @Field("fototaging") String encodedImage,
+            @Field("absensi") String absensi,
+            @Field("eselon") String eselon,
+            @Field("employee_id") String employee_id,
+            @Field("timetable_id") String timetable_id,
+            @Field("tanggal") String tanggal,
+            @Field("jam_masuk") String jam_masuk,
+            @Field("posisi_masuk") String posisi_masuk,
+            @Field("status_masuk") String status_masuk,
+            @Field("lat_masuk") String lat_masuk,
+            @Field("lng_masuk") String lng_masuk,
+            @Field("ket_masuk") String ket_masuk,
+            @Field("terlambat") int terlambat,
+            @Field("opd") String opd,
+            @Field("jam_kantor") String jam_kantor,
+            @Field("valid_masuk") String valid_masuk,
+            @Field("lampiran_masuk") String lampiran_masuk,
+            @Field("ekslampiran") String ekslampiran,
+            @Field("fakegps") String fakegps,
+            @Field("batas_waktu") String bataswaktu
+    );
+
+
+    @FormUrlEncoded
+    @POST("izin/pribadi/masuk")
+    Call<ResponsePOJO> uploadIzinKpMasuk(
+            @Field("fototaging") String encfototagingodedImage,
+            @Field("absensi") String absensi,
+            @Field("eselon") String eselon,
+            @Field("employee_id") String employee_id,
+            @Field("timetable_id") String timetable_id,
+            @Field("tanggal") String tanggal,
+            @Field("jam_masuk") String jam_masuk,
+            @Field("posisi_masuk") String posisi_masuk,
+            @Field("status_masuk") String status_masuk,
+            @Field("lat_masuk") String lat_masuk,
+            @Field("lng_masuk") String lng_masuk,
+            @Field("ket_masuk") String ket_masuk,
+            @Field("terlambat") int terlambat,
+            @Field("opd") String opd,
+            @Field("jam_kantor") String jam_kantor,
+            @Field("valid_masuk") String valid_masuk,
+            @Field("fakegps") String fakegps,
+            @Field("batas_waktu") String bataswaktu
+    );
+
+
+    @FormUrlEncoded
+    @POST("izin/pribadi/pulang")
+    Call<ResponsePOJO> uploadIzinKpPulang(
+            @Field("fototaging") String fototaging,
+            @Field("absensi") String absensi,
+            @Field("eselon") String eselon,
+            @Field("employee_id") String employee_id,
+            @Field("timetable_id") String timetable_id,
+            @Field("tanggal") String tanggal,
+            @Field("jam_pulang") String jam_pulang,
+            @Field("posisi_pulang") String posisi_pulang,
+            @Field("status_pulang") String status_pulang,
+            @Field("lat_pulang") String lat_pulang,
+            @Field("lng_pulang") String lng_pulang,
+            @Field("ket_pulang") String ket_pulang,
+            @Field("terlambat") int terlambat,
+            @Field("opd") String opd,
+            @Field("jam_kantor") String jam_kantor,
+            @Field("valid_pulang") String valid_pulang,
+            @Field("fakegps") String fakegps,
+            @Field("batas_waktu") String bataswaktu
+    );
+
+    @FormUrlEncoded
+    @POST("tl/pulang")
+    Call<ResponsePOJO> uploadTLPulang(
+            @Field("fototaging") String fototaging,
+            @Field("absensi") String absensi,
+            @Field("eselon") String eselon,
+            @Field("employee_id") String id,
+            @Field("timetable_id") String time,
+            @Field("tanggal") String tanggal,
+            @Field("jam_pulang") String jam_pulang,
+            @Field("posisi_pulang") String posisi_pulang,
+            @Field("status_pulang") String status_pulang,
+            @Field("lat_pulang") String lat_pulang,
+            @Field("lng_pulang") String lng_pulang,
+            @Field("ket_pulang") String ket_pulang,
+            @Field("kecepatan") int kecepatan,
+            @Field("opd") String opd,
+            @Field("jam_kantor") String jam_kantor,
+            @Field("valid_pulang") String valid_pulang,
+            @Field("lampiran_pulang") String lampiran_pulang,
+            @Field("ekslampiran") String ekslampiran,
+            @Field("fakegps") String fakegps,
+            @Field("batas_waktu") String bataswaktu
+    );
+
+
+    @FormUrlEncoded
+    @POST("dinasluarkantornewsift")
+    Call<ResponsePOJO> uploadAbsenKpSift(
+            @Field("fototaging") String encodedImage,
+            @Field("absensi") String absensi,
+            @Field("eselon") String eselon,
+            @Field("employee_id") String id,
+            @Field("timetable_id") String time,
+            @Field("tanggal") String tanggal,
+            @Field("jam_masuk") String jammasuk,
+            @Field("posisi_masuk") String posisimasuk,
+            @Field("status_masuk") String statusmasuk,
+            @Field("lat_masuk") String latmasuk,
+            @Field("lng_masuk") String lngmasuk,
+            @Field("ket_masuk") String ketmasuk,
+            @Field("terlambat") int terlambat,
+            @Field("opd") String opd,
+            @Field("jam_kantor") String jamkantor,
+            @Field("valid_masuk") String validasi,
+            @Field("lampiran") String lampiran,
+            @Field("ekslampiran") String ekslampiran,
+            @Field("fakegps") String fakegps,
+            @Field("batas_waktu") String bataswaktu
+    );
+
+    @FormUrlEncoded
+    @POST("izin/sakit/masuk")
+    Call<ResponsePOJO> uploadizinsakitmasuk(
+            @Field("fototaging") String fototaging,
+            @Field("absensi") String absensi,
+            @Field("eselon") String eselon,
+            @Field("employee_id") String employee_id,
+            @Field("timetable_id") String timetable_id,
+            @Field("tanggal") String tanggal,
+            @Field("jam_masuk") String jam_masuk,
+            @Field("posisi_masuk") String posisi_masuk,
+            @Field("status_masuk") String status_masuk,
+            @Field("lat_masuk") String lat_masuk,
+            @Field("lng_masuk") String lng_masuk,
+            @Field("ket_masuk") String ket_masuk,
+            @Field("terlambat") int terlambat,
+            @Field("opd") String opd,
+            @Field("jam_kantor") String jamkantor,
+            @Field("valid_masuk") String valid_masuk,
+            @Field("lampiran_masuk") String lampiran_masuk,
+            @Field("ekslampiran") String ekslampiran,
+            @Field("fakegps") String fakegps
+    );
+
+
+    @FormUrlEncoded
+    @POST("izin/sakit/pulang")
+    Call<ResponsePOJO> uploadizinsakitpulang(
+            @Field("fototaging") String fototaging,
+            @Field("absensi") String absensi,
+            @Field("eselon") String eselon,
+            @Field("employee_id") String employee_id,
+            @Field("timetable_id") String timetable_id,
+            @Field("tanggal") String tanggal,
+            @Field("jam_pulang") String jam_pulang,
+            @Field("posisi_pulang") String posisi_pulang,
+            @Field("status_pulang") String status_pulang,
+            @Field("lat_pulang") String lat_pulang,
+            @Field("lng_pulang") String lng_pulang,
+            @Field("ket_pulang") String ket_pulang,
+            @Field("kecepatan") int kecepatan,
+            @Field("opd") String opd,
+            @Field("jam_kantor") String jamkantor,
+            @Field("valid_pulang") String valid_pulang,
+            @Field("lampiran_pulang") String lampiran_pulang,
+            @Field("ekslampiran") String ekslampiran,
+            @Field("fakegps") String fakegps
+    );
+
+    @FormUrlEncoded
+    @POST("izinsakitsiftinsert")
+    Call<ResponsePOJO> uploadizinsakitsift(
+            @Field("fototaging") String encodedImage,
+            @Field("absensi") String absensi,
+            @Field("eselon") String eselon,
+            @Field("employee_id") String id,
+            @Field("timetable_id") String time,
+            @Field("tanggal") String tanggal,
+            @Field("jam_masuk") String jammasuk,
+            @Field("posisi_masuk") String posisimasuk,
+            @Field("status_masuk") String statusmasuk,
+            @Field("lat_masuk") String latmasuk,
+            @Field("lng_masuk") String lngmasuk,
+            @Field("ket_masuk") String ketmasuk,
+            @Field("terlambat") int terlambat,
+            @Field("opd") String opd,
+            @Field("jam_kantor") String jamkantor,
+            @Field("valid_masuk") String validasi,
+            @Field("lampiran") String lampiran,
+            @Field("ekslampiran") String ekslampiran,
+            @Field("fakegps") String fakegps,
+            @Field("idsift") String idsift,
+            @Field("tipesift") String tipesift,
+            @Field("inisialsift") String inisialsift,
+            @Field("masuksift") String masuksift,
+            @Field("pulangsift") String pulangsift
+    );
+
+
+    @FormUrlEncoded
+    @POST("perjalanandinas")
+    Call<ResponsePOJO> uploadAbsenPerjalananDinas(
+            @Field("fototaging") String encodedImage,
+            @Field("eselon") String eselon,
+            @Field("employee_id") String id,
+            @Field("timetable_id") String time,
+            @Field("jam_masuk") String jammasuk,
+            @Field("posisi_masuk") String posisimasuk,
+            @Field("status_masuk") String statusmasuk,
+            @Field("lat_masuk") String latmasuk,
+            @Field("lng_masuk") String lngmasuk,
+            @Field("ket_masuk") String ketmasuk,
+            @Field("terlambat") int terlambat,
+            @Field("opd") String opd,
+            @Field("valid_masuk") String validasi,
+            @Field("lampiran") String lampiran,
+            @Field("ekslampiran") String ekslampiran,
+            @Field("mulai") String dari,
+            @Field("sampai") String sampai,
+            @Field("fakegps") String fakegps
+    );
+
+    @FormUrlEncoded
+    @POST("izin/cuti")
+    Call<ResponsePOJO> uploadAbsenIzinCuti(
+            @Field("fototaging") String fototaging,
+            @Field("employee_id") String employee_id,
+            @Field("posisi_masuk") String posisi_masuk,
+            @Field("status_masuk") String status_masuk,
+            @Field("lat_masuk") String lat_masuk,
+            @Field("lng_masuk") String lng_masuk,
+            @Field("ket_masuk") String ket_masuk,
+            @Field("valid_masuk") String valid_masuk,
+            @Field("lampiran") String lampiran,
+            @Field("ekslampiran") String ekslampiran,
+            @Field("mulai") String mulai,
+            @Field("sampai") String sampai,
+            @Field("fakegps") String fakegps
+    );
+
+    @FormUrlEncoded
+    @POST("absensiizincutisift")
+    Call<ResponsePOJO> uploadAbsenIzinCutiSift(
+
+            @Field("fototaging") String encodedImage,
+            @Field("employee_id") String id,
+            @Field("posisi_masuk") String posisimasuk,
+            @Field("status_masuk") String statusmasuk,
+            @Field("lat_masuk") String latmasuk,
+            @Field("lng_masuk") String lngmasuk,
+            @Field("ket_masuk") String ketmasuk,
+            @Field("valid_masuk") String validasi,
+            @Field("lampiran") String lampiran,
+            @Field("ekslampiran") String ekslampiran,
+            @Field("mulai") String dari,
+            @Field("sampai") String sampai,
+            @Field("fakegps") String fakegps
+
+    );
+
+}

@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".izinsift.izinsiftcuti.IzinCutiSiftFinalActivity">
+
+
+    <RelativeLayout
+        android:layout_marginTop="40dp"
+        android:id="@+id/titleHeaderFinalTl"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        >
+
+            <ImageView
+                android:onClick="backFinalDinasLuar"
+                android:id="@+id/ivBack"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_centerVertical="true"
+                android:contentDescription="@string/todo"
+                android:elevation="10dp"
+                android:layout_marginEnd="10dp"
+                app:srcCompat="@drawable/one_left" />
+
+        <TextView
+            android:id="@+id/title_contentCuti"
+            android:layout_toEndOf="@+id/ivBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:textSize="18sp"
+            android:elevation="10dp"
+            android:textStyle="bold"
+            android:textColor="@color/text_hitam"
+            android:outlineAmbientShadowColor="@color/font_highlight"
+            android:outlineSpotShadowColor="@color/font_highlight"/>
+
+    </RelativeLayout>
+
+    <androidx.fragment.app.FragmentContainerView
+        app:layout_constraintBottom_toTopOf="@+id/llKeteranganIzinCuti"
+        app:layout_constraintTop_toBottomOf="@+id/titleHeaderFinalTl"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="20dp"
+        class="com.google.android.gms.maps.SupportMapFragment"
+        />
+
+
+    <ImageView
+        app:layout_constraintEnd_toEndOf="@+id/map"
+        app:layout_constraintBottom_toBottomOf="@+id/map"
+        android:visibility="visible"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:padding="2dp"
+        app:srcCompat="@drawable/ic_search_location"
+        android:layout_alignParentEnd="true"
+        android:clickable="true"
+        android:layout_centerVertical="true"
+        android:foreground="?attr/selectableItemBackground"
+        android:focusable="true"
+        android:onClick="fokusLokasi"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/backgroundtranshitam"
+        />
+
+    <LinearLayout
+        android:id="@+id/llKeteranganIzinCuti"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:orientation="vertical">
+
+        <View
+            android:layout_width="25dp"
+            android:layout_height="5dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/backgroundnavbar"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_weight="2"
+                android:textAlignment="center"
+                android:text="@string/data_perjalanan_dinas"
+                android:textColor="#444"
+                android:textSize="18sp"
+
+                android:id="@+id/titleDinasLuarCuti"/>
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/tvKegiatanFinalCuti"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/backgoundovalkuning"
+            android:text="@string/kegiatan"
+            android:textColor="@color/putih"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:textSize="14sp"
+
+            android:layout_marginBottom="5dp"/>
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="center">
+
+                <LinearLayout
+                    android:layout_marginEnd="2dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical"
+                    >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Foto Absen"
+                        android:layout_marginBottom="5dp"
+
+                        android:textColor="@color/font"
+                        />
+
+                    <LinearLayout
+                        android:layout_width="150dp"
+                        android:layout_height="200dp"
+                        android:background="@drawable/backgroundnavbarputih"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center_horizontal"
+                        android:foreground="?attr/selectableItemBackground"
+                        android:orientation="vertical"
+                        android:onClick="addFotoKegiatan"
+                        tools:ignore="SpeakableTextPresentCheck,SpeakableTextPresentCheck">
+
+                        <com.google.android.material.imageview.ShapeableImageView
+                            android:id="@+id/ivFinalKegiatanCuti"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            android:visibility="visible"
+                            app:shapeAppearance="@style/ImageStyle2" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_marginStart="2dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical"
+                    android:id="@+id/llLampiranDinasLuarCutiHead"
+                    >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Surat Cuti"
+                        android:layout_marginBottom="5dp"
+
+
+                        android:textColor="@color/font"
+                        />
+
+                    <LinearLayout
+                        android:layout_width="150dp"
+                        android:layout_height="200dp"
+                        android:orientation="vertical"
+                        android:gravity="center_horizontal"
+                        android:background="@drawable/backgroundnavbarputih"
+                        android:id="@+id/llLampiranDinasLuarCuti"
+                        android:clickable="true"
+                        android:foreground="?attr/selectableItemBackground"
+                        android:onClick="addFotoSuratPerintah"
+                        android:focusable="true">
+
+
+                        <com.google.android.material.imageview.ShapeableImageView
+                            android:layout_width="50dp"
+                            android:layout_height="match_parent"
+                            android:id="@+id/iconLampiranCuti"
+                            android:src="@drawable/ic_document_scanner"/>
+
+                        <com.google.android.material.imageview.ShapeableImageView
+                            android:id="@+id/ivSuratPerintahFinalCuti"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            android:visibility="gone"
+                            app:shapeAppearance="@style/ImageStyle2"/>
+
+
+
+                    </LinearLayout>
+
+                </LinearLayout>
+            </LinearLayout>
+
+
+        </HorizontalScrollView>
+
+        <LinearLayout
+            android:clickable="true"
+            android:foreground="?attr/selectableItemBackground"
+            android:onClick="addFotoSuratPerintah"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/backgoundovalkuning"
+            android:gravity="center_vertical"
+            android:layout_marginTop="10dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:layout_gravity="center"
+            android:id="@+id/llPdfDinasLuarCuti"
+            android:visibility="gone"
+
+            android:focusable="true">
+
+            <ImageView
+                android:layout_gravity="center_vertical"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                app:srcCompat="@drawable/ic_document_scanner"/>
+
+            <TextView
+                android:layout_gravity="center_vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="10dp"
+                android:textAlignment="inherit"
+                android:text="@string/dokumen_surat_perintah"
+                android:textColor="@color/putih"
+
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:id="@+id/tvSuratPerintahCuti"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginTop="10dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <LinearLayout
+                style="@style/Widget.AppCompat.Spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:onClick="llMulaiDinasLuar"
+                tools:ignore="TouchTargetSizeCheck">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:contentDescription="@string/todo"
+                    app:srcCompat="@drawable/ic_calendar" />
+
+                <TextView
+                    android:id="@+id/tvHariMulai"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:text="-"
+                    android:textSize="14dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:text="/"/>
+
+                <TextView
+                    android:id="@+id/tvBulanTahunMulai"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:text="-"
+                    android:textSize="14sp" />
+            </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:text="s.d."
+                android:textStyle="bold" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/Widget.AppCompat.Spinner"
+                android:onClick="llSampaiDinasLuar"
+                android:layout_weight="1"
+                android:gravity="center"
+                >
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    app:srcCompat="@drawable/ic_calendar"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:text="-"
+                    android:id="@+id/tvHariSampai"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="/"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:text="-"
+                    android:textSize="14sp"
+                    android:id="@+id/tvBulanTahunSampai"/>
+            </LinearLayout>
+        </LinearLayout>
+
+
+
+        <LinearLayout
+            android:layout_marginTop="10dp"
+            android:layout_gravity="center"
+            android:id="@+id/llUpload"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/backgroundnavbar"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:clickable="true"
+            android:foreground="?attr/selectableItemBackground"
+            android:onClick="kirimDataDinasLuar"
+            android:layout_marginBottom="50dp"
+            android:gravity="center_vertical"
+            android:focusable="true">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/kirim"
+                android:textSize="18sp"
+                android:layout_marginEnd="5dp"
+                android:textStyle="italic"
+                android:textColor="@color/putih"/>
+
+        </LinearLayout>
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

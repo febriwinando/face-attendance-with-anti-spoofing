@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".login.LoginActivity"
+    android:background="@color/background_color"
+    >
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="40dp"
+        android:text="@string/versiapp"
+        android:textAlignment="center"
+        android:textColor="@color/abuabu_font"
+        android:textSize="12sp"
+
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="20dp"
+        android:translationY="-50dp">
+
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:contentDescription="@string/todo"
+            app:srcCompat="@drawable/logoabsensilogin" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="20dp"
+
+            android:text="@string/eabsensi"
+            android:textAlignment="center"
+            android:textColor="@color/biru"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:text="@string/silahkan_masuk_ke_akun_anda"
+            android:textAlignment="center"
+            android:textColor="@color/font"
+            android:textSize="15sp" />
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/nip_nik"
+            app:endIconTint="@color/biru"
+            app:hintAnimationEnabled="true"
+            app:hintTextAppearance="@style/TextStyleInputLogin"
+            app:startIconDrawable="@drawable/ic_card"
+            app:startIconTint="@color/biru_putih">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etUsername"
+                android:textStyle="bold"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionNext"
+                android:inputType="numberSigned"
+                android:textSize="16sp"
+                android:textColor="@color/text_hitam"
+                />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:hint="@string/password"
+            app:endIconMode="password_toggle"
+            app:endIconTint="@color/biru_putih"
+            app:expandedHintEnabled="true"
+            app:hintAnimationEnabled="true"
+            app:hintTextAppearance="@style/TextStyleInputLogin"
+            app:startIconDrawable="@drawable/one_lock"
+            app:startIconTint="@color/biru_putih">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_hitam"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:id="@+id/btnLogin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/backgroundnavbar"
+            android:onClick="loginUser"
+            android:text="@string/masuk"
+            android:textAlignment="center"
+            android:textColor="@color/text_putih"
+            android:textSize="16sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:gravity="center_horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_hitam"
+                android:text="Lupa Password, " />
+
+            <TextView
+                android:id="@+id/tvResetPassword"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:text="Reset Password!"
+                android:textColor="@color/biru"
+                android:textStyle="italic" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="50dp"
+            android:layout_height="1dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:background="#BF87888C" />
+
+        <TextView
+            android:id="@+id/textdb"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:text="@string/cttan"
+            android:textAlignment="center"
+            android:textColor="@color/abuabu_font"
+            android:textSize="14sp" />
+
+    </LinearLayout>
+</RelativeLayout>

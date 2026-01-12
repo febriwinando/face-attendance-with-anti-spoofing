@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/tools"
+    android:id="@+id/llRekapPresensi">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="25dp"
+        card_view:cardElevation="50dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:gravity="center_vertical">
+
+            <LinearLayout
+                android:id="@+id/statusVerifikasi"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/civPresensi"
+                android:layout_width="7dp"
+                android:layout_height="7dp"
+                android:background="@drawable/backgroundkuning"
+                android:padding="2dp"
+                android:visibility="gone"/>
+
+
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/civPresensiTolak"
+                android:layout_width="7dp"
+                android:layout_height="7dp"
+                android:background="@drawable/backgoundovalmerah"
+                android:padding="2dp"
+                    android:visibility="gone"/>
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/civPresensiVerifikasi"
+                android:layout_width="7dp"
+                android:layout_height="7dp"
+                android:background="@drawable/backgoundovalbirusift"
+                android:padding="2dp"
+                    android:visibility="gone"/>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvTanggalRekap"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="10dp"
+                android:textColor="@color/text_hitam"
+                android:layout_toEndOf="@+id/statusVerifikasi"
+                android:textSize="14sp"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="5dp"
+                android:paddingEnd="5dp">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    app:srcCompat="@drawable/one_more"
+                    app:tint="@color/biru_putih"
+                    android:contentDescription="@string/todo" />
+
+                <TextView
+                    android:id="@+id/tvRekapJamMasuk"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:text="00:00"
+                    android:textSize="14sp"
+                    android:textColor="@color/text_hitam"
+                    />
+
+                <ImageView
+                    app:tint="@color/biru_putih"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginStart="10dp"
+                    app:srcCompat="@drawable/one_less"
+                    android:contentDescription="@string/todo" />
+
+                <TextView
+                    android:id="@+id/tvRekapJamPulang"
+                    android:textColor="@color/text_hitam"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:text="00:00"
+                    android:textSize="14sp" />
+            </LinearLayout>
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+
+</LinearLayout>

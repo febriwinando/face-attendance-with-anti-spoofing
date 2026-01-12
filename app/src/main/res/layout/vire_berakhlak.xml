@@ -1,0 +1,421 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="5dp"
+        android:layout_margin="10dp"
+        android:backgroundTint="@color/background_color">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+
+        <RelativeLayout
+            android:id="@+id/titleKehadiran"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingEnd="20dp"
+            android:paddingStart="20dp">
+            <TextView
+                android:layout_centerInParent="true"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Survei Core Values"
+                android:textAlignment="center"
+                android:textSize="20sp"
+                android:textColor="@color/text_hitam"
+                android:textStyle="bold"
+                android:layout_marginBottom="10dp"
+                android:id="@+id/titleBerakhlak"
+                />
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true"
+                app:srcCompat="@drawable/one_close"
+                android:id="@+id/ivCloseBerakhlak"
+                />
+        </RelativeLayout>
+
+        <RelativeLayout
+
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:paddingBottom="20dp"
+            android:paddingTop="10dp">
+
+            <LinearLayout
+                android:layout_marginBottom="10dp"
+                android:id="@+id/llImgBerakhlak"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <ImageView
+                    android:id="@+id/ivBerakhlak"
+                    android:layout_width="100dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/berakhlak"/>
+
+                <ImageView
+                    android:layout_toEndOf="@+id/ivBerakhlak"
+                    android:id="@+id/ivBangga"
+                    android:layout_width="70dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/bangga"/>
+
+            </LinearLayout>
+
+            <TextView
+                android:textAlignment="inherit"
+                android:layout_below="@+id/llImgBerakhlak"
+                android:id="@+id/tvPeritahPilih"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Silahkan pilih Core Values ASN BerAKHLAK yang anda kerjakan hari ini:"
+                android:textColor="@color/text_hitam"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="10dp"/>
+
+
+
+            <LinearLayout
+                android:id="@+id/listBerakhlak"
+                android:layout_below="@+id/tvPeritahPilih"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/llListBerakhlak1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="10dp">
+
+                    <ImageView
+                        android:id="@+id/ivListBerakhlah1"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/one_rectangle_non"
+                        android:layout_marginEnd="10dp"/>
+
+                    <ImageView
+                        android:id="@+id/ivCheckBer1"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/one_rectangle"
+                        android:layout_marginEnd="10dp"
+                        android:visibility="gone"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        android:text="Ber"
+                        android:textStyle="bold"
+                        android:textColor="@color/merah"
+                        />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        android:text="orientasi Pelayanan"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_hitam"
+                        />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/llListBerakhlak2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="10dp">
+
+
+                    <ImageView
+                        android:id="@+id/ivListBerakhlah2"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/one_rectangle_non"
+                        android:layout_marginEnd="10dp"/>
+
+                    <ImageView
+                        android:id="@+id/ivCheckBer2"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/one_rectangle"
+                        android:layout_marginEnd="10dp"
+                        android:visibility="gone"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        android:text="A"
+                        android:textStyle="bold"
+                        android:textColor="@color/merah"
+                        />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        android:text="kuntabel"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_hitam"
+                        />
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:id="@+id/llListBerakhlak3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="10dp">
+
+
+                    <ImageView
+                        android:id="@+id/ivListBerakhlah3"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/one_rectangle_non"
+                        android:layout_marginEnd="10dp"/>
+
+                    <ImageView
+                        android:id="@+id/ivCheckBer3"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/one_rectangle"
+                        android:layout_marginEnd="10dp"
+                        android:visibility="gone"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        android:text="K"
+                        android:textStyle="bold"
+                        android:textColor="@color/merah"
+                        />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        android:text="ompeten"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_hitam"
+                        />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/llListBerakhlak4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="10dp">
+
+
+                    <ImageView
+                        android:id="@+id/ivListBerakhlah4"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/one_rectangle_non"
+                        android:layout_marginEnd="10dp"/>
+                    <ImageView
+                        android:id="@+id/ivCheckBer4"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/one_rectangle"
+                        android:layout_marginEnd="10dp"
+                        android:visibility="gone"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        android:text="H"
+                        android:textStyle="bold"
+                        android:textColor="@color/merah"
+                        />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        android:text="armonis"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_hitam"
+                        />
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:id="@+id/llListBerakhlak5"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="10dp">
+
+
+                    <ImageView
+                        android:id="@+id/ivListBerakhlah5"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/one_rectangle_non"
+                        android:layout_marginEnd="10dp"/>
+
+                    <ImageView
+                        android:id="@+id/ivCheckBer5"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/one_rectangle"
+                        android:layout_marginEnd="10dp"
+                        android:visibility="gone"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        android:text="L"
+                        android:textStyle="bold"
+                        android:textColor="@color/merah"
+                        />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        android:text="oyal"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_hitam"
+                        />
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:id="@+id/llListBerakhlak6"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="10dp">
+
+
+                    <ImageView
+                        android:id="@+id/ivListBerakhlah6"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/one_rectangle_non"
+                        android:layout_marginEnd="10dp"/>
+                    <ImageView
+                        android:id="@+id/ivCheckBer6"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/one_rectangle"
+                        android:layout_marginEnd="10dp"
+                        android:visibility="gone"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        android:text="A"
+                        android:textStyle="bold"
+                        android:textColor="@color/merah"
+                        />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        android:text="daptif"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_hitam"
+                        />
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:id="@+id/llListBerakhlak7"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="10dp">
+
+
+                    <ImageView
+                        android:id="@+id/ivListBerakhlah7"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/one_rectangle_non"
+                        android:layout_marginEnd="10dp"/>
+
+                    <ImageView
+                        android:id="@+id/ivCheckBer7"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/one_rectangle"
+                        android:layout_marginEnd="10dp"
+                        android:visibility="gone"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        android:text="K"
+                        android:textStyle="bold"
+                        android:textColor="@color/merah"
+                        />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        android:text="olaboratif"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_hitam"
+                        />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:layout_below="@+id/listBerakhlak"
+                android:id="@+id/tvKirimSurveiBerakhlak"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/backgroundnavbar"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:paddingStart="15dp"
+                android:paddingEnd="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="KIRIM"
+                android:textSize="18sp"
+                android:layout_marginEnd="5dp"
+                android:textStyle="bold"
+                android:textColor="@color/text_putih"/>
+
+        </RelativeLayout>
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+</LinearLayout>

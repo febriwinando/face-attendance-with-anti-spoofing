@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="20dp"
+    android:orientation="vertical"
+    android:padding="10dp"
+    android:background="@drawable/backgroundnavbarputih"
+    >
+
+
+    <LinearLayout
+        android:paddingBottom="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="Info Jadwal Sift"
+                android:textAlignment="center"
+                android:textColor="@color/text_hitam"
+                android:textSize="20sp" />
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true"
+                app:srcCompat="@drawable/one_close"
+                app:tint="@color/text_hitam"
+                android:id="@+id/ivTutupViewInfoSift"
+                />
+        </RelativeLayout>
+        <TableLayout
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TableRow
+                android:layout_marginBottom="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                >
+
+                <TextView
+                    android:textAlignment="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Jam Masuk"
+
+                    android:textColor="@color/text_hitam"
+                    android:textSize="16sp"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="10dp"/>
+
+                <TextView
+                    android:id="@+id/jamSiftMasuk"
+                    android:textAlignment="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="24:00"
+                    android:padding="5dp"
+                    android:background="@drawable/backgroundovalkuning"
+                    android:textColor="@color/text_putih"
+                    android:textSize="16sp"
+android:textStyle="bold"
+                    />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:textAlignment="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Jam Pulang"
+                    android:textColor="@color/text_hitam"
+                    android:textSize="16sp"
+
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="10dp"/>
+
+                <TextView
+                    android:id="@+id/jamSiftPulang"
+                    android:textAlignment="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="08:00"
+                    android:padding="5dp"
+                    android:textStyle="bold"
+                    android:background="@drawable/backgroundovalkuning"
+                    android:textColor="@color/text_putih"
+                    android:textSize="16sp"/>
+            </TableRow>
+        </TableLayout>
+
+    </LinearLayout>
+</LinearLayout>

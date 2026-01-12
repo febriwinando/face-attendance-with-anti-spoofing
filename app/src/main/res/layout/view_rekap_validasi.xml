@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="700dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_margin="10dp"
+    android:paddingTop="10dp"
+    android:paddingStart="5dp"
+    android:paddingEnd="5dp"
+    android:orientation="vertical"
+    android:background="@drawable/backgoundovalputih"
+    >
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Validasi Absensi Masuk"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:id="@+id/tvTitleValidasi"
+            android:textColor="@color/biru"
+            android:layout_centerInParent="true"
+            />
+
+
+        <ImageView
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="20dp"
+            android:layout_gravity="center_horizontal"
+            app:srcCompat="@drawable/one_close"
+            android:id="@+id/ivTutupViewListValidasi"
+            />
+
+    </RelativeLayout>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="600dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:paddingEnd="5dp"
+        android:paddingStart="5dp"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                >
+
+
+                <TableLayout
+                    android:background="@drawable/backgroundwhite"
+                    android:padding="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    >
+
+                    <TableRow
+                        android:id="@+id/trNamaRekapValid"
+                        android:layout_width="match_parent">
+
+                        <TextView
+                            android:text="Nama"
+                            android:textStyle="bold"
+                            android:textColor="@color/font_highlight"
+                            android:textSize="14sp"
+                            />
+                        <TextView
+                            android:text=" : "
+                            android:textStyle="bold"
+                            android:textColor="@color/font_highlight"
+                            android:textSize="14sp"
+                            />
+                        <TextView
+                            android:id="@+id/tvNamaRekapValid"
+                            android:textColor="@color/font"
+                            android:textSize="14dp"
+                            android:layout_weight="1"
+                            />
+                    </TableRow>
+                    <TableRow
+                        android:id="@+id/trTanggalRekapValid"
+                        android:layout_width="match_parent">
+                        <TextView
+                            android:text="Tanggal"
+                            android:textStyle="bold"
+                            android:textColor="@color/font_highlight"
+                            android:textSize="14sp"
+                            />
+                        <TextView
+                            android:text=" : "
+                            android:textStyle="bold"
+                            android:textColor="@color/font_highlight"
+                            android:textSize="12dp"
+                            />
+                        <TextView
+                            android:id="@+id/tvTanggalRekapValid"
+                            android:textColor="@color/font"
+                            android:textSize="14sp"
+                            android:layout_weight="1"
+                            />
+                    </TableRow>
+                    <TableRow
+                        android:id="@+id/trPukulRekapValid"
+                        android:layout_width="match_parent">
+                        <TextView
+                            android:text="Pukul"
+                            android:textStyle="bold"
+                            android:textColor="@color/font_highlight"
+                            android:textSize="14sp"
+                            />
+                        <TextView
+                            android:text=" : "
+                            android:textStyle="bold"
+                            android:textColor="@color/font_highlight"
+                            android:textSize="14sp"
+                            />
+                        <TextView
+                            android:id="@+id/tvJamRekapValid"
+                            android:textColor="@color/font"
+                            android:textSize="14sp"
+                            android:layout_weight="1"
+                            />
+                    </TableRow>
+
+                    <TableRow
+                        android:layout_width="match_parent">
+
+                        <TextView
+
+                            android:id="@+id/tvFieldRekapValid"
+                            android:text="Aktivitas"
+                            android:textColor="@color/font_highlight"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+
+                            />
+
+                        <TextView
+                            android:text=" : "
+                            android:textStyle="bold"
+                            android:textColor="@color/font_highlight"
+                            android:textSize="14sp"
+                            />
+                        <TextView
+                            android:id="@+id/tvAktivitasRekapValid"
+                            android:text="melaksanakan tugas"
+                            android:textColor="@color/font"
+                            android:textSize="14sp"
+                            android:layout_weight="1"
+                            />
+                    </TableRow>
+
+                    <TableRow
+                        android:id="@+id/trKegiatanRekapValid"
+                        android:layout_width="match_parent">
+                        <TextView
+                            android:id="@+id/tvKegiatanLabelValid"
+                            android:text="Kegiatan"
+                            android:textStyle="bold"
+                            android:textColor="@color/font_highlight"
+                            android:textSize="14sp"
+                            />
+                        <TextView
+                            android:text=" : "
+                            android:textStyle="bold"
+                            android:textColor="@color/font_highlight"
+                            android:textSize="14sp"
+                            />
+
+                        <TextView
+                            android:id="@+id/tvKegiatanRekapValid"
+                            android:layout_weight="1"
+                            android:text="melaksanakan tugas"
+                            android:textColor="@color/font"
+                            android:textSize="14sp" />
+                    </TableRow>
+
+                    <TableRow
+                        android:id="@+id/trAlamatLuarKantor"
+                        android:layout_width="match_parent">
+                        <TextView
+                            android:text="Lokasi"
+                            android:textStyle="bold"
+                            android:textColor="@color/font_highlight"
+                            android:textSize="14sp"
+                            />
+                        <TextView
+                            android:text=" : "
+                            android:textStyle="bold"
+                            android:textColor="@color/font_highlight"
+                            android:textSize="14sp"
+                            />
+
+                        <TextView
+                            android:id="@+id/tvLokasiAlamatLuarKantorValid"
+                            android:layout_weight="1"
+                            android:text="melaksanakan tugas"
+                            android:textColor="@color/font"
+                            android:textSize="14sp" />
+                    </TableRow>
+
+                </TableLayout>
+
+
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Aktivitas Absensi Masuk"
+                    android:layout_margin="10dp"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/font"
+                    android:id="@+id/tvTagFotoRekapValid"
+
+                    />
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/ivValidasiRekapValid"
+                    android:layout_width="match_parent"
+                    android:layout_height="500dp"
+                    android:maxWidth="375dp"
+                    android:maxHeight="500dp"
+                    android:outlineAmbientShadowColor="@color/biru"
+                    android:scaleType="centerCrop"
+                    app:shapeAppearance="@style/ImageStyle2"
+                    />
+
+                <TextView
+                    android:layout_marginTop="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:text="Lampiran Absensi Masuk"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/font"
+                    android:id="@+id/tvTagLampiranRekapValid"
+
+                    />
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/ivLampiranValidasiRekapValid"
+                    android:layout_width="match_parent"
+                    android:layout_height="500dp"
+                    android:maxWidth="375dp"
+                    android:maxHeight="500dp"
+                    android:outlineAmbientShadowColor="@color/biru"
+                    android:scaleType="centerCrop"
+                    app:shapeAppearance="@style/ImageStyle2"
+                    android:visibility="gone"
+                    />
+
+                <WebView
+                    android:layout_width="match_parent"
+                    android:layout_height="500dp"
+                    android:id="@+id/webviewValid"
+                    android:visibility="gone"
+                    tools:ignore="WebViewLayout" />
+
+                <LinearLayout
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="20dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_horizontal">
+                <TextView
+                    android:id="@+id/btnTerima"
+                    android:layout_marginEnd="5dp"
+                    android:layout_width="70dp"
+                    android:textAlignment="center"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/putih"
+                    android:text="Terima"
+                    android:padding="10dp"
+                    android:textSize="14sp"
+                    android:background="@drawable/backgroundnavbar"/>
+
+                <TextView
+                    android:id="@+id/btnTolak"
+                    android:textSize="14sp"
+                    android:padding="10dp"
+                    android:textColor="@color/putih"
+                    android:layout_marginStart="5dp"
+                    android:background="@drawable/backgroundnavbar"
+                    android:layout_width="70dp"
+                    android:textAlignment="center"
+                    android:layout_height="wrap_content"
+                    android:text="Tolak"/>
+                </LinearLayout>
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+    </ScrollView>
+
+
+</LinearLayout>
