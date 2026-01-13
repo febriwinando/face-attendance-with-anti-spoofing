@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".verifikasi.fragvalidasi.pulang.PulangFragment"
+    android:background="@color/putih"
+    android:paddingRight="20dp"
+    android:paddingLeft="20dp"
+    android:paddingBottom="20dp"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        >
+
+        <ImageView
+            android:layout_alignParentStart="true"
+            android:id="@+id/ivBackValidasi"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="10dp"
+            app:srcCompat="@drawable/one_left" />
+
+
+
+        <TextView
+            android:layout_toEndOf="@+id/ivBackValidasi"
+            android:layout_centerInParent="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="VALIDASI PULANG"
+            android:textColor="@color/font_highlight"
+            android:textSize="18sp"
+            android:textStyle="bold"/>
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/tvv1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:background="@drawable/backgoundovalbirusift"
+        android:text="Verifikator Pertama"
+        android:textSize="16sp"
+        android:padding="5dp"
+        android:layout_marginBottom="10dp"
+        android:textColor="@color/putih"
+        android:visibility="gone"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvRekapPulangragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:listitem="@layout/item_validasi_new"
+            />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvv2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:background="@drawable/backgoundovalbirusift"
+        android:text="Verifikator Kedua"
+        android:textSize="16sp"
+        android:padding="5dp"
+        android:layout_marginBottom="10dp"
+        android:textColor="@color/putih"
+        android:visibility="gone"
+        />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvVerivikatorKedua"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:listitem="@layout/item_validasi_new"
+            />
+
+    </LinearLayout>
+
+</LinearLayout>

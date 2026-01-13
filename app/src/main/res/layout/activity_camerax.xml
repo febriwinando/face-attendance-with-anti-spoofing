@@ -12,8 +12,8 @@
         android:id="@+id/cameraPreview"/>
 
     <ImageButton
-        android:layout_width="60sp"
-        android:layout_height="60sp"
+        android:layout_width="80sp"
+        android:layout_height="80sp"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="40sp"
@@ -31,6 +31,7 @@
         android:src="@drawable/flash"
         app:tint="#fff"
         android:id="@+id/toggleFlash"
+        android:visibility="gone"
         android:background="?attr/selectableItemBackgroundBorderless"/>
 
     <ImageButton

@@ -47,21 +47,27 @@ public class ValidasiNewActivity extends AppCompatActivity {
         crossfade();
         getSupportFragmentManager().beginTransaction().replace(R.id.containervalidasi, masukFragment).commit();
 
-        menuvalidasi.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()){
-                    case R.id.masukvalidasi:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.containervalidasi, masukFragment).commit();
-                        return true;
-                    case R.id.pulangvalidasi:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.containervalidasi, pulangFragment).commit();
-                        return true;
-                }
+        menuvalidasi.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
 
-                return false;
+            if (id == R.id.masukvalidasi) {
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.containervalidasi, masukFragment)
+                        .commit();
+                return true;
+
+            } else if (id == R.id.pulangvalidasi) {
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.containervalidasi, pulangFragment)
+                        .commit();
+                return true;
             }
+
+            return false;
         });
+
 
     }
 

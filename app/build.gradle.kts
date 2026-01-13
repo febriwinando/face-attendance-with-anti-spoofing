@@ -28,8 +28,8 @@ android {
         applicationId = "go.pemkott.appsandroidmobiletebingtinggi"
         minSdk = 24
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 153
+        versionName = "2.0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -54,8 +54,8 @@ dependencies {
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
-    implementation(libs.pytorch.android.lite)
-    implementation(libs.pytorch.android.torchvision.lite)
+//    implementation(libs.pytorch.android.lite)
+//    implementation(libs.pytorch.android.torchvision.lite)
     implementation(libs.app.update)
     implementation(libs.face.detection)
     implementation(libs.glide)

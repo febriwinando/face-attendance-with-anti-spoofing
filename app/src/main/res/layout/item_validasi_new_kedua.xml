@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/tools"
+    android:id="@+id/rlValidasiIzin"
+    >
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="20dp"
+        android:layout_margin="5dp"
+        android:id="@+id/cvValidasi"
+        >
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:gravity="center_vertical">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/llnotif"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/civPresensiReject"
+                android:background="@drawable/backgroundovaliconmerah"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:visibility="gone"
+                android:padding="2dp"/>
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/civPresensi"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:background="@drawable/backgroundkuning"
+                android:visibility="gone"
+                android:padding="2dp"/>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvNamaValidasi"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="10dp"
+                android:layout_toEndOf="@+id/llnotif"
+                android:textSize="10sp"
+
+                android:textColor="@color/biru" />
+
+            <TextView
+                android:id="@+id/txtSatusVerif"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:paddingStart="5dp"
+                android:paddingEnd="5dp"
+                android:textSize="10sp"
+
+                />
+
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+
+</RelativeLayout>

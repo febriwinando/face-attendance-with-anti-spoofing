@@ -39,9 +39,10 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/logoabsensilogin"
+        android:requestLegacyExternalStorage="true"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/logoabsensilogin"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppPemko">
         <activity
@@ -129,6 +130,9 @@
             android:name=".NewDashboard.DashboardVersiOne"
             android:exported="false" />
         <activity
+            android:name=".camerax.CameraxActivity"
+            android:exported="false" />
+        <activity
             android:name=".login.DownloadDataActivity"
             android:exported="false" />
         <activity
@@ -144,15 +148,6 @@
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
-        </activity>
-        <activity
-            android:name=".MainActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
         <meta-data
