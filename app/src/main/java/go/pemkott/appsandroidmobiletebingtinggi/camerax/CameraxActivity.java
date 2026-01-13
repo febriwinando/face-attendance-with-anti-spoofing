@@ -1,9 +1,14 @@
 package go.pemkott.appsandroidmobiletebingtinggi.camerax;
 
 import android.Manifest;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -30,6 +35,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 
 import go.pemkott.appsandroidmobiletebingtinggi.R;
+import go.pemkott.appsandroidmobiletebingtinggi.kehadiran.AbsensiKehadiranActivity;
 
 public class CameraxActivity extends AppCompatActivity {
     ImageButton capture, toggleFlash, flipCamera;
@@ -44,7 +50,7 @@ public class CameraxActivity extends AppCompatActivity {
         }
     });
 
-    int aktivitas;
+    String aktivitas;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,8 +61,11 @@ public class CameraxActivity extends AppCompatActivity {
         toggleFlash = findViewById(R.id.toggleFlash);
         flipCamera = findViewById(R.id.flipCamera);
 
-        aktivitas = getIntent().getIntExtra("aktivitas", 1);
-        Toast.makeText(this, ""+aktivitas, Toast.LENGTH_SHORT).show();
+        aktivitas = getIntent().getStringExtra("aktivitas");
+
+//        Toast.makeText(this, aktivitas, Toast.LENGTH_SHORT).show();
+
+
 
         if (ContextCompat.checkSelfPermission(CameraxActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             activityResultLauncher.launch(Manifest.permission.CAMERA);
@@ -103,6 +112,7 @@ public class CameraxActivity extends AppCompatActivity {
                         if (ContextCompat.checkSelfPermission(CameraxActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                             activityResultLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE);
                         }
+
                         takePicture(imageCapture);
                     }
                 });
@@ -121,36 +131,93 @@ public class CameraxActivity extends AppCompatActivity {
         }, ContextCompat.getMainExecutor(this));
     }
 
-    public void takePicture(ImageCapture imageCapture) {
-        final File file = new File(getExternalFilesDir(null), System.currentTimeMillis() + ".jpg");
-        ImageCapture.OutputFileOptions outputFileOptions = new ImageCapture.OutputFileOptions.Builder(file).build();
-        imageCapture.takePicture(outputFileOptions, Executors.newCachedThreadPool(), new ImageCapture.OnImageSavedCallback() {
-            @Override
-            public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-//                        Toast.makeText(CameraxActivity.this, "Image saved at: " + file.getPath(), Toast.LENGTH_SHORT).show();
-//                        Intent intent = new Intent(CameraxActivity.this, ViewActivity.class);
-//                        intent.putExtra("image_path", file.getAbsolutePath());
-//                        startActivity(intent);
-                    }
-                });
+//    public void takePicture(ImageCapture imageCapture) {
+//        String myDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString()+ "/eabsensi";
+//
+//        final File file = new File(getExternalFilesDir(null), System.currentTimeMillis() + ".jpg");
+//        ImageCapture.OutputFileOptions outputFileOptions = new ImageCapture.OutputFileOptions.Builder(file).build();
+//        imageCapture.takePicture(outputFileOptions, Executors.newCachedThreadPool(), new ImageCapture.OnImageSavedCallback() {
+//            @Override
+//            public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        if (aktivitas.equals("kehadiran")){
+//                            Log.d("lokasi file", file.getPath());
+//
+////                            Intent intent = new Intent(CameraxActivity.this, AbsensiKehadiranActivity.class);
+////                            intent.putExtra("image_path", file.getAbsolutePath());
+////                            startActivity(intent);
+//                        }
+//
+//                    }
+//                });
+//            }
+//
+//            @Override
+//            public void onError(@NonNull ImageCaptureException exception) {
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        Toast.makeText(CameraxActivity.this, "Failed to save: " + exception.getMessage(), Toast.LENGTH_SHORT).show();
+//                    }
+//                });
 //                startCamera(cameraFacing);
-            }
+//            }
+//        });
+//    }
 
-            @Override
-            public void onError(@NonNull ImageCaptureException exception) {
-                runOnUiThread(new Runnable() {
+    public void takePicture(ImageCapture imageCapture) {
+
+        String fileName = System.currentTimeMillis() + ".jpg";
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, fileName);
+        contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg");
+        contentValues.put(
+                MediaStore.MediaColumns.RELATIVE_PATH,
+                Environment.DIRECTORY_PICTURES + "/eabsensi"
+        );
+
+        ImageCapture.OutputFileOptions outputFileOptions =
+                new ImageCapture.OutputFileOptions.Builder(
+                        getContentResolver(),
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                        contentValues
+                ).build();
+
+        imageCapture.takePicture(
+                outputFileOptions,
+                Executors.newCachedThreadPool(),
+                new ImageCapture.OnImageSavedCallback() {
+
                     @Override
-                    public void run() {
-                        Toast.makeText(CameraxActivity.this, "Failed to save: " + exception.getMessage(), Toast.LENGTH_SHORT).show();
+                    public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
+                        runOnUiThread(() -> {
+                            if ("kehadiran".equals(aktivitas)) {
+//                                Uri savedUri = outputFileResults.getSavedUri();
+//                                Log.d("lokasi file", savedUri.toString());
+                                    Intent intent = new Intent(CameraxActivity.this, AbsensiKehadiranActivity.class);
+                                    intent.putExtra("namafile", fileName);
+                                    startActivity(intent);
+                            }
+                        });
                     }
-                });
-                startCamera(cameraFacing);
-            }
-        });
+
+                    @Override
+                    public void onError(@NonNull ImageCaptureException exception) {
+                        runOnUiThread(() ->
+                                Toast.makeText(
+                                        CameraxActivity.this,
+                                        "Gagal menyimpan: " + exception.getMessage(),
+                                        Toast.LENGTH_SHORT
+                                ).show()
+                        );
+                    }
+                }
+        );
     }
+
 
     private void setFlashIcon(Camera camera) {
         if (camera.getCameraInfo().hasFlashUnit()) {

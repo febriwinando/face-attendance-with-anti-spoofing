@@ -83,6 +83,8 @@ import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFoto;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.Lokasi;
 import go.pemkott.appsandroidmobiletebingtinggi.utils.NetworkUtils;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -185,18 +187,14 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
 
         String myDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString()+ "/eabsensi";
         Intent intent = getIntent();
-        String fileName = intent.getStringExtra("fileName");
+        String fileName = intent.getStringExtra("namafile");
+
         file = new File(myDir, fileName);
-
-        Bitmap gambardeteksi = BitmapFactory.decodeFile(file.getAbsolutePath());
-        ivTaging.setImageBitmap(gambardeteksi);
-
-        Bitmap selectedBitmap = ambilFoto.compressBitmapTo80KB(file);
-
+        Bitmap selectedBitmap = ambilFoto.compressAndFixOrientation(file);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         selectedBitmap.compress(Bitmap.CompressFormat.JPEG, 90, baos);
 
-        encodedImage = Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT);
+        ivTaging.setImageBitmap(selectedBitmap);
 
         title_content.setText("KEHADIRAN");
 
@@ -212,6 +210,27 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
         });
 
         startLocationUpdates();
+    }
+
+    private MultipartBody.Part prepareFilePart(String partName, File file) {
+        RequestBody requestFile =
+                RequestBody.create(
+                        okhttp3.MediaType.parse("image/jpeg"),
+                        file
+                );
+
+        return MultipartBody.Part.createFormData(
+                partName,
+                file.getName(),
+                requestFile
+        );
+    }
+
+    private RequestBody textPart(String value) {
+        return RequestBody.create(
+                okhttp3.MediaType.parse("text/plain"),
+                value
+        );
     }
 
     private void setRoundedBackground(FragmentContainerView view) {
@@ -527,15 +546,19 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
         return R * c;
     }
 
-    String encodedImage = null;
     AmbilFoto ambilFoto = new AmbilFoto(AbsensiKehadiranActivity.this);
     public void uploadImages(){
 
 
 
-        if(encodedImage == null || encodedImage.isEmpty()){
-            dialogView.viewNotifKosong(AbsensiKehadiranActivity.this, "Harap melampirkan foto taging anda.", "");
-        }else{
+        if (file == null || !file.exists() || file.length() == 0) {
+            dialogView.viewNotifKosong(
+                    this,
+                    "Foto belum diambil",
+                    "Silakan ambil foto terlebih dahulu"
+            );
+            return;
+        } else{
             if (jamMasuk == null || jamPulang == null){
                 dialogView.viewNotifKosong(AbsensiKehadiranActivity.this, "Anda tidak memiliki Jadwal Kerja untuk hari ini", "");
             }
@@ -633,27 +656,54 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
         dialogproses.setContentView(R.layout.view_proses);
         dialogproses.setCancelable(false);
 
-        Call<ResponsePOJO> call = RetroClient.getInstance().getApi().uploadAbsenKehadiranMasuk(
-                encodedImage,
-                absensi,
-                eselon,
-                idpegawai,
-                timetableid,
-                tanggal,
-                jam,
-                posisi,
-                status,
-                lat,
-                lng,
-                ket,
-                terlambat,
-                eOPD,
-                jampegawai,
-                validasi,
-                rbFakeGPS,
-                batasWaktu,
-                berakhlak
-        );
+        MultipartBody.Part fotoPart = prepareFilePart("fototaging", file);
+
+        Call<ResponsePOJO> call =
+                RetroClient.getInstance().getApi().uploadAbsenKehadiranMasuk(
+                        fotoPart,
+
+                        textPart(absensi),
+                        textPart(eselon),
+                        textPart(idpegawai),
+                        textPart(timetableid),
+                        textPart(tanggal),
+                        textPart(jam),
+                        textPart(posisi),
+                        textPart(status),
+                        textPart(lat),
+                        textPart(lng),
+                        textPart(ket),
+                        textPart(String.valueOf(terlambat)),
+                        textPart(eOPD),
+                        textPart(jampegawai),
+                        textPart(validasi),
+                        textPart(rbFakeGPS),
+                        textPart(batasWaktu),
+                        textPart(berakhlak)
+                );
+
+
+//        Call<ResponsePOJO> call = RetroClient.getInstance().getApi().uploadAbsenKehadiranMasuk(
+//                encodedImage,
+//                absensi,
+//                eselon,
+//                idpegawai,
+//                timetableid,
+//                tanggal,
+//                jam,
+//                posisi,
+//                status,
+//                lat,
+//                lng,
+//                ket,
+//                terlambat,
+//                eOPD,
+//                jampegawai,
+//                validasi,
+//                rbFakeGPS,
+//                batasWaktu,
+//                berakhlak
+//        );
         call.enqueue(new Callback<ResponsePOJO>() {
             @Override
             public void onResponse(@NonNull Call<ResponsePOJO> call, @NonNull Response<ResponsePOJO> response) {
@@ -693,55 +743,55 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
     }
 
     public void kirimDataPulang(String absensi, String eselon, String idpegawai, String timetableid, String tanggal, String jam, String posisi, String status, String lat, String lng, String ket, int terlambat, String jampegawai, String validasi, String berakhlak){
-        Log.d("Response Status Normal", "Mulai");
-        Dialog dialogproses = new Dialog(AbsensiKehadiranActivity.this, R.style.DialogStyle);
-        dialogproses.setContentView(R.layout.view_proses);
-        dialogproses.setCancelable(false);
-
-        Call<ResponsePOJO> call = RetroClient.getInstance().getApi().uploadAbsenKehadiranPulang(
-                encodedImage,
-                absensi,
-                eselon,
-                idpegawai,
-                timetableid,
-                tanggal,
-                jam,
-                posisi,
-                status,
-                lat,
-                lng,
-                ket,
-                terlambat,
-                eOPD,
-                jampegawai,
-                validasi,
-                rbFakeGPS,
-                batasWaktu,
-                berakhlak
-        );
-        call.enqueue(new Callback<ResponsePOJO>() {
-            @Override
-            public void onResponse(@NonNull Call<ResponsePOJO> call, @NonNull Response<ResponsePOJO> response) {
-                dialogproses.dismiss();
-
-                if (!response.isSuccessful()){
-                    dialogView.viewNotifKosong(AbsensiKehadiranActivity.this, "Gagal mengisi absensi,", "silahkan coba kembali  iii.");
-                    return;
-                }
-
-                Log.d("Response Status Normal", response.body().getRemarks());
-
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
-                Log.e("Response Status Normal", "Gagal memanggil API absensi: " + t.getMessage(), t);
-                dialogproses.dismiss();
-                dialogView.pesanError(AbsensiKehadiranActivity.this);
-            }
-        });
-
-        dialogproses.show();
+//        Log.d("Response Status Normal", "Mulai");
+//        Dialog dialogproses = new Dialog(AbsensiKehadiranActivity.this, R.style.DialogStyle);
+//        dialogproses.setContentView(R.layout.view_proses);
+//        dialogproses.setCancelable(false);
+//
+//        Call<ResponsePOJO> call = RetroClient.getInstance().getApi().uploadAbsenKehadiranPulang(
+//                encodedImage,
+//                absensi,
+//                eselon,
+//                idpegawai,
+//                timetableid,
+//                tanggal,
+//                jam,
+//                posisi,
+//                status,
+//                lat,
+//                lng,
+//                ket,
+//                terlambat,
+//                eOPD,
+//                jampegawai,
+//                validasi,
+//                rbFakeGPS,
+//                batasWaktu,
+//                berakhlak
+//        );
+//        call.enqueue(new Callback<ResponsePOJO>() {
+//            @Override
+//            public void onResponse(@NonNull Call<ResponsePOJO> call, @NonNull Response<ResponsePOJO> response) {
+//                dialogproses.dismiss();
+//
+//                if (!response.isSuccessful()){
+//                    dialogView.viewNotifKosong(AbsensiKehadiranActivity.this, "Gagal mengisi absensi,", "silahkan coba kembali  iii.");
+//                    return;
+//                }
+//
+//                Log.d("Response Status Normal", response.body().getRemarks());
+//
+//            }
+//
+//            @Override
+//            public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
+//                Log.e("Response Status Normal", "Gagal memanggil API absensi: " + t.getMessage(), t);
+//                dialogproses.dismiss();
+//                dialogView.pesanError(AbsensiKehadiranActivity.this);
+//            }
+//        });
+//
+//        dialogproses.show();
     }
 
     Boolean statusRekam = false;

@@ -2,10 +2,14 @@ package go.pemkott.appsandroidmobiletebingtinggi.api;
 
 import go.pemkott.appsandroidmobiletebingtinggi.model.CheckAbsensi;
 import go.pemkott.appsandroidmobiletebingtinggi.model.DataEmployee;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Part;
 
 public interface ApiAddProduk {
 
@@ -15,29 +19,30 @@ public interface ApiAddProduk {
             @Field("fileup") String encodedImage
     );
 
-    @FormUrlEncoded
+    @Multipart
     @POST("kehadiran/masuk")
     Call<ResponsePOJO> uploadAbsenKehadiranMasuk(
-            @Field("fototaging") String encodedImage,
-            @Field("absensi") String absensi,
-            @Field("eselon") String eselon,
-            @Field("employee_id") String id,
-            @Field("timetable_id") String time,
-            @Field("tanggal") String tanggal,
-            @Field("jam_masuk") String jammasuk,
-            @Field("posisi_masuk") String posisimasuk,
-            @Field("status_masuk") String statusmasuk,
-            @Field("lat_masuk") String latmasuk,
-            @Field("lng_masuk") String lngmasuk,
-            @Field("ket_masuk") String ketmasuk,
-            @Field("terlambat") int terlambat,
-            @Field("opd") String opd,
-            @Field("jam_kantor") String jamkantor,
-            @Field("valid_masuk") String validasi,
-            @Field("fakegps") String fakegps,
-            @Field("batas_waktu") String batas_waktu,
-            @Field("berakhlak") String berakhlak
+            @Part MultipartBody.Part fototaging,
+            @Part("absensi") RequestBody absensi,
+            @Part("eselon") RequestBody eselon,
+            @Part("employee_id") RequestBody employee_id,
+            @Part("timetable_id") RequestBody timetable_id,
+            @Part("tanggal") RequestBody tanggal,
+            @Part("jam_masuk") RequestBody jam_masuk,
+            @Part("posisi_masuk") RequestBody posisi_masuk,
+            @Part("status_masuk") RequestBody status_masuk,
+            @Part("lat_masuk") RequestBody lat_masuk,
+            @Part("lng_masuk") RequestBody lng_masuk,
+            @Part("ket_masuk") RequestBody ket_masuk,
+            @Part("terlambat") RequestBody terlambat,
+            @Part("opd") RequestBody opd,
+            @Part("jam_kantor") RequestBody jam_kantor,
+            @Part("valid_masuk") RequestBody valid_masuk,
+            @Part("fakegps") RequestBody fakegps,
+            @Part("batas_waktu") RequestBody batas_waktu,
+            @Part("berakhlak") RequestBody berakhlak
     );
+
 
     @FormUrlEncoded
     @POST("kehadiran/pulang")

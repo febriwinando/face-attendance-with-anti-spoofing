@@ -203,7 +203,7 @@ public class AbsenSiftActivity extends AppCompatActivity implements OnMapReadyCa
 
         Bitmap gambardeteksi = BitmapFactory.decodeFile(file.getAbsolutePath());
         ivTaging.setImageBitmap(gambardeteksi);
-        Bitmap selectedBitmap = ambilFoto.compressBitmapTo80KB(file);
+        Bitmap selectedBitmap = ambilFoto.compressAndFixOrientation(file);
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         selectedBitmap.compress(Bitmap.CompressFormat.JPEG,90, byteArrayOutputStream);

@@ -209,6 +209,87 @@ public class AmbilFoto {
         return BitmapFactory.decodeFile(file.getAbsolutePath(), opts2);
     }
 
+    public static Matrix getExifRotation(String path) {
+        Matrix matrix = new Matrix();
+
+        try {
+            ExifInterface exif = new ExifInterface(path);
+            int orientation = exif.getAttributeInt(
+                    ExifInterface.TAG_ORIENTATION,
+                    ExifInterface.ORIENTATION_NORMAL
+            );
+
+            switch (orientation) {
+                case ExifInterface.ORIENTATION_ROTATE_90:
+                    matrix.postRotate(90);
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_180:
+                    matrix.postRotate(180);
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_270:
+                    matrix.postRotate(270);
+                    break;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return matrix;
+    }
+
+    public Bitmap compressAndFixOrientation(File file) {
+
+        // ==== STEP 1: Decode ukuran awal ====
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(file.getAbsolutePath(), options);
+
+        int REQUIRED_SIZE = 500;
+        int scale = 1;
+
+        while ((options.outWidth / scale) >= REQUIRED_SIZE &&
+                (options.outHeight / scale) >= REQUIRED_SIZE) {
+            scale *= 2;
+        }
+
+        options.inJustDecodeBounds = false;
+        options.inSampleSize = scale;
+
+        Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath(), options);
+
+        // ==== STEP 2: FIX ROTASI EXIF ====
+        Matrix matrix = getExifRotation(file.getAbsolutePath());
+
+        bitmap = Bitmap.createBitmap(
+                bitmap,
+                0,
+                0,
+                bitmap.getWidth(),
+                bitmap.getHeight(),
+                matrix,
+                true
+        );
+
+        // ==== STEP 3: KOMPRES SAMPAI ≤ 50 KB ====
+        int quality = 60;
+        ByteArrayOutputStream stream;
+
+        while (true) {
+            stream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, stream);
+
+            int sizeKB = stream.toByteArray().length / 1024;
+
+            if (sizeKB <= 50 || quality <= 20) {
+                break;
+            }
+
+            quality -= 5;
+        }
+
+        return bitmap;
+    }
+
     public Bitmap compressBitmapTo80KB(File file) {
 
         // 1. Decode awal dengan resolusi besar dulu
