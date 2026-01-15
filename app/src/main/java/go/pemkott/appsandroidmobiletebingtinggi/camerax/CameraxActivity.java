@@ -1,6 +1,7 @@
 package go.pemkott.appsandroidmobiletebingtinggi.camerax;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -168,6 +169,8 @@ public class CameraxActivity extends AppCompatActivity {
 //        });
 //    }
 
+    String timeStamp;
+
     public void takePicture(ImageCapture imageCapture) {
 
         String fileName = System.currentTimeMillis() + ".jpg";
@@ -205,6 +208,13 @@ public class CameraxActivity extends AppCompatActivity {
                                 intent.putExtra("namafile", fileName);
                                 startActivity(intent);
                                 finish();
+                            } else if ("lampirantl".equals(aktivitas)) {
+
+                                Intent resultIntent = new Intent();
+                                resultIntent.putExtra("KEY_HASIL", fileName);
+                                setResult(Activity.RESULT_OK, resultIntent);
+                                finish();
+
                             }
                         });
                     }

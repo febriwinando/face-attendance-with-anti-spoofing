@@ -719,7 +719,7 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
 
 
             Intent intent = new Intent(TugasLapanganFinalActivity.this, CameraxActivity.class);
-            intent.putExtra("lampiran", 21);
+            intent.putExtra("lampiran", "lampirantl");
             startActivityForResult(intent, REQUEST_CODE_LAMPIRAN);
             dialogLampiran.dismiss();
         });
