@@ -95,6 +95,7 @@ import java.util.Objects;
 import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.api.ResponsePOJO;
 import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
+import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraXLActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraxActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
@@ -715,7 +716,7 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
         });
 
         llKamera.setOnClickListener(v -> {
-            Intent intent = new Intent(this, CameraxActivity.class);
+            Intent intent = new Intent(this, CameraXLActivity.class);
             intent.putExtra("aktivitas", "lampirantl");
             cameraLauncher.launch(intent);
 

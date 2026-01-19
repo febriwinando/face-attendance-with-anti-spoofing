@@ -130,6 +130,9 @@
             android:name=".NewDashboard.DashboardVersiOne"
             android:exported="false" />
         <activity
+            android:name=".camerax.CameraXLActivity"
+            android:exported="false" />
+        <activity
             android:name=".camerax.CameraxActivity"
             android:exported="false" />
         <activity

@@ -6,44 +6,73 @@
     android:layout_height="match_parent"
     tools:context=".camerax.CameraxActivity">
 
-    <androidx.camera.view.PreviewView
+
+
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/cameraPreview"/>
+        android:layout_height="match_parent">
 
-    <ImageButton
-        android:layout_width="80sp"
-        android:layout_height="80sp"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="40sp"
-        android:id="@+id/capture"
-        android:src="@drawable/take"
-        android:scaleType="centerCrop"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        app:tint="#fff" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-    <ImageButton
-        android:layout_width="40sp"
-        android:layout_height="40sp"
-        android:layout_alignParentEnd="true"
-        android:layout_margin="10sp"
-        android:src="@drawable/flash"
-        app:tint="#fff"
-        android:id="@+id/toggleFlash"
-        android:visibility="gone"
-        android:background="?attr/selectableItemBackgroundBorderless"/>
+        <androidx.camera.view.PreviewView
+            android:id="@+id/cameraPreview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
-    <ImageButton
-        android:layout_width="40sp"
-        android:layout_height="40sp"
-        android:layout_below="@id/toggleFlash"
-        android:layout_marginEnd="10sp"
-        android:layout_alignParentEnd="true"
-        android:id="@+id/flipCamera"
-        android:src="@drawable/flip"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        app:tint="#fff"
-        android:visibility="gone"/>
+            <ImageButton
+                android:layout_width="80sp"
+                android:layout_height="80sp"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="40sp"
+                android:id="@+id/capture"
+                android:src="@drawable/take"
+                android:scaleType="centerCrop"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                app:tint="#fff" />
+
+            <ImageButton
+                android:layout_width="40sp"
+                android:layout_height="40sp"
+                android:layout_alignParentEnd="true"
+                android:layout_margin="10sp"
+                android:src="@drawable/flash"
+                app:tint="#fff"
+                android:id="@+id/toggleFlash"
+                android:visibility="gone"
+                android:background="?attr/selectableItemBackgroundBorderless"/>
+
+            <ImageButton
+                android:layout_width="40sp"
+                android:layout_height="40sp"
+                android:layout_below="@id/toggleFlash"
+                android:layout_marginEnd="10sp"
+                android:layout_alignParentEnd="true"
+                android:id="@+id/flipCamera"
+                android:src="@drawable/flip"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                app:tint="#fff"
+                android:visibility="gone"/>
+
+            <go.pemkott.appsandroidmobiletebingtinggi.camerax.FaceOverlayView
+                android:id="@+id/faceOverlay"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <TextView
+                android:id="@+id/txtChallenge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Arahkan wajah ke frame"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_gravity="top|center_horizontal"
+                android:layout_marginTop="24dp"/>
+
+        </RelativeLayout>
+    </FrameLayout>
 
 </RelativeLayout>
