@@ -479,27 +479,51 @@ public interface ApiAddProduk {
     );
 
 
-    @FormUrlEncoded
+//    @FormUrlEncoded
+//    @POST("perjalanandinas")
+//    Call<ResponsePOJO> uploadAbsenPerjalananDinas(
+//            @Field("fototaging") String encodedImage,
+//            @Field("eselon") String eselon,
+//            @Field("employee_id") String id,
+//            @Field("timetable_id") String time,
+//            @Field("jam_masuk") String jammasuk,
+//            @Field("posisi_masuk") String posisimasuk,
+//            @Field("status_masuk") String statusmasuk,
+//            @Field("lat_masuk") String latmasuk,
+//            @Field("lng_masuk") String lngmasuk,
+//            @Field("ket_masuk") String ketmasuk,
+//            @Field("terlambat") int terlambat,
+//            @Field("opd") String opd,
+//            @Field("valid_masuk") String validasi,
+//            @Field("lampiran") String lampiran,
+//            @Field("ekslampiran") String ekslampiran,
+//            @Field("mulai") String dari,
+//            @Field("sampai") String sampai,
+//            @Field("fakegps") String fakegps
+//    );
+
+
+    @Multipart
     @POST("perjalanandinas")
     Call<ResponsePOJO> uploadAbsenPerjalananDinas(
-            @Field("fototaging") String encodedImage,
-            @Field("eselon") String eselon,
-            @Field("employee_id") String id,
-            @Field("timetable_id") String time,
-            @Field("jam_masuk") String jammasuk,
-            @Field("posisi_masuk") String posisimasuk,
-            @Field("status_masuk") String statusmasuk,
-            @Field("lat_masuk") String latmasuk,
-            @Field("lng_masuk") String lngmasuk,
-            @Field("ket_masuk") String ketmasuk,
-            @Field("terlambat") int terlambat,
-            @Field("opd") String opd,
-            @Field("valid_masuk") String validasi,
-            @Field("lampiran") String lampiran,
-            @Field("ekslampiran") String ekslampiran,
-            @Field("mulai") String dari,
-            @Field("sampai") String sampai,
-            @Field("fakegps") String fakegps
+            @Part MultipartBody.Part fototaging,
+            @Part("eselon") RequestBody eselon,
+            @Part("employee_id") RequestBody employee_id,
+            @Part("timetable_id") RequestBody timetable_id,
+            @Part("jam_masuk") RequestBody jam_masuk,
+            @Part("posisi_masuk") RequestBody posisi_masuk,
+            @Part("status_masuk") RequestBody status_masuk,
+            @Part("lat_masuk") RequestBody lat_masuk,
+            @Part("lng_masuk") RequestBody lng_masuk,
+            @Part("ket_masuk") RequestBody ket_masuk,
+            @Part("terlambat") RequestBody terlambat,
+            @Part("opd") RequestBody opd,
+            @Part("valid_masuk") RequestBody valid_masuk,
+            @Part MultipartBody.Part lampiran,
+            @Part("ekslampiran") RequestBody ekslampiran,
+            @Part("mulai") RequestBody mulai,
+            @Part("sampai") RequestBody sampai,
+            @Part("fakegps") RequestBody fakegps
     );
 
     @FormUrlEncoded

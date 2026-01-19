@@ -828,26 +828,25 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
         MultipartBody.Part lampiranPart = prepareFilePart("fototaging", imageBytesLampiran);
 
         Call<ResponsePOJO> call =
-                RetroClient.getInstance().getApi().uploadTLMasuk(
+                RetroClient.getInstance().getApi().uploadAbsenPerjalananDinas(
                         fotoPart,
-                        textPart(ketKehadiran),
                         textPart(eJabatan),
                         textPart(sEmployeID),
                         textPart(timetableid),
-                        textPart(tanggal),
                         textPart(rbJam),
                         textPart(posisi),
                         textPart(status),
                         textPart(rbLat),
                         textPart(rbLng),
                         textPart(rbKet),
-                        textPart(String.valueOf(mins)),
+                        textPart(String.valueOf(0)),
                         textPart(eOPD),
-                        textPart(jampegawai),
                         textPart(valid),
                         lampiranPart,
-                        textPart(rbFakeGPS),
-                        textPart(batasWaktu)
+                        textPart(ekslampiran),
+                        textPart(dariTanggal),
+                        textPart(sampaiTanggal),
+                        textPart(rbFakeGPS)
                 );
 
 //        Call<ResponsePOJO> call = RetroClient.getInstance().getApi().uploadAbsenPerjalananDinas(
