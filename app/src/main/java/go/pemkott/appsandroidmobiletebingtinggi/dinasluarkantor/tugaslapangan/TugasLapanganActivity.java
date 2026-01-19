@@ -111,6 +111,7 @@ public class TugasLapanganActivity extends AppCompatActivity {
             intentTL.putExtra("aktivitas", "tugaslapangan");
             intentTL.putExtra("title", "Isi Data Tugas Lapangan");
             startActivity(intentTL);
+            finish();
 
         }
     }

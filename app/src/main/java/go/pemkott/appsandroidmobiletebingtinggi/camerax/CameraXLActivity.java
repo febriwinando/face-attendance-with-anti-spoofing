@@ -70,7 +70,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.kehadiran.AbsensiKehadiranActivi
 public class CameraXLActivity extends AppCompatActivity {
     ImageButton capture, toggleFlash, flipCamera;
     private PreviewView previewView;
-    int cameraFacing = CameraSelector.LENS_FACING_FRONT;
+    int cameraFacing = CameraSelector.LENS_FACING_BACK;
     private final ActivityResultLauncher<String> activityResultLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), new ActivityResultCallback<Boolean>() {
         @Override
         public void onActivityResult(Boolean result) {
@@ -106,8 +106,8 @@ public class CameraXLActivity extends AppCompatActivity {
         flipCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (cameraFacing == CameraSelector.LENS_FACING_BACK) {
-                    cameraFacing = CameraSelector.LENS_FACING_FRONT;
+                if (cameraFacing == CameraSelector.LENS_FACING_FRONT) {
+                    cameraFacing = CameraSelector.LENS_FACING_BACK;
                 } else {
                     cameraFacing = CameraSelector.LENS_FACING_BACK;
                 }

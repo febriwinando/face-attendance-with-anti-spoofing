@@ -19,6 +19,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraxActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
+import go.pemkott.appsandroidmobiletebingtinggi.dinasluarkantor.tugaslapangan.TugasLapanganActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.model.Kegiatan;
 
 public class SppdActivity extends AppCompatActivity {
@@ -100,10 +101,11 @@ public class SppdActivity extends AppCompatActivity {
             dialogView.viewNotifKosong(SppdActivity.this,
                     "Anda Harus Mengisi Kegiatan Yang Dilaksanakan.", "");
         } else {
-            Intent intentPd = new Intent(SppdActivity.this, CameraxActivity.class);
-            intentPd.putExtra("aktivitas", 3);
-            intentPd.putExtra("title", "Isi Data Perjalanan Dinas");
-            startActivity(intentPd);
+            Intent intentTL = new Intent(SppdActivity.this, CameraxActivity.class);
+            intentTL.putExtra("aktivitas", "perjalanandinas");
+            intentTL.putExtra("title", "Isi Data Perjalanan Dinas");
+            startActivity(intentTL);
+            finish();
         }
     }
 

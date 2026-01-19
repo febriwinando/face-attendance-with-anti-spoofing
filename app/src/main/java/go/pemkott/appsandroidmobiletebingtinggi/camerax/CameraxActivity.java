@@ -656,6 +656,7 @@ import java.util.Random;
 import java.util.concurrent.Executors;
 
 import go.pemkott.appsandroidmobiletebingtinggi.R;
+import go.pemkott.appsandroidmobiletebingtinggi.dinasluarkantor.perjalanandinas.PerjalananDinasFinalActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.dinasluarkantor.tugaslapangan.TugasLapanganFinalActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.kehadiran.AbsensiKehadiranActivity;
 
@@ -1010,6 +1011,9 @@ public class CameraxActivity extends AppCompatActivity {
             i = new Intent(this, AbsensiKehadiranActivity.class);
         } else if ("tugaslapangan".equals(aktivitas)) {
             i = new Intent(this, TugasLapanganFinalActivity.class);
+        } else if ("perjalanandinas".equals(aktivitas)) {
+            i = new Intent(this, PerjalananDinasFinalActivity.class);
+
         } else {
             i = new Intent();
             i.putExtra("namafile", fileName);

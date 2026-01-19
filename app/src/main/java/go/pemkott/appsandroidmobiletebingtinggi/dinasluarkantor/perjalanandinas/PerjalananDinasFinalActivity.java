@@ -104,6 +104,9 @@ import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFotoLampiran;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.Lokasi;
 import go.pemkott.appsandroidmobiletebingtinggi.utils.NetworkUtils;
 import go.pemkott.appsandroidmobiletebingtinggi.viewmodel.LocationViewModel;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -152,7 +155,7 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
     String dariTanggal, sampaiTanggal;
     SimpleDateFormat hari;
     DatePickerDialog datePickerDialogMulai, datePickerDialogSampai;
-    String fotoTaging = null, lampiran = null;
+    String lampiran = null;
     String ekslampiran;
 
     TextView tvHariMulai, tvBulanTahunMulai, tvHariSampai, tvBulanTahunSampai, tvKegiatanFinal, tvSuratPerintah, titleDinasLuar, title_content;
@@ -237,18 +240,30 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
 //        kegiatans = SppdActivity.kegiatanCheckedPd;
 //        kegiatanlainnya = SppdActivity.kegiatansPdLainnya;
 
+//        String myDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString()+ "/eabsensi";
+//        String fileName = intent.getStringExtra("fileName");
+//        file = new File(myDir, fileName);
+//
+//        Bitmap gambardeteksi = BitmapFactory.decodeFile(file.getAbsolutePath());
+
         String myDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString()+ "/eabsensi";
-        String fileName = intent.getStringExtra("fileName");
+        String fileName = intent.getStringExtra("namafile");
+
         file = new File(myDir, fileName);
+        byte[] imageBytes = ambilFoto.compressToMax80KB(file);
 
-        Bitmap gambardeteksi = BitmapFactory.decodeFile(file.getAbsolutePath());
-        ivFinalKegiatan.setImageBitmap(gambardeteksi);
-        Bitmap selectedBitmap = ambilFoto.compressBitmapTo80KB(file);
+        Bitmap preview = BitmapFactory.decodeByteArray(
+                imageBytes, 0, imageBytes.length
+        );
 
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        selectedBitmap.compress(Bitmap.CompressFormat.JPEG,90, byteArrayOutputStream);
-        byte[] imageInByte = byteArrayOutputStream.toByteArray();
-        fotoTaging =  Base64.encodeToString(imageInByte,Base64.DEFAULT);
+
+        ivFinalKegiatan.setImageBitmap(preview);
+//        Bitmap selectedBitmap = ambilFoto.compressBitmapTo80KB(file);
+//
+//        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+//        selectedBitmap.compress(Bitmap.CompressFormat.JPEG,90, byteArrayOutputStream);
+//        byte[] imageInByte = byteArrayOutputStream.toByteArray();
+//        fotoTaging =  Base64.encodeToString(imageInByte,Base64.DEFAULT);
 
         resultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
             @SuppressLint("Range")
@@ -478,6 +493,7 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
         });
 
         llKamera.setOnClickListener(v -> {
+
             Intent intent = new Intent(PerjalananDinasFinalActivity.this, CameraxActivity.class);
             intent.putExtra("lampiran", 22);
             startActivityForResult(intent, REQUEST_CODE_LAMPIRAN);
@@ -500,18 +516,18 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
         if (resultCode != RESULT_CANCELED){
 
             if (requestCode == 1 && resultCode == RESULT_OK) {
-
-                ivFinalKegiatan.setVisibility(View.VISIBLE);
-                File file = new File(currentPhotoPath);
-                Bitmap bitmap = ambilFoto.fileBitmap(file);
-                rotationBitmapTag = Bitmap.createBitmap(bitmap, 0,0, bitmap.getWidth(), bitmap.getHeight(), AmbilFoto.exifInterface(currentPhotoPath, 0), true);
-
-                ivFinalKegiatan.setImageBitmap(rotationBitmapTag);
-
-                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                rotationBitmapTag.compress(Bitmap.CompressFormat.JPEG,50, byteArrayOutputStream);
-                byte[] imageInByte = byteArrayOutputStream.toByteArray();
-                fotoTaging =  Base64.encodeToString(imageInByte,Base64.DEFAULT);
+//
+//                ivFinalKegiatan.setVisibility(View.VISIBLE);
+//                File file = new File(currentPhotoPath);
+//                Bitmap bitmap = ambilFoto.fileBitmap(file);
+//                rotationBitmapTag = Bitmap.createBitmap(bitmap, 0,0, bitmap.getWidth(), bitmap.getHeight(), AmbilFoto.exifInterface(currentPhotoPath, 0), true);
+//
+//                ivFinalKegiatan.setImageBitmap(rotationBitmapTag);
+//
+//                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+//                rotationBitmapTag.compress(Bitmap.CompressFormat.JPEG,50, byteArrayOutputStream);
+//                byte[] imageInByte = byteArrayOutputStream.toByteArray();
+//                fotoTaging =  Base64.encodeToString(imageInByte,Base64.DEFAULT);
 
                 periksaWaktu();
                 handlerProgressDialog();
@@ -738,7 +754,7 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
             dialogView.viewNotifKosong(PerjalananDinasFinalActivity.this, "Anda terdeteksi menggunakan Fake GPS.", "Jika ditemukan berulang kali, akun anda akan terblokir otomatis dan tercatat Alpa.");
 
         }else{
-            if (fotoTaging == null || lampiran == null){
+            if (file == null || !file.exists() || file.length() == 0){
                 dialogView.viewNotifKosong(PerjalananDinasFinalActivity.this, "Anda harus melampirkan Foto Kegiatan dan Surat Perintah Perjalanan Dinas.", "");
             }
             else {
@@ -780,33 +796,80 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
 
     }
 
+    private RequestBody textPart(String value) {
+        return RequestBody.create(
+                okhttp3.MediaType.parse("text/plain"),
+                value
+        );
+    }
+
+    private MultipartBody.Part prepareFilePart(String partName, byte[] imageBytes) {
+        RequestBody requestBody =
+                RequestBody.create(
+                        imageBytes,
+                        MediaType.parse("image/jpeg")
+                );
+
+        return MultipartBody.Part.createFormData(
+                partName,
+                "fototaging.jpg",
+                requestBody
+        );
+    }
     public void kirimdata(String valid, String posisi, String status){
 
         Dialog dialogproses = new Dialog(PerjalananDinasFinalActivity.this, R.style.DialogStyle);
         dialogproses.setContentView(R.layout.view_proses);
         dialogproses.setCancelable(false);
+        byte[] imageBytes = ambilFoto.compressToMax80KB(file);
+        MultipartBody.Part fotoPart = prepareFilePart("fototaging", imageBytes);
 
+        byte[] imageBytesLampiran = ambilFoto.compressToMax80KB(file);
+        MultipartBody.Part lampiranPart = prepareFilePart("fototaging", imageBytesLampiran);
 
-        Call<ResponsePOJO> call = RetroClient.getInstance().getApi().uploadAbsenPerjalananDinas(
-                fotoTaging,
-                eJabatan,
-                sEmployeID,
-                timetableid,
-                rbJam,
-                posisi,
-                status,
-                rbLat,
-                rbLng,
-                rbKet,
-                0,
-                eOPD,
-                valid,
-                lampiran,
-                ekslampiran,
-                dariTanggal,
-                sampaiTanggal,
-                rbFakeGPS
-        );
+        Call<ResponsePOJO> call =
+                RetroClient.getInstance().getApi().uploadTLMasuk(
+                        fotoPart,
+                        textPart(ketKehadiran),
+                        textPart(eJabatan),
+                        textPart(sEmployeID),
+                        textPart(timetableid),
+                        textPart(tanggal),
+                        textPart(rbJam),
+                        textPart(posisi),
+                        textPart(status),
+                        textPart(rbLat),
+                        textPart(rbLng),
+                        textPart(rbKet),
+                        textPart(String.valueOf(mins)),
+                        textPart(eOPD),
+                        textPart(jampegawai),
+                        textPart(valid),
+                        lampiranPart,
+                        textPart(rbFakeGPS),
+                        textPart(batasWaktu)
+                );
+
+//        Call<ResponsePOJO> call = RetroClient.getInstance().getApi().uploadAbsenPerjalananDinas(
+//                fotoTaging,
+//                eJabatan,
+//                sEmployeID,
+//                timetableid,
+//                rbJam,
+//                posisi,
+//                status,
+//                rbLat,
+//                rbLng,
+//                rbKet,
+//                0,
+//                eOPD,
+//                valid,
+//                lampiran,
+//                ekslampiran,
+//                dariTanggal,
+//                sampaiTanggal,
+//                rbFakeGPS
+//        );
 
         call.enqueue(new Callback<ResponsePOJO>() {
             @Override
