@@ -777,7 +777,7 @@ public class CameraxActivity extends AppCompatActivity {
 
     private void showCurrentChallenge() {
         txtChallenge.setText(
-                "Challenge " + (challengeIndex + 1) + " / " + challengeQueue.size()
+                "Pemeriksaan " + (challengeIndex + 1) + " / " + challengeQueue.size()
                         + "\n" + getChallengeText(challengeQueue.get(challengeIndex))
         );
     }

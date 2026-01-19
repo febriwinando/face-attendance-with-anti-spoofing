@@ -59,10 +59,10 @@ public class FaceOverlayView extends View {
 
     // FRAME NORMALIZED (0–1)
     private final RectF frameNorm = new RectF(
-            0.15f,  // left
+            0.05f,  // left
             0.05f,  // top
-            0.85f,  // right
-            0.8f   // bottom
+            0.95f,  // right
+            0.7f   // bottom
     );
 
     public FaceOverlayView(Context context, AttributeSet attrs) {

@@ -12,26 +12,32 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <RelativeLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-        <androidx.camera.view.PreviewView
-            android:id="@+id/cameraPreview"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            <androidx.camera.view.PreviewView
+                android:id="@+id/cameraPreview"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
 
             <ImageButton
                 android:layout_width="80sp"
                 android:layout_height="80sp"
-                android:layout_centerHorizontal="true"
-                android:layout_alignParentBottom="true"
                 android:layout_marginBottom="40sp"
                 android:id="@+id/capture"
                 android:src="@drawable/take"
                 android:scaleType="centerCrop"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                app:tint="#fff" />
+                app:tint="#fff"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
 
             <ImageButton
                 android:layout_width="40sp"
@@ -61,7 +67,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
+
             <TextView
+                android:layout_alignTop="@+id/capture"
                 android:id="@+id/txtChallenge"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -69,10 +77,17 @@
                 android:textColor="@android:color/white"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:layout_gravity="top|center_horizontal"
-                android:layout_marginTop="24dp"/>
+                android:background="@drawable/backgoundovalbirusift"
+                android:padding="10dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/capture"
+                android:layout_marginBottom="10dp"
+                />
 
-        </RelativeLayout>
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </FrameLayout>
 
 </RelativeLayout>

@@ -716,7 +716,7 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
         });
 
         llKamera.setOnClickListener(v -> {
-            Intent intent = new Intent(this, CameraXLActivity.class);
+            Intent intent = new Intent(this, CameraxActivity.class);
             intent.putExtra("aktivitas", "lampirantl");
             cameraLauncher.launch(intent);
 
