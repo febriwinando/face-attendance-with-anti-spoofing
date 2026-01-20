@@ -528,23 +528,42 @@ public interface ApiAddProduk {
             @Part("fakegps") RequestBody fakegps
     );
 
-    @FormUrlEncoded
+
+    @Multipart
     @POST("izin/cuti")
     Call<ResponsePOJO> uploadAbsenIzinCuti(
-            @Field("fototaging") String fototaging,
-            @Field("employee_id") String employee_id,
-            @Field("posisi_masuk") String posisi_masuk,
-            @Field("status_masuk") String status_masuk,
-            @Field("lat_masuk") String lat_masuk,
-            @Field("lng_masuk") String lng_masuk,
-            @Field("ket_masuk") String ket_masuk,
-            @Field("valid_masuk") String valid_masuk,
-            @Field("lampiran") String lampiran,
-            @Field("ekslampiran") String ekslampiran,
-            @Field("mulai") String mulai,
-            @Field("sampai") String sampai,
-            @Field("fakegps") String fakegps
+            @Part MultipartBody.Part fototaging,
+            @Part("employee_id") RequestBody employee_id,
+            @Part("posisi_masuk") RequestBody posisi_masuk,
+            @Part("status_masuk") RequestBody status_masuk,
+            @Part("lat_masuk") RequestBody lat_masuk,
+            @Part("lng_masuk") RequestBody lng_masuk,
+            @Part("ket_masuk") RequestBody ket_masuk,
+            @Part("valid_masuk") RequestBody valid_masuk,
+            @Part MultipartBody.Part lampiran,
+            @Part("ekslampiran") RequestBody ekslampiran,
+            @Part("mulai") RequestBody mulai,
+            @Part("sampai") RequestBody sampai,
+            @Part("fakegps") RequestBody fakegps
     );
+
+//    @FormUrlEncoded
+//    @POST("izin/cuti")
+//    Call<ResponsePOJO> uploadAbsenIzinCuti(
+//            @Field("fototaging") String fototaging,
+//            @Field("employee_id") String employee_id,
+//            @Field("posisi_masuk") String posisi_masuk,
+//            @Field("status_masuk") String status_masuk,
+//            @Field("lat_masuk") String lat_masuk,
+//            @Field("lng_masuk") String lng_masuk,
+//            @Field("ket_masuk") String ket_masuk,
+//            @Field("valid_masuk") String valid_masuk,
+//            @Field("lampiran") String lampiran,
+//            @Field("ekslampiran") String ekslampiran,
+//            @Field("mulai") String mulai,
+//            @Field("sampai") String sampai,
+//            @Field("fakegps") String fakegps
+//    );
 
     @FormUrlEncoded
     @POST("absensiizincutisift")

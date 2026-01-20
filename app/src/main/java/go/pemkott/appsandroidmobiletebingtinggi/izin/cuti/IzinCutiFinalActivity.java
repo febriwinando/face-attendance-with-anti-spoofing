@@ -82,6 +82,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.ParseException;
@@ -94,6 +95,7 @@ import java.util.Objects;
 import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.api.ResponsePOJO;
 import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
+import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraXLActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraxActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
@@ -103,6 +105,9 @@ import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFotoLampiran;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.Lokasi;
 import go.pemkott.appsandroidmobiletebingtinggi.utils.NetworkUtils;
 import go.pemkott.appsandroidmobiletebingtinggi.viewmodel.LocationViewModel;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -142,7 +147,6 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
     String dariTanggal, sampaiTanggal;
     SimpleDateFormat hari;
     DatePickerDialog datePickerDialogMulai, datePickerDialogSampai;
-    String fotoTaging = null, lampiran = null;
     String ekslampiran;
     final private int REQUEST_CODE_ASK_PERMISSIONS = 123;
 
@@ -166,7 +170,7 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
     FusedLocationProviderClient fusedLocationProviderClient;
     LocationRequest locationRequest;
 
-    File file;
+    File file, filelampiran;
     @SuppressLint("WrongThread")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -237,17 +241,17 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
 
 
         String myDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString()+ "/eabsensi";
-        String fileName = intent.getStringExtra("fileName");
-        file = new File(myDir, fileName);
+        String fileName = intent.getStringExtra("namafile");
 
-        Bitmap gambardeteksi = BitmapFactory.decodeFile(file.getAbsolutePath());
-        ivFinalKegiatan.setImageBitmap(gambardeteksi);
-        Bitmap selectedBitmap = ambilFoto.compressBitmapTo80KB(file);
+        File originalFile = new File(myDir, fileName);
+        try {
+            file = ambilFoto.compressToFile(this, originalFile);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        selectedBitmap.compress(Bitmap.CompressFormat.JPEG,90, byteArrayOutputStream);
-        byte[] imageInByte = byteArrayOutputStream.toByteArray();
-        fotoTaging =  Base64.encodeToString(imageInByte,Base64.DEFAULT);
+        Bitmap preview = BitmapFactory.decodeFile(file.getAbsolutePath());
+        ivFinalKegiatan.setImageBitmap(preview);
 
         resultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
             @SuppressLint("Range")
@@ -328,7 +332,7 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
 
         }else {
 
-            if (fotoTaging == null || lampiran == null) {
+            if (file == null || !file.exists() || file.length() == 0) {
                 dialogView.viewNotifKosong(IzinCutiFinalActivity.this, "Anda harus melampirkan Foto Kegiatan dan Izin Cuti.", "");
             } else {
                 uploadImages();
@@ -369,6 +373,26 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
         }
     }
 
+    private RequestBody textPart(String value) {
+        return RequestBody.create(
+                okhttp3.MediaType.parse("text/plain"),
+                value
+        );
+    }
+
+    private MultipartBody.Part prepareFilePart(String partName, byte[] imageBytes) {
+        RequestBody requestBody =
+                RequestBody.create(
+                        imageBytes,
+                        MediaType.parse("image/jpeg")
+                );
+
+        return MultipartBody.Part.createFormData(
+                partName,
+                "fototaging.jpg",
+                requestBody
+        );
+    }
     public void kirimdata(String valid, String posisi, String status){
 
         progressDialog = new ProgressDialog(IzinCutiFinalActivity.this, R.style.AppCompatAlertDialogStyle);
@@ -376,21 +400,57 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
         progressDialog.setCancelable(false);
         progressDialog.show();
 
-        Call<ResponsePOJO> call = RetroClient.getInstance().getApi().uploadAbsenIzinCuti(
-                fotoTaging,
-                sEmployeID,
-                posisi,
-                status,
-                rbLat,
-                rbLng,
-                rbKet,
-                valid,
-                lampiran,
-                ekslampiran,
-                dariTanggal,
-                sampaiTanggal,
-                rbFakeGPS
-        );
+//        Call<ResponsePOJO> call = RetroClient.getInstance().getApi().uploadAbsenIzinCuti(
+//                fotoTaging,
+//                sEmployeID,
+//                posisi,
+//                status,
+//                rbLat,
+//                rbLng,
+//                rbKet,
+//                valid,
+//                lampiran,
+//                ekslampiran,
+//                dariTanggal,
+//                sampaiTanggal,
+//                rbFakeGPS
+//        );
+
+
+        byte[] imageBytes = ambilFoto.compressToMax80KB(file);
+        MultipartBody.Part fotoPart =
+                prepareFilePart("fototaging", imageBytes);
+
+        MultipartBody.Part lampiranPart;
+
+        if ("pdf".equals(ekslampiran)) {
+            lampiranPart =
+                    prepareFilePart("lampiran", imageBytesDokumenPdf);
+            Log.d("TugasLapanganFinalActivity", "PDF");
+        } else {
+            byte[] imageBytesLampiran =
+                    ambilFoto.compressToMax80KB(filelampiran);
+            lampiranPart =
+                    prepareFilePart("lampiran", imageBytesLampiran);
+            Log.d("TugasLapanganFinalActivity", "JPG");
+        }
+
+        Call<ResponsePOJO> call =
+                RetroClient.getInstance().getApi().uploadAbsenIzinCuti(
+                        fotoPart,
+                        textPart(sEmployeID),
+                        textPart(posisi),
+                        textPart(status),
+                        textPart(rbLat),
+                        textPart(rbLng),
+                        textPart(rbKet),
+                        textPart(valid),
+                        lampiranPart,
+                        textPart(ekslampiran),
+                        textPart(dariTanggal),
+                        textPart(sampaiTanggal),
+                        textPart(rbFakeGPS)
+                );
 
         call.enqueue(new Callback<ResponsePOJO>() {
             @Override
@@ -563,9 +623,9 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
         llKamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(IzinCutiFinalActivity.this, CameraxActivity.class);
-                intent.putExtra("lampiran", 24);
-                startActivityForResult(intent, REQUEST_CODE_LAMPIRAN);
+                Intent intent = new Intent(IzinCutiFinalActivity.this, CameraXLActivity.class);
+                intent.putExtra("aktivitas", "izincuti");
+                cameraLauncher.launch(intent);
                 dialogLampiran.dismiss();
             }
         });
@@ -579,6 +639,34 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
 
         dialogLampiran.show();
     }
+
+    private ActivityResultLauncher<Intent> cameraLauncher =
+            registerForActivityResult(
+                    new ActivityResultContracts.StartActivityForResult(),
+                    result -> {
+                        if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+
+                            String myDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString()+ "/eabsensi";
+                            String fileName = result.getData().getStringExtra("namafile");
+
+                            filelampiran = new File(myDir, fileName);
+                            byte[] imageBytes = ambilFoto.compressToMax80KB(filelampiran);
+
+                            Bitmap previewLampiran = BitmapFactory.decodeByteArray(
+                                    imageBytes, 0, imageBytes.length
+                            );
+
+
+                            llLampiranDinasLuar.setVisibility(View.VISIBLE);
+                            ivSuratPerintahFinal.setVisibility(View.VISIBLE);
+                            llPdfDinasLuar.setVisibility(View.GONE);
+                            iconLampiran.setVisibility(View.GONE);
+                            ekslampiran = "jpg";
+                            ivSuratPerintahFinal.setImageBitmap(previewLampiran);
+
+                        }
+                    }
+            );
     static final int REQUEST_CODE_LAMPIRAN = 341;
     String fotoFileLampiran;
 
@@ -601,7 +689,6 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 rotationBitmapTag.compress(Bitmap.CompressFormat.JPEG,75, byteArrayOutputStream);
                 byte[] imageInByte = byteArrayOutputStream.toByteArray();
-                fotoTaging =  Base64.encodeToString(imageInByte,Base64.DEFAULT);
 
                 periksaWaktu();
                 handlerProgressDialog();
@@ -622,7 +709,6 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 rotationBitmapSurat.compress(Bitmap.CompressFormat.JPEG,90, byteArrayOutputStream);
                 byte[] imageInByte = byteArrayOutputStream.toByteArray();
-                lampiran =  Base64.encodeToString(imageInByte,Base64.DEFAULT);
                 ekslampiran = "jpg";
 
                 handlerProgressDialog();
@@ -638,17 +724,14 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
 
                 Uri selectedImageUri = data.getData();
                 String FilePath2  = getDriveFilePath(selectedImageUri, IzinCutiFinalActivity.this);
-
-                File file1 = new File(FilePath2);
-                Bitmap bitmap = ambilFoto.compressBitmapTo80KB(file1);
-                rotationBitmapSurat = Bitmap.createBitmap(bitmap, 0,0, bitmap.getWidth(), bitmap.getHeight(), AmbilFoto.exifInterface(FilePath2, 0), true);
-
-                ivSuratPerintahFinal.setImageBitmap(rotationBitmapSurat);
-
-                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.JPEG,90, byteArrayOutputStream);
-                byte[] imageInByte = byteArrayOutputStream.toByteArray();
-                lampiran =  Base64.encodeToString(imageInByte,Base64.DEFAULT);
+                File originalLampiran = new File(FilePath2);
+                try {
+                    filelampiran = ambilFoto.compressToFile(this, originalLampiran);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                Bitmap preview = BitmapFactory.decodeFile(filelampiran.getAbsolutePath());
+                ivSuratPerintahFinal.setImageBitmap(preview);
                 ekslampiran = "jpg";
 
                 handlerProgressDialog();
@@ -682,7 +765,6 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 selectedBitmap.compress(Bitmap.CompressFormat.JPEG,90, byteArrayOutputStream);
                 byte[] imageInByte = byteArrayOutputStream.toByteArray();
-                lampiran =  Base64.encodeToString(imageInByte,Base64.DEFAULT);
 
             }
         }else {
@@ -725,6 +807,7 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
             e.printStackTrace();
         }
     }
+    byte[] imageBytesDokumenPdf;
 
     public String getPDFPath(Uri uri){
         String absolutePath = "";
@@ -748,18 +831,16 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
                 mPath= Environment.getExternalStorageDirectory().toString() + "absensi-"+sEmployeID+"-"+currentDateandTimes + ".pdf";
             }
 
-            File pdfFile = new File(mPath);
-            OutputStream op = new FileOutputStream(pdfFile);
+            filelampiran = new File(mPath);
+            OutputStream op = new FileOutputStream(filelampiran);
             op.write(pdfInBytes);
 
-            absolutePath = pdfFile.getPath();
-
-            InputStream finput = new FileInputStream(pdfFile);
-            byte[] imageBytes = new byte[(int)pdfFile.length()];
-            finput.read(imageBytes, 0, imageBytes.length);
+            absolutePath = filelampiran.getPath();
+            InputStream finput = new FileInputStream(filelampiran);
+            imageBytesDokumenPdf = new byte[(int)filelampiran.length()];
+            finput.read(imageBytesDokumenPdf, 0, imageBytesDokumenPdf.length);
             finput.close();
             ekslampiran = "pdf";
-            lampiran = Base64.encodeToString(imageBytes, Base64.DEFAULT);
 
         }catch (Exception ae){
             ae.printStackTrace();

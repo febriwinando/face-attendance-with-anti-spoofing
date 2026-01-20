@@ -37,7 +37,6 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.OpenableColumns;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewOutlineProvider;
@@ -98,10 +97,8 @@ import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.api.ResponsePOJO;
 import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
 import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraXLActivity;
-import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraxActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
-import go.pemkott.appsandroidmobiletebingtinggi.dinasluarkantor.tugaslapangan.TugasLapanganFinalActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFoto;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFotoLampiran;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.Lokasi;
@@ -239,25 +236,13 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
         Intent intent = getIntent();
         titleDinasLuar.setText(intent.getStringExtra("title"));
 
-//        kegiatans.clear();
-//        kegiatans = SppdActivity.kegiatanCheckedPd;
-//        kegiatanlainnya = SppdActivity.kegiatansPdLainnya;
+        kegiatans.clear();
+        kegiatans = SppdActivity.kegiatanCheckedPd;
+        kegiatanlainnya = SppdActivity.kegiatansPdLainnya;
 
-//        String myDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString()+ "/eabsensi";
-//        String fileName = intent.getStringExtra("fileName");
-//        file = new File(myDir, fileName);
-//
-//        Bitmap gambardeteksi = BitmapFactory.decodeFile(file.getAbsolutePath());
 
         String myDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString()+ "/eabsensi";
         String fileName = intent.getStringExtra("namafile");
-
-//        file = new File(myDir, fileName);
-//        byte[] imageBytes = ambilFoto.compressToMax80KB(file);
-//
-//        Bitmap preview = BitmapFactory.decodeByteArray(
-//                imageBytes, 0, imageBytes.length
-//        );
 
         File originalFile = new File(myDir, fileName);
         try {
