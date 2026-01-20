@@ -134,7 +134,6 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
     DatabaseHelper databaseHelper;
     ActivityResultLauncher<Intent> resultLauncher;
     private static final String TAG = PerjalananDinasFinalActivity.class.getSimpleName();
-    File imageFile;
     private String currentPhotoPath;
     private String rbLat;
     private String rbLng;

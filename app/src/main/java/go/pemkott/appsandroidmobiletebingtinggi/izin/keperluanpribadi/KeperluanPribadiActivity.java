@@ -103,7 +103,8 @@ public class KeperluanPribadiActivity extends AppCompatActivity {
         }else {
 
             Intent intentTL = new Intent(KeperluanPribadiActivity.this, CameraxActivity.class);
-            intentTL.putExtra("aktivitas", 6);
+            intentTL.putExtra("aktivitas", "izinkp");
+            intentTL.putExtra("title", "Isi Informasi Keperluan Pribadi");
             startActivity(intentTL);
 
         }

@@ -143,7 +143,7 @@ public class CutiActivity extends AppCompatActivity {
         }else {
 
             Intent intentTL = new Intent(CutiActivity.this, CameraxActivity.class);
-            intentTL.putExtra("aktivitas", 5);
+            intentTL.putExtra("aktivitas", "izincuti");
             startActivity(intentTL);
 
         }

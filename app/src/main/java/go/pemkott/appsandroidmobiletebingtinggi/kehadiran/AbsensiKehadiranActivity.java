@@ -667,7 +667,6 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
         Call<ResponsePOJO> call =
                 RetroClient.getInstance().getApi().uploadAbsenKehadiranMasuk(
                         fotoPart,
-
                         textPart(absensi),
                         textPart(eselon),
                         textPart(idpegawai),

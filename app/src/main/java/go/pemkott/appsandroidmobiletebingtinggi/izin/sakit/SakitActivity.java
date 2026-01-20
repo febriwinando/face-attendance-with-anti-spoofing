@@ -130,6 +130,7 @@ public class SakitActivity extends AppCompatActivity {
         }else {
             Intent intentTL = new Intent(SakitActivity.this, CameraxActivity.class);
             intentTL.putExtra("lampiran", 23);
+            intentTL.putExtra("aktivitas", "izinsakit");
             intentTL.putExtra("title", "Isi Data Kondisi Kesehatan");
             startActivity(intentTL);
         }

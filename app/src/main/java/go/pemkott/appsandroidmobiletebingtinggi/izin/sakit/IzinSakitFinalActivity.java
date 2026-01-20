@@ -97,15 +97,20 @@ import go.pemkott.appsandroidmobiletebingtinggi.NewDashboard.DashboardVersiOne;
 import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.api.ResponsePOJO;
 import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
+import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraXLActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraxActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import go.pemkott.appsandroidmobiletebingtinggi.dinasluarkantor.perjalanandinas.PerjalananDinasFinalActivity;
+import go.pemkott.appsandroidmobiletebingtinggi.dinasluarkantor.tugaslapangan.TugasLapanganFinalActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFoto;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFotoLampiran;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.Lokasi;
 import go.pemkott.appsandroidmobiletebingtinggi.utils.NetworkUtils;
 import go.pemkott.appsandroidmobiletebingtinggi.viewmodel.LocationViewModel;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -147,7 +152,6 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
     String jam_masuk, jam_pulang, batasWaktu;
     SimpleDateFormat hari;
 
-    String fotoTaging = null, lampiran = null;
     String ekslampiran;
 
     TextView tvKegiatanFinal, tvSuratPerintah, titleDinasLuar, title_content;
@@ -177,7 +181,7 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
     FusedLocationProviderClient fusedLocationProviderClient;
     LocationRequest locationRequest;
 
-    File file;
+    File file, filelampiran;
     @SuppressLint("WrongThread")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -244,18 +248,19 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
         kegiatanlainnya = SakitActivity.kegiatansSakitLainnya;
 
 
+
         String myDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString()+ "/eabsensi";
-        String fileName = intent.getStringExtra("fileName");
-        file = new File(myDir, fileName);
+        String fileName = intent.getStringExtra("namafile");
 
-        Bitmap gambardeteksi = BitmapFactory.decodeFile(file.getAbsolutePath());
-        ivFinalKegiatan.setImageBitmap(gambardeteksi);
-        Bitmap selectedBitmap = ambilFoto.compressBitmapTo80KB(file);
+        File originalfile = new File(myDir, fileName);
+        try {
+            file = ambilFoto.compressToFile(this, originalfile);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        selectedBitmap.compress(Bitmap.CompressFormat.JPEG,90, byteArrayOutputStream);
-        byte[] imageInByte = byteArrayOutputStream.toByteArray();
-        fotoTaging =  Base64.encodeToString(imageInByte,Base64.DEFAULT);
+        Bitmap preview = BitmapFactory.decodeFile(file.getAbsolutePath());
+        ivFinalKegiatan.setImageBitmap(preview);
 
         resultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
             @SuppressLint("Range")
@@ -366,7 +371,7 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
             dialogView.viewNotifKosong(IzinSakitFinalActivity.this, "Anda terdeteksi menggunakan Fake GPS.", "Jika ditemukan berulang kali, akun anda akan terblokir otomatis dan tercatat Alpa.");
 
         }else {
-            if (fotoTaging == null || lampiran == null) {
+            if (file == null || !file.exists() || file.length() == 0) {
                 dialogView.viewNotifKosong(IzinSakitFinalActivity.this, "Anda harus melampirkan Foto Kondisi Kesehatan dan Surat Dokter.", "");
             } else {
                 uploadImages();
@@ -428,6 +433,28 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
     }
 
 
+    private MultipartBody.Part prepareFilePart(String partName, byte[] imageBytes) {
+        RequestBody requestBody =
+                RequestBody.create(
+                        imageBytes,
+                        MediaType.parse("image/jpeg")
+                );
+
+        return MultipartBody.Part.createFormData(
+                partName,
+                "fototaging.jpg",
+                requestBody
+        );
+    }
+
+    private RequestBody textPart(String value) {
+        return RequestBody.create(
+                okhttp3.MediaType.parse("text/plain"),
+                value
+        );
+    }
+
+
     public void kirimdataMasuk(String valid, String status, String ketKehadiran, String jampegawai){
         Log.d("Log Izin Sakit", "mulai");
         progressDialog = new ProgressDialog(IzinSakitFinalActivity.this, R.style.AppCompatAlertDialogStyle);
@@ -435,27 +462,69 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
         progressDialog.setCancelable(false);
         progressDialog.show();
 
-        Call<ResponsePOJO> call = RetroClient.getInstance().getApi().uploadizinsakitmasuk(
-                fotoTaging,
-                ketKehadiran,
-                eJabatan,
-                sEmployeID,
-                timetableid,
-                rbTanggal,
-                rbJam,
-                "sk",
-                status,
-                rbLat,
-                rbLng,
-                rbKet,
-                mins,
-                eOPD,
-                jampegawai,
-                valid,
-                lampiran,
-                ekslampiran,
-                rbFakeGPS
-        );
+        byte[] imageBytes = ambilFoto.compressToMax80KB(file);
+        MultipartBody.Part fotoPart =
+                prepareFilePart("fototaging", imageBytes);
+
+        MultipartBody.Part lampiranPart;
+
+        if ("pdf".equals(ekslampiran)) {
+            lampiranPart =
+                    prepareFilePart("lampiran", imageBytesDokumenPdf);
+            Log.d("TugasLapanganFinalActivity", "PDF");
+        } else {
+            byte[] imageBytesLampiran =
+                    ambilFoto.compressToMax80KB(filelampiran);
+            lampiranPart =
+                    prepareFilePart("lampiran", imageBytesLampiran);
+            Log.d("TugasLapanganFinalActivity", "JPG");
+        }
+
+        Call<ResponsePOJO> call =
+                RetroClient.getInstance().getApi().uploadizinsakitmasuk(
+                        fotoPart,
+                        textPart(ketKehadiran),
+                        textPart(eJabatan),
+                        textPart(sEmployeID),
+                        textPart(timetableid),
+                        textPart(rbTanggal),
+                        textPart(rbJam),
+                        textPart("sk"),
+                        textPart(status),
+                        textPart(rbLat),
+                        textPart(rbLng),
+                        textPart(rbKet),
+                        textPart(String.valueOf(mins)),
+                        textPart(eOPD),
+                        textPart(jampegawai),
+                        textPart(valid),
+                        lampiranPart,
+                        textPart(ekslampiran),
+                        textPart(rbFakeGPS)
+                );
+
+
+//        Call<ResponsePOJO> call = RetroClient.getInstance().getApi().uploadizinsakitmasuk(
+//                fotoTaging,
+//                ketKehadiran,
+//                eJabatan,
+//                sEmployeID,
+//                timetableid,
+//                rbTanggal,
+//                rbJam,
+//                "sk",
+//                status,
+//                rbLat,
+//                rbLng,
+//                rbKet,
+//                mins,
+//                eOPD,
+//                jampegawai,
+//                valid,
+//                lampiran,
+//                ekslampiran,
+//                rbFakeGPS
+//        );
 
         call.enqueue(new Callback<ResponsePOJO>() {
             @Override
@@ -504,27 +573,69 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
         progressDialog.setCancelable(false);
         progressDialog.show();
 
-        Call<ResponsePOJO> call = RetroClient.getInstance().getApi().uploadizinsakitpulang(
-                fotoTaging,
-                ketKehadiran,
-                eJabatan,
-                sEmployeID,
-                timetableid,
-                rbTanggal,
-                rbJam,
-                "sk",
-                status,
-                rbLat,
-                rbLng,
-                rbKet,
-                mins,
-                eOPD,
-                jampegawai,
-                valid,
-                lampiran,
-                ekslampiran,
-                rbFakeGPS
-        );
+
+        byte[] imageBytes = ambilFoto.compressToMax80KB(file);
+        MultipartBody.Part fotoPart =
+                prepareFilePart("fototaging", imageBytes);
+
+        MultipartBody.Part lampiranPart;
+
+        if ("pdf".equals(ekslampiran)) {
+            lampiranPart =
+                    prepareFilePart("lampiran", imageBytesDokumenPdf);
+            Log.d("TugasLapanganFinalActivity", "PDF");
+        } else {
+            byte[] imageBytesLampiran =
+                    ambilFoto.compressToMax80KB(filelampiran);
+            lampiranPart =
+                    prepareFilePart("lampiran", imageBytesLampiran);
+            Log.d("TugasLapanganFinalActivity", "JPG");
+        }
+
+        Call<ResponsePOJO> call =
+                RetroClient.getInstance().getApi().uploadizinsakitpulang(
+                        fotoPart,
+                        textPart(ketKehadiran),
+                        textPart(eJabatan),
+                        textPart(sEmployeID),
+                        textPart(timetableid),
+                        textPart(rbTanggal),
+                        textPart(rbJam),
+                        textPart("sk"),
+                        textPart(status),
+                        textPart(rbLat),
+                        textPart(rbLng),
+                        textPart(rbKet),
+                        textPart(String.valueOf(mins)),
+                        textPart(eOPD),
+                        textPart(jampegawai),
+                        textPart(valid),
+                        lampiranPart,
+                        textPart(ekslampiran),
+                        textPart(rbFakeGPS)
+                );
+//
+//        Call<ResponsePOJO> call = RetroClient.getInstance().getApi().uploadizinsakitpulang(
+//                fotoTaging,
+//                ketKehadiran,
+//                eJabatan,
+//                sEmployeID,
+//                timetableid,
+//                rbTanggal,
+//                rbJam,
+//                "sk",
+//                status,
+//                rbLat,
+//                rbLng,
+//                rbKet,
+//                mins,
+//                eOPD,
+//                jampegawai,
+//                valid,
+//                lampiran,
+//                ekslampiran,
+//                rbFakeGPS
+//        );
 
         call.enqueue(new Callback<ResponsePOJO>() {
             @Override
@@ -697,9 +808,9 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
         });
 
         llKamera.setOnClickListener(v -> {
-            Intent intent = new Intent(IzinSakitFinalActivity.this, CameraxActivity.class);
-            intent.putExtra("lampiran", 23);
-            startActivityForResult(intent, REQUEST_CODE_LAMPIRAN);
+            Intent intent = new Intent(IzinSakitFinalActivity.this, CameraXLActivity.class);
+            intent.putExtra("aktivitas", "lampiranizinsakit");
+            cameraLauncher.launch(intent);
             dialogLampiran.dismiss();
         });
 
@@ -707,6 +818,34 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
 
         dialogLampiran.show();
     }
+
+    private ActivityResultLauncher<Intent> cameraLauncher =
+            registerForActivityResult(
+                    new ActivityResultContracts.StartActivityForResult(),
+                    result -> {
+                        if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+
+                            String myDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString()+ "/eabsensi";
+                            String fileName = result.getData().getStringExtra("namafile");
+
+                            filelampiran = new File(myDir, fileName);
+                            byte[] imageBytes = ambilFoto.compressToMax80KB(filelampiran);
+
+                            Bitmap previewLampiran = BitmapFactory.decodeByteArray(
+                                    imageBytes, 0, imageBytes.length
+                            );
+
+
+                            llLampiranDinasLuar.setVisibility(View.VISIBLE);
+                            ivSuratPerintahFinal.setVisibility(View.VISIBLE);
+                            llPdfDinasLuar.setVisibility(View.GONE);
+                            iconLampiran.setVisibility(View.GONE);
+                            ekslampiran = "jpg";
+                            ivSuratPerintahFinal.setImageBitmap(previewLampiran);
+
+                        }
+                    }
+            );
     static final int REQUEST_CODE_LAMPIRAN = 341;
 
     private void ambilFoto(String addFoto){
@@ -762,7 +901,7 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 rotationBitmapTag.compress(Bitmap.CompressFormat.JPEG,90, byteArrayOutputStream);
                 byte[] imageInByte = byteArrayOutputStream.toByteArray();
-                fotoTaging =  Base64.encodeToString(imageInByte,Base64.DEFAULT);
+
 
                 periksaWaktu();
                 handlerProgressDialog();
@@ -788,7 +927,7 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 rotationBitmapSurat.compress(Bitmap.CompressFormat.JPEG,90, byteArrayOutputStream);
                 byte[] imageInByte = byteArrayOutputStream.toByteArray();
-                lampiran =  Base64.encodeToString(imageInByte,Base64.DEFAULT);
+
                 ekslampiran = "jpg";
 
                 handlerProgressDialog();
@@ -805,16 +944,14 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
                 Uri selectedImageUri = data.getData();
                 String FilePath2  = getDriveFilePath(selectedImageUri, IzinSakitFinalActivity.this);
 
-                File file1 = new File(FilePath2);
-                Bitmap bitmap = ambilFoto.compressBitmapTo80KB(file1);
-                rotationBitmapSurat = Bitmap.createBitmap(bitmap, 0,0, bitmap.getWidth(), bitmap.getHeight(), AmbilFoto.exifInterface(FilePath2,0), true);
-
-                ivSuratPerintahFinal.setImageBitmap(rotationBitmapSurat);
-
-                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.JPEG,90, byteArrayOutputStream);
-                byte[] imageInByte = byteArrayOutputStream.toByteArray();
-                lampiran =  Base64.encodeToString(imageInByte,Base64.DEFAULT);
+                File originalLampiran = new File(FilePath2);
+                try {
+                    filelampiran = ambilFoto.compressToFile(this, originalLampiran);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                Bitmap preview = BitmapFactory.decodeFile(filelampiran.getAbsolutePath());
+                ivSuratPerintahFinal.setImageBitmap(preview);
                 ekslampiran = "jpg";
 
                 handlerProgressDialog();
@@ -848,7 +985,6 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 selectedBitmap.compress(Bitmap.CompressFormat.JPEG,90, byteArrayOutputStream);
                 byte[] imageInByte = byteArrayOutputStream.toByteArray();
-                lampiran =  Base64.encodeToString(imageInByte,Base64.DEFAULT);
 
             }
         }else {
@@ -897,6 +1033,8 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
 
     }
 
+    byte[] imageBytesDokumenPdf;
+
     public String getPDFPath(Uri uri){
         String absolutePath = "";
         try{
@@ -919,18 +1057,18 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
                 mPath= Environment.getExternalStorageDirectory().toString() + "absensi-"+sEmployeID+"-"+currentDateandTimes + ".pdf";
             }
 
-            File pdfFile = new File(mPath);
-            OutputStream op = new FileOutputStream(pdfFile);
+            filelampiran = new File(mPath);
+            OutputStream op = new FileOutputStream(filelampiran);
             op.write(pdfInBytes);
 
-            absolutePath = pdfFile.getPath();
+            absolutePath = filelampiran.getPath();
 
-            InputStream finput = new FileInputStream(pdfFile);
-            byte[] imageBytes = new byte[(int)pdfFile.length()];
-            finput.read(imageBytes, 0, imageBytes.length);
+            InputStream finput = new FileInputStream(filelampiran);
+            byte[] imageBytes = new byte[(int)filelampiran.length()];
+            imageBytesDokumenPdf = new byte[(int)filelampiran.length()];
+            finput.read(imageBytesDokumenPdf, 0, imageBytesDokumenPdf.length);
             finput.close();
             ekslampiran = "pdf";
-            lampiran = Base64.encodeToString(imageBytes, Base64.DEFAULT);
 
         }catch (Exception ae){
             ae.printStackTrace();

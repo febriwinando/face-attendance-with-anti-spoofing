@@ -31,7 +31,6 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewOutlineProvider;
@@ -72,6 +71,7 @@ import com.google.android.material.imageview.ShapeableImageView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -91,6 +91,9 @@ import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFoto;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.Lokasi;
 import go.pemkott.appsandroidmobiletebingtinggi.utils.NetworkUtils;
 import go.pemkott.appsandroidmobiletebingtinggi.viewmodel.LocationViewModel;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -128,7 +131,6 @@ public class KeperluanPribadiFinalActivity extends AppCompatActivity implements 
     String jam_masuk, jam_pulang, batasWaktu;
     SimpleDateFormat hari;
 
-    String fotoTaging = null;
 
 
     TextView tvKegiatanFinal, titleDinasLuar, title_content;
@@ -155,7 +157,7 @@ public class KeperluanPribadiFinalActivity extends AppCompatActivity implements 
     FusedLocationProviderClient fusedLocationProviderClient;
     LocationRequest locationRequest;
 
-    File file;
+    File file,filelampiran;
     @SuppressLint("WrongThread")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -214,17 +216,29 @@ public class KeperluanPribadiFinalActivity extends AppCompatActivity implements 
 
 
         String myDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString()+ "/eabsensi";
-        String fileName = intent.getStringExtra("fileName");
-        file = new File(myDir, fileName);
+        String fileName = intent.getStringExtra("namafile");
 
-        Bitmap gambardeteksi = BitmapFactory.decodeFile(file.getAbsolutePath());
-        ivFinalKegiatan.setImageBitmap(gambardeteksi);
-        Bitmap selectedBitmap = ambilFoto.compressBitmapTo80KB(file);
+        File originalFile = new File(myDir, fileName);
+        try {
+            file = ambilFoto.compressToFile(this, originalFile);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        selectedBitmap.compress(Bitmap.CompressFormat.JPEG,90, byteArrayOutputStream);
-        byte[] imageInByte = byteArrayOutputStream.toByteArray();
-        fotoTaging =  Base64.encodeToString(imageInByte,Base64.DEFAULT);
+        Bitmap preview = BitmapFactory.decodeFile(file.getAbsolutePath());
+        ivFinalKegiatan.setImageBitmap(preview);
+
+//        String myDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString()+ "/eabsensi";
+//        String fileName = intent.getStringExtra("fileName");
+//        file = new File(myDir, fileName);
+//        Bitmap gambardeteksi = BitmapFactory.decodeFile(file.getAbsolutePath());
+//        ivFinalKegiatan.setImageBitmap(gambardeteksi);
+//        Bitmap selectedBitmap = ambilFoto.compressBitmapTo80KB(file);
+//
+//        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+//        selectedBitmap.compress(Bitmap.CompressFormat.JPEG,90, byteArrayOutputStream);
+//        byte[] imageInByte = byteArrayOutputStream.toByteArray();
+//        fotoTaging =  Base64.encodeToString(imageInByte,Base64.DEFAULT);
 
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.R){
             requestPermission();
@@ -261,7 +275,7 @@ public class KeperluanPribadiFinalActivity extends AppCompatActivity implements 
             dialogView.viewNotifKosong(KeperluanPribadiFinalActivity.this, "Anda terdeteksi menggunakan Fake GPS.", "Jika ditemukan berulang kali, akun anda akan terblokir otomatis dan tercatat Alpa.");
 
         }else {
-            if (fotoTaging == null) {
+            if (file == null || !file.exists() || file.length() == 0) {
                 dialogView.viewNotifKosong(KeperluanPribadiFinalActivity.this, "Anda harus melampirkan Foto Kegiatan.", "");
             } else {
                 uploadImages();
@@ -322,6 +336,26 @@ public class KeperluanPribadiFinalActivity extends AppCompatActivity implements 
         }
     }
 
+    private MultipartBody.Part prepareFilePart(String partName, byte[] imageBytes) {
+        RequestBody requestBody =
+                RequestBody.create(
+                        imageBytes,
+                        MediaType.parse("image/jpeg")
+                );
+
+        return MultipartBody.Part.createFormData(
+                partName,
+                "fototaging.jpg",
+                requestBody
+        );
+    }
+
+    private RequestBody textPart(String value) {
+        return RequestBody.create(
+                okhttp3.MediaType.parse("text/plain"),
+                value
+        );
+    }
 
     public void kirimdataMasuk(String valid, String posisi, String status, String ketKehadiran, String jampegawai){
 
@@ -329,26 +363,51 @@ public class KeperluanPribadiFinalActivity extends AppCompatActivity implements 
         dialogproses.setContentView(R.layout.view_proses);
         dialogproses.setCancelable(false);
 
-        Call<ResponsePOJO> call = RetroClient.getInstance().getApi().uploadIzinKpMasuk(
-                fotoTaging,
-                ketKehadiran,
-                eJabatan,
-                sEmployeID,
-                timetableid,
-                rbTanggal,
-                rbJam,
-                posisi,
-                status,
-                rbLat,
-                rbLng,
-                rbKet,
-                mins,
-                eOPD,
-                jampegawai,
-                valid,
-                rbFakeGPS,
-                batasWaktu
-        );
+        byte[] imageBytes = ambilFoto.compressToMax80KB(file);
+        MultipartBody.Part fotoPart = prepareFilePart("fototaging", imageBytes);
+
+        Call<ResponsePOJO> call =
+                RetroClient.getInstance().getApi().uploadIzinKpMasuk(
+                        fotoPart,
+                        textPart(ketKehadiran),
+                        textPart(eJabatan),
+                        textPart(sEmployeID),
+                        textPart(timetableid),
+                        textPart(rbTanggal),
+                        textPart(rbJam),
+                        textPart(posisi),
+                        textPart(status),
+                        textPart(rbLat),
+                        textPart(rbLng),
+                        textPart(rbKet),
+                        textPart(String.valueOf(mins)),
+                        textPart(eOPD),
+                        textPart(jampegawai),
+                        textPart(valid),
+                        textPart(rbFakeGPS),
+                        textPart(batasWaktu)
+                );
+
+//        Call<ResponsePOJO> call = RetroClient.getInstance().getApi().uploadIzinKpMasuk(
+//                fotoTaging,
+//                ketKehadiran,
+//                eJabatan,
+//                sEmployeID,
+//                timetableid,
+//                rbTanggal,
+//                rbJam,
+//                posisi,
+//                status,
+//                rbLat,
+//                rbLng,
+//                rbKet,
+//                mins,
+//                eOPD,
+//                jampegawai,
+//                valid,
+//                rbFakeGPS,
+//                batasWaktu
+//        );
 
         call.enqueue(new Callback<ResponsePOJO>() {
             @Override
@@ -392,26 +451,50 @@ public class KeperluanPribadiFinalActivity extends AppCompatActivity implements 
         dialogproses.setContentView(R.layout.view_proses);
         dialogproses.setCancelable(false);
 
-        Call<ResponsePOJO> call = RetroClient.getInstance().getApi().uploadIzinKpPulang(
-                fotoTaging,
-                ketKehadiran,
-                eJabatan,
-                sEmployeID,
-                timetableid,
-                rbTanggal,
-                rbJam,
-                posisi,
-                status,
-                rbLat,
-                rbLng,
-                rbKet,
-                mins,
-                eOPD,
-                jampegawai,
-                valid,
-                rbFakeGPS,
-                batasWaktu
-        );
+        byte[] imageBytes = ambilFoto.compressToMax80KB(file);
+        MultipartBody.Part fotoPart = prepareFilePart("fototaging", imageBytes);
+
+        Call<ResponsePOJO> call =
+                RetroClient.getInstance().getApi().uploadIzinKpPulang(
+                        fotoPart,
+                        textPart(ketKehadiran),
+                        textPart(eJabatan),
+                        textPart(sEmployeID),
+                        textPart(timetableid),
+                        textPart(rbTanggal),
+                        textPart(rbJam),
+                        textPart(posisi),
+                        textPart(status),
+                        textPart(rbLat),
+                        textPart(rbLng),
+                        textPart(rbKet),
+                        textPart(String.valueOf(mins)),
+                        textPart(eOPD),
+                        textPart(jampegawai),
+                        textPart(valid),
+                        textPart(rbFakeGPS),
+                        textPart(batasWaktu)
+                );
+//        Call<ResponsePOJO> call = RetroClient.getInstance().getApi().uploadIzinKpPulang(
+//                fotoTaging,
+//                ketKehadiran,
+//                eJabatan,
+//                sEmployeID,
+//                timetableid,
+//                rbTanggal,
+//                rbJam,
+//                posisi,
+//                status,
+//                rbLat,
+//                rbLng,
+//                rbKet,
+//                mins,
+//                eOPD,
+//                jampegawai,
+//                valid,
+//                rbFakeGPS,
+//                batasWaktu
+//        );
 
         call.enqueue(new Callback<ResponsePOJO>() {
             @Override
@@ -560,14 +643,12 @@ public class KeperluanPribadiFinalActivity extends AppCompatActivity implements 
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 rotationBitmapTag.compress(Bitmap.CompressFormat.JPEG,90, byteArrayOutputStream);
                 byte[] imageInByte = byteArrayOutputStream.toByteArray();
-                fotoTaging =  Base64.encodeToString(imageInByte,Base64.DEFAULT);
 
                 periksaWaktu();
                 handlerProgressDialog();
 
 
             }
-        }else {
         }
     }
     Date tagingTime;
