@@ -911,32 +911,32 @@ public class AbsenSiftActivity extends AppCompatActivity implements OnMapReadyCa
         Log.d("ABSEN_MASUK_PAGI", "==============================");
 
 //
-//        Call<ResponsePOJO> call =
-//                RetroClient.getInstance().getApi().absensiftMasukPagi(
-//                        fotoPart,
-//                        textPart(absensi),
-//                        textPart(eselon),
-//                        textPart(idpegawai),
+        Call<ResponsePOJO> call =
+                RetroClient.getInstance().getApi().absensiftMasukPagi(
+                        fotoPart,
+                        textPart(absensi),
+                        textPart(eselon),
+                        textPart(idpegawai),
 //                        textPart(timetableid),
-//                        textPart(tanggal),
-//                        textPart(jam),
-//                        textPart(posisi),
-//                        textPart(status),
-//                        textPart(lat),
-//                        textPart(lng),
-//                        textPart(eOPD),
-//                        textPart(jampegawai),
-//                        textPart(validasi),
-//                        textPart(rbFakeGPS),
-//                        textPart(batasWaktu),
-//                        textPart(masuksift),
-//                        textPart(pulangsift),
-//                        textPart(inisialsift),
-//                        textPart(tipesift),
-//                        textPart(idsift),
-//                        textPart(ket),
-//                        textPart(String.valueOf(terlambat))
-//                );
+                        textPart(tanggal),
+                        textPart(jam),
+                        textPart(posisi),
+                        textPart(status),
+                        textPart(lat),
+                        textPart(lng),
+                        textPart(eOPD),
+                        textPart(jampegawai),
+                        textPart(validasi),
+                        textPart(rbFakeGPS),
+                        textPart(batasWaktu),
+                        textPart(masuksift),
+                        textPart(pulangsift),
+                        textPart(inisialsift),
+                        textPart(tipesift),
+                        textPart(idsift),
+                        textPart(ket),
+                        textPart(String.valueOf(terlambat))
+                );
 //        Call<ResponsePOJO> call = RetroClient.getInstance().getApi().absensiftMasukPagi(
 //                encodedImage,
 //                absensi,
@@ -963,34 +963,33 @@ public class AbsenSiftActivity extends AppCompatActivity implements OnMapReadyCa
 //                terlambat
 //        );
 
-//        call.enqueue(new Callback<>() {
-//            @Override
-//            public void onResponse(@NonNull Call<ResponsePOJO> call, @NonNull Response<ResponsePOJO> response) {
-//
-//                if (!response.isSuccessful()) {
-//
-//                    dialogView.viewNotifKosong(AbsenSiftActivity.this, "Gagal mengisi absensi,", "silahkan coba kembali.");
-//                    dialogproses.dismiss();
-//                    return;
-//                }
-//
-//                if (response.body().isStatus()) {
-//                    dialogproses.dismiss();
-//                    viewSukses(AbsenSiftActivity.this);
-//                } else {
-//                    dialogproses.dismiss();
-//
-//                    dialogView.viewNotifKosong(AbsenSiftActivity.this, response.body().getRemarks(), "");
-//                }
-//
-//            }
-//
-//            @Override
-//            public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
-//                dialogproses.dismiss();
-//                dialogView.pesanError(AbsenSiftActivity.this);
-//            }
-//        });
+        call.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponsePOJO> call, @NonNull Response<ResponsePOJO> response) {
+
+                if (!response.isSuccessful()) {
+
+                    dialogView.viewNotifKosong(AbsenSiftActivity.this, "Gagal mengisi absensi,", "silahkan coba kembali.");
+                    dialogproses.dismiss();
+                    return;
+                }
+
+                if (response.body().isStatus()) {
+                    dialogproses.dismiss();
+                    viewSukses(AbsenSiftActivity.this);
+                } else {
+                    dialogproses.dismiss();
+                    dialogView.viewNotifKosong(AbsenSiftActivity.this, response.body().getRemarks(), "");
+                }
+
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
+                dialogproses.dismiss();
+                dialogView.pesanError(AbsenSiftActivity.this);
+            }
+        });
 
         dialogproses.show();
     }

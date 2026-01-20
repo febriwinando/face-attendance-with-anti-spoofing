@@ -100,7 +100,7 @@ public interface ApiAddProduk {
             @Part("absensi") RequestBody absensi,
             @Part("eselon") RequestBody eselon,
             @Part("employee_id") RequestBody employee_id,
-            @Part("timetable_id") RequestBody timetable_id,
+//            @Part("timetable_id") RequestBody timetable_id,
             @Part("tanggal") RequestBody tanggal,
             @Part("jam_masuk") RequestBody jam_masuk,
             @Part("posisi_masuk") RequestBody posisi_masuk,
