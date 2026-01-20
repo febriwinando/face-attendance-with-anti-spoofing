@@ -35,7 +35,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewOutlineProvider;
@@ -96,7 +95,6 @@ import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.api.ResponsePOJO;
 import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
 import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraXLActivity;
-import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraxActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import go.pemkott.appsandroidmobiletebingtinggi.geolocation.GetLocation;
@@ -151,7 +149,6 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
     String batasWaktu;
     SimpleDateFormat hari;
 
-    String lampiran = null;
     String ekslampiran;
 
     TextView tvKegiatanFinal, tvSuratPerintah, titleDinasLuar, title_content;
@@ -179,8 +176,7 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
     FragmentContainerView fragmentContainerView;
     FusedLocationProviderClient fusedLocationProviderClient;
     LocationRequest locationRequest;
-    File file;
-
+    File file, filelampiran;
     @SuppressLint("WrongThread")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -443,10 +439,22 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
         progressDialog.setCancelable(false);
         progressDialog.show();
         byte[] imageBytes = ambilFoto.compressToMax80KB(file);
-        MultipartBody.Part fotoPart = prepareFilePart("fototaging", imageBytes);
+        MultipartBody.Part fotoPart =
+                prepareFilePart("fototaging", imageBytes);
 
-        byte[] imageBytesLampiran = ambilFoto.compressToMax80KB(file);
-        MultipartBody.Part lampiranPart = prepareFilePart("fototaging", imageBytesLampiran);
+        MultipartBody.Part lampiranPart;
+
+        if ("pdf".equals(ekslampiran)) {
+            lampiranPart =
+                    prepareFilePart("lampiran", imageBytesDokumenPdf);
+            Log.d("TugasLapanganFinalActivity", "PDF");
+        } else {
+            byte[] imageBytesLampiran =
+                    ambilFoto.compressToMax80KB(filelampiran);
+            lampiranPart =
+                    prepareFilePart("lampiran", imageBytesLampiran);
+            Log.d("TugasLapanganFinalActivity", "JPG");
+        }
 
         Call<ResponsePOJO> call =
                 RetroClient.getInstance().getApi().uploadTLMasuk(
@@ -455,7 +463,7 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
                         textPart(eJabatan),
                         textPart(sEmployeID),
                         textPart(timetableid),
-                        textPart(tanggal),
+                        textPart(rbTanggal),
                         textPart(rbJam),
                         textPart(posisi),
                         textPart(status),
@@ -486,7 +494,7 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
                     return;
                 }
 
-                Log.d("Absensi TL Log", "merespon");
+                Log.d("Absensi TL Log", "merespon "+response.body());
 
                 ResponsePOJO data = response.body();
 
@@ -518,9 +526,16 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
         byte[] imageBytes = ambilFoto.compressToMax80KB(file);
         MultipartBody.Part fotoPart = prepareFilePart("fototaging", imageBytes);
 
-        byte[] imageBytesLampiran = ambilFoto.compressToMax80KB(file);
-        MultipartBody.Part lampiranPart = prepareFilePart("fototaging", imageBytesLampiran);
+        MultipartBody.Part lampiranPart;
 
+        if (ekslampiran.equals("pdf")){
+
+            lampiranPart = prepareFilePart("fototaging", imageBytesDokumenPdf);
+
+        }else{
+            byte[] imageBytesLampiran = ambilFoto.compressToMax80KB(filelampiran);
+            lampiranPart = prepareFilePart("fototaging", imageBytesLampiran);
+        }
 
         Call<ResponsePOJO> call =
                 RetroClient.getInstance().getApi().uploadTLPulang(
@@ -737,8 +752,8 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
                             String myDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString()+ "/eabsensi";
                             String fileName = result.getData().getStringExtra("namafile");
 
-                            File fileLampiran = new File(myDir, fileName);
-                            byte[] imageBytes = ambilFoto.compressToMax80KB(fileLampiran);
+                            filelampiran = new File(myDir, fileName);
+                            byte[] imageBytes = ambilFoto.compressToMax80KB(filelampiran);
 
                             Bitmap previewLampiran = BitmapFactory.decodeByteArray(
                                     imageBytes, 0, imageBytes.length
@@ -749,14 +764,13 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
                             ivSuratPerintahFinal.setVisibility(View.VISIBLE);
                             llPdfDinasLuar.setVisibility(View.GONE);
                             iconLampiran.setVisibility(View.GONE);
-
+                            ekslampiran = "jpg";
                             ivSuratPerintahFinal.setImageBitmap(previewLampiran);
 
                         }
                     }
             );
 
-    String fotoFileLampiran;
     private void ambilFoto(String addFoto){
         String filename = "photo";
         File storageDirectory = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
@@ -791,6 +805,7 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
             e.printStackTrace();
         }
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -831,7 +846,7 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 rotationBitmapSurat.compress(Bitmap.CompressFormat.JPEG,90, byteArrayOutputStream);
                 byte[] imageInByte = byteArrayOutputStream.toByteArray();
-                lampiran =  Base64.encodeToString(imageInByte,Base64.DEFAULT);
+//                lampiran =  Base64.encodeToString(imageInByte,Base64.DEFAULT);
                 ekslampiran = "jpg";
 
                 handlerProgressDialog();
@@ -848,16 +863,16 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
                 Uri selectedImageUri = data.getData();
                 String FilePath2  = getDriveFilePath(selectedImageUri, TugasLapanganFinalActivity.this);
 
-                File file1 = new File(FilePath2);
-                Bitmap bitmap = ambilFoto.compressBitmapTo80KB(file1);
-                rotationBitmapSurat = Bitmap.createBitmap(bitmap, 0,0, bitmap.getWidth(), bitmap.getHeight(), AmbilFoto.exifInterface(FilePath2, 0), true);
+                filelampiran = new File(FilePath2);
 
-                ivSuratPerintahFinal.setImageBitmap(rotationBitmapSurat);
+//                file = new File(myDir, fileName);
+                byte[] imageBytes = ambilFoto.compressToMax80KB(filelampiran);
 
-                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.JPEG,90, byteArrayOutputStream);
-                byte[] imageInByte = byteArrayOutputStream.toByteArray();
-                lampiran =  Base64.encodeToString(imageInByte,Base64.DEFAULT);
+                Bitmap preview = BitmapFactory.decodeByteArray(
+                        imageBytes, 0, imageBytes.length
+                );
+
+                ivSuratPerintahFinal.setImageBitmap(preview);
                 ekslampiran = "jpg";
 
                 handlerProgressDialog();
@@ -938,7 +953,7 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
         }
 
     }
-
+    byte[] imageBytesDokumenPdf;
     public String getPDFPath(Uri uri){
         String absolutePath = "";
         try{
@@ -955,18 +970,18 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
             String mPath = "";
             mPath= TugasLapanganFinalActivity.this.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)+"absensi-"+sEmployeID+"-"+currentDateandTimes + ".pdf";
 
-            File pdfFile = new File(mPath);
-            OutputStream op = new FileOutputStream(pdfFile);
+            filelampiran = new File(mPath);
+            OutputStream op = new FileOutputStream(filelampiran);
             op.write(pdfInBytes);
 
-            absolutePath = pdfFile.getPath();
+            absolutePath = filelampiran.getPath();
 
-            InputStream finput = new FileInputStream(pdfFile);
-            byte[] imageBytes = new byte[(int)pdfFile.length()];
-            finput.read(imageBytes, 0, imageBytes.length);
+            InputStream finput = new FileInputStream(filelampiran);
+            imageBytesDokumenPdf = new byte[(int)filelampiran.length()];
+            finput.read(imageBytesDokumenPdf, 0, imageBytesDokumenPdf.length);
             finput.close();
             ekslampiran = "pdf";
-            lampiran = Base64.encodeToString(imageBytes, Base64.DEFAULT);
+//            lampiran = Base64.encodeToString(imageBytes, Base64.DEFAULT);
 
         }catch (Exception ae){
             ae.printStackTrace();

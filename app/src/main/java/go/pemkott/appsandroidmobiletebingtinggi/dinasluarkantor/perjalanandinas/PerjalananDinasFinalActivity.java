@@ -849,27 +849,6 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
                         textPart(rbFakeGPS)
                 );
 
-//        Call<ResponsePOJO> call = RetroClient.getInstance().getApi().uploadAbsenPerjalananDinas(
-//                fotoTaging,
-//                eJabatan,
-//                sEmployeID,
-//                timetableid,
-//                rbJam,
-//                posisi,
-//                status,
-//                rbLat,
-//                rbLng,
-//                rbKet,
-//                0,
-//                eOPD,
-//                valid,
-//                lampiran,
-//                ekslampiran,
-//                dariTanggal,
-//                sampaiTanggal,
-//                rbFakeGPS
-//        );
-
         call.enqueue(new Callback<ResponsePOJO>() {
             @Override
             public void onResponse(@NonNull Call<ResponsePOJO> call, @NonNull Response<ResponsePOJO> response) {
