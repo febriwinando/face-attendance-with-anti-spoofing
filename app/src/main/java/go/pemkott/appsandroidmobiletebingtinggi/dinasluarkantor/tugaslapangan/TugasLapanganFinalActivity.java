@@ -236,14 +236,25 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
         String myDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString()+ "/eabsensi";
         String fileName = intent.getStringExtra("namafile");
 
-        file = new File(myDir, fileName);
-        byte[] imageBytes = ambilFoto.compressToMax80KB(file);
+        File originalfile = new File(myDir, fileName);
+        try {
+            file = ambilFoto.compressToFile(this, originalfile);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
-        Bitmap preview = BitmapFactory.decodeByteArray(
-                imageBytes, 0, imageBytes.length
-        );
-
+        Bitmap preview = BitmapFactory.decodeFile(file.getAbsolutePath());
         ivFinalKegiatan.setImageBitmap(preview);
+
+//
+//        byte[] imageBytes = ambilFoto.compressToMax80KB(file);
+//
+//
+//        Bitmap preview = BitmapFactory.decodeByteArray(
+//                imageBytes, 0, imageBytes.length
+//        );
+
+//        ivFinalKegiatan.setImageBitmap(preview);
 
 
         resultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
@@ -869,16 +880,22 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
                 Uri selectedImageUri = data.getData();
                 String FilePath2  = getDriveFilePath(selectedImageUri, TugasLapanganFinalActivity.this);
 
-                filelampiran = new File(FilePath2);
-
-//                file = new File(myDir, fileName);
-                byte[] imageBytes = ambilFoto.compressToMax80KB(filelampiran);
-
-                Bitmap preview = BitmapFactory.decodeByteArray(
-                        imageBytes, 0, imageBytes.length
-                );
-
+                File originalLampiran = new File(FilePath2);
+                try {
+                    filelampiran = ambilFoto.compressToFile(this, originalLampiran);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                Bitmap preview = BitmapFactory.decodeFile(filelampiran.getAbsolutePath());
                 ivSuratPerintahFinal.setImageBitmap(preview);
+//                file = new File(myDir, fileName);
+//                byte[] imageBytes = ambilFoto.compressToMax80KB(filelampiran);
+//
+//                Bitmap preview = BitmapFactory.decodeByteArray(
+//                        imageBytes, 0, imageBytes.length
+//                );
+//
+//                ivSuratPerintahFinal.setImageBitmap(preview);
                 ekslampiran = "jpg";
 
                 handlerProgressDialog();

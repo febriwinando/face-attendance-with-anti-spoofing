@@ -67,6 +67,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.imageview.ShapeableImageView;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -188,19 +189,18 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
         Intent intent = getIntent();
         String fileName = intent.getStringExtra("namafile");
 
-        file = new File(myDir, fileName);
-        byte[] imageBytes = ambilFoto.compressToMax80KB(file);
 
-        Bitmap preview = BitmapFactory.decodeByteArray(
-                imageBytes, 0, imageBytes.length
-        );
+        File originalFile = new File(myDir, fileName);
+        try {
+            file = ambilFoto.compressToFile(this, originalFile);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
+        Bitmap preview = BitmapFactory.decodeFile(file.getAbsolutePath());
         ivTaging.setImageBitmap(preview);
 
 // upload pakai imageBytes
-
-//        ivTaging.setImageBitmap(selectedBitmap);
-
         title_content.setText("KEHADIRAN");
 
         llUpload.setOnClickListener(view -> {

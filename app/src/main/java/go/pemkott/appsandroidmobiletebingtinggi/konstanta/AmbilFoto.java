@@ -354,6 +354,31 @@ public class AmbilFoto {
         return bitmap;
     }
 
+    public File compressToFile(Context context, File sourceFile) throws IOException {
+
+        byte[] compressedBytes = compressToMax80KB(sourceFile);
+
+        File compressedDir = new File(
+                context.getCacheDir(), "compressed"
+        );
+        if (!compressedDir.exists()) {
+            compressedDir.mkdirs();
+        }
+
+        File compressedFile = new File(
+                compressedDir,
+                "IMG_" + System.currentTimeMillis() + ".jpg"
+        );
+
+        FileOutputStream fos = new FileOutputStream(compressedFile);
+        fos.write(compressedBytes);
+        fos.flush();
+        fos.close();
+
+        return compressedFile;
+    }
+
+
     public byte[] compressToMax80KB(File file) {
 
         BitmapFactory.Options options = new BitmapFactory.Options();
@@ -377,7 +402,7 @@ public class AmbilFoto {
             bitmap.compress(Bitmap.CompressFormat.JPEG, quality, baos);
 
             int sizeKB = baos.size() / 1024;
-            if (sizeKB <= 80 || quality <= 20) break;
+            if (sizeKB <= 50 || quality <= 20) break;
 
             quality -= 5;
         }
