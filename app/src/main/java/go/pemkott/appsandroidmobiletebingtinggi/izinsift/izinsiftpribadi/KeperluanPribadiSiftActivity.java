@@ -126,7 +126,7 @@ public class KeperluanPribadiSiftActivity extends AppCompatActivity {
 
             Intent intentTL = new Intent(KeperluanPribadiSiftActivity.this, CameraxActivity.class);
             intentTL.putExtra("title", "Isi Data Keperluan Pribadi");
-            intentTL.putExtra("aktivitas", 16);
+            intentTL.putExtra("aktivitas", "shiftizinkp");
             startActivity(intentTL);
 
         }

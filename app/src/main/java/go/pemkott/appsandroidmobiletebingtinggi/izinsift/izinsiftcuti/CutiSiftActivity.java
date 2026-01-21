@@ -145,7 +145,7 @@ public class CutiSiftActivity extends AppCompatActivity {
         }else {
 
             Intent intentTL = new Intent(CutiSiftActivity.this, CameraxActivity.class);
-            intentTL.putExtra("lampiran", 31);
+            intentTL.putExtra("lampiran", "shiftizincuti");
             startActivity(intentTL);
 
         }

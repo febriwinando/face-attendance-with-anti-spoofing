@@ -1136,6 +1136,8 @@ public class AbsenSiftActivity extends AppCompatActivity implements OnMapReadyCa
         dialogproses.setContentView(R.layout.view_proses);
         dialogproses.setCancelable(false);
 
+        Log.d("ABSEN_MASUK_PAGI", "Ini absen pulang malam");
+
 
         byte[] imageBytes = ambilFoto.compressToMax80KB(file);
         MultipartBody.Part fotoPart = prepareFilePart("fototaging", imageBytes);

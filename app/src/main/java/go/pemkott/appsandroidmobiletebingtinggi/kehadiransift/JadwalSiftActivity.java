@@ -292,7 +292,7 @@ public class JadwalSiftActivity extends AppCompatActivity {
 //                                Log.d("ABSEN_MASUK_PAGI", inisialsift);
 //                                Log.d("ABSEN_MASUK_PAGI", tipesift);
 //                                Log.d("ABSEN_MASUK_PAGI", masuksift);
-//                                Log.d("ABSEN_MASUK_PAGI", pulangsift);
+                                Log.d("ABSEN_MASUK_PAGI", pulangsift);
 
                             }
                         }
@@ -320,7 +320,7 @@ public class JadwalSiftActivity extends AppCompatActivity {
 
                 if (targetDate.after(today)) {
                     try {
-                        dialogView.viewNotifKosong(JadwalSiftActivity.this, "Anda belum dapat melakukan absen masuk untuk jadwal tanggal "+TimeFormat.formatBahasaIndonesia(s),"");
+                        dialogView.viewNotifKosong(JadwalSiftActivity.this, "Anda belum dapat melakukan absensi masuk untuk jadwal pada "+TimeFormat.formatBahasaIndonesia(s),"");
                     } catch (ParseException e) {
                         throw new RuntimeException(e);
                     }
@@ -336,8 +336,19 @@ public class JadwalSiftActivity extends AppCompatActivity {
                         long diffDay = (harinini.getTime() - tanggalDB.getTime())
                                 / (1000 * 60 * 60 * 24);
 
-                        if (diffDay == 0 || diffDay == 1) {
+                        if (diffDay == 0) {
                             viewinfo();
+                        }else if (diffDay == 1){
+
+                            Calendar calendar = Calendar.getInstance();
+                            int currentHour = calendar.get(Calendar.HOUR_OF_DAY); // 0–23
+
+                            if (currentHour >= 22) {
+                                dialogView.viewNotifKosong(JadwalSiftActivity.this, "Kami informasikan bahwa waktu absensi untuk shift malam pada "+TimeFormat.formatBahasaIndonesia(s)+" tersebut telah terlewati","");
+                            } else {
+                                viewinfo();
+                            }
+
                         }
 
                     } catch (ParseException e) {

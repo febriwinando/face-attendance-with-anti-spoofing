@@ -113,7 +113,7 @@ public class SakitSiftActivity extends AppCompatActivity {
 
         if (!kegiatanCheckedSakit.isEmpty() || !etkegiatanSakitLainnya.getText().toString().isEmpty()){
             Intent intentTL = new Intent(SakitSiftActivity.this, CameraxActivity.class);
-            intentTL.putExtra("aktivitas", 14);
+            intentTL.putExtra("aktivitas", "shiftizinsakit");
             startActivity(intentTL);
         }else {
             showMessage("Peringatan!", "Anda Harus Mengisi Kegiatan Yang Dilaksanakan.");
