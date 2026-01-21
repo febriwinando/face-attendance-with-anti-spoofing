@@ -277,7 +277,7 @@ public class JadwalSiftActivity extends AppCompatActivity {
             public void onItemClicked(String s) {
 
                 tanggalSift = s;
-                Log.d("ABSEN_MASUK_PAGI", s);
+//                Log.d("ABSEN_MASUK_PAGI", s);
                 for (int i=0 ;i<listJadwalSift.size();i++){
                     if (tanggalJadwal.get(i).equals(s)){
                         for (int j = 0 ; j<idSift.size();j++){
@@ -288,11 +288,11 @@ public class JadwalSiftActivity extends AppCompatActivity {
                                 masuksift = masukSift.get(j);
                                 pulangsift = pulangSift.get(j);
 
-                                Log.d("ABSEN_MASUK_PAGI", idsift );
-                                Log.d("ABSEN_MASUK_PAGI", inisialsift);
-                                Log.d("ABSEN_MASUK_PAGI", tipesift);
-                                Log.d("ABSEN_MASUK_PAGI", masuksift);
-                                Log.d("ABSEN_MASUK_PAGI", pulangsift);
+//                                Log.d("ABSEN_MASUK_PAGI", idsift );
+//                                Log.d("ABSEN_MASUK_PAGI", inisialsift);
+//                                Log.d("ABSEN_MASUK_PAGI", tipesift);
+//                                Log.d("ABSEN_MASUK_PAGI", masuksift);
+//                                Log.d("ABSEN_MASUK_PAGI", pulangsift);
 
                             }
                         }
@@ -347,44 +347,6 @@ public class JadwalSiftActivity extends AppCompatActivity {
                 } else {
                     viewinfo();
                 }
-
-//                if (jamSekarangString.equals(s)){
-//
-//                    if (tipesift.equals("malam")){
-//
-//                        if (jamSekarang.getTime()> batasJamAbsenMalam.getTime()){
-//                            Toast.makeText(JadwalSiftActivity.this, "Batas waktu melakukan absen sift malam telah lewat", Toast.LENGTH_SHORT).show();
-//                        }else{
-//                            if (jam_masuk != null && jam_pulang != null){
-//                                dialogView.viewNotifKosong(JadwalSiftActivity.this, "Anda Sudah mengisi absen masuk dan absen pulang untuk jadwal tanggal "+s,"");
-//                            }else{
-//                                viewinfo();
-//                            }
-//                        }
-//                    }
-//
-//                }else if(jadwalAbsensetelah.getTime() > hariini.getTime()){
-//                    Toast.makeText(JadwalSiftActivity.this, "Belum dapat melakukan absen", Toast.LENGTH_SHORT).show();
-//                }else if(tanggal.equals(s)){
-//                    if (tipesift.equals("malam")) {
-////                        Log.d("ABSEN_MASUK_PAGI", jamSekarang+ " - " + batasJamAbsenMalam);
-//                        if (jamSekarang.getTime() >= batasJamAbsenMalam.getTime()) {
-//                            if (jam_masuk != null && jam_pulang != null){
-//                                dialogView.viewNotifKosong(JadwalSiftActivity.this, "Anda Sudah mengisi absen masuk dan absen pulang untuk jadwal tanggal "+s,"");
-//                            }else{
-//                                viewinfo( );
-//                            }
-//                        } else {
-//                            dialogView.viewNotifKosong(JadwalSiftActivity.this, "Sesi jadwal malam tanggal " + infoJadwalhariini + " masih berlangsung sampai pukul 12:00.", "");
-//                        }
-//                    } else {
-//                        if (jam_masuk != null && jam_pulang != null){
-//                            dialogView.viewNotifKosong(JadwalSiftActivity.this, "Anda Sudah mengisi absen masuk dan absen pulang untuk jadwal tanggal "+s,"");
-//                        }else{
-//                            viewinfo();
-//                        }
-//                    }
-//                }
             }
         });
 
