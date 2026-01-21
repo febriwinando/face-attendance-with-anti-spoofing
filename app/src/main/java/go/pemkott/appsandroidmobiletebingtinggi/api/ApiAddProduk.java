@@ -753,6 +753,26 @@ public interface ApiAddProduk {
             @Part("fakegps") RequestBody fakegps
     );
 
+
+
+    @Multipart
+    @POST("izin/cuti/shift")
+    Call<ResponsePOJO> uploadAbsenIzinCutiShift(
+            @Part MultipartBody.Part fototaging,
+            @Part("employee_id") RequestBody employee_id,
+            @Part("posisi_masuk") RequestBody posisi_masuk,
+            @Part("status_masuk") RequestBody status_masuk,
+            @Part("lat_masuk") RequestBody lat_masuk,
+            @Part("lng_masuk") RequestBody lng_masuk,
+            @Part("ket_masuk") RequestBody ket_masuk,
+            @Part("valid_masuk") RequestBody valid_masuk,
+            @Part MultipartBody.Part lampiran,
+            @Part("ekslampiran") RequestBody ekslampiran,
+            @Part("mulai") RequestBody mulai,
+            @Part("sampai") RequestBody sampai,
+            @Part("fakegps") RequestBody fakegps
+    );
+
 //    @FormUrlEncoded
 //    @POST("izin/cuti")
 //    Call<ResponsePOJO> uploadAbsenIzinCuti(

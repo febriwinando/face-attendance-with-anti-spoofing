@@ -375,7 +375,7 @@
             android:paddingEnd="10dp"
             android:clickable="true"
             android:foreground="?attr/selectableItemBackground"
-            android:onClick="kirimDataDinasLuar"
+            android:onClick="kirimdatacutishift"
             android:layout_marginBottom="50dp"
             android:gravity="center_vertical"
             android:focusable="true">

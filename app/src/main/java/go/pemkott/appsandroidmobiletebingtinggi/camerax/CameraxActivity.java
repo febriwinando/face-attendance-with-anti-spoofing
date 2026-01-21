@@ -1033,7 +1033,6 @@ public class CameraxActivity extends AppCompatActivity {
             i = new Intent(this, KeperluanPribadiSiftActivity.class);
         } else if ("shiftizincuti".equals(aktivitas)) {
             i = new Intent(this, IzinCutiSiftFinalActivity.class);
-
         } else {
             i = new Intent();
             i.putExtra("namafile", fileName);

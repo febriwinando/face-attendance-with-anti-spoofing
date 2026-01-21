@@ -326,10 +326,8 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
 
     public void kirimDataDinasLuar(View view){
         requestPermission();
-
         if (mock_location == 1){
             dialogView.viewNotifKosong(IzinCutiFinalActivity.this, "Anda terdeteksi menggunakan Fake GPS.", "Jika ditemukan berulang kali, akun anda akan terblokir otomatis dan tercatat Alpa.");
-
         }else {
 
             if (file == null || !file.exists() || file.length() == 0) {
@@ -398,24 +396,6 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
         progressDialog = new ProgressDialog(IzinCutiFinalActivity.this, R.style.AppCompatAlertDialogStyle);
         progressDialog.setMessage("Sedang memproses...");
         progressDialog.setCancelable(false);
-        progressDialog.show();
-
-//        Call<ResponsePOJO> call = RetroClient.getInstance().getApi().uploadAbsenIzinCuti(
-//                fotoTaging,
-//                sEmployeID,
-//                posisi,
-//                status,
-//                rbLat,
-//                rbLng,
-//                rbKet,
-//                valid,
-//                lampiran,
-//                ekslampiran,
-//                dariTanggal,
-//                sampaiTanggal,
-//                rbFakeGPS
-//        );
-
 
         byte[] imageBytes = ambilFoto.compressToMax80KB(file);
         MultipartBody.Part fotoPart =
@@ -484,6 +464,8 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
                 dialogView.pesanError(IzinCutiFinalActivity.this);
             }
         });
+        progressDialog.show();
+
     }
 
     public void hitungjarak(){
