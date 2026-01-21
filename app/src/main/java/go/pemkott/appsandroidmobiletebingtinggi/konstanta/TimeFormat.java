@@ -1,11 +1,31 @@
 package go.pemkott.appsandroidmobiletebingtinggi.konstanta;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
 public class TimeFormat {
     public final static Locale localeID = new Locale("in", "ID");
+
+    public static String formatBahasaIndonesia(String tanggal) throws ParseException {
+        String tanggalServer = tanggal;
+
+    // format asal (server)
+        SimpleDateFormat sdfServer = new SimpleDateFormat(
+                "yyyy-MM-dd",
+                Locale.US
+        );
+
+    // format Indonesia (tampilan)
+        SimpleDateFormat sdfIndonesia = new SimpleDateFormat(
+                "EEEE, dd MMMM yyyy",
+                new Locale("id", "ID")
+        );
+
+        Date date = sdfServer.parse(tanggalServer);
+        return sdfIndonesia.format(date);
+    }
 
     public static SimpleDateFormat SIMPLE_DATE_FORMAT_TAGING = new SimpleDateFormat("yyyyMMddHHmmss", localeID);
     public static SimpleDateFormat SIMPLE_DATE_FORMAT_TAGING_PHOTO_REPORT = new SimpleDateFormat("yyyyMMddHHmmss", localeID);

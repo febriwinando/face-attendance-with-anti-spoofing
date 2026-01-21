@@ -25,10 +25,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.facebook.shimmer.ShimmerFrameLayout;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.api.HttpService;
@@ -298,32 +300,53 @@ public class JadwalSiftActivity extends AppCompatActivity {
                 }
 
 
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
-                String tanggal = SIMPLE_FORMAT_TANGGAL.format(new Date());
-                Date hariini = null;
+                // tanggal hari ini
+                Date today = null;
                 try {
-                    hariini = SIMPLE_FORMAT_TANGGAL.parse(tanggal);
+                    today = sdf.parse(sdf.format(new Date()));
                 } catch (ParseException e) {
-                    e.printStackTrace();
+                    throw new RuntimeException(e);
                 }
 
-//                Calendar calendar = Calendar.getInstance();
-//                calendar.setTime(hariini);
-//                calendar.add(Calendar.DAY_OF_YEAR, -1);
-//                Date newDate = calendar.getTime();
-                String infoJadwalhariini = SIMPLE_FORMAT_TANGGAL.format(new Date());
-
-                String jamSekarangString = SIMPLE_FORMAT_JAM.format(new Date());
-                Date jamSekarang = null, batasJamAbsenMalam = null, jadwalAbsensetelah = null;
+                // tanggal yang mau dibandingkan
+                Date targetDate = null;
                 try {
-                    batasJamAbsenMalam = SIMPLE_FORMAT_JAM.parse("12:00");
-                    jamSekarang = SIMPLE_FORMAT_JAM.parse(jamSekarangString);
-                    jadwalAbsensetelah = SIMPLE_FORMAT_TANGGAL.parse(s);
+                    targetDate = sdf.parse(s);
                 } catch (ParseException e) {
-                    e.printStackTrace();
+                    throw new RuntimeException(e);
                 }
 
-                Log.d("ABSEN_MASUK_PAGI", "TANGGAL HARI INI: "+infoJadwalhariini);
+                if (targetDate.after(today)) {
+                    try {
+                        dialogView.viewNotifKosong(JadwalSiftActivity.this, "Anda belum dapat melakukan absen masuk untuk jadwal tanggal "+TimeFormat.formatBahasaIndonesia(s),"");
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                } else if (targetDate.before(today)) {
+
+                    try {
+                        Date tanggalDB = SIMPLE_FORMAT_TANGGAL.parse(s);
+                        Date harinini = SIMPLE_FORMAT_TANGGAL.parse(
+                                SIMPLE_FORMAT_TANGGAL.format(new Date())
+                        );
+
+                        long diffDay = (harinini.getTime() - tanggalDB.getTime())
+                                / (1000 * 60 * 60 * 24);
+
+                        if (diffDay == 0 || diffDay == 1) {
+                            viewinfo();
+                        }
+
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+
+                } else {
+                    viewinfo();
+                }
 
 //                if (jamSekarangString.equals(s)){
 //
