@@ -12,6 +12,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -80,6 +81,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
+import java.util.Objects;
 
 import go.pemkott.appsandroidmobiletebingtinggi.NewDashboard.DashboardVersiOne;
 import go.pemkott.appsandroidmobiletebingtinggi.R;
@@ -87,12 +90,16 @@ import go.pemkott.appsandroidmobiletebingtinggi.api.ResponsePOJO;
 import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
+import go.pemkott.appsandroidmobiletebingtinggi.izin.sakit.IzinSakitFinalActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.izinsift.JadwalIzinSiftActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFoto;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFotoLampiran;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.Lokasi;
 import go.pemkott.appsandroidmobiletebingtinggi.utils.NetworkUtils;
 import go.pemkott.appsandroidmobiletebingtinggi.viewmodel.LocationViewModel;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -160,6 +167,7 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
     private boolean mockLocationsEnabled;
     int mock_location = 0;
     String inisialsift, tipesift, masuksift, pulangsift, idsift;
+    File file, filelampiran;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -311,6 +319,26 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
         if (tipesift.equals("malam")){
             if (radioSelectedKehadiran.getText().toString().equals("MASUK")){
 
+
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+
+                // tanggal hari ini
+                Date today = null;
+                try {
+                    today = sdf.parse(sdf.format(new Date()));
+                } catch (ParseException e) {
+                    throw new RuntimeException(e);
+                }
+
+                // tanggal yang mau dibandingkan
+                Date targetDate = null;
+                try {
+                    targetDate = sdf.parse(rbTanggal);
+                } catch (ParseException e) {
+                    throw new RuntimeException(e);
+                }
+
+
                 if (jam_masuk == null){
 
 
@@ -414,58 +442,257 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
     }
 
 
-    public void kirimdata(String valid, String status, String ketKehadiran, String jampegawai){
 
-        Call<ResponsePOJO> call = RetroClient.getInstance().getApi().uploadizinsakitsift(
-                fotoTaging,
-                ketKehadiran,
-                eJabatan,
-                sEmployeID,
-                timetableid,
-                rbTanggal,
-                rbJam,
-                "sk",
-                status,
-                rbLat,
-                rbLng,
-                rbKet,
-                mins,
-                eOPD,
-                jampegawai,
-                valid,
-                lampiran,
-                ekslampiran,
-                rbFakeGPS,
-                idsift,
-                inisialsift,
-                tipesift,
-                masuksift,
-                pulangsift
+    private MultipartBody.Part prepareFilePart(String partName, byte[] imageBytes) {
+        RequestBody requestBody =
+                RequestBody.create(
+                        imageBytes,
+                        MediaType.parse("image/jpeg")
+                );
+
+        return MultipartBody.Part.createFormData(
+                partName,
+                "fototaging.jpg",
+                requestBody
         );
+    }
+
+    private RequestBody textPart(String value) {
+        return RequestBody.create(
+                okhttp3.MediaType.parse("text/plain"),
+                value
+        );
+    }
+
+    ProgressDialog progressDialog;
+    public void kirimdataMasuk(String valid, String status, String ketKehadiran, String jampegawai){
+        Log.d("Log Izin Sakit", "mulai");
+        progressDialog = new ProgressDialog(IzinSakitSiftFinalActivity.this, R.style.AppCompatAlertDialogStyle);
+        progressDialog.setMessage("Sedang memproses...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
+        byte[] imageBytes = ambilFoto.compressToMax80KB(file);
+        MultipartBody.Part fotoPart =
+                prepareFilePart("fototaging", imageBytes);
+
+        MultipartBody.Part lampiranPart;
+
+        if ("pdf".equals(ekslampiran)) {
+            lampiranPart =
+                    prepareFilePart("lampiran", imageBytesDokumenPdf);
+            Log.d("TugasLapanganFinalActivity", "PDF");
+        } else {
+            byte[] imageBytesLampiran =
+                    ambilFoto.compressToMax80KB(filelampiran);
+            lampiranPart =
+                    prepareFilePart("lampiran", imageBytesLampiran);
+            Log.d("TugasLapanganFinalActivity", "JPG");
+        }
+
+        Call<ResponsePOJO> call =
+                RetroClient.getInstance().getApi().uploadizinsakitsiftmasuk(
+                        fotoPart,
+                        textPart(ketKehadiran),
+                        textPart(eJabatan),
+                        textPart(sEmployeID),
+                        textPart(timetableid),
+                        textPart(rbTanggal),
+                        textPart(rbJam),
+                        textPart("sk"),
+                        textPart(status),
+                        textPart(rbLat),
+                        textPart(rbLng),
+                        textPart(rbKet),
+                        textPart(String.valueOf(mins)),
+                        textPart(eOPD),
+                        textPart(jampegawai),
+                        textPart(valid),
+                        lampiranPart,
+                        textPart(ekslampiran),
+                        textPart(rbFakeGPS)
+                );
+
 
         call.enqueue(new Callback<ResponsePOJO>() {
             @Override
             public void onResponse(@NonNull Call<ResponsePOJO> call, @NonNull Response<ResponsePOJO> response) {
-                if (!response.isSuccessful()){
-                    dialogView.viewNotifKosong(IzinSakitSiftFinalActivity.this, "Gagal mengisi absensi,", "silahkan coba kembali.");
+                progressDialog.dismiss();
+
+                if (!response.isSuccessful()) {
+
+                    dialogView.viewNotifKosong(
+                            IzinSakitSiftFinalActivity.this,
+                            "Gagal mengisi absensi",
+                            "Silahkan coba kembali."
+                    );
+                    Log.d("Log Izin Sakit", "error: tidak menerima response.");
+
                     return;
                 }
 
-                assert response.body() != null;
-                if(response.body().isStatus()){
-                    viewSukses(IzinSakitSiftFinalActivity.this, response.body().getRemarks(), "");
-                }else{
-                    dialogView.viewNotifKosong(IzinSakitSiftFinalActivity.this, response.body().getRemarks(), "");
+                ResponsePOJO data = response.body();
+
+                if (Objects.requireNonNull(response.body()).isStatus()){
+                    Log.d("Log Izin Sakit", "berhasil.");
+                    dialogView.viewSukses(IzinSakitSiftFinalActivity.this, data.getRemarks());
+                }else {
+                    dialogView.viewNotifKosong(IzinSakitSiftFinalActivity.this, data.getRemarks(),"");
                 }
 
             }
 
             @Override
             public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
+                progressDialog.dismiss();
+                Log.d("Log Izin Sakit", "error: "+t.getMessage());
+
                 dialogView.viewNotifKosong(IzinSakitSiftFinalActivity.this, "Gagal mengisi absensi,", "silahkan coba kembali.");
             }
         });
     }
+
+
+
+    public void kirimdataPulang(String valid, String status, String ketKehadiran, String jampegawai){
+        Log.d("Log Izin Sakit", "mulai");
+
+        progressDialog = new ProgressDialog(IzinSakitSiftFinalActivity.this, R.style.AppCompatAlertDialogStyle);
+        progressDialog.setMessage("Sedang memproses...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
+
+        byte[] imageBytes = ambilFoto.compressToMax80KB(file);
+        MultipartBody.Part fotoPart =
+                prepareFilePart("fototaging", imageBytes);
+
+        MultipartBody.Part lampiranPart;
+
+        if ("pdf".equals(ekslampiran)) {
+            lampiranPart =
+                    prepareFilePart("lampiran", imageBytesDokumenPdf);
+            Log.d("TugasLapanganFinalActivity", "PDF");
+        } else {
+            byte[] imageBytesLampiran =
+                    ambilFoto.compressToMax80KB(filelampiran);
+            lampiranPart =
+                    prepareFilePart("lampiran", imageBytesLampiran);
+            Log.d("TugasLapanganFinalActivity", "JPG");
+        }
+
+        Call<ResponsePOJO> call =
+                RetroClient.getInstance().getApi().uploadizinsakitpulang(
+                        fotoPart,
+                        textPart(ketKehadiran),
+                        textPart(eJabatan),
+                        textPart(sEmployeID),
+                        textPart(timetableid),
+                        textPart(rbTanggal),
+                        textPart(rbJam),
+                        textPart("sk"),
+                        textPart(status),
+                        textPart(rbLat),
+                        textPart(rbLng),
+                        textPart(rbKet),
+                        textPart(String.valueOf(mins)),
+                        textPart(eOPD),
+                        textPart(jampegawai),
+                        textPart(valid),
+                        lampiranPart,
+                        textPart(ekslampiran),
+                        textPart(rbFakeGPS)
+                );
+
+        call.enqueue(new Callback<ResponsePOJO>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponsePOJO> call, @NonNull Response<ResponsePOJO> response) {
+                progressDialog.dismiss();
+
+                if (!response.isSuccessful()) {
+
+                    dialogView.viewNotifKosong(
+                            IzinSakitSiftFinalActivity.this,
+                            "Gagal mengisi absensi",
+                            "Silahkan coba kembali."
+                    );
+                    return;
+                }
+
+                ResponsePOJO data = response.body();
+
+                if (Objects.requireNonNull(response.body()).isStatus()){
+                    Log.d("Log Izin Sakit", "berhasil.");
+                    dialogView.viewSukses(IzinSakitSiftFinalActivity.this, data.getRemarks());
+                }else {
+                    dialogView.viewNotifKosong(IzinSakitSiftFinalActivity.this, data.getRemarks(),"");
+                }
+
+
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
+                progressDialog.dismiss();
+                Log.d("Log Izin Sakit", "error: "+t.getMessage());
+                dialogView.viewNotifKosong(IzinSakitSiftFinalActivity.this, "Gagal mengisi absensi,", "silahkan coba kembali.");
+            }
+        });
+    }
+
+
+//    public void kirimdata(String valid, String status, String ketKehadiran, String jampegawai){
+//
+//        Call<ResponsePOJO> call = RetroClient.getInstance().getApi().uploadizinsakitsiftmasuk(
+//                fotoTaging,
+//                ketKehadiran,
+//                eJabatan,
+//                sEmployeID,
+//                timetableid,
+//                rbTanggal,
+//                rbJam,
+//                "sk",
+//                status,
+//                rbLat,
+//                rbLng,
+//                rbKet,
+//                mins,
+//                eOPD,
+//                jampegawai,
+//                valid,
+//                lampiran,
+//                ekslampiran,
+//                rbFakeGPS,
+//                idsift,
+//                inisialsift,
+//                tipesift,
+//                masuksift,
+//                pulangsift
+//        );
+//
+//        call.enqueue(new Callback<ResponsePOJO>() {
+//            @Override
+//            public void onResponse(@NonNull Call<ResponsePOJO> call, @NonNull Response<ResponsePOJO> response) {
+//                if (!response.isSuccessful()){
+//                    dialogView.viewNotifKosong(IzinSakitSiftFinalActivity.this, "Gagal mengisi absensi,", "silahkan coba kembali.");
+//                    return;
+//                }
+//
+//                assert response.body() != null;
+//                if(response.body().isStatus()){
+//                    viewSukses(IzinSakitSiftFinalActivity.this, response.body().getRemarks(), "");
+//                }else{
+//                    dialogView.viewNotifKosong(IzinSakitSiftFinalActivity.this, response.body().getRemarks(), "");
+//                }
+//
+//            }
+//
+//            @Override
+//            public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
+//                dialogView.viewNotifKosong(IzinSakitSiftFinalActivity.this, "Gagal mengisi absensi,", "silahkan coba kembali.");
+//            }
+//        });
+//    }
 
 
 
@@ -753,6 +980,8 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
 
     }
 
+    byte[] imageBytesDokumenPdf;
+
     public String getPDFPath(Uri uri){
         String absolutePath = "";
         try{
@@ -775,15 +1004,16 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
                 mPath= Environment.getExternalStorageDirectory().toString() + "absensi-"+sEmployeID+"-"+currentDateandTimes + ".pdf";
             }
 
-            File pdfFile = new File(mPath);
-            OutputStream op = new FileOutputStream(pdfFile);
+            filelampiran = new File(mPath);
+            OutputStream op = new FileOutputStream(filelampiran);
             op.write(pdfInBytes);
 
-            absolutePath = pdfFile.getPath();
+            absolutePath = filelampiran.getPath();
 
-            InputStream finput = new FileInputStream(pdfFile);
-            byte[] imageBytes = new byte[(int)pdfFile.length()];
-            finput.read(imageBytes, 0, imageBytes.length);
+            InputStream finput = new FileInputStream(filelampiran);
+            byte[] imageBytes = new byte[(int)filelampiran.length()];
+            imageBytesDokumenPdf = new byte[(int)filelampiran.length()];
+            finput.read(imageBytesDokumenPdf, 0, imageBytesDokumenPdf.length);
             finput.close();
             ekslampiran = "pdf";
             lampiran = Base64.encodeToString(imageBytes, Base64.DEFAULT);
