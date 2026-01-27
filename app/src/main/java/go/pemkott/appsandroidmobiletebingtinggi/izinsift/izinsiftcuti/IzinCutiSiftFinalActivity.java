@@ -109,6 +109,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.kehadiran.AbsensiKehadiranActivi
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFoto;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFotoLampiran;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.Lokasi;
+import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
 import go.pemkott.appsandroidmobiletebingtinggi.utils.NetworkUtils;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -174,6 +175,9 @@ public class IzinCutiSiftFinalActivity extends AppCompatActivity implements OnMa
     ProgressDialog progressDialog;
 
     File file, filelampiran;
+    SessionManager session;
+    int pegawaiId;
+
     @SuppressLint("WrongThread")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -186,6 +190,8 @@ public class IzinCutiSiftFinalActivity extends AppCompatActivity implements OnMa
 
         setContentView(R.layout.activity_izin_cuti_sift_final);
 
+        session = new SessionManager(this);
+        pegawaiId = session.getPegawaiId();
 
 
         databaseHelper = new DatabaseHelper(this);
@@ -555,7 +561,7 @@ public class IzinCutiSiftFinalActivity extends AppCompatActivity implements OnMa
 
 
     private void datauser() {
-        Cursor res = databaseHelper.getAllData22();
+        Cursor res = databaseHelper.getAllData22(pegawaiId);
         if (res.getCount() == 0) {
             showMessage("Error", "Nothing found");
             return;

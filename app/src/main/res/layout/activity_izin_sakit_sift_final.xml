@@ -325,7 +325,7 @@
             android:paddingEnd="10dp"
             android:clickable="true"
             android:foreground="?attr/selectableItemBackground"
-            android:onClick="kirimDataDinasLuar"
+            android:onClick="kirimdataIzinSakitShift"
             android:gravity="center_vertical"
             android:focusable="true">
 

@@ -25,7 +25,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:src="@drawable/tebingtinggikota"
+            android:src="@drawable/img"
             android:scaleType="centerCrop"
             app:shapeAppearance="@style/ImageStyleBottomDashOne"
             />

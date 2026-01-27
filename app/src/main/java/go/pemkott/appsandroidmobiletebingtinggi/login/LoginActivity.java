@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -56,7 +57,7 @@ public class LoginActivity extends AppCompatActivity {
     DatabaseHelper databaseHelper;
 
     AppUpdateManager appUpdateManager ;
-
+    SessionManager session;
     NetworkConnectionMonitor connectionMonitor;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +71,12 @@ public class LoginActivity extends AppCompatActivity {
         appUpdateManager = AppUpdateManagerFactory.create(LoginActivity.this);
 
 
+        session = new SessionManager(this);
+        if (session.getToken() != null) {
+            Log.d("LevelUser", session.getPegawaiLevel());
+            startActivity(new Intent(LoginActivity.this, DashboardVersiOne.class));
+
+        }
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://absensi.tebingtinggikota.go.id/api/")
@@ -102,7 +109,7 @@ public class LoginActivity extends AppCompatActivity {
 //        connectionMonitor.registerDefaultNetworkCallback();
 //        Variables.isRegistered=true;
         databaseHelper.getReadableDatabase();
-        datauser();
+//        datauser();
 
     }
 
@@ -163,6 +170,9 @@ public class LoginActivity extends AppCompatActivity {
                         JSONObject array = jsonObject.getJSONObject(0);
                         JSONObject JO = array.getJSONObject("user");
 
+                        session.saveToken("Bearer " + sToken);
+                        session.savePegawaiId(Integer.parseInt(sId));
+
                         sId = JO.getString("id");
                         sEmployee_id = JO.getString("employee_id");
                         sAkses = JO.getString("akses");
@@ -219,5 +229,7 @@ public class LoginActivity extends AppCompatActivity {
         dialogproses.show();
 
     }
+
+    
 
 }

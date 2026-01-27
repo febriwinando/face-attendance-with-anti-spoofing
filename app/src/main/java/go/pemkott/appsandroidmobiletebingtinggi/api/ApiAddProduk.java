@@ -693,29 +693,19 @@ public interface ApiAddProduk {
     @POST("izin/sakitshift/masuk")
     Call<ResponsePOJO> uploadizinsakitsiftmasuk(
             @Part MultipartBody.Part fototaging,
-            @Part("absensi") RequestBody absensi,
-            @Part("eselon") RequestBody eselon,
             @Part("employee_id") RequestBody employee_id,
-            @Part("timetable_id") RequestBody timetable_id,
             @Part("tanggal") RequestBody tanggal,
+            @Part("idsift") RequestBody idsift,
             @Part("jam_masuk") RequestBody jam_masuk,
             @Part("posisi_masuk") RequestBody posisi_masuk,
             @Part("status_masuk") RequestBody status_masuk,
             @Part("lat_masuk") RequestBody lat_masuk,
             @Part("lng_masuk") RequestBody lng_masuk,
             @Part("ket_masuk") RequestBody ket_masuk,
-            @Part("terlambat") RequestBody terlambat,
-            @Part("opd") RequestBody opd,
-            @Part("jam_kantor") RequestBody jam_kantor,
             @Part("valid_masuk") RequestBody valid_masuk,
+            @Part("batas_waktu") RequestBody batas_waktu,
             @Part MultipartBody.Part lampiran,
-            @Part("ekslampiran") RequestBody ekslampiran,
-            @Part("fakegps") RequestBody fakegps,
-            @Part("idsift") RequestBody idsift,
-            @Part("inisialsift") RequestBody inisialsift,
-            @Part("tipesift") RequestBody tipesift,
-            @Part("masuksift") RequestBody masuksift,
-            @Part("pulangsift") RequestBody pulangsift
+            @Part("ekslampiran") RequestBody ekslampiran
     );
 
     @Multipart

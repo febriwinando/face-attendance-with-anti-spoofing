@@ -63,6 +63,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.izin.keperluanpribadi.KeperluanP
 import go.pemkott.appsandroidmobiletebingtinggi.izin.sakit.SakitActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.izinsift.JadwalIzinSiftActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.kehadiransift.JadwalSiftActivity;
+import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
 import go.pemkott.appsandroidmobiletebingtinggi.model.CheckUpdate;
 import go.pemkott.appsandroidmobiletebingtinggi.model.KegiatanIzin;
 import go.pemkott.appsandroidmobiletebingtinggi.model.Koordinat;
@@ -105,6 +106,9 @@ public class DashboardVersiOne extends AppCompatActivity {
     SwipeRefreshLayout swipeRefreshLayout;
 
     ConstraintLayout clCariRekap;
+    SessionManager session;
+
+    int pegawaiId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,12 +120,17 @@ public class DashboardVersiOne extends AppCompatActivity {
         window.setStatusBarColor(this.getResources().getColor(R.color.background_color));
         window.setNavigationBarColor(getResources().getColor(R.color.background_color));
         setContentView(R.layout.activity_dashboard_versi_one);
-            READ_STORAGE_PERMISSION = Manifest.permission.READ_EXTERNAL_STORAGE;
+        session = new SessionManager(this);
+        pegawaiId = session.getPegawaiId();
 
-            dashboardVersiOne = this;
+        READ_STORAGE_PERMISSION = Manifest.permission.READ_EXTERNAL_STORAGE;
+
+        dashboardVersiOne = this;
         manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         databaseHelper = new DatabaseHelper(this);
+
         datauser();
+
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://absensi.tebingtinggikota.go.id/api/")
                 .addConverterFactory(GsonConverterFactory.create())
@@ -478,7 +487,7 @@ public class DashboardVersiOne extends AppCompatActivity {
     }
     public void datauser(){
 
-        Cursor res = databaseHelper.getAllData22();
+        Cursor res = databaseHelper.getAllData22(pegawaiId);
         if (res.getCount()==0){
 
             return;

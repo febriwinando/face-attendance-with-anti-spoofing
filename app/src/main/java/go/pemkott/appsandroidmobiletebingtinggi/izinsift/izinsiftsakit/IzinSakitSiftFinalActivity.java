@@ -20,6 +20,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
@@ -88,6 +89,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.NewDashboard.DashboardVersiOne;
 import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.api.ResponsePOJO;
 import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
+import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraXLActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import go.pemkott.appsandroidmobiletebingtinggi.izin.sakit.IzinSakitFinalActivity;
@@ -140,7 +142,6 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
     String jam_masuk, jam_pulang, batasWaktu;
     SimpleDateFormat hari;
 
-    String fotoTaging = null, lampiran = null;
     String ekslampiran;
 
     TextView tvHariMulai, tvBulanTahunMulai, tvHariSampai, tvBulanTahunSampai, tvKegiatanFinal, tvSuratPerintah, titleDinasLuar, title_content;
@@ -172,7 +173,9 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.background_color));
+        getWindow().setNavigationBarColor(getResources().getColor(R.color.background_color));
         setContentView(R.layout.activity_izin_sakit_sift_final);
 
 
@@ -212,10 +215,9 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
 
         datauser();
 
-        Bundle intent = getIntent().getExtras();
         jam_masuk = DashboardVersiOne.jam_masuk;
         jam_pulang = DashboardVersiOne.jam_pulang;
-        titleDinasLuar.setText(intent.getString("SAKIT"));
+//        titleDinasLuar.setText(intent.getString("SAKIT"));
         rbTanggal = JadwalIzinSiftActivity.tanggalSift;
         inisialsift = JadwalIzinSiftActivity.inisialsift;
         idsift = JadwalIzinSiftActivity.idsift;
@@ -227,6 +229,22 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
         kegiatans.clear();
         kegiatans = SakitSiftActivity.kegiatanCheckedSakit;
         kegiatanlainnya = SakitSiftActivity.kegiatansSakitLainnya;
+
+        Intent intent = getIntent();
+
+        String myDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString()+ "/eabsensi";
+        String fileName = intent.getStringExtra("namafile");
+
+        File originalfile = new File(myDir, fileName);
+        try {
+            file = ambilFoto.compressToFile(this, originalfile);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        Bitmap preview = BitmapFactory.decodeFile(file.getAbsolutePath());
+        ivFinalKegiatan.setImageBitmap(preview);
+
 
         resultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
             @SuppressLint("Range")
@@ -272,6 +290,7 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
         selected = rgKehadiran.getCheckedRadioButtonId();
         radioSelectedKehadiran = findViewById(selected);
 
+
         if (!Settings.Secure.getString(this.getContentResolver(), Settings
                 .Secure.ALLOW_MOCK_LOCATION).equals("0")) {
             mockLocationsEnabled = true;
@@ -283,15 +302,16 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
 
 
 
-    public void kirimDataDinasLuar(View view){
+    public void kirimdataIzinSakitShift(View view){
         requestPermission();
+        Log.d("ABSEN_MASUK_PAGI", "kirimdataIzinSakitShift");
 
         if (mock_location == 1){
 
             dialogView.viewNotifKosong(IzinSakitSiftFinalActivity.this, "Anda terdeteksi menggunakan Fake GPS.", "Jika ditemukan berulang kali, akun anda akan terblokir otomatis dan tercatat Alpa.");
 
         }else {
-            if (fotoTaging == null || lampiran == null) {
+            if (file == null || !file.exists() || file.length() == 0) {
                 dialogView.viewNotifKosong(IzinSakitSiftFinalActivity.this, "Anda harus melampirkan Foto Kondisi Kesehatan dan Surat Dokter.", "");
             } else {
                 uploadImages();
@@ -305,7 +325,7 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
         radioSelectedKehadiran = findViewById(selected);
         String rbValid = "0";
         String rbStatus = "izin";
-
+        Log.d("ABSEN_MASUK_PAGI", "uploadImages");
 
         periksaWaktu();
         hitungjarak();
@@ -317,7 +337,11 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
             e.printStackTrace();
         }
         if (tipesift.equals("malam")){
+            Log.d("ABSEN_MASUK_PAGI", "absen malam");
+
             if (radioSelectedKehadiran.getText().toString().equals("MASUK")){
+
+                Log.d("ABSEN_MASUK_PAGI", "absen malam MASUK");
 
 
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
@@ -337,13 +361,20 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
                 } catch (ParseException e) {
                     throw new RuntimeException(e);
                 }
+                Log.d("ABSEN_MASUK_PAGI", "targetDate: "+targetDate+" && today: "+today);
 
 
                 if (targetDate.after(today)) {
-                    kirimdataMasuk(rbValid, rbStatus, "masuk", masuksift);
+//                    Log.d("ABSEN_MASUK_PAGI", "Today");
+//
+//                    kirimdataMasuk(rbValid, rbStatus, "masuk", masuksift);
                 } else if (targetDate.before(today)) {
+                    Log.d("ABSEN_MASUK_PAGI", "Before Today");
+
                     kirimdataMasuk(rbValid, rbStatus, "masuk", masuksift);
 
+                }else{
+                    kirimdataMasuk(rbValid, rbStatus, "masuk", masuksift);
                 }
 
             }else{
@@ -450,11 +481,13 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
 
     ProgressDialog progressDialog;
     public void kirimdataMasuk(String valid, String status, String ketKehadiran, String jampegawai){
-        Log.d("Log Izin Sakit", "mulai");
         progressDialog = new ProgressDialog(IzinSakitSiftFinalActivity.this, R.style.AppCompatAlertDialogStyle);
         progressDialog.setMessage("Sedang memproses...");
         progressDialog.setCancelable(false);
         progressDialog.show();
+
+        Log.d("ABSEN_MASUK_PAGI", "Masuk absen kirim data");
+
 
         byte[] imageBytes = ambilFoto.compressToMax80KB(file);
         MultipartBody.Part fotoPart =
@@ -467,41 +500,90 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
                     prepareFilePart("lampiran", imageBytesDokumenPdf);
             Log.d("TugasLapanganFinalActivity", "PDF");
         } else {
-            byte[] imageBytesLampiran =
-                    ambilFoto.compressToMax80KB(filelampiran);
-            lampiranPart =
-                    prepareFilePart("lampiran", imageBytesLampiran);
+            byte[] imageBytesLampiran = ambilFoto.compressToMax80KB(filelampiran);
+            lampiranPart = prepareFilePart("lampiran", imageBytesLampiran);
             Log.d("TugasLapanganFinalActivity", "JPG");
         }
+        Log.d("IZIN_SAKIT_SHIFT", "========== REQUEST IZIN SAKIT SHIFT MASUK ==========");
+
+        Log.d("IZIN_SAKIT_SHIFT", "fotoPart        : " + (fotoPart != null ? "ADA" : "NULL"));
+        Log.d("IZIN_SAKIT_SHIFT", "lampiranPart    : " + (lampiranPart != null ? "ADA" : "NULL"));
+
+        Log.d("IZIN_SAKIT_SHIFT", "ketKehadiran    : " + String.valueOf(ketKehadiran));
+        Log.d("IZIN_SAKIT_SHIFT", "eJabatan        : " + String.valueOf(eJabatan));
+        Log.d("IZIN_SAKIT_SHIFT", "employee_id     : " + String.valueOf(sEmployeID));
+        Log.d("IZIN_SAKIT_SHIFT", "timetable_id    : " + String.valueOf(timetableid));
+        Log.d("IZIN_SAKIT_SHIFT", "tanggal         : " + String.valueOf(rbTanggal));
+        Log.d("IZIN_SAKIT_SHIFT", "jam_masuk       : " + String.valueOf(rbJam));
+
+        Log.d("IZIN_SAKIT_SHIFT", "absensi         : sk");
+        Log.d("IZIN_SAKIT_SHIFT", "status_masuk    : " + String.valueOf(status));
+        Log.d("IZIN_SAKIT_SHIFT", "lat             : " + String.valueOf(rbLat));
+        Log.d("IZIN_SAKIT_SHIFT", "lng             : " + String.valueOf(rbLng));
+        Log.d("IZIN_SAKIT_SHIFT", "keterangan      : " + String.valueOf(rbKet));
+
+        Log.d("IZIN_SAKIT_SHIFT", "terlambat(min)  : " + String.valueOf(mins));
+        Log.d("IZIN_SAKIT_SHIFT", "opd             : " + String.valueOf(eOPD));
+        Log.d("IZIN_SAKIT_SHIFT", "jam_kantor      : " + String.valueOf(jampegawai));
+        Log.d("IZIN_SAKIT_SHIFT", "valid_masuk     : " + String.valueOf(valid));
+
+        Log.d("IZIN_SAKIT_SHIFT", "ekslampiran     : " + String.valueOf(ekslampiran));
+        Log.d("IZIN_SAKIT_SHIFT", "fakegps         : " + String.valueOf(rbFakeGPS));
+
+        Log.d("IZIN_SAKIT_SHIFT", "idsift          : " + String.valueOf(idsift));
+        Log.d("IZIN_SAKIT_SHIFT", "inisialsift     : " + String.valueOf(inisialsift));
+        Log.d("IZIN_SAKIT_SHIFT", "tipesift        : " + String.valueOf(tipesift));
+        Log.d("IZIN_SAKIT_SHIFT", "masuksift       : " + String.valueOf(masuksift));
+        Log.d("IZIN_SAKIT_SHIFT", "pulangsift      : " + String.valueOf(pulangsift));
+
+        Log.d("IZIN_SAKIT_SHIFT", "====================================================");
+
+
+//        Call<ResponsePOJO> call =
+//                RetroClient.getInstance().getApi().uploadizinsakitsiftmasuk(
+//                        fotoPart,
+//                        textPart(ketKehadiran),
+//                        textPart(eJabatan),
+//                        textPart(sEmployeID),
+//                        textPart(rbTanggal),
+//                        textPart(rbJam),
+//                        textPart("sk"),
+//                        textPart(status),
+//                        textPart(rbLat),
+//                        textPart(rbLng),
+//                        textPart(rbKet),
+//                        textPart(String.valueOf(mins)),
+//                        textPart(eOPD),
+//                        textPart(jampegawai),
+//                        textPart(valid),
+//                        lampiranPart,
+//                        textPart(ekslampiran),
+//                        textPart(rbFakeGPS),
+//                        textPart(idsift),
+//                        textPart(inisialsift),
+//                        textPart(tipesift),
+//                        textPart(masuksift),
+//                        textPart(pulangsift)
+//                );
 
         Call<ResponsePOJO> call =
                 RetroClient.getInstance().getApi().uploadizinsakitsiftmasuk(
                         fotoPart,
-                        textPart(ketKehadiran),
-                        textPart(eJabatan),
-                        textPart(sEmployeID),
-                        textPart(timetableid),
-                        textPart(rbTanggal),
-                        textPart(rbJam),
-                        textPart("sk"),
-                        textPart(status),
-                        textPart(rbLat),
-                        textPart(rbLng),
-                        textPart(rbKet),
-                        textPart(String.valueOf(mins)),
-                        textPart(eOPD),
-                        textPart(jampegawai),
-                        textPart(valid),
-                        lampiranPart,
-                        textPart(ekslampiran),
-                        textPart(rbFakeGPS),
-                        textPart(idsift),
-                        textPart(inisialsift),
-                        textPart(tipesift),
-                        textPart(masuksift),
-                        textPart(pulangsift)
-                );
 
+                        textPart(sEmployeID),      // employee_id
+                        textPart(rbTanggal),       // tanggal
+                        textPart(idsift),          // idsift
+                        textPart(rbJam),           // jam_masuk
+                        textPart("sk"),            // posisi_masuk
+                        textPart(status),          // status_masuk
+                        textPart(rbLat),           // lat_masuk
+                        textPart(rbLng),           // lng_masuk
+                        textPart(rbKet),           // ket_masuk
+                        textPart(valid),            // valid_masuk
+                        textPart(String.valueOf(mins)), // batas_waktu
+                        lampiranPart,
+                        textPart(ekslampiran)
+                );
 
         call.enqueue(new Callback<ResponsePOJO>() {
             @Override
@@ -513,7 +595,7 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
                     dialogView.viewNotifKosong(
                             IzinSakitSiftFinalActivity.this,
                             "Gagal mengisi absensi",
-                            "Silahkan coba kembali."
+                            "Silahkan coba kembali yaaa."
                     );
                     Log.d("Log Izin Sakit", "error: tidak menerima response.");
 
@@ -744,8 +826,14 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
         });
 
         llKamera.setOnClickListener(v -> {
-            ambilFoto("surat");
+
+
+            Intent intent = new Intent(IzinSakitSiftFinalActivity.this, CameraXLActivity.class);
+            intent.putExtra("aktivitas", "lampiranizinsakitshift");
+            cameraLauncher.launch(intent);
             dialogLampiran.dismiss();
+
+
         });
 
         ivTutupViewLampiran.setOnClickListener(v -> dialogLampiran.dismiss());
@@ -753,6 +841,34 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
         dialogLampiran.show();
     }
 
+
+    private ActivityResultLauncher<Intent> cameraLauncher =
+            registerForActivityResult(
+                    new ActivityResultContracts.StartActivityForResult(),
+                    result -> {
+                        if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+
+                            String myDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString()+ "/eabsensi";
+                            String fileName = result.getData().getStringExtra("namafile");
+
+                            filelampiran = new File(myDir, fileName);
+                            byte[] imageBytes = ambilFoto.compressToMax80KB(filelampiran);
+
+                            Bitmap previewLampiran = BitmapFactory.decodeByteArray(
+                                    imageBytes, 0, imageBytes.length
+                            );
+
+
+                            llLampiranDinasLuar.setVisibility(View.VISIBLE);
+                            ivSuratPerintahFinal.setVisibility(View.VISIBLE);
+                            llPdfDinasLuar.setVisibility(View.GONE);
+                            iconLampiran.setVisibility(View.GONE);
+                            ekslampiran = "jpg";
+                            ivSuratPerintahFinal.setImageBitmap(previewLampiran);
+
+                        }
+                    }
+            );
     private void ambilFoto(String addFoto){
         String filename = "photo";
         File storageDirectory = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
@@ -801,7 +917,6 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 rotationBitmapTag.compress(Bitmap.CompressFormat.JPEG,50, byteArrayOutputStream);
                 byte[] imageInByte = byteArrayOutputStream.toByteArray();
-                fotoTaging =  Base64.encodeToString(imageInByte,Base64.DEFAULT);
 
                 periksaWaktu();
                 handlerProgressDialog();
@@ -827,7 +942,6 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 rotationBitmapSurat.compress(Bitmap.CompressFormat.JPEG,75, byteArrayOutputStream);
                 byte[] imageInByte = byteArrayOutputStream.toByteArray();
-                lampiran =  Base64.encodeToString(imageInByte,Base64.DEFAULT);
                 ekslampiran = "jpg";
 
                 handlerProgressDialog();
@@ -845,16 +959,15 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
                 Uri selectedImageUri = data.getData();
                 String FilePath2  = getDriveFilePath(selectedImageUri, IzinSakitSiftFinalActivity.this);
 
-                File file1 = new File(FilePath2);
-                Bitmap bitmap = ambilFotoLampiran.fileBitmap(file1);
-                rotationBitmapSurat = Bitmap.createBitmap(bitmap, 0,0, bitmap.getWidth(), bitmap.getHeight(), AmbilFoto.exifInterface(FilePath2, 0), true);
+                filelampiran = new File(FilePath2);
+                byte[] imageBytes = ambilFoto.compressToMax80KB(filelampiran);
 
-                ivSuratPerintahFinal.setImageBitmap(rotationBitmapSurat);
+                Bitmap previewLampiran = BitmapFactory.decodeByteArray(
+                        imageBytes, 0, imageBytes.length
+                );
+                ivSuratPerintahFinal.setVisibility(View.VISIBLE);
+                ivSuratPerintahFinal.setImageBitmap(previewLampiran);
 
-                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.JPEG,75, byteArrayOutputStream);
-                byte[] imageInByte = byteArrayOutputStream.toByteArray();
-                lampiran =  Base64.encodeToString(imageInByte,Base64.DEFAULT);
                 ekslampiran = "jpg";
 
                 handlerProgressDialog();
@@ -952,7 +1065,6 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
             finput.read(imageBytesDokumenPdf, 0, imageBytesDokumenPdf.length);
             finput.close();
             ekslampiran = "pdf";
-            lampiran = Base64.encodeToString(imageBytes, Base64.DEFAULT);
 
         }catch (Exception ae){
             ae.printStackTrace();

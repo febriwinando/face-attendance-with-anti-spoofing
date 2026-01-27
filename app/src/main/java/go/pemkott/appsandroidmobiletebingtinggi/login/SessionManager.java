@@ -1,0 +1,55 @@
+package go.pemkott.appsandroidmobiletebingtinggi.login;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+
+public class SessionManager {
+    private static final String PREF_NAME = "APP_PREFS";
+    private static final String KEY_TOKEN = "AUTH_TOKEN";
+    private static final String KEY_PEGAWAI_ID = "PEGAWAI_ID";
+    private static final String KEY_JABTAN = "JABATAN";
+
+    private final SharedPreferences prefs;
+
+    public SessionManager(Context context) {
+        prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+    }
+
+    public void saveToken(String token) {
+        prefs.edit().putString(KEY_TOKEN, token).apply();
+    }
+
+    public String getToken() {
+        return prefs.getString(KEY_TOKEN, null);
+    }
+
+//    public void clearSession() {
+//        prefs.edit().remove(KEY_TOKEN).apply();
+//    }
+
+    // -------------------------
+    // PEGAWAI ID
+    // -------------------------
+    public void savePegawaiId(int id) {
+        prefs.edit().putInt(KEY_PEGAWAI_ID, id).apply();
+    }
+
+    public int getPegawaiId() {
+        return prefs.getInt(KEY_PEGAWAI_ID, 0); // default 0
+    }
+
+    public void savePegawaiLevel(String level) {
+        prefs.edit().putString(KEY_JABTAN, level).apply();
+    }
+
+    public String getPegawaiLevel() {
+        return prefs.getString(KEY_JABTAN, "0"); // default 0
+    }
+
+    // -------------------------
+    // CLEAR
+    // -------------------------
+    public void clearSession() {
+        prefs.edit().clear().apply();
+    }
+}
