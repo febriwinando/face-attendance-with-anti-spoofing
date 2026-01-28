@@ -141,7 +141,7 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
     File file;
 
     SessionManager session;
-    int pegawaiId;
+    String userId;
 
     @SuppressLint("WrongThread")
     @Override
@@ -154,7 +154,7 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
         setContentView(R.layout.activity_kehadiran_one);
 
         session = new SessionManager(this);
-        pegawaiId = session.getPegawaiId();
+        userId = session.getPegawaiId();
 
         databaseHelper = new DatabaseHelper(this);
         databases();
@@ -294,7 +294,7 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
 
     public void databases(){
 
-        Cursor tUser = databaseHelper.getAllData22(pegawaiId);
+        Cursor tUser = databaseHelper.getAllData22(userId);
         while (tUser.moveToNext()){
             sEmployId = tUser.getString(1);
         }

@@ -173,7 +173,7 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
 
     File file, filelampiran;
     SessionManager session;
-    int pegawaiId;
+    String userId;
     @SuppressLint("WrongThread")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -185,7 +185,7 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
         setContentView(R.layout.activity_izin_cuti_final);
 
         session = new SessionManager(this);
-        pegawaiId = session.getPegawaiId();
+        userId = session.getPegawaiId();
 
 
         databaseHelper = new DatabaseHelper(this);
@@ -494,7 +494,7 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
 
 
     private void datauser() {
-        Cursor res = databaseHelper.getAllData22(pegawaiId);
+        Cursor res = databaseHelper.getAllData22(userId);
         if (res.getCount() == 0) {
             showMessage("Error", "Nothing found");
             return;

@@ -58,8 +58,9 @@ public class LoginActivity extends AppCompatActivity {
 
     AppUpdateManager appUpdateManager ;
     SessionManager session;
-    NetworkConnectionMonitor connectionMonitor;
 
+    String userId;
+    NetworkConnectionMonitor connectionMonitor;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,16 +70,10 @@ public class LoginActivity extends AppCompatActivity {
         getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.background_color));
         getWindow().setNavigationBarColor(getResources().getColor(R.color.background_color));
         setContentView(R.layout.activity_login);
+
         appUpdateManager = AppUpdateManagerFactory.create(LoginActivity.this);
 
-
-
         session = new SessionManager(this);
-        if (session.getToken() != null) {
-            Log.d("LevelUser", session.getPegawaiLevel());
-            startActivity(new Intent(LoginActivity.this, DashboardVersiOne.class));
-
-        }
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://absensi.tebingtinggikota.go.id/api/")
@@ -111,7 +106,8 @@ public class LoginActivity extends AppCompatActivity {
 //        connectionMonitor.registerDefaultNetworkCallback();
 //        Variables.isRegistered=true;
         databaseHelper.getReadableDatabase();
-//        datauser();
+        session = new SessionManager(this);
+        datauser();
 
     }
 
@@ -130,7 +126,16 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
+    private void datauser(){
 
+        if (session.getToken() != null) {
+            Intent dashboardActivity = new Intent(LoginActivity.this, DashboardVersiOne.class);
+            dashboardActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(dashboardActivity);
+            finish();
+        }
+
+    }
 
     @Override
     public void onBackPressed() {
@@ -162,8 +167,6 @@ public class LoginActivity extends AppCompatActivity {
                         JSONObject array = jsonObject.getJSONObject(0);
                         JSONObject JO = array.getJSONObject("user");
 
-                        session.saveToken("Bearer " + sToken);
-                        session.savePegawaiId(Integer.parseInt(sId));
 
                         sId = JO.getString("id");
                         sEmployee_id = JO.getString("employee_id");
@@ -174,6 +177,8 @@ public class LoginActivity extends AppCompatActivity {
                         sUsername = array.getString("nama");
                         status = array.getString("status");
 
+                        session.saveToken("Bearer " + sToken);
+                        session.savePegawaiId(sId);
 
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -221,7 +226,5 @@ public class LoginActivity extends AppCompatActivity {
         dialogproses.show();
 
     }
-
-
 
 }

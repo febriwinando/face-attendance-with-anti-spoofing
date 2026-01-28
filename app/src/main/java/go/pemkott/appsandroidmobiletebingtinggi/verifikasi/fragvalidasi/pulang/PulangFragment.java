@@ -58,7 +58,7 @@ public class PulangFragment extends Fragment {
     ImageView ivBackValidasi;
 
     SessionManager session;
-    int pegawaiId;
+    String userId;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -66,7 +66,7 @@ public class PulangFragment extends Fragment {
 
         View view =  inflater.inflate(R.layout.fragment_pulang, container, false);
         session = new SessionManager(getContext());
-        pegawaiId = session.getPegawaiId();
+        userId = session.getPegawaiId();
 
 
         rvRekapPulangFragment = view.findViewById(R.id.rvRekapPulangragment);
@@ -102,7 +102,7 @@ public class PulangFragment extends Fragment {
 
         if (NetworkUtils.isConnected(getContext())){
 
-            Cursor res = databaseHelper.getAllData22(pegawaiId);
+            Cursor res = databaseHelper.getAllData22(userId);
             if (res.getCount()==0){
                 return;
             }

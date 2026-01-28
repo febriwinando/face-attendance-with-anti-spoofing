@@ -57,7 +57,7 @@ public class MasukFragment extends Fragment {
     ImageView ivBackValidasi;
 
     SessionManager session;
-    int pegawaiId;
+    String userId;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -66,7 +66,7 @@ public class MasukFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_masuk, container, false);
 
         session = new SessionManager(getContext());
-        pegawaiId = session.getPegawaiId();
+        userId = session.getPegawaiId();
 
 
         rvRekapMasukFragment = view.findViewById(R.id.rvRekapMasukFragment);
@@ -100,7 +100,7 @@ public class MasukFragment extends Fragment {
 
         if (NetworkUtils.isConnected(getContext())){
 
-            Cursor res = databaseHelper.getAllData22(pegawaiId);
+            Cursor res = databaseHelper.getAllData22(userId);
             if (res.getCount()==0){
                 return;
             }

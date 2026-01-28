@@ -179,7 +179,7 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
     LocationRequest locationRequest;
     File file, filelampiran;
     SessionManager session;
-    int pegawaiId;
+    String userId;
     @SuppressLint("WrongThread")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -192,7 +192,7 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
 
 
         session = new SessionManager(this);
-        pegawaiId = session.getPegawaiId();
+        userId = session.getPegawaiId();
 
         databaseHelper = new DatabaseHelper(this);
         tvKegiatanFinal = findViewById(R.id.tvKegiatanFinal);
@@ -640,7 +640,7 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
     }
 
     private void datauser(){
-        Cursor res = databaseHelper.getAllData22(pegawaiId);
+        Cursor res = databaseHelper.getAllData22(userId);
         if (res.getCount()==0){
             showMessage("Error", "Nothing found");
             return;

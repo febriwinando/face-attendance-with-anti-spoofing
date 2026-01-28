@@ -108,7 +108,7 @@ public class DashboardVersiOne extends AppCompatActivity {
     ConstraintLayout clCariRekap;
     SessionManager session;
 
-    int pegawaiId;
+    String userid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,11 +121,14 @@ public class DashboardVersiOne extends AppCompatActivity {
         window.setNavigationBarColor(getResources().getColor(R.color.background_color));
         setContentView(R.layout.activity_dashboard_versi_one);
         session = new SessionManager(this);
-        pegawaiId = session.getPegawaiId();
+        userid = session.getPegawaiId();
+
 
         READ_STORAGE_PERMISSION = Manifest.permission.READ_EXTERNAL_STORAGE;
 
         dashboardVersiOne = this;
+
+
         manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         databaseHelper = new DatabaseHelper(this);
 
@@ -487,20 +490,24 @@ public class DashboardVersiOne extends AppCompatActivity {
     }
     public void datauser(){
 
-        Cursor res = databaseHelper.getAllData22(pegawaiId);
+        Cursor res = databaseHelper.getAllData22(userid);
         if (res.getCount()==0){
-
             return;
         }
 
 
         while (res.moveToNext()){
-
             sEmployee_id = res.getString(1);
             sAkses = res.getString(3);
             sActive = res.getString(4);
             sToken = res.getString(5);
             sVerifikator = res.getString(6);
+
+            Log.d("DB_LOGIN", "Employee ID   : " + sEmployee_id);
+            Log.d("DB_LOGIN", "Akses         : " + sAkses);
+            Log.d("DB_LOGIN", "Active        : " + sActive);
+            Log.d("DB_LOGIN", "Token         : " + sToken);
+            Log.d("DB_LOGIN", "Verifikator   : " + sVerifikator);
         }
 
         Cursor dataPegawai = databaseHelper.getDataEmployee(sEmployee_id);

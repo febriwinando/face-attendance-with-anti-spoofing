@@ -878,9 +878,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-    public Cursor getAllData22(int id){
+    public Cursor getAllData22(String id){
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor res = db.rawQuery("select * from "+TABLE_USER+"  WHERE "+COL_1+" = "+id, null);
+        Cursor res = db.rawQuery("select * from "+TABLE_USER+" WHERE ID = '"+id+"'", null);
         return res;
     }
 

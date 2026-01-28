@@ -157,7 +157,7 @@ public class AbsenSiftActivity extends AppCompatActivity implements OnMapReadyCa
 
 
     SessionManager session;
-    int pegawaiId;
+    String userId;
     FragmentContainerView fragmentContainerView;
     @SuppressLint("WrongThread")
     @Override
@@ -169,7 +169,7 @@ public class AbsenSiftActivity extends AppCompatActivity implements OnMapReadyCa
         setContentView(R.layout.activity_absen_sift);
         mContext = AbsenSiftActivity.this;
         session = new SessionManager(this);
-        pegawaiId = session.getPegawaiId();
+        userId = session.getPegawaiId();
 
         databaseHelper = new DatabaseHelper(mContext);
         databases();
@@ -284,7 +284,7 @@ public class AbsenSiftActivity extends AppCompatActivity implements OnMapReadyCa
 
     public void databases(){
 
-        Cursor tUser = databaseHelper.getAllData22(pegawaiId);
+        Cursor tUser = databaseHelper.getAllData22(userId);
         while (tUser.moveToNext()){
             sEmployId = tUser.getString(1);
         }

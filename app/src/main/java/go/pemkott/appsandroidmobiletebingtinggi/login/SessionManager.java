@@ -30,12 +30,12 @@ public class SessionManager {
     // -------------------------
     // PEGAWAI ID
     // -------------------------
-    public void savePegawaiId(int id) {
-        prefs.edit().putInt(KEY_PEGAWAI_ID, id).apply();
+    public void savePegawaiId(String id) {
+        prefs.edit().putString(KEY_PEGAWAI_ID, id).apply();
     }
 
-    public int getPegawaiId() {
-        return prefs.getInt(KEY_PEGAWAI_ID, 0); // default 0
+    public String getPegawaiId() {
+        return prefs.getString(KEY_PEGAWAI_ID, "0"); // default 0
     }
 
     public void savePegawaiLevel(String level) {

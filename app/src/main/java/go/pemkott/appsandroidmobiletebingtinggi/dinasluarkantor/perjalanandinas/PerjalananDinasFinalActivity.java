@@ -180,7 +180,7 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
     File file, filelampiran;
 
     SessionManager session;
-    int pegawaiId;
+    String userId;
 
     @SuppressLint("WrongThread")
     @Override
@@ -193,7 +193,7 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
         setContentView(R.layout.activity_perjalanan_dinas_final);
 
         session = new SessionManager(this);
-        pegawaiId = session.getPegawaiId();
+        userId = session.getPegawaiId();
 
 
         databaseHelper = new DatabaseHelper(this);
@@ -345,7 +345,7 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
         });
     }
     private void datauser() {
-        Cursor res = databaseHelper.getAllData22(pegawaiId);
+        Cursor res = databaseHelper.getAllData22(userId);
 
         while (res.moveToNext()) {
             sEmployeID = res.getString(1);

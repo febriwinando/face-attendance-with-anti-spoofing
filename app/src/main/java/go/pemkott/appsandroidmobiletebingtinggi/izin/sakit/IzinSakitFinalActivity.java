@@ -184,7 +184,7 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
 
     File file, filelampiran;
     SessionManager session;
-    int pegawaiId;
+    String userId;
     @SuppressLint("WrongThread")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -196,7 +196,7 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
         setContentView(R.layout.activity_izin_sakit_final);
 
         session = new SessionManager(this);
-        pegawaiId = session.getPegawaiId();
+        userId = session.getPegawaiId();
 
 
         databaseHelper = new DatabaseHelper(this);
@@ -699,7 +699,7 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
     }
 
     private void datauser(){
-        Cursor res = databaseHelper.getAllData22(pegawaiId);
+        Cursor res = databaseHelper.getAllData22(userId);
         if (res.getCount()==0){
             showMessage("Error", "Nothing found");
             return;

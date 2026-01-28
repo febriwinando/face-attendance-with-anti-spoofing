@@ -176,7 +176,7 @@ public class IzinCutiSiftFinalActivity extends AppCompatActivity implements OnMa
 
     File file, filelampiran;
     SessionManager session;
-    int pegawaiId;
+    String userId;
 
     @SuppressLint("WrongThread")
     @Override
@@ -191,7 +191,7 @@ public class IzinCutiSiftFinalActivity extends AppCompatActivity implements OnMa
         setContentView(R.layout.activity_izin_cuti_sift_final);
 
         session = new SessionManager(this);
-        pegawaiId = session.getPegawaiId();
+        userId = session.getPegawaiId();
 
 
         databaseHelper = new DatabaseHelper(this);
@@ -561,7 +561,7 @@ public class IzinCutiSiftFinalActivity extends AppCompatActivity implements OnMa
 
 
     private void datauser() {
-        Cursor res = databaseHelper.getAllData22(pegawaiId);
+        Cursor res = databaseHelper.getAllData22(userId);
         if (res.getCount() == 0) {
             showMessage("Error", "Nothing found");
             return;

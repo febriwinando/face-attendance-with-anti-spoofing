@@ -11,6 +11,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -66,14 +67,15 @@ public class DownloadDataActivity extends AppCompatActivity {
     private final int TOTAL_STEPS = 6; // used for progress calculation (exclude initial read local)
 
     SessionManager session;
-    int pegawaiId;
+    String userId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_download_data);
 
         session = new SessionManager(this);
-        pegawaiId = session.getPegawaiId();
+        userId = session.getPegawaiId();
+        Toast.makeText(this, ""+userId, Toast.LENGTH_SHORT).show();
 
         // init
         databaseHelper = new DatabaseHelper(this);
@@ -111,7 +113,7 @@ public class DownloadDataActivity extends AppCompatActivity {
     }
 
     private void readLocalUserAndStart() {
-        Cursor tUser = databaseHelper.getAllData22(pegawaiId);
+        Cursor tUser = databaseHelper.getAllData22(userId);
         int dataUser = 0;
         while (tUser.moveToNext()) {
             dataUser++;
@@ -846,7 +848,7 @@ public class DownloadDataActivity extends AppCompatActivity {
 //
 //
 //    public void dataUser(){
-//        Cursor tUser = databaseHelper.getAllData22();
+//        Cursor tUser = databaseHelper.getAllData22(userId);
 //        int dataUser = 0;
 //
 //        while (tUser.moveToNext()){

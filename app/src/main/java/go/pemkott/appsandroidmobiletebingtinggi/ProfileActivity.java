@@ -17,6 +17,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -27,7 +28,9 @@ import com.bumptech.glide.Glide;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import go.pemkott.appsandroidmobiletebingtinggi.api.ApiAddProduk;
 import go.pemkott.appsandroidmobiletebingtinggi.api.HttpService;
+import go.pemkott.appsandroidmobiletebingtinggi.api.RetrofitBuilder;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import go.pemkott.appsandroidmobiletebingtinggi.login.LoginActivity;
@@ -35,6 +38,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
 import go.pemkott.appsandroidmobiletebingtinggi.model.Updatep;
 import retrofit2.Call;
 import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -54,7 +58,8 @@ public class ProfileActivity extends AppCompatActivity {
     CircleImageView civProfilPegawai;
     ImageView ivBack;
     SessionManager session;
-    int pegawaiId;
+    String userId;
+    ApiAddProduk api;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,7 +67,9 @@ public class ProfileActivity extends AppCompatActivity {
         setContentView(R.layout.activity_profile);
 
         session = new SessionManager(this);
-        pegawaiId = session.getPegawaiId();
+        userId = session.getPegawaiId();
+
+        api = RetrofitBuilder.getClient().create(ApiAddProduk.class);
 
         civProfilPegawai = findViewById(R.id.civProfilPegawai);
         tvNamaPegawai = findViewById(R.id.tvNamaPegawai);
@@ -142,7 +149,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     public void dataEmployee(){
 
-        Cursor res = databaseHelper.getAllData22(pegawaiId);
+        Cursor res = databaseHelper.getAllData22(userId);
 
         while (res.moveToNext()){
             sEmployee_id = res.getString(1);
@@ -319,27 +326,43 @@ public class ProfileActivity extends AppCompatActivity {
         dialogproses.setContentView(R.layout.view_proses);
         dialogproses.setCancelable(false);
 
-        databaseHelper.deleteDataUseAll();
-        databaseHelper.deleteDataEmployeeAll();
-        databaseHelper.deleteDataKoordinatOPDAll();
-        databaseHelper.deleteKegiatanIzin();
-        databaseHelper.deleteTimeTableAll();
-        databaseHelper.deleteDataKoordinatEmployeeAll();
-        databaseHelper.deleteJamSift();
-        databaseHelper.deleteJadwalSift2();
+        String token = session.getToken();
 
-        Handler handler = new Handler();
-        handler.postDelayed(() -> {
-            dashboardVersiOne.finish();
-            finish();
-            Intent loginActivity = new Intent(ProfileActivity.this, LoginActivity.class);
-            startActivity(loginActivity);
+        api.logout(token).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                session.clearSession();
+                DatabaseHelper db = new DatabaseHelper(ProfileActivity.this);
 
-        }, 3000);
+                databaseHelper.deleteDataUseAll();
+                databaseHelper.deleteDataEmployeeAll();
+                databaseHelper.deleteDataKoordinatOPDAll();
+                databaseHelper.deleteKegiatanIzin();
+                databaseHelper.deleteTimeTableAll();
+                databaseHelper.deleteDataKoordinatEmployeeAll();
+                databaseHelper.deleteJamSift();
+                databaseHelper.deleteJadwalSift2();
+                session.clearSession();
 
+                Handler handler = new Handler();
+                handler.postDelayed(() -> {
+                    dashboardVersiOne.finish();
+                    Intent loginActivity = new Intent(ProfileActivity.this, LoginActivity.class);
+                    loginActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(loginActivity);
+                    finish();
+                }, 3000);
 
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+                Toast.makeText(ProfileActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
 
         dialogproses.show();
     }
+
 
 }

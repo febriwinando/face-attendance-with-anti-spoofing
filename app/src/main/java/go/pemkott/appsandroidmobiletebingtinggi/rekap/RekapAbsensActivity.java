@@ -74,7 +74,7 @@ public class RekapAbsensActivity extends AppCompatActivity {
 
     DialogView dialogFragment = new DialogView(RekapAbsensActivity.this);
     SessionManager session;
-    int pegawaiId;
+    String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,7 +86,7 @@ public class RekapAbsensActivity extends AppCompatActivity {
         setContentView(R.layout.activity_rekap_absens);
 
         session = new SessionManager(this);
-        pegawaiId = session.getPegawaiId();
+        userId = session.getPegawaiId();
 
 
         Retrofit retrofit = new Retrofit.Builder()
@@ -209,7 +209,7 @@ public class RekapAbsensActivity extends AppCompatActivity {
 
     private void dataUser() {
 
-        Cursor res = databaseHelper.getAllData22(pegawaiId);
+        Cursor res = databaseHelper.getAllData22(userId);
         if (res.getCount()==0){
             return;
         }

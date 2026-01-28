@@ -156,7 +156,7 @@ public class KeperluanPribadiSiftFinalActivity extends AppCompatActivity  implem
     int mock_location = 0;
     String inisialsift, tipesift, masuksift, pulangsift, idsift;
     SessionManager session;
-    int pegawaiId;
+    String userId;
 File file;
     @SuppressLint("WrongThread")
     @Override
@@ -165,7 +165,7 @@ File file;
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_keperluan_pribadi_sift_final);
         session = new SessionManager(this);
-        pegawaiId = session.getPegawaiId();
+        userId = session.getPegawaiId();
 
         databaseHelper = new DatabaseHelper(this);
         tvKegiatanFinal = findViewById(R.id.tvKegiatanFinal);
@@ -441,7 +441,7 @@ File file;
     }
 
     private void datauser(){
-        Cursor res = databaseHelper.getAllData22(pegawaiId);
+        Cursor res = databaseHelper.getAllData22(userId);
         if (res.getCount()==0){
             showMessage("Error", "Nothing found");
             return;

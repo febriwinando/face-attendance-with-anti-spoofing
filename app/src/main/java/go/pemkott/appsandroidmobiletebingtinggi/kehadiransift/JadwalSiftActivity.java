@@ -74,7 +74,7 @@ public class JadwalSiftActivity extends AppCompatActivity {
 
     public static String tanggalSift=  null, inisialsift = null, tipesift = null, masuksift = null, pulangsift = null, idsift = null;
 SessionManager session;
-int pegawaiId;
+String userId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,7 +83,7 @@ int pegawaiId;
 
         setContentView(R.layout.activity_jadwal_sift);
         session = new SessionManager(this);
-        pegawaiId = session.getPegawaiId();
+        userId = session.getPegawaiId();
 
 
         jadwalSiftActivity = this;
@@ -177,7 +177,7 @@ int pegawaiId;
         pulangSift.clear();
         listJadwalSift.clear();
 
-        Cursor res = databaseHelper.getAllData22(pegawaiId);
+        Cursor res = databaseHelper.getAllData22(userId);
         if (res.getCount() == 0) {
             return;
         }

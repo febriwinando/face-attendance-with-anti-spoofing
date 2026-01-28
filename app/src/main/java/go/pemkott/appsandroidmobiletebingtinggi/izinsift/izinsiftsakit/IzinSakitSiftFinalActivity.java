@@ -171,7 +171,7 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
     String inisialsift, tipesift, masuksift, pulangsift, idsift;
     File file, filelampiran;
     SessionManager session;
-    int pegawaiId;
+    String userId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -181,7 +181,7 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
         getWindow().setNavigationBarColor(getResources().getColor(R.color.background_color));
         setContentView(R.layout.activity_izin_sakit_sift_final);
         session = new SessionManager(this);
-        pegawaiId = session.getPegawaiId();
+        userId = session.getPegawaiId();
 
 
         databaseHelper = new DatabaseHelper(this);
@@ -737,7 +737,7 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
     }
 
     private void datauser(){
-        Cursor res = databaseHelper.getAllData22(pegawaiId);
+        Cursor res = databaseHelper.getAllData22(userId);
         if (res.getCount()==0){
             showMessage("Error", "Nothing found");
             return;

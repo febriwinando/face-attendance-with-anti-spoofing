@@ -70,7 +70,7 @@ public class CalendarJadwalSiftActivity extends AppCompatActivity {
     String tahun = TAHUN.format(new Date());
 
     SessionManager session;
-    int pegawaiId;
+    String userId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,7 +79,7 @@ public class CalendarJadwalSiftActivity extends AppCompatActivity {
         setContentView(R.layout.activity_calendar_jadwal_sift);
 
         session = new SessionManager(this);
-        pegawaiId = session.getPegawaiId();
+        userId = session.getPegawaiId();
 
 
         jadwalSiftActivity = this;
@@ -201,7 +201,7 @@ public class CalendarJadwalSiftActivity extends AppCompatActivity {
         pulangSift.clear();
         listJadwalSift.clear();
 
-        Cursor res = databaseHelper.getAllData22(pegawaiId);
+        Cursor res = databaseHelper.getAllData22(userId);
         if (res.getCount() == 0) {
             return;
         }

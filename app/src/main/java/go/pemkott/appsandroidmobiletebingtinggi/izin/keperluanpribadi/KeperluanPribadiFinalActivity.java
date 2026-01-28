@@ -159,7 +159,7 @@ public class KeperluanPribadiFinalActivity extends AppCompatActivity implements 
     LocationRequest locationRequest;
 
     SessionManager session;
-    int pegawaiId;
+    String userId;
     File file,filelampiran;
     @SuppressLint("WrongThread")
     @Override
@@ -172,7 +172,7 @@ public class KeperluanPribadiFinalActivity extends AppCompatActivity implements 
         setContentView(R.layout.activity_keperluan_pribadi_final);
 
         session = new SessionManager(this);
-        pegawaiId = session.getPegawaiId();
+        userId = session.getPegawaiId();
 
 
         databaseHelper = new DatabaseHelper(this);
@@ -558,7 +558,7 @@ public class KeperluanPribadiFinalActivity extends AppCompatActivity implements 
     }
 
     private void datauser(){
-        Cursor res = databaseHelper.getAllData22(pegawaiId);
+        Cursor res = databaseHelper.getAllData22(userId);
         if (res.getCount()==0){
             showMessage("Error", "Nothing found");
             return;
