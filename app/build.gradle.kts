@@ -81,6 +81,7 @@ dependencies {
     implementation(libs.converter.gson)
     implementation(libs.firebase.bom)
     implementation(libs.swiperefreshlayout)
+    implementation(libs.firebase.messaging)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "459319720893",
+    "project_id": "apppemko",
+    "storage_bucket": "apppemko.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:459319720893:android:cd567324e789472e6d70d4",
+        "android_client_info": {
+          "package_name": "go.pemkott.appsandroidmobiletebingtinggi"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAIeKhR7-E8FrcZbxfoAYau6nFUZZ4WQgs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:459319720893:android:e52af150a9da385b6d70d4",
+        "android_client_info": {
+          "package_name": "go.pemkott.gudut"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAIeKhR7-E8FrcZbxfoAYau6nFUZZ4WQgs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
