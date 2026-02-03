@@ -408,8 +408,6 @@ public class DashboardVersiOne extends AppCompatActivity {
         AppUpdateManager appUpdateManager =
                 AppUpdateManagerFactory.create(this);
 
-        Log.d("UPDATE Versi Aplikasi", "checkAppUpdate DIPANGGIL");
-
         appUpdateManager.getAppUpdateInfo()
                 .addOnSuccessListener(appUpdateInfo -> {
 

@@ -19,7 +19,9 @@ import go.pemkott.appsandroidmobiletebingtinggi.api.HttpService;
 import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
+import go.pemkott.appsandroidmobiletebingtinggi.model.DataEmployee;
 import go.pemkott.appsandroidmobiletebingtinggi.model.Koordinat;
+import go.pemkott.appsandroidmobiletebingtinggi.model.TimeTables;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -49,6 +51,81 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
 
         }
+    }
+
+
+    private void stepPegawai() {
+        HttpService api = RetroClient.getInstance2().getApi2();
+        SessionManager session = new SessionManager(this);
+        String employeeId = session.getEmployeeId();
+        DatabaseHelper db = new DatabaseHelper(this);
+
+        api.dataEmployee(employeeId).enqueue(new Callback<DataEmployee>() {
+            @Override
+            public void onResponse(Call<DataEmployee> call, Response<DataEmployee> res) {
+
+
+                if (res.isSuccessful()){
+                    db.deleteDataUseAll();
+                    DataEmployee d = res.body();
+                    db.insertDataEmployee(
+                            d.getId(), d.getAtasan_id1(), d.getAtasan_id2(),
+                            d.getPosition_id(), d.getOpd_id(), d.getNip(),
+                            d.getNama(), d.getEmail(), d.getNo_hp(),
+                            d.getKelompok(), d.getS_jabatan(), d.getEselon(),
+                            d.getJabatan(), d.getOpd(), d.getAlamat(),
+                            d.getLet(), d.getLng(), d.getFoto(),
+                            d.getAwal_waktu(), String.valueOf(d.getShift())
+                    );
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<DataEmployee> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void stepTimetable() {
+        HttpService api = RetroClient.getInstance2().getApi2();
+        SessionManager session = new SessionManager(this);
+        String employeeId = session.getEmployeeId();
+        String token = session.getToken();
+        DatabaseHelper db = new DatabaseHelper(this);
+        
+        String url = "https://absensi.tebingtinggikota.go.id/api/timetable?employee_id=" + employeeId;
+
+        api.getUrlTimeTable(url, "Bearer " + token,
+                        RequestBody.create("", MediaType.parse("application/json")))
+                .enqueue(new Callback<List<TimeTables>>() {
+
+                    @Override
+                    public void onResponse(Call<List<TimeTables>> call, Response<List<TimeTables>> res) {
+
+                        if (res.isSuccessful()) {
+                            db.deleteTimeTableAll();
+                            for (TimeTables t : res.body()) {
+                                db.insertDataTimeTable(
+                                        String.valueOf(t.getId()),
+                                        t.getEmployee_id(),
+                                        t.getTimetable_id(),
+                                        t.getInisial(),
+                                        String.valueOf(t.getHari()),
+                                        t.getMasuk(),
+                                        t.getPulang()
+                                );
+                            }
+
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<TimeTables>> call, Throwable t) {
+                        
+                    }
+                });
     }
 
 
@@ -90,6 +167,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         if(title.equals("Lokasi")){
             koordinat_e();
+        } else if (title.equals("Jadwal")) {
+            stepTimetable();
+        }else if (title.equals("Data Pegawai")){
+            stepPegawai();
         }
 
         NotificationManager manager =
@@ -103,7 +184,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             );
             manager.createNotificationChannel(channel);
         }
-
 
 
         Notification notification = new NotificationCompat.Builder(this, channelId)
