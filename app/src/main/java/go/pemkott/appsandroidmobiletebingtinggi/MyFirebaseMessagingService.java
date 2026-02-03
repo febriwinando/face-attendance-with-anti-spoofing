@@ -66,7 +66,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
 
                 if (res.isSuccessful()){
-                    db.deleteDataUseAll();
+                    db.deleteDataEmployeeAll();
+
                     DataEmployee d = res.body();
                     db.insertDataEmployee(
                             d.getId(), d.getAtasan_id1(), d.getAtasan_id2(),
