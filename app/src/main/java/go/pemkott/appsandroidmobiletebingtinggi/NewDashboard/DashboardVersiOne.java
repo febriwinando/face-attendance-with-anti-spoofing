@@ -15,11 +15,9 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.location.LocationManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -52,7 +50,7 @@ import com.google.android.play.core.appupdate.AppUpdateManager;
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
 import com.google.android.play.core.install.model.AppUpdateType;
 import com.google.android.play.core.install.model.UpdateAvailability;
-import com.google.firebase.messaging.FirebaseMessaging;
+
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -73,7 +71,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.izin.sakit.SakitActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.izinsift.JadwalIzinSiftActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.kehadiransift.JadwalSiftActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
-import go.pemkott.appsandroidmobiletebingtinggi.model.CheckUpdate;
+
 import go.pemkott.appsandroidmobiletebingtinggi.model.KegiatanIzin;
 import go.pemkott.appsandroidmobiletebingtinggi.model.Koordinat;
 import go.pemkott.appsandroidmobiletebingtinggi.model.ValidasiData;
@@ -101,7 +99,7 @@ public class DashboardVersiOne extends AppCompatActivity {
 
     public static String statusSift, fotoProfile, jam_masuk, jam_pulang, sOPD, sNip, sJabatan, sKantor, sEmployee_id, sUsername, sAkses, sActive,  sToken, sVerifikator, toDay = SIMPLE_FORMAT_TANGGAL.format(new Date());
 
-    TextView tvNamaUser, tvJamPulang, tvJamMasuk, tvTanggalHariIni;
+    TextView tvNamaUser, tvTanggalHariIni;
     public static int jenisabsensi;
     DialogView dialogView = new DialogView(DashboardVersiOne.this);
 
@@ -125,14 +123,10 @@ public class DashboardVersiOne extends AppCompatActivity {
     private static final String LOCATION_PERMISSION =
             Manifest.permission.ACCESS_FINE_LOCATION;
 
-//    private static final String READ_STORAGE_PERMISSION =
-//            Manifest.permission.READ_EXTERNAL_STORAGE;
-
     private static final String READ_STORAGE_PERMISSION =
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
                     ? Manifest.permission.READ_MEDIA_IMAGES
                     : Manifest.permission.READ_EXTERNAL_STORAGE;
-    private AppUpdateManager appUpdateManager;
     private static final int REQ_UPDATE = 2001;
 
 
@@ -146,10 +140,6 @@ public class DashboardVersiOne extends AppCompatActivity {
         window.setStatusBarColor(this.getResources().getColor(R.color.background_color));
         window.setNavigationBarColor(getResources().getColor(R.color.background_color));
         setContentView(R.layout.activity_dashboard_versi_one);
-
-//        createNotificationChannel();
-//        requestNotificationPermission();
-//        requestAppPermissions();
 
 
         createNotificationChannel(); // aman, tidak muncul dialog
@@ -181,11 +171,6 @@ public class DashboardVersiOne extends AppCompatActivity {
 
         httpService = retrofit.create(HttpService.class);
 
-        setUpReferences();
-        setUpReferencesIzin();
-        sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        sheetBehaviorIzin.setState(BottomSheetBehavior.STATE_COLLAPSED);
-
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
         cvKehadiran = findViewById(R.id.cvKehadiran);
         vOpenBottomSheet = findViewById(R.id.vOpenBottomSheet);
@@ -193,8 +178,6 @@ public class DashboardVersiOne extends AppCompatActivity {
         cvKehadiranKantor = findViewById(R.id.cvKehadiranKantor);
         cvTugasLapangan = findViewById(R.id.cvTugasLapangan);
         tvNamaUser = findViewById(R.id.tvNamaUser);
-        tvJamMasuk = findViewById(R.id.tvJamMasuk);
-        tvJamPulang = findViewById(R.id.tvJamPulang);
         ciUser = findViewById(R.id.ciUser);
         cvJadwal = findViewById(R.id.cvJadwal);
         cvLokasi = findViewById(R.id.cvLokasi);
@@ -210,6 +193,10 @@ public class DashboardVersiOne extends AppCompatActivity {
         clVerifikasi = findViewById(R.id.clVerifikasi);
         clCariRekap = findViewById(R.id.clCariRekap);
         tvTanggalHariIni = findViewById(R.id.tvTanggalHariIni);
+
+        setUpReferences();
+        setUpReferencesIzin();
+
 
 
         String tanggal = TANGGAL.format(new Date());
@@ -292,7 +279,6 @@ public class DashboardVersiOne extends AppCompatActivity {
         Glide.with(this)
                 .load( "https://absensi.tebingtinggikota.go.id/storage/"+fotoProfile )
                 .into( ciUser );
-//        showPermissionDialog();
 
         cvJadwal.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -444,8 +430,6 @@ public class DashboardVersiOne extends AppCompatActivity {
                 });
     }
 
-
-
     @Override
     public void onRequestPermissionsResult(
             int requestCode,
@@ -485,8 +469,6 @@ public class DashboardVersiOne extends AppCompatActivity {
             } else {
                 Toast.makeText(this, "Sebagian permission ditolak", Toast.LENGTH_SHORT).show();
             }
-
-
         }
     }
 
@@ -563,26 +545,16 @@ public class DashboardVersiOne extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-
         dataValidasi(sVerifikator, sEmployee_id);
 
-        checkAppUpdate();
-
-//        checkupdate(version);
-
-        tvJamMasuk.setText("--:--");
-        tvJamPulang.setText("--:--");
-
-        createNotificationChannel(); // aman, tidak muncul dialog
-
+        createNotificationChannel();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             requestNotificationPermission();
         } else {
-            requestAppPermissions(); // Android < 13
+            requestAppPermissions();
         }
 
     }
-
 
     public void dataValidasi(String verifikator, String idE){
         if (verifikator.equals("verifikator1") || verifikator.equals("verifikator2")){
@@ -612,37 +584,6 @@ public class DashboardVersiOne extends AppCompatActivity {
 
     }
 
-
-//    public void checkupdate(int version){
-//
-//        Call<List<CheckUpdate>> callCheckUpdate = httpService.getCheckUpdate("https://absensi.tebingtinggikota.go.id/api/updateapp");
-//        callCheckUpdate.enqueue(new Callback<List<CheckUpdate>>() {
-//            @Override
-//            public void onResponse(@NonNull Call<List<CheckUpdate>> call, @NonNull Response<List<CheckUpdate>> response) {
-//                if (!response.isSuccessful()) {
-//                    return;
-//                }
-//                List<CheckUpdate> checkUpdates = response.body();
-//                for (CheckUpdate checkUpdate : checkUpdates) {
-//                    if (checkUpdate.getVersion() > version) {
-//                        final String appPackageName = checkUpdate.getNamapackage();
-//                        try {
-//                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
-//                        } catch (android.content.ActivityNotFoundException anfe) {
-//                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
-//                        }
-//
-//                    }
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(@NonNull Call<List<CheckUpdate>> call, @NonNull Throwable t) {
-//                dialogView.viewNotifKosong(DashboardVersiOne.this, "Gagal menghubungkan, ", "mohon periksa jaringan internet anda.");
-//
-//            }
-//        });
-//    }
 
     public void checkGPS(){
         if(!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
@@ -684,12 +625,6 @@ public class DashboardVersiOne extends AppCompatActivity {
             sActive = res.getString(4);
             sToken = res.getString(5);
             sVerifikator = res.getString(6);
-
-            Log.d("DB_LOGIN", "Employee ID   : " + sEmployee_id);
-            Log.d("DB_LOGIN", "Akses         : " + sAkses);
-            Log.d("DB_LOGIN", "Active        : " + sActive);
-            Log.d("DB_LOGIN", "Token         : " + sToken);
-            Log.d("DB_LOGIN", "Verifikator   : " + sVerifikator);
         }
 
         Cursor dataPegawai = databaseHelper.getDataEmployee(sEmployee_id);
@@ -708,8 +643,8 @@ public class DashboardVersiOne extends AppCompatActivity {
     private void setUpReferences() {
         LinearLayout layoutBottomSheet = findViewById(R.id.bottom_sheet_kehadiran_one);
         sheetBehavior = BottomSheetBehavior.from(layoutBottomSheet);
-
         sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+
         sheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
@@ -718,15 +653,14 @@ public class DashboardVersiOne extends AppCompatActivity {
                     vOpenBottomSheet.startAnimation(fadeInAnimation);
                     vOpenBottomSheet.setVisibility(View.VISIBLE);
                 }else if (newState == BottomSheetBehavior.STATE_COLLAPSED){
-                    vOpenBottomSheet.setVisibility(View.GONE);
-
+                    vOpenBottomSheet.setVisibility(View.INVISIBLE);
                 }
             }
 
             @Override
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
                 if (slideOffset > 0) {
-                    vOpenBottomSheet.setVisibility(View.GONE);
+                    vOpenBottomSheet.setVisibility(View.INVISIBLE);
                 }
             }
         });
@@ -746,7 +680,7 @@ public class DashboardVersiOne extends AppCompatActivity {
                     vOpenBottomSheetIzin.startAnimation(fadeInAnimation);
                     vOpenBottomSheetIzin.setVisibility(View.VISIBLE);
                 }else if (newState == BottomSheetBehavior.STATE_COLLAPSED){
-                    vOpenBottomSheetIzin.setVisibility(View.GONE);
+                    vOpenBottomSheetIzin.setVisibility(View.INVISIBLE);
 
                 }
             }
@@ -754,17 +688,17 @@ public class DashboardVersiOne extends AppCompatActivity {
             @Override
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
                 if (slideOffset > 0) {
-                    vOpenBottomSheetIzin.setVisibility(View.GONE);
+                    vOpenBottomSheetIzin.setVisibility(View.INVISIBLE);
                 }
             }
         });
     }
+
     private void bukaKehadiran() {
             if (sheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
                 sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             } else if (sheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED){
                 sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-
             }
     }
 
