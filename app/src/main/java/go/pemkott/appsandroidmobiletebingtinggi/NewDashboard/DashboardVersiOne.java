@@ -33,6 +33,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -132,7 +133,6 @@ public class DashboardVersiOne extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         Window window = this.getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -193,9 +193,6 @@ public class DashboardVersiOne extends AppCompatActivity {
         clVerifikasi = findViewById(R.id.clVerifikasi);
         clCariRekap = findViewById(R.id.clCariRekap);
         tvTanggalHariIni = findViewById(R.id.tvTanggalHariIni);
-
-        setUpReferences();
-        setUpReferencesIzin();
 
 
 
@@ -374,6 +371,12 @@ public class DashboardVersiOne extends AppCompatActivity {
                 swipeRefreshLayout.setRefreshing(false);
             }
         });
+        setUpReferences();
+        setUpReferencesIzin();
+
+        sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        sheetBehaviorIzin.setState(BottomSheetBehavior.STATE_COLLAPSED);
+
 
     }
 

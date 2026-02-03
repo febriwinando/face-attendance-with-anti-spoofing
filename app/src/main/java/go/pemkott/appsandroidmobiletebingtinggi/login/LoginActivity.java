@@ -148,10 +148,10 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     DialogView dialogView = new DialogView(LoginActivity.this);
-
+    Dialog dialogproses;
     private void login_app(){
 
-        Dialog dialogproses = new Dialog(LoginActivity.this, R.style.DialogStyle);
+        dialogproses = new Dialog(LoginActivity.this, R.style.DialogStyle);
         dialogproses.setContentView(R.layout.view_proses);
         dialogproses.setCancelable(false);
 
@@ -200,7 +200,7 @@ public class LoginActivity extends AppCompatActivity {
 
                             databaseHelper.insertDataUserLogin(sId, sEmployee_id, sUsername, sAkses, sActive, sToken, sVerifikator);
 
-                            dialogproses.dismiss();
+
                             fetchFcmTokenAndSend();
 
                         }else{
@@ -276,6 +276,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
     private void openNextPage() {
+        dialogproses.dismiss();
         Intent intent = new Intent(LoginActivity.this, DownloadDataActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
