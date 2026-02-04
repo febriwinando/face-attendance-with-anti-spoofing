@@ -103,6 +103,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import go.pemkott.appsandroidmobiletebingtinggi.dinasluarkantor.perjalanandinas.PerjalananDinasFinalActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.dinasluarkantor.tugaslapangan.TugasLapanganFinalActivity;
+import go.pemkott.appsandroidmobiletebingtinggi.kehadiran.AbsensiKehadiranActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFoto;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFotoLampiran;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.Lokasi;
@@ -117,7 +118,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapReadyCallback {
-    ProgressDialog progressDialog;
 
     //Gmaps
     private static final int REQUEST_CHECK_SETTINGS = 100;
@@ -301,7 +301,6 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
                         displayName = file.getName();
                         tvSuratPerintah.setText(displayName);
                     }
-                    handlerProgressDialog();
                 }
             }
         });
@@ -462,11 +461,9 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
 
 
     public void kirimdataMasuk(String valid, String status, String ketKehadiran, String jampegawai){
-        Log.d("Log Izin Sakit", "mulai");
-        progressDialog = new ProgressDialog(IzinSakitFinalActivity.this, R.style.AppCompatAlertDialogStyle);
-        progressDialog.setMessage("Sedang memproses...");
-        progressDialog.setCancelable(false);
-        progressDialog.show();
+        Dialog dialogproses = new Dialog(IzinSakitFinalActivity.this, R.style.DialogStyle);
+        dialogproses.setContentView(R.layout.view_proses);
+        dialogproses.setCancelable(false);
 
         byte[] imageBytes = ambilFoto.compressToMax80KB(file);
         MultipartBody.Part fotoPart =
@@ -513,7 +510,7 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
         call.enqueue(new Callback<ResponsePOJO>() {
             @Override
             public void onResponse(@NonNull Call<ResponsePOJO> call, @NonNull Response<ResponsePOJO> response) {
-                progressDialog.dismiss();
+                dialogproses.dismiss();
 
                 if (!response.isSuccessful()) {
 
@@ -540,22 +537,23 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
 
             @Override
             public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
-                progressDialog.dismiss();
+                dialogproses.dismiss();
                 Log.d("Log Izin Sakit", "error: "+t.getMessage());
 
                 dialogView.viewNotifKosong(IzinSakitFinalActivity.this, "Gagal mengisi absensi,", "silahkan coba kembali.");
             }
         });
+
+        dialogproses.show();
     }
 
 
     public void kirimdataPulang(String valid, String status, String ketKehadiran, String jampegawai){
         Log.d("Log Izin Sakit", "mulai");
 
-        progressDialog = new ProgressDialog(IzinSakitFinalActivity.this, R.style.AppCompatAlertDialogStyle);
-        progressDialog.setMessage("Sedang memproses...");
-        progressDialog.setCancelable(false);
-        progressDialog.show();
+        Dialog dialogproses = new Dialog(IzinSakitFinalActivity.this, R.style.DialogStyle);
+        dialogproses.setContentView(R.layout.view_proses);
+        dialogproses.setCancelable(false);
 
 
         byte[] imageBytes = ambilFoto.compressToMax80KB(file);
@@ -602,7 +600,7 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
         call.enqueue(new Callback<ResponsePOJO>() {
             @Override
             public void onResponse(@NonNull Call<ResponsePOJO> call, @NonNull Response<ResponsePOJO> response) {
-                progressDialog.dismiss();
+                dialogproses.dismiss();
 
                 if (!response.isSuccessful()) {
 
@@ -628,11 +626,12 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
 
             @Override
             public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
-                progressDialog.dismiss();
+                dialogproses.dismiss();
                 Log.d("Log Izin Sakit", "error: "+t.getMessage());
                 dialogView.viewNotifKosong(IzinSakitFinalActivity.this, "Gagal mengisi absensi,", "silahkan coba kembali.");
             }
         });
+        dialogproses.show();
     }
 
 
@@ -743,9 +742,7 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
         ImageView ivTutupViewLampiran = dialogLampiran.findViewById(R.id.ivTutupViewLampiran);
 
         llFileManager.setOnClickListener(v -> {
-            progressDialog = new ProgressDialog(IzinSakitFinalActivity.this, R.style.AppCompatAlertDialogStyle);
-            progressDialog.setMessage("Sedang memproses...");
-            progressDialog.show();
+
             Intent i = new Intent();
             i.setType("image/*");
             i.setAction(Intent.ACTION_GET_CONTENT);
@@ -754,9 +751,6 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
         });
 
         llDokumen.setOnClickListener(v -> {
-            progressDialog = new ProgressDialog(IzinSakitFinalActivity.this, R.style.AppCompatAlertDialogStyle);
-            progressDialog.setMessage("Sedang memproses...");
-            progressDialog.show();
 
             Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
             intent.setType("application/pdf");
@@ -822,18 +816,14 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
                 startActivityForResult(intent, 1);
-                progressDialog = new ProgressDialog(IzinSakitFinalActivity.this, R.style.AppCompatAlertDialogStyle);
-                progressDialog.setMessage("Sedang memproses...");
-                progressDialog.show();
+
 
             }else{
 
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
                 startActivityForResult(intent, 2);
-                progressDialog = new ProgressDialog(IzinSakitFinalActivity.this, R.style.AppCompatAlertDialogStyle);
-                progressDialog.setMessage("Sedang memproses...");
-                progressDialog.show();
+
 
             }
 
@@ -863,7 +853,6 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
 
 
                 periksaWaktu();
-                handlerProgressDialog();
 
 
             }
@@ -889,7 +878,6 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
 
                 ekslampiran = "jpg";
 
-                handlerProgressDialog();
 
             }
             else if (requestCode == 33 && resultCode == Activity.RESULT_OK && data != null){
@@ -913,7 +901,6 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
                 ivSuratPerintahFinal.setImageBitmap(preview);
                 ekslampiran = "jpg";
 
-                handlerProgressDialog();
 
             }
             else if (requestCode == 34 && resultCode == RESULT_OK && data != null) {
@@ -925,7 +912,6 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
                 }catch (Exception e){
                     Log.d(TAG, "Exception"+e);
                 }
-                handlerProgressDialog();
 
             }else if (requestCode == REQUEST_CODE_LAMPIRAN) {
 
@@ -946,8 +932,6 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
                 byte[] imageInByte = byteArrayOutputStream.toByteArray();
 
             }
-        }else {
-            progressDialog.dismiss();
         }
     }
     Date tagingTime;
@@ -1222,25 +1206,25 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
         finish();
     }
 
-
-
-    public void handlerProgressDialog(){
-        Handler handler = new Handler();
-        handler.postDelayed(() -> {
-            //your code here
-            progressDialog.dismiss();
-
-        }, 1500);
-    }
-    public void handlerProgressDialog2(){
-        Handler handler = new Handler();
-        handler.postDelayed(() -> {
-            //your code here
-            progressDialog.dismiss();
-            finish();
-
-        }, 1500);
-    }
+//
+//
+//    public void handlerProgressDialog(){
+//        Handler handler = new Handler();
+//        handler.postDelayed(() -> {
+//            //your code here
+//            progressDialog.dismiss();
+//
+//        }, 1500);
+//    }
+//    public void handlerProgressDialog2(){
+//        Handler handler = new Handler();
+//        handler.postDelayed(() -> {
+//            //your code here
+//            progressDialog.dismiss();
+//            finish();
+//
+//        }, 1500);
+//    }
 
     public void showMessage(String title, String Message){
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.ThemeOverlay_App_MaterialAlertDialog);
@@ -1264,7 +1248,6 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
             finish();
         });
 
-        handlerProgressDialog2();
 
         dialogSukes.show();
 

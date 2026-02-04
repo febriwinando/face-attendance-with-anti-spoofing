@@ -46,6 +46,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.api.HttpService;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
+import go.pemkott.appsandroidmobiletebingtinggi.kehadiran.AbsensiKehadiranActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
 import go.pemkott.appsandroidmobiletebingtinggi.model.RekapServer;
 import go.pemkott.appsandroidmobiletebingtinggi.utils.NetworkUtils;
@@ -58,7 +59,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RekapAbsensActivity extends AppCompatActivity {
 
     Dialog persyaratanDialog;
-    ProgressDialog progressDialog;
+
     DatabaseHelper databaseHelper;
     String sEmployee_id, sToken, sVerifikator;
     HttpService holderAPI;
@@ -223,9 +224,9 @@ public class RekapAbsensActivity extends AppCompatActivity {
 
 
     public void dataRekapServer(String idE, String dariTanggal, String sampaiTanggal){
-        progressDialog = new ProgressDialog(RekapAbsensActivity.this, R.style.AppCompatAlertDialogStyle);
-        progressDialog.setMessage("Sedang proses...");
-        progressDialog.show();
+        Dialog dialogproses = new Dialog(RekapAbsensActivity.this, R.style.DialogStyle);
+        dialogproses.setContentView(R.layout.view_proses);
+        dialogproses.setCancelable(false);
         Call<List<RekapServer>> callRekapAbsensi = holderAPI.getUrlRekapServer("https://absensi.tebingtinggikota.go.id/api/rekapserver?id="+idE+"&dtgl="+dariTanggal+"&stgl="+sampaiTanggal);
         callRekapAbsensi.enqueue(new Callback<List<RekapServer>>() {
             @Override
@@ -239,8 +240,7 @@ public class RekapAbsensActivity extends AppCompatActivity {
                 rekapServerAdapter = new RekapServerAdapter(rekapServers, RekapAbsensActivity.this);
                 rvRekapServer.setAdapter(rekapServerAdapter);
                 rekapServerAdapter.setOnItemClickCallback(data -> viewPresensi(data));
-
-                handlerProgressDialog();
+                dialogproses.dismiss();
             }
 
             @Override
@@ -250,16 +250,18 @@ public class RekapAbsensActivity extends AppCompatActivity {
             }
         });
 
+        dialogproses.show();
+
     }
 
-    public void handlerProgressDialog() {
-
-        Handler handler = new Handler();
-        handler.postDelayed(() -> {
-            //your code here
-            progressDialog.dismiss();
-        }, 1000);
-    }
+//    public void handlerProgressDialog() {
+//
+//        Handler handler = new Handler();
+//        handler.postDelayed(() -> {
+//            //your code here
+//            progressDialog.dismiss();
+//        }, 1000);
+//    }
 
     @SuppressLint("SetJavaScriptEnabled")
     public void viewPresensi(RekapServer data){

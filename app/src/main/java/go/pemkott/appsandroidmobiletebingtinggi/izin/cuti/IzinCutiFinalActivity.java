@@ -100,6 +100,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraxActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import go.pemkott.appsandroidmobiletebingtinggi.dinasluarkantor.perjalanandinas.PerjalananDinasFinalActivity;
+import go.pemkott.appsandroidmobiletebingtinggi.kehadiran.AbsensiKehadiranActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFoto;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFotoLampiran;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.Lokasi;
@@ -114,7 +115,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapReadyCallback {
-    ProgressDialog progressDialog;
 
     //Gmaps
     private static final int REQUEST_CHECK_SETTINGS = 100;
@@ -292,7 +292,7 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
                         displayName = file.getName();
                         tvSuratPerintah.setText(displayName);
                     }
-                    handlerProgressDialog();
+                    
                 }
             }
         });
@@ -398,10 +398,9 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
         );
     }
     public void kirimdata(String valid, String posisi, String status){
-
-        progressDialog = new ProgressDialog(IzinCutiFinalActivity.this, R.style.AppCompatAlertDialogStyle);
-        progressDialog.setMessage("Sedang memproses...");
-        progressDialog.setCancelable(false);
+        Dialog dialogproses = new Dialog(IzinCutiFinalActivity.this, R.style.DialogStyle);
+        dialogproses.setContentView(R.layout.view_proses);
+        dialogproses.setCancelable(false);
 
         byte[] imageBytes = ambilFoto.compressToMax80KB(file);
         MultipartBody.Part fotoPart =
@@ -441,7 +440,7 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
         call.enqueue(new Callback<ResponsePOJO>() {
             @Override
             public void onResponse(@NonNull Call<ResponsePOJO> call, @NonNull Response<ResponsePOJO> response) {
-                progressDialog.dismiss();
+                dialogproses.dismiss();
 
                 if (!response.isSuccessful()) {
 
@@ -466,11 +465,11 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
 
             @Override
             public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
-                progressDialog.dismiss();
+                dialogproses.dismiss();
                 dialogView.pesanError(IzinCutiFinalActivity.this);
             }
         });
-        progressDialog.show();
+        dialogproses.show();
 
     }
 
@@ -579,9 +578,6 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
         llFileManager.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                progressDialog = new ProgressDialog(IzinCutiFinalActivity.this, R.style.AppCompatAlertDialogStyle);
-                progressDialog.setMessage("Sedang memproses...");
-                progressDialog.show();
 
                 Intent i = new Intent();
                 i.setType("image/*");
@@ -595,9 +591,6 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
         llDokumen.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                progressDialog = new ProgressDialog(IzinCutiFinalActivity.this, R.style.AppCompatAlertDialogStyle);
-                progressDialog.setMessage("Sedang memproses...");
-                progressDialog.show();
 
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                 intent.setType("application/pdf");
@@ -679,7 +672,6 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
                 byte[] imageInByte = byteArrayOutputStream.toByteArray();
 
                 periksaWaktu();
-                handlerProgressDialog();
 
 
             }
@@ -699,7 +691,7 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
                 byte[] imageInByte = byteArrayOutputStream.toByteArray();
                 ekslampiran = "jpg";
 
-                handlerProgressDialog();
+
             }
             else if (requestCode == 33 && resultCode == Activity.RESULT_OK && data != null){
                 requestPermission();
@@ -722,7 +714,7 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
                 ivSuratPerintahFinal.setImageBitmap(preview);
                 ekslampiran = "jpg";
 
-                handlerProgressDialog();
+
 
             }
             else if (requestCode == 34 && resultCode == RESULT_OK && data != null) {
@@ -734,7 +726,7 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
                 }catch (Exception e){
                     Log.d(TAG, "Exception"+e);
                 }
-                handlerProgressDialog();
+
 
             }else if (requestCode == REQUEST_CODE_LAMPIRAN) {
 
@@ -752,11 +744,9 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
                 Bitmap selectedBitmap = ambilFoto.compressBitmapTo80KB(filelampiran);
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 selectedBitmap.compress(Bitmap.CompressFormat.JPEG,90, byteArrayOutputStream);
-                byte[] imageInByte = byteArrayOutputStream.toByteArray();
+
 
             }
-        }else {
-            progressDialog.dismiss();
         }
     }
 
@@ -1167,26 +1157,25 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
             finish();
         });
 
-        handlerProgressDialog2();
         dialogSukes.show();
 
     }
-    public void handlerProgressDialog(){
-        Handler handler = new Handler();
-        handler.postDelayed(() -> {
-            //your code here
-            progressDialog.dismiss();
-        }, 1500);
-    }
-
-    public void handlerProgressDialog2(){
-        Handler handler = new Handler();
-        handler.postDelayed(() -> {
-            //your code here
-            progressDialog.dismiss();
-            finish();
-        }, 1500);
-    }
+//    public void handlerProgressDialog(){
+//        Handler handler = new Handler();
+//        handler.postDelayed(() -> {
+//            //your code here
+//            progressDialog.dismiss();
+//        }, 1500);
+//    }
+//
+//    public void handlerProgressDialog2(){
+//        Handler handler = new Handler();
+//        handler.postDelayed(() -> {
+//            //your code here
+//            progressDialog.dismiss();
+//            finish();
+//        }, 1500);
+//    }
 
     @Override
     protected void onStop() {

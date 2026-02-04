@@ -40,6 +40,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import go.pemkott.appsandroidmobiletebingtinggi.izinsift.izinsiftcuti.CutiSiftActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.izinsift.izinsiftpribadi.KeperluanPribadiSiftActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.izinsift.izinsiftsakit.SakitSiftActivity;
+import go.pemkott.appsandroidmobiletebingtinggi.kehadiran.AbsensiKehadiranActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.kehadiransift.JadwalSiftActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat;
 import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
@@ -72,7 +73,6 @@ public class JadwalIzinSiftActivity extends AppCompatActivity {
     String jam_masuk, jam_pulang;
     public static AppCompatActivity jadwalIzinSiftActivity ;
     HttpService holderAPI;
-    ProgressDialog progressDialog;
     ImageView ivSyncJadwalSift;
     String bulan = BULAN.format(new Date());
     String tahun = TAHUN.format(new Date());
@@ -472,9 +472,9 @@ public class JadwalIzinSiftActivity extends AppCompatActivity {
     }
 
     public void unduhJadwalSift(int status){
-        progressDialog = new ProgressDialog(JadwalIzinSiftActivity.this, R.style.AppCompatAlertDialogStyle);
-        progressDialog.setMessage("Sedang proses...");
-        progressDialog.show();
+        Dialog dialogproses = new Dialog(JadwalIzinSiftActivity.this, R.style.DialogStyle);
+        dialogproses.setContentView(R.layout.view_proses);
+        dialogproses.setCancelable(false);
 
         if (status == 1){
             databaseHelper.deleteJadwalSift(sEmployeID, bulan, tahun);
@@ -484,9 +484,10 @@ public class JadwalIzinSiftActivity extends AppCompatActivity {
         jadwalSiftPegawai.enqueue(new Callback<ArrayList<JadwalSift>>() {
             @Override
             public void onResponse(@NonNull Call<ArrayList<JadwalSift>> call, @NonNull Response<ArrayList<JadwalSift>> response) {
+                dialogproses.dismiss();
                 if (!response.isSuccessful()){
                     dialogView.viewNotifKosong(JadwalIzinSiftActivity.this, "Gagal mengunduh Jadwal Sift.","Silahkan coba kembali.");
-                    progressDialog.dismiss();
+
                 }
 
                 ArrayList<JadwalSift> jadwalSifts = response.body();
@@ -507,17 +508,18 @@ public class JadwalIzinSiftActivity extends AppCompatActivity {
                     }
                 }
 
-                progressDialog.dismiss();
 
             }
 
             @Override
             public void onFailure(@NonNull Call<ArrayList<JadwalSift>> call, @NonNull Throwable t) {
-                progressDialog.dismiss();
+                dialogproses.dismiss();
                 dialogView.viewNotifKosong(JadwalIzinSiftActivity.this, "Gagal mengakses server.", "Silahkan coba kembali.");
 
             }
         });
+
+        dialogproses.show();
 
 
     }

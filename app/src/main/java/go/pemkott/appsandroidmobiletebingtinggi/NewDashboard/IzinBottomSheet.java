@@ -67,7 +67,6 @@ public class IzinBottomSheet extends BottomSheetDialogFragment {
     public void onStart() {
         super.onStart();
 
-        // Pastikan bottom sheet langsung expanded (UX lebih enak)
         View view = getView();
         if (view != null) {
             View parent = (View) view.getParent();

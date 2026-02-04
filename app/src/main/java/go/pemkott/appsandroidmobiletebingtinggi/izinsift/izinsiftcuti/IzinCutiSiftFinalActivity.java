@@ -172,7 +172,7 @@ public class IzinCutiSiftFinalActivity extends AppCompatActivity implements OnMa
     int mock_location = 0;
     FragmentContainerView fragmentContainerView;
     LocationRequest locationRequest;
-    ProgressDialog progressDialog;
+
 
     File file, filelampiran;
     SessionManager session;
@@ -446,9 +446,9 @@ public class IzinCutiSiftFinalActivity extends AppCompatActivity implements OnMa
         );
     }
     public void kirimdata(String valid, String posisi, String status){
-        progressDialog = new ProgressDialog(IzinCutiSiftFinalActivity.this, R.style.AppCompatAlertDialogStyle);
-        progressDialog.setMessage("Sedang memproses...");
-        progressDialog.setCancelable(false);
+        Dialog dialogproses = new Dialog(IzinCutiSiftFinalActivity.this, R.style.DialogStyle);
+        dialogproses.setContentView(R.layout.view_proses);
+        dialogproses.setCancelable(false);
 
 
         byte[] imageBytes = ambilFoto.compressToMax80KB(file);
@@ -509,7 +509,7 @@ public class IzinCutiSiftFinalActivity extends AppCompatActivity implements OnMa
         call.enqueue(new Callback<ResponsePOJO>() {
             @Override
             public void onResponse(@NonNull Call<ResponsePOJO> call, @NonNull Response<ResponsePOJO> response) {
-                progressDialog.dismiss();
+                dialogproses.dismiss();
 
                 if (!response.isSuccessful()) {
 
@@ -534,12 +534,12 @@ public class IzinCutiSiftFinalActivity extends AppCompatActivity implements OnMa
 
             @Override
             public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
-                progressDialog.dismiss();
+                dialogproses.dismiss();
                 dialogView.pesanError(IzinCutiSiftFinalActivity.this);
             }
         });
 
-        progressDialog.show();
+        dialogproses.show();
 
     }
 

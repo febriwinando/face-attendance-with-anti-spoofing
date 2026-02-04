@@ -12,6 +12,7 @@ import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.loca
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;

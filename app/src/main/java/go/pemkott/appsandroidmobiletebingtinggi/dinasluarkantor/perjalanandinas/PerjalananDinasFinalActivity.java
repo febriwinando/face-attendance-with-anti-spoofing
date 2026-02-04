@@ -113,7 +113,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class PerjalananDinasFinalActivity extends AppCompatActivity implements OnMapReadyCallback {
-    ProgressDialog progressDialog;
 
     //Gmaps
     private static final int REQUEST_CHECK_SETTINGS = 100;
@@ -298,7 +297,7 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
                         displayName = file.getName();
                         tvSuratPerintah.setText(displayName);
                     }
-                    handlerProgressDialog();
+
                 }
             }
         });
@@ -466,9 +465,7 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
         ImageView ivTutupViewLampiran = dialogLampiran.findViewById(R.id.ivTutupViewLampiran);
 
         llFileManager.setOnClickListener(v -> {
-            progressDialog = new ProgressDialog(PerjalananDinasFinalActivity.this, R.style.AppCompatAlertDialogStyle);
-            progressDialog.setMessage("Sedang memproses...");
-            progressDialog.show();
+
             Intent i = new Intent();
             i.setType("image/*");
             i.setAction(Intent.ACTION_GET_CONTENT);
@@ -477,9 +474,7 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
         });
 
         llDokumen.setOnClickListener(v -> {
-            progressDialog = new ProgressDialog(PerjalananDinasFinalActivity.this, R.style.AppCompatAlertDialogStyle);
-            progressDialog.setMessage("Sedang memproses...");
-            progressDialog.show();
+
 
             Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
             intent.setType("application/pdf");
@@ -559,7 +554,7 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
 //                fotoTaging =  Base64.encodeToString(imageInByte,Base64.DEFAULT);
 
                 periksaWaktu();
-                handlerProgressDialog();
+
 
             }
             else if (requestCode == 2 && resultCode == RESULT_OK){
@@ -579,7 +574,7 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
                 rotationBitmapSurat.compress(Bitmap.CompressFormat.JPEG,90, byteArrayOutputStream);
                 byte[] imageInByte = byteArrayOutputStream.toByteArray();
                 ekslampiran = "jpg";
-                handlerProgressDialog();
+
 
             }
             else if (requestCode == 33 && resultCode == Activity.RESULT_OK && data != null){
@@ -604,7 +599,7 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
                 ivSuratPerintahFinal.setImageBitmap(preview);
 
                 ekslampiran = "jpg";
-                handlerProgressDialog();
+
 
             }
             else if (requestCode == 34 && resultCode == RESULT_OK && data != null) {
@@ -617,7 +612,7 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
                 }catch (Exception e){
                     Log.d(TAG, "Exception"+e);
                 }
-                handlerProgressDialog();
+
             }else if (requestCode == REQUEST_CODE_LAMPIRAN) {
 
                 llLampiranDinasLuar.setVisibility(View.VISIBLE);
@@ -637,8 +632,6 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
                 byte[] imageInByte = byteArrayOutputStream.toByteArray();
 
             }
-        }else {
-            progressDialog.dismiss();
         }
 
     }
@@ -1189,27 +1182,26 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
             finish();
         });
 
-        handlerProgressDialog2();
         dialogSukes.show();
 
     }
 
-    public void handlerProgressDialog(){
-        Handler handler = new Handler();
-        handler.postDelayed(() -> {
-            //your code here
-            progressDialog.dismiss();
-        }, 1500);
-    }
-
-    public void handlerProgressDialog2(){
-        Handler handler = new Handler();
-        handler.postDelayed(() -> {
-            //your code here
-            progressDialog.dismiss();
-            finish();
-        }, 1500);
-    }
+//    public void handlerProgressDialog(){
+//        Handler handler = new Handler();
+//        handler.postDelayed(() -> {
+//            //your code here
+//            progressDialog.dismiss();
+//        }, 1500);
+//    }
+//
+//    public void handlerProgressDialog2(){
+//        Handler handler = new Handler();
+//        handler.postDelayed(() -> {
+//            //your code here
+//            progressDialog.dismiss();
+//            finish();
+//        }, 1500);
+//    }
     @Override
     protected void onStop() {
         super.onStop();

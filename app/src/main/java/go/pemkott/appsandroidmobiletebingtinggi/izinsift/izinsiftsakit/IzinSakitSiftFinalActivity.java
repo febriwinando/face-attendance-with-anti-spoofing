@@ -94,6 +94,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import go.pemkott.appsandroidmobiletebingtinggi.izin.sakit.IzinSakitFinalActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.izinsift.JadwalIzinSiftActivity;
+import go.pemkott.appsandroidmobiletebingtinggi.kehadiran.AbsensiKehadiranActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFoto;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFotoLampiran;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.Lokasi;
@@ -484,12 +485,10 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
         );
     }
 
-    ProgressDialog progressDialog;
     public void kirimdataMasuk(String valid, String status, String ketKehadiran, String jampegawai){
-        progressDialog = new ProgressDialog(IzinSakitSiftFinalActivity.this, R.style.AppCompatAlertDialogStyle);
-        progressDialog.setMessage("Sedang memproses...");
-        progressDialog.setCancelable(false);
-        progressDialog.show();
+        Dialog dialogproses = new Dialog(IzinSakitSiftFinalActivity.this, R.style.DialogStyle);
+        dialogproses.setContentView(R.layout.view_proses);
+        dialogproses.setCancelable(false);
 
         Log.d("ABSEN_MASUK_PAGI", "Masuk absen kirim data");
 
@@ -509,67 +508,40 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
             lampiranPart = prepareFilePart("lampiran", imageBytesLampiran);
             Log.d("TugasLapanganFinalActivity", "JPG");
         }
-        Log.d("IZIN_SAKIT_SHIFT", "========== REQUEST IZIN SAKIT SHIFT MASUK ==========");
+//        Log.d("IZIN_SAKIT_SHIFT", "========== REQUEST IZIN SAKIT SHIFT MASUK ==========");
+//
+//        Log.d("IZIN_SAKIT_SHIFT", "fotoPart        : " + (fotoPart != null ? "ADA" : "NULL"));
+//        Log.d("IZIN_SAKIT_SHIFT", "lampiranPart    : " + (lampiranPart != null ? "ADA" : "NULL"));
+//
+//        Log.d("IZIN_SAKIT_SHIFT", "ketKehadiran    : " + String.valueOf(ketKehadiran));
+//        Log.d("IZIN_SAKIT_SHIFT", "eJabatan        : " + String.valueOf(eJabatan));
+//        Log.d("IZIN_SAKIT_SHIFT", "employee_id     : " + String.valueOf(sEmployeID));
+//        Log.d("IZIN_SAKIT_SHIFT", "timetable_id    : " + String.valueOf(timetableid));
+//        Log.d("IZIN_SAKIT_SHIFT", "tanggal         : " + String.valueOf(rbTanggal));
+//        Log.d("IZIN_SAKIT_SHIFT", "jam_masuk       : " + String.valueOf(rbJam));
+//
+//        Log.d("IZIN_SAKIT_SHIFT", "absensi         : sk");
+//        Log.d("IZIN_SAKIT_SHIFT", "status_masuk    : " + String.valueOf(status));
+//        Log.d("IZIN_SAKIT_SHIFT", "lat             : " + String.valueOf(rbLat));
+//        Log.d("IZIN_SAKIT_SHIFT", "lng             : " + String.valueOf(rbLng));
+//        Log.d("IZIN_SAKIT_SHIFT", "keterangan      : " + String.valueOf(rbKet));
+//
+//        Log.d("IZIN_SAKIT_SHIFT", "terlambat(min)  : " + String.valueOf(mins));
+//        Log.d("IZIN_SAKIT_SHIFT", "opd             : " + String.valueOf(eOPD));
+//        Log.d("IZIN_SAKIT_SHIFT", "jam_kantor      : " + String.valueOf(jampegawai));
+//        Log.d("IZIN_SAKIT_SHIFT", "valid_masuk     : " + String.valueOf(valid));
+//
+//        Log.d("IZIN_SAKIT_SHIFT", "ekslampiran     : " + String.valueOf(ekslampiran));
+//        Log.d("IZIN_SAKIT_SHIFT", "fakegps         : " + String.valueOf(rbFakeGPS));
+//
+//        Log.d("IZIN_SAKIT_SHIFT", "idsift          : " + String.valueOf(idsift));
+//        Log.d("IZIN_SAKIT_SHIFT", "inisialsift     : " + String.valueOf(inisialsift));
+//        Log.d("IZIN_SAKIT_SHIFT", "tipesift        : " + String.valueOf(tipesift));
+//        Log.d("IZIN_SAKIT_SHIFT", "masuksift       : " + String.valueOf(masuksift));
+//        Log.d("IZIN_SAKIT_SHIFT", "pulangsift      : " + String.valueOf(pulangsift));
+//
+//        Log.d("IZIN_SAKIT_SHIFT", "====================================================");
 
-        Log.d("IZIN_SAKIT_SHIFT", "fotoPart        : " + (fotoPart != null ? "ADA" : "NULL"));
-        Log.d("IZIN_SAKIT_SHIFT", "lampiranPart    : " + (lampiranPart != null ? "ADA" : "NULL"));
-
-        Log.d("IZIN_SAKIT_SHIFT", "ketKehadiran    : " + String.valueOf(ketKehadiran));
-        Log.d("IZIN_SAKIT_SHIFT", "eJabatan        : " + String.valueOf(eJabatan));
-        Log.d("IZIN_SAKIT_SHIFT", "employee_id     : " + String.valueOf(sEmployeID));
-        Log.d("IZIN_SAKIT_SHIFT", "timetable_id    : " + String.valueOf(timetableid));
-        Log.d("IZIN_SAKIT_SHIFT", "tanggal         : " + String.valueOf(rbTanggal));
-        Log.d("IZIN_SAKIT_SHIFT", "jam_masuk       : " + String.valueOf(rbJam));
-
-        Log.d("IZIN_SAKIT_SHIFT", "absensi         : sk");
-        Log.d("IZIN_SAKIT_SHIFT", "status_masuk    : " + String.valueOf(status));
-        Log.d("IZIN_SAKIT_SHIFT", "lat             : " + String.valueOf(rbLat));
-        Log.d("IZIN_SAKIT_SHIFT", "lng             : " + String.valueOf(rbLng));
-        Log.d("IZIN_SAKIT_SHIFT", "keterangan      : " + String.valueOf(rbKet));
-
-        Log.d("IZIN_SAKIT_SHIFT", "terlambat(min)  : " + String.valueOf(mins));
-        Log.d("IZIN_SAKIT_SHIFT", "opd             : " + String.valueOf(eOPD));
-        Log.d("IZIN_SAKIT_SHIFT", "jam_kantor      : " + String.valueOf(jampegawai));
-        Log.d("IZIN_SAKIT_SHIFT", "valid_masuk     : " + String.valueOf(valid));
-
-        Log.d("IZIN_SAKIT_SHIFT", "ekslampiran     : " + String.valueOf(ekslampiran));
-        Log.d("IZIN_SAKIT_SHIFT", "fakegps         : " + String.valueOf(rbFakeGPS));
-
-        Log.d("IZIN_SAKIT_SHIFT", "idsift          : " + String.valueOf(idsift));
-        Log.d("IZIN_SAKIT_SHIFT", "inisialsift     : " + String.valueOf(inisialsift));
-        Log.d("IZIN_SAKIT_SHIFT", "tipesift        : " + String.valueOf(tipesift));
-        Log.d("IZIN_SAKIT_SHIFT", "masuksift       : " + String.valueOf(masuksift));
-        Log.d("IZIN_SAKIT_SHIFT", "pulangsift      : " + String.valueOf(pulangsift));
-
-        Log.d("IZIN_SAKIT_SHIFT", "====================================================");
-
-
-//        Call<ResponsePOJO> call =
-//                RetroClient.getInstance().getApi().uploadizinsakitsiftmasuk(
-//                        fotoPart,
-//                        textPart(ketKehadiran),
-//                        textPart(eJabatan),
-//                        textPart(sEmployeID),
-//                        textPart(rbTanggal),
-//                        textPart(rbJam),
-//                        textPart("sk"),
-//                        textPart(status),
-//                        textPart(rbLat),
-//                        textPart(rbLng),
-//                        textPart(rbKet),
-//                        textPart(String.valueOf(mins)),
-//                        textPart(eOPD),
-//                        textPart(jampegawai),
-//                        textPart(valid),
-//                        lampiranPart,
-//                        textPart(ekslampiran),
-//                        textPart(rbFakeGPS),
-//                        textPart(idsift),
-//                        textPart(inisialsift),
-//                        textPart(tipesift),
-//                        textPart(masuksift),
-//                        textPart(pulangsift)
-//                );
 
         Call<ResponsePOJO> call =
                 RetroClient.getInstance().getApi().uploadizinsakitsiftmasuk(
@@ -593,7 +565,7 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
         call.enqueue(new Callback<ResponsePOJO>() {
             @Override
             public void onResponse(@NonNull Call<ResponsePOJO> call, @NonNull Response<ResponsePOJO> response) {
-                progressDialog.dismiss();
+                dialogproses.dismiss();
 
                 if (!response.isSuccessful()) {
 
@@ -620,22 +592,23 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
 
             @Override
             public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
-                progressDialog.dismiss();
+                dialogproses.dismiss();
                 Log.d("Log Izin Sakit", "error: "+t.getMessage());
 
                 dialogView.viewNotifKosong(IzinSakitSiftFinalActivity.this, "Gagal mengisi absensi,", "silahkan coba kembali.");
             }
         });
+
+        dialogproses.show();
     }
 
 
     public void kirimdataPulang(String valid, String status, String ketKehadiran, String jampegawai){
         Log.d("Log Izin Sakit", "mulai");
 
-        progressDialog = new ProgressDialog(IzinSakitSiftFinalActivity.this, R.style.AppCompatAlertDialogStyle);
-        progressDialog.setMessage("Sedang memproses...");
-        progressDialog.setCancelable(false);
-        progressDialog.show();
+        Dialog dialogproses = new Dialog(IzinSakitSiftFinalActivity.this, R.style.DialogStyle);
+        dialogproses.setContentView(R.layout.view_proses);
+        dialogproses.setCancelable(false);
 
 
         byte[] imageBytes = ambilFoto.compressToMax80KB(file);
@@ -687,7 +660,7 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
         call.enqueue(new Callback<ResponsePOJO>() {
             @Override
             public void onResponse(@NonNull Call<ResponsePOJO> call, @NonNull Response<ResponsePOJO> response) {
-                progressDialog.dismiss();
+                dialogproses.dismiss();
 
                 if (!response.isSuccessful()) {
 
@@ -713,11 +686,13 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
 
             @Override
             public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
-                progressDialog.dismiss();
+                dialogproses.dismiss();
                 Log.d("Log Izin Sakit", "error: "+t.getMessage());
                 dialogView.viewNotifKosong(IzinSakitSiftFinalActivity.this, "Gagal mengisi absensi,", "silahkan coba kembali.");
             }
         });
+
+        dialogproses.show();
     }
 
     public void hitungjarak(){

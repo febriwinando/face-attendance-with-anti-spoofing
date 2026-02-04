@@ -98,6 +98,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraXLActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import go.pemkott.appsandroidmobiletebingtinggi.geolocation.GetLocation;
+import go.pemkott.appsandroidmobiletebingtinggi.kehadiran.AbsensiKehadiranActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFoto;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFotoLampiran;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.Lokasi;
@@ -112,7 +113,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class TugasLapanganFinalActivity extends AppCompatActivity implements OnMapReadyCallback {
-    ProgressDialog progressDialog;
 
     //Gmaps
     private static final int REQUEST_CHECK_SETTINGS = 100;
@@ -299,7 +299,6 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
                         displayName = file.getName();
                         tvSuratPerintah.setText(displayName);
                     }
-                    handlerProgressDialog();
                 }
             }
         });
@@ -451,10 +450,10 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
         );
     }
     public void kirimdataMasuk(String valid, String posisi, String status, String ketKehadiran, String jampegawai){
-        progressDialog = new ProgressDialog(TugasLapanganFinalActivity.this, R.style.AppCompatAlertDialogStyle);
-        progressDialog.setMessage("Sedang memproses...");
-        progressDialog.setCancelable(false);
-        progressDialog.show();
+        Dialog dialogproses = new Dialog(TugasLapanganFinalActivity.this, R.style.DialogStyle);
+        dialogproses.setContentView(R.layout.view_proses);
+        dialogproses.setCancelable(false);
+
         byte[] imageBytes = ambilFoto.compressToMax80KB(file);
         MultipartBody.Part fotoPart =
                 prepareFilePart("fototaging", imageBytes);
@@ -501,7 +500,8 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
         call.enqueue(new Callback<ResponsePOJO>() {
             @Override
             public void onResponse(@NonNull Call<ResponsePOJO> call, @NonNull Response<ResponsePOJO> response) {
-                progressDialog.dismiss();
+
+                dialogproses.dismiss();
                 if (!response.isSuccessful()) {
 
                     dialogView.viewNotifKosong(
@@ -527,20 +527,21 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
 
             @Override
             public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
-                progressDialog.dismiss();
+                dialogproses.dismiss();
                 Log.d("Absensi TL Log", "gagal: "+t.getMessage());
 
                 dialogView.pesanError(TugasLapanganFinalActivity.this);
 
             }
         });
+
+        dialogproses.show();
     }
 
     public void kirimdataPulang(String valid, String posisi, String status, String ketKehadiran, String jampegawai){
-        progressDialog = new ProgressDialog(TugasLapanganFinalActivity.this, R.style.AppCompatAlertDialogStyle);
-        progressDialog.setMessage("Sedang memproses...");
-        progressDialog.setCancelable(false);
-        progressDialog.show();
+        Dialog dialogproses = new Dialog(TugasLapanganFinalActivity.this, R.style.DialogStyle);
+        dialogproses.setContentView(R.layout.view_proses);
+        dialogproses.setCancelable(false);
         byte[] imageBytes = ambilFoto.compressToMax80KB(file);
         MultipartBody.Part fotoPart =
                 prepareFilePart("fototaging", imageBytes);
@@ -587,7 +588,7 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
             @Override
             public void onResponse(@NonNull Call<ResponsePOJO> call, @NonNull Response<ResponsePOJO> response) {
                 Log.d("Absen TL", ekslampiran);
-                progressDialog.dismiss();
+                dialogproses.dismiss();
                 if (!response.isSuccessful()) {
 
                     dialogView.viewNotifKosong(
@@ -611,7 +612,7 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
 
             @Override
             public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
-                progressDialog.dismiss();
+                dialogproses.dismiss();
                 dialogView.pesanError(TugasLapanganFinalActivity.this);
 
 
@@ -727,9 +728,7 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
         ImageView ivTutupViewLampiran = dialogLampiran.findViewById(R.id.ivTutupViewLampiran);
 
         llFileManager.setOnClickListener(v -> {
-            progressDialog = new ProgressDialog(TugasLapanganFinalActivity.this, R.style.AppCompatAlertDialogStyle);
-            progressDialog.setMessage("Sedang memproses...");
-            progressDialog.show();
+
             Intent i = new Intent();
             i.setType("image/*");
             i.setAction(Intent.ACTION_GET_CONTENT);
@@ -740,9 +739,7 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
         llDokumen.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                progressDialog = new ProgressDialog(TugasLapanganFinalActivity.this, R.style.AppCompatAlertDialogStyle);
-                progressDialog.setMessage("Sedang memproses...");
-                progressDialog.show();
+
 
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                 intent.setType("application/pdf");
@@ -808,18 +805,13 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
                 startActivityForResult(intent, 1);
-                progressDialog = new ProgressDialog(TugasLapanganFinalActivity.this, R.style.AppCompatAlertDialogStyle);
-                progressDialog.setMessage("Sedang memproses...");
-                progressDialog.show();
+
 
             }else{
 
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
                 startActivityForResult(intent, 2);
-                progressDialog = new ProgressDialog(TugasLapanganFinalActivity.this, R.style.AppCompatAlertDialogStyle);
-                progressDialog.setMessage("Sedang memproses...");
-                progressDialog.show();
 
             }
 
@@ -851,7 +843,6 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
 //                fotoTaging =  Base64.encodeToString(imageInByte,Base64.DEFAULT);
 
                 periksaWaktu();
-                handlerProgressDialog();
 
             }
             else if (requestCode == 2 && resultCode == RESULT_OK){
@@ -872,7 +863,6 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
 //                lampiran =  Base64.encodeToString(imageInByte,Base64.DEFAULT);
                 ekslampiran = "jpg";
 
-                handlerProgressDialog();
             }
             else if (requestCode == 33 && resultCode == Activity.RESULT_OK && data != null){
                 requestPermission();
@@ -904,7 +894,6 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
 //                ivSuratPerintahFinal.setImageBitmap(preview);
                 ekslampiran = "jpg";
 
-                handlerProgressDialog();
             }
             else if (requestCode == 34 && resultCode == RESULT_OK && data != null) {
                 requestPermission();
@@ -915,7 +904,6 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
                 }catch (Exception e){
                     Log.d(TAG, "Exception"+e);
                 }
-                handlerProgressDialog();
             }
 //            else if (requestCode == REQUEST_CODE_LAMPIRAN) {
 //
@@ -937,8 +925,6 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
 //                lampiran =  Base64.encodeToString(imageInByte,Base64.DEFAULT);
 //
 //            }
-        }else {
-            progressDialog.dismiss();
         }
 
 
@@ -1067,24 +1053,24 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
     }
 
 
-    public void handlerProgressDialog(){
-        Handler handler = new Handler();
-        handler.postDelayed(() -> {
-            //your code here
-            progressDialog.dismiss();
-
-        }, 1500);
-    }
-
-    public void handlerProgressDialog2(){
-        Handler handler = new Handler();
-        handler.postDelayed(() -> {
-            //your code here
-            progressDialog.dismiss();
-            finish();
-
-        }, 1500);
-    }
+//    public void handlerProgressDialog(){
+//        Handler handler = new Handler();
+//        handler.postDelayed(() -> {
+//            //your code here
+//            progressDialog.dismiss();
+//
+//        }, 1500);
+//    }
+//
+//    public void handlerProgressDialog2(){
+//        Handler handler = new Handler();
+//        handler.postDelayed(() -> {
+//            //your code here
+//            progressDialog.dismiss();
+//            finish();
+//
+//        }, 1500);
+//    }
 
     public void showMessage(String title, String Message){
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.ThemeOverlay_App_MaterialAlertDialog);
@@ -1108,7 +1094,6 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
             finish();
         });
 
-        handlerProgressDialog2();
         dialogSukes.show();
 
     }
