@@ -13,9 +13,8 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="5dp"
         >
-
 
         <ImageView
             android:layout_alignParentLeft="true"
@@ -49,7 +48,8 @@
         android:text="VERIFIKATOR PERTAMA"
         android:textSize="16sp"
         android:padding="5dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="5dp"
         android:textColor="@color/putih"
         android:visibility="gone"
         />
@@ -77,7 +77,8 @@
         android:text="VERIFIKATOR KEDUA"
         android:textSize="16sp"
         android:padding="5dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="5dp"
         android:textColor="@color/putih"
         android:visibility="gone"
         />

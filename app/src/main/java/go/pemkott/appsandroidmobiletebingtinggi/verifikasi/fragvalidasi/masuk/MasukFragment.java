@@ -262,7 +262,6 @@ public class MasukFragment extends Fragment {
             fotolampiran.setVisibility(View.GONE);
             tagLampiranMasuk.setVisibility(View.GONE);
         }else{
-            if(NetworkUtils.isConnected(getActivity())){
 
                 if (data.getEkstensi_masuk().equals("img")){
                 Glide.with(this)
@@ -271,17 +270,17 @@ public class MasukFragment extends Fragment {
                 fotolampiran.setVisibility(View.VISIBLE);
 
                 }else{
-                        viewLampiranpdf.setVisibility(View.VISIBLE);
-                        fotolampiran.setVisibility(View.GONE);
-                        String pdfurl="https://absensi.tebingtinggikota.go.id/uploads-img-lampiran/"+data.getLampiran_masuk();
-                        viewLampiranpdf.loadUrl("https://docs.google.com/gview?embedded=true&url="+pdfurl);
-                        viewLampiranpdf.setWebViewClient(new WebViewClient());
-                        viewLampiranpdf.getSettings().setSupportZoom(true);
-                        viewLampiranpdf.getProgress();
+                    viewLampiranpdf.setVisibility(View.VISIBLE);
+                    fotolampiran.setVisibility(View.GONE);
+                    String pdfurl="https://absensi.tebingtinggikota.go.id/uploads-img-lampiran/"+data.getLampiran_masuk();
+                    viewLampiranpdf.loadUrl("https://docs.google.com/gview?embedded=true&url="+pdfurl);
+                    viewLampiranpdf.setWebViewClient(new WebViewClient());
+                    viewLampiranpdf.getSettings().setSupportZoom(true);
+                    viewLampiranpdf.getProgress();
                     viewLampiranpdf.getSettings().setJavaScriptEnabled(true);
                 }
 
-            }
+
         }
 
         if (data.getLat_masuk() == null ){
