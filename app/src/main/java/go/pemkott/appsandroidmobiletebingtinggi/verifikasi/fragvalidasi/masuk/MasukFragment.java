@@ -11,8 +11,6 @@ import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -39,7 +37,6 @@ import go.pemkott.appsandroidmobiletebingtinggi.model.RekapMasukFragment;
 import go.pemkott.appsandroidmobiletebingtinggi.model.RekapMasukKeduaFragment;
 import go.pemkott.appsandroidmobiletebingtinggi.model.ValidasiModel;
 import go.pemkott.appsandroidmobiletebingtinggi.pdf.ReadPdfActivity;
-import go.pemkott.appsandroidmobiletebingtinggi.utils.NetworkUtils;
 import go.pemkott.appsandroidmobiletebingtinggi.verifikasi.ValidasiNewActivity;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -226,7 +223,6 @@ public class MasukFragment extends Fragment {
         TextView alamat = viewDataValidasi.findViewById(R.id.tvLokasiAlamatLuarKantorValid);
         ShapeableImageView fototaging = viewDataValidasi.findViewById(R.id.ivValidasiRekapValid);
         ShapeableImageView fotolampiran = viewDataValidasi.findViewById(R.id.ivLampiranValidasiRekapValid);
-        WebView viewLampiranpdf = viewDataValidasi.findViewById(R.id.webviewValid);
         TextView tolak = viewDataValidasi.findViewById(R.id.btnTolak);
         TextView terima = viewDataValidasi.findViewById(R.id.btnTerima);
 
@@ -273,6 +269,8 @@ public class MasukFragment extends Fragment {
                 fotolampiran.setVisibility(View.VISIBLE);
 
                 }else{
+                    fotolampiran.setVisibility(View.GONE);
+                    txtOpenPdf.setVisibility(View.VISIBLE);
                     txtOpenPdf.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -281,14 +279,7 @@ public class MasukFragment extends Fragment {
                             startActivity(intent);
                         }
                     });
-//                    viewLampiranpdf.setVisibility(View.VISIBLE);
-//                    fotolampiran.setVisibility(View.GONE);
-//                    String pdfurl="https://absensi.tebingtinggikota.go.id/uploads-img-lampiran/"+data.getLampiran_masuk();
-//                    viewLampiranpdf.loadUrl("https://docs.google.com/gview?embedded=true&url="+pdfurl);
-//                    viewLampiranpdf.setWebViewClient(new WebViewClient());
-//                    viewLampiranpdf.getSettings().setSupportZoom(true);
-//                    viewLampiranpdf.getProgress();
-//                    viewLampiranpdf.getSettings().setJavaScriptEnabled(true);
+
                 }
 
 
@@ -347,9 +338,10 @@ public class MasukFragment extends Fragment {
         TextView alamat = viewDataValidasi.findViewById(R.id.tvLokasiAlamatLuarKantorValid);
         ShapeableImageView fototaging = viewDataValidasi.findViewById(R.id.ivValidasiRekapValid);
         ShapeableImageView fotolampiran = viewDataValidasi.findViewById(R.id.ivLampiranValidasiRekapValid);
-        WebView viewLampiranpdf = viewDataValidasi.findViewById(R.id.webviewValid);
+
         TextView tolak = viewDataValidasi.findViewById(R.id.btnTolak);
         TextView terima = viewDataValidasi.findViewById(R.id.btnTerima);
+        TextView txtOpenPdf = viewDataValidasi.findViewById(R.id.txtOpenPdf);
 
         if (data.getValidasi_masuk() == 3 || data.getValidasi_masuk() == 4){
             tolak.setVisibility(View.GONE);
@@ -399,14 +391,16 @@ public class MasukFragment extends Fragment {
                 fotolampiran.setVisibility(View.VISIBLE);
 
                 }else{
-                        viewLampiranpdf.setVisibility(View.VISIBLE);
-                        fotolampiran.setVisibility(View.GONE);
-                        String pdfurl="https://absensi.tebingtinggikota.go.id/uploads-img-lampiran/"+data.getLampiran_masuk();
-                        viewLampiranpdf.loadUrl("https://docs.google.com/gview?embedded=true&url="+pdfurl);
-                        viewLampiranpdf.setWebViewClient(new WebViewClient());
-                        viewLampiranpdf.getSettings().setSupportZoom(true);
-                        viewLampiranpdf.getProgress();
-                    viewLampiranpdf.getSettings().setJavaScriptEnabled(true);
+                    fotolampiran.setVisibility(View.GONE);
+                    txtOpenPdf.setVisibility(View.VISIBLE);
+                    txtOpenPdf.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(getActivity(), ReadPdfActivity.class);
+                            intent.putExtra("PDF_URL", "https://absensi.tebingtinggikota.go.id/uploads-img-lampiran/"+data.getLampiran_masuk());
+                            startActivity(intent);
+                        }
+                    });
                 }
 
 
