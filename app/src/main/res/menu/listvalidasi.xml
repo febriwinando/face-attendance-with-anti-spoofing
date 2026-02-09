@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/masukvalidasi"
         android:icon="@drawable/one_more"
         android:title="@string/masuk"
+        app:tint="@color/black"
         />
 
     <item
         android:id="@+id/pulangvalidasi"
         android:icon="@drawable/one_less"
         android:title="@string/pulang"
+        app:tint="@color/black"
         />
 
 </menu>

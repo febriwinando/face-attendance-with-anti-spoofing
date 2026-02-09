@@ -47,8 +47,9 @@
         <item name="cornerSize">10%</item>
     </style>
     <style name="NavigationViewStyle">
-        <item name="android:textSize">10sp</item> <!-- menu item text size-->
-        <item name="listPreferredItemHeightSmall">20dp</item><!-- menu item height-->
+        <item name="android:textSize">10sp</item>
+        <item name="listPreferredItemHeightSmall">20dp</item>
+        <item name="color">@color/white</item>
     </style>
     <style name="menu_home">
         <item name="cornerSize">10%</item>

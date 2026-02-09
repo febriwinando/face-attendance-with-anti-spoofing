@@ -10,7 +10,7 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardCornerRadius="10dp"
+        app:cardCornerRadius="20dp"
         android:layout_margin="5dp"
         android:id="@+id/cvValidasi"
         >
@@ -54,8 +54,9 @@
                 android:layout_marginStart="10dp"
                 android:layout_toEndOf="@+id/llnotif"
                 android:textSize="14sp"
-                android:textStyle="bold"
-                android:textColor="@color/font_highlight" />
+                android:text="Ini adalah nama pegawai"
+                android:textColor="@color/black"
+                android:textStyle="bold"/>
 
             <TextView
                 android:id="@+id/txtSatusVerif"

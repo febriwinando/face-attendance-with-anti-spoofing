@@ -31,7 +31,6 @@ public class ValidasiNewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_validasi_new);
-
         validasi = this;
         Window window = this.getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -83,10 +82,9 @@ public class ValidasiNewActivity extends AppCompatActivity {
 
 
         contentView.animate()
-                .alpha(1f)
+                .alpha(10f)
                 .setDuration(shortAnimationDuration)
                 .setListener(null);
-
     }
 
 }
