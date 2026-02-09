@@ -46,6 +46,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -252,17 +253,6 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
         Bitmap preview = BitmapFactory.decodeFile(file.getAbsolutePath());
         ivFinalKegiatan.setImageBitmap(preview);
 
-//
-//        byte[] imageBytes = ambilFoto.compressToMax80KB(file);
-//
-//
-//        Bitmap preview = BitmapFactory.decodeByteArray(
-//                imageBytes, 0, imageBytes.length
-//        );
-
-//        ivFinalKegiatan.setImageBitmap(preview);
-
-
         resultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
             @SuppressLint("Range")
             @Override
@@ -313,6 +303,12 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
         startLocationUpdates();
         rbTanggal = SIMPLE_FORMAT_TANGGAL.format(new Date());
 
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                finish();
+            }
+        });
     }
 
     public void fokusLokasi(View view){
@@ -1033,44 +1029,15 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
     }
 
     public void backFinalDinasLuar(View view){
-        onBackPressed();
+        finish();
     }
 
     protected void onResume() {
         super.onResume();
         rbTanggal = SIMPLE_FORMAT_TANGGAL.format(new Date());
-
-
-
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        kegiatans.clear();
-        stopLocationUpdates();
-        finish();
     }
 
 
-//    public void handlerProgressDialog(){
-//        Handler handler = new Handler();
-//        handler.postDelayed(() -> {
-//            //your code here
-//            progressDialog.dismiss();
-//
-//        }, 1500);
-//    }
-//
-//    public void handlerProgressDialog2(){
-//        Handler handler = new Handler();
-//        handler.postDelayed(() -> {
-//            //your code here
-//            progressDialog.dismiss();
-//            finish();
-//
-//        }, 1500);
-//    }
 
     public void showMessage(String title, String Message){
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.ThemeOverlay_App_MaterialAlertDialog);

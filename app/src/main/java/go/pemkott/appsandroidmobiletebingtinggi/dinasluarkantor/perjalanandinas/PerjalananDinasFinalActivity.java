@@ -49,6 +49,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -311,7 +312,12 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
         startLocationUpdates();
 
 
-
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                finish();   // atau aksi lain
+            }
+        });
     }
 
 
@@ -1143,7 +1149,9 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
     }
 
     public void backFinalDinasLuar(View view){
-        onBackPressed();
+        stopLocationUpdates();
+        kegiatans.clear();
+        finish();
     }
 
     protected void onResume() {
@@ -1151,13 +1159,7 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
         rbTanggal = SIMPLE_FORMAT_TANGGAL.format(new Date());
     }
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        stopLocationUpdates();
-        kegiatans.clear();
-        finish();
-    }
+
 
 
     public void showMessage(String title, String Message){

@@ -276,9 +276,16 @@
                     tools:ignore="WebViewLayout" />
 
                 <TextView
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Buka Dokumen Lampiran"/>
+                    android:text="Buka Dokumen Lampiran"
+                    android:layout_margin="5dp"
+                    android:padding="10dp"
+                    android:textStyle="bold"
+                    android:textAlignment="center"
+                    android:textColor="@color/white"
+                    android:background="@drawable/backgoundovalbirusift"
+                    android:id="@+id/txtOpenPdf"/>
 
                 <LinearLayout
                     android:layout_marginTop="10dp"

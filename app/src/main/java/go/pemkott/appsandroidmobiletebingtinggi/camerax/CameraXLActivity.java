@@ -42,6 +42,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -112,6 +113,13 @@ public class CameraXLActivity extends AppCompatActivity {
                     cameraFacing = CameraSelector.LENS_FACING_BACK;
                 }
                 startCamera(cameraFacing);
+            }
+        });
+
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                finish();   // atau aksi lain
             }
         });
     }

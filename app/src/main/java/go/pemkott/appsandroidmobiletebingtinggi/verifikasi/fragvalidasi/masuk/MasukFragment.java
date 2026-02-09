@@ -2,6 +2,7 @@ package go.pemkott.appsandroidmobiletebingtinggi.verifikasi.fragvalidasi.masuk;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.location.Address;
 import android.location.Geocoder;
@@ -37,6 +38,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
 import go.pemkott.appsandroidmobiletebingtinggi.model.RekapMasukFragment;
 import go.pemkott.appsandroidmobiletebingtinggi.model.RekapMasukKeduaFragment;
 import go.pemkott.appsandroidmobiletebingtinggi.model.ValidasiModel;
+import go.pemkott.appsandroidmobiletebingtinggi.pdf.ReadPdfActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.utils.NetworkUtils;
 import go.pemkott.appsandroidmobiletebingtinggi.verifikasi.ValidasiNewActivity;
 import retrofit2.Call;
@@ -98,7 +100,6 @@ public class MasukFragment extends Fragment {
 
     private void dataUser() {
 
-        if (NetworkUtils.isConnected(getContext())){
 
             Cursor res = databaseHelper.getAllData22(userId);
             if (res.getCount()==0){
@@ -110,7 +111,7 @@ public class MasukFragment extends Fragment {
                 sToken = res.getString(5);
                 sVerifikator = res.getString(6);
             }
-        }
+
 
     }
 
@@ -229,6 +230,8 @@ public class MasukFragment extends Fragment {
         TextView tolak = viewDataValidasi.findViewById(R.id.btnTolak);
         TextView terima = viewDataValidasi.findViewById(R.id.btnTerima);
 
+        TextView txtOpenPdf = viewDataValidasi.findViewById(R.id.txtOpenPdf);
+
         tanggal.setText(data.getTanggal());
         nama.setText(data.getNama());
         pukul.setText(data.getJam_masuk());
@@ -270,14 +273,22 @@ public class MasukFragment extends Fragment {
                 fotolampiran.setVisibility(View.VISIBLE);
 
                 }else{
-                    viewLampiranpdf.setVisibility(View.VISIBLE);
-                    fotolampiran.setVisibility(View.GONE);
-                    String pdfurl="https://absensi.tebingtinggikota.go.id/uploads-img-lampiran/"+data.getLampiran_masuk();
-                    viewLampiranpdf.loadUrl("https://docs.google.com/gview?embedded=true&url="+pdfurl);
-                    viewLampiranpdf.setWebViewClient(new WebViewClient());
-                    viewLampiranpdf.getSettings().setSupportZoom(true);
-                    viewLampiranpdf.getProgress();
-                    viewLampiranpdf.getSettings().setJavaScriptEnabled(true);
+                    txtOpenPdf.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(getActivity(), ReadPdfActivity.class);
+                            intent.putExtra("PDF_URL", "https://absensi.tebingtinggikota.go.id/uploads-img-lampiran/"+data.getLampiran_masuk());
+                            startActivity(intent);
+                        }
+                    });
+//                    viewLampiranpdf.setVisibility(View.VISIBLE);
+//                    fotolampiran.setVisibility(View.GONE);
+//                    String pdfurl="https://absensi.tebingtinggikota.go.id/uploads-img-lampiran/"+data.getLampiran_masuk();
+//                    viewLampiranpdf.loadUrl("https://docs.google.com/gview?embedded=true&url="+pdfurl);
+//                    viewLampiranpdf.setWebViewClient(new WebViewClient());
+//                    viewLampiranpdf.getSettings().setSupportZoom(true);
+//                    viewLampiranpdf.getProgress();
+//                    viewLampiranpdf.getSettings().setJavaScriptEnabled(true);
                 }
 
 
@@ -379,7 +390,7 @@ public class MasukFragment extends Fragment {
             fotolampiran.setVisibility(View.GONE);
             tagLampiranMasuk.setVisibility(View.GONE);
         }else{
-            if(NetworkUtils.isConnected(getActivity())){
+
 
                 if (data.getEkstensi_masuk().equals("img")){
                 Glide.with(this)
@@ -398,7 +409,7 @@ public class MasukFragment extends Fragment {
                     viewLampiranpdf.getSettings().setJavaScriptEnabled(true);
                 }
 
-            }
+
         }
 
         if (data.getLat_masuk() == null ){

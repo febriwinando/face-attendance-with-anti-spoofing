@@ -48,6 +48,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -312,6 +313,13 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
         }
 
         startLocationUpdates();
+
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                finish();   // atau aksi lain
+            }
+        });
     }
 
 
@@ -1119,17 +1127,6 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
     }
 
     public void backFinalDinasLuar(View view){
-        onBackPressed();
-    }
-
-    protected void onResume() {
-        super.onResume();
-//        rbTanggal = SIMPLE_FORMAT_TANGGAL.format(new Date());
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
         stopLocationUpdates();
         kegiatans.clear();
         finish();

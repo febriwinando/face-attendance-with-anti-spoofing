@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -58,19 +59,22 @@ public class TugasLapanganActivity extends AppCompatActivity {
 
         showRecyclerList();
 
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                finish();   // atau aksi lain
+            }
+        });
+
     }
 
 
 
     public void backTl(View view){
-        onBackPressed();
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
         finish();
     }
+
+
 
     public void kegiatanDatabase(){
         Cursor res = databaseHelper.getKegiatanIzin();
