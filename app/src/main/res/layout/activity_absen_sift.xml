@@ -27,7 +27,6 @@
             android:clickable="true"
             android:layout_centerVertical="true"
             android:foreground="?attr/selectableItemBackground"
-            android:onClick="backFinalSiftActivity"
             android:focusable="true">
 
 
@@ -165,7 +164,7 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     android:checked="true"
-                    android:text="Masuk"
+                    android:text="MASUK"
                     android:textColor="@color/font"
                     android:textSize="16sp"
                     android:theme="@style/TextLabel" />
@@ -175,7 +174,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
-                    android:text="Pulang"
+                    android:text="PULANG"
                     android:textColor="@color/font"
                     android:textSize="16sp"
                     android:theme="@style/TextLabel" />

@@ -32,7 +32,7 @@ gson = "2.13.2"
 runner = "1.7.0"
 shimmer = "0.5.0"
 converterGson = "3.0.0"
-firebaseBom = "34.8.0"
+firebaseBom = "34.9.0"
 swiperefreshlayout = "1.2.0"
 
 cameraCore = "1.6.0-beta01"

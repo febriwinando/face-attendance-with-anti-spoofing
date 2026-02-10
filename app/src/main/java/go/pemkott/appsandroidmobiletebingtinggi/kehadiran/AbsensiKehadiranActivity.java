@@ -688,15 +688,12 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
             else{
 
                 periksaWaktu();
-//                hitungjarak();
                 hitungJarakAbsensi();
 
                 if (tagingTime.getTime() <= dateBatasWaktu.getTime()) {
                     dialogView.viewNotifKosong(AbsensiKehadiranActivity.this, "Anda hanya dapat mengisi absen masuk, "+batasWaktu+" menit sebelum Jam Masuk", "");
                 }
                 else{
-
-
                     selected = rgKehadiran.getCheckedRadioButtonId();
                     radioSelectedKehadiran = findViewById(selected);
 
@@ -713,7 +710,7 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
                         String rbPosisi;
                         String rbStatus;
                         String rbValid;
-                        if (radioSelectedKehadiran.getText().toString().equals("Masuk")){
+                        if (radioSelectedKehadiran.getText().toString().equals("MASUK")){
 
                                 if (tagingTime.getTime() >= jamPulangDate.getTime()){
                                     dialogView.viewNotifKosong(AbsensiKehadiranActivity.this, "Anda tidak dapat melakukan absensi masuk pada jam pulang kerja.", "");

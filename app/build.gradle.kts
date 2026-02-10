@@ -78,7 +78,7 @@ dependencies {
     implementation(libs.runner)
     implementation(libs.shimmer)
     implementation(libs.converter.gson)
-    implementation(libs.firebase.bom)
+    implementation(platform(libs.firebase.bom))
     implementation(libs.swiperefreshlayout)
     implementation(libs.firebase.messaging)
     implementation(libs.google.services)
