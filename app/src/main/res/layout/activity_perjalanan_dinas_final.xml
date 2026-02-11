@@ -9,6 +9,18 @@
     android:background="@color/background_color"
     tools:context=".dinasluarkantor.perjalanandinas.PerjalananDinasFinalActivity">
 
+
+    <androidx.fragment.app.FragmentContainerView
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/llKeteranganPd"
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        class="com.google.android.gms.maps.SupportMapFragment"
+        />
+
     <RelativeLayout
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -56,23 +68,12 @@
             android:textSize="18sp"
             android:elevation="10dp"
             android:textStyle="bold"
-            android:textColor="@color/text_hitam"
+            android:textColor="@color/biru"
             android:outlineAmbientShadowColor="@color/font_highlight"
             android:outlineSpotShadowColor="@color/font_highlight"/>
 
     </RelativeLayout>
 
-    <androidx.fragment.app.FragmentContainerView
-        app:layout_constraintTop_toBottomOf="@+id/titleHeaderFinalTl"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/llKeteranganPd"
-        android:id="@+id/map"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_margin="20dp"
-        class="com.google.android.gms.maps.SupportMapFragment"
-        />
 
 
     <ImageView
@@ -115,8 +116,8 @@
                 android:textAlignment="center"
                 android:text="@string/data_perjalanan_dinas"
                 android:textColor="@color/font"
-                android:textSize="18sp"
-
+                android:textSize="14sp"
+                android:textStyle="bold"
                 android:id="@+id/titleDinasLuarPd"/>
 
         </LinearLayout>
@@ -400,8 +401,8 @@
                 android:layout_height="wrap_content"
                 android:text="@string/kirim"
                 android:textSize="18sp"
-                android:layout_marginEnd="5dp"
-                android:textStyle="italic"
+                android:padding="5dp"
+                android:textStyle="bold"
                 android:textColor="@color/putih"/>
         </LinearLayout>
     </LinearLayout>

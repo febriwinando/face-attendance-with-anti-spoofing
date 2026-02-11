@@ -278,9 +278,16 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
     }
 
     private void startLocationUpdates() {
+
+
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+
             fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
+        }else{
+
         }
+
+
     }
 
     private void stopLocationUpdates() {

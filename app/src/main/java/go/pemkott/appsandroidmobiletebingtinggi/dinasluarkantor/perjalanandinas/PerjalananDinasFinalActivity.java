@@ -191,7 +191,7 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
         getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.background_color));
         getWindow().setNavigationBarColor(getResources().getColor(R.color.background_color));
         setContentView(R.layout.activity_perjalanan_dinas_final);
-
+        kegiatans.clear();
         session = new SessionManager(this);
         userId = session.getPegawaiId();
 
@@ -243,9 +243,7 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
         Intent intent = getIntent();
         titleDinasLuar.setText(intent.getStringExtra("title"));
 
-        kegiatans.clear();
-        kegiatans = SppdActivity.kegiatanCheckedPd;
-        kegiatanlainnya = SppdActivity.kegiatansPdLainnya;
+
 
 
         String myDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString()+ "/eabsensi";
@@ -304,6 +302,10 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
         });
 
         requestPermission();
+
+        kegiatans = SppdActivity.kegiatanCheckedPd;
+        kegiatanlainnya = SppdActivity.kegiatansPdLainnya;
+
         setupDataKegiatan();
 
         datePickerMulai();
@@ -324,14 +326,14 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
 
     public void setupDataKegiatan() {
         // Ambil data dari SppdActivity
-        kegiatans.clear();
-        if (SppdActivity.kegiatanCheckedPd != null) {
-            kegiatans.addAll(SppdActivity.kegiatanCheckedPd);
-        }
 
-        kegiatanlainnya = (SppdActivity.kegiatansPdLainnya != null)
-                ? SppdActivity.kegiatansPdLainnya
-                : "kosong";
+//        if (SppdActivity.kegiatanCheckedPd != null) {
+//            kegiatans.addAll(SppdActivity.kegiatanCheckedPd);
+//        }
+//
+//        kegiatanlainnya = (SppdActivity.kegiatansPdLainnya != null)
+//                ? SppdActivity.kegiatansPdLainnya
+//                : "kosong";
 
         dataKegiatan();
     }
@@ -390,7 +392,9 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
         StringBuilder stringBuilder = new StringBuilder();
         keterangan = new StringBuilder();
 
+//        Toast.makeText(this, kegiatanlainnya+" - "+kegiatans.size(), Toast.LENGTH_SHORT).show();
         for (int i = 0; i < kegiatans.size(); i++) {
+
             String kegiatan = kegiatans.get(i);
             if (i == kegiatans.size() - 1) {
                 keterangan.append(kegiatan);
@@ -411,7 +415,7 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
         }
 
         rbKet = stringBuilder.toString();
-        Toast.makeText(this, rbKet, Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, rbKet, Toast.LENGTH_SHORT).show();
         tvKegiatanFinal.setText(rbKet);
     }
     byte[] imageBytesDokumenPdf;

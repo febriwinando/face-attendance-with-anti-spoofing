@@ -622,6 +622,7 @@
 package go.pemkott.appsandroidmobiletebingtinggi.camerax;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -985,6 +986,11 @@ public class CameraxActivity extends AppCompatActivity {
     // ================= CAPTURE =================
     private void takePicture() {
 
+        Dialog dialogproses = new Dialog(CameraxActivity.this, R.style.DialogStyle);
+        dialogproses.setContentView(R.layout.view_proses);
+        dialogproses.setCancelable(false);
+
+
         String fileName = System.currentTimeMillis() + ".jpg";
 
         ContentValues values = new ContentValues();
@@ -1007,6 +1013,7 @@ public class CameraxActivity extends AppCompatActivity {
 
                     @Override
                     public void onImageSaved(@NonNull ImageCapture.OutputFileResults output) {
+                        dialogproses.dismiss();
                         kirimHasil(fileName);
                     }
 
@@ -1017,6 +1024,8 @@ public class CameraxActivity extends AppCompatActivity {
                     }
                 }
         );
+
+        dialogproses.show();
     }
 
     private void kirimHasil(String fileName) {

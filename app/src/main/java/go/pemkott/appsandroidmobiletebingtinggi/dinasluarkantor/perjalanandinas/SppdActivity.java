@@ -7,6 +7,7 @@ import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
@@ -46,12 +47,13 @@ public class SppdActivity extends AppCompatActivity {
         getWindow().setNavigationBarColor(getResources().getColor(R.color.background_color));
         setContentView(R.layout.activity_sppd);
 
-
+        listPd.clear();
+        kegiatansListPd.clear();
+        kegiatanCheckedPd.clear();
         pd = this;
 
 
-        listPd.clear();
-        kegiatansListPd.clear();
+
 
         databaseHelper = new DatabaseHelper(this);
         kegiatanDatabase();
@@ -71,6 +73,7 @@ public class SppdActivity extends AppCompatActivity {
     static ArrayList<Kegiatan> getListData2() {
         ArrayList<Kegiatan> list = new ArrayList<>();
         list.clear();
+
         for (int position = 0; position < kegiatansListPd.size(); position++) {
             Kegiatan kegiatans = new Kegiatan();
             kegiatans.setKegiatan(kegiatansListPd.get(position));
@@ -98,13 +101,29 @@ public class SppdActivity extends AppCompatActivity {
             kegiatansPdLainnya = "kosong";
         }
 
-        if (kegiatanCheckedPd.isEmpty() && "kosong".equals(kegiatansPdLainnya)) {
-            dialogView.viewNotifKosong(SppdActivity.this,
-                    "Anda Harus Mengisi Kegiatan Yang Dilaksanakan.", "");
+        boolean isKegiatanCheckedKosong = kegiatanCheckedPd == null || kegiatanCheckedPd.isEmpty();
+        boolean isLainnyaKosong = etkegiatanPdLainnya.getText().toString().trim().isEmpty();
+
+        if (isKegiatanCheckedKosong && isLainnyaKosong) {
+            dialogView.viewNotifKosong(
+                    SppdActivity.this,
+                    "Anda Harus Mengisi Kegiatan Yang Dilaksanakan.",
+                    ""
+            );
+            return;
         } else {
             Intent intentTL = new Intent(SppdActivity.this, CameraxActivity.class);
             intentTL.putExtra("aktivitas", "perjalanandinas");
             intentTL.putExtra("title", "Isi Data Perjalanan Dinas");
+//            intentTL.putStringArrayListExtra(
+//                    "kegiatan_checked_pd",
+//                    kegiatanCheckedPd
+//            );
+//
+//            intentTL.putExtra(
+//                    "kegiatan_pd_lainnya",
+//                    kegiatansPdLainnya
+//            );
             startActivity(intentTL);
             finish();
         }
@@ -143,7 +162,7 @@ public class SppdActivity extends AppCompatActivity {
 
         }else{
             kegiatanCheckedPd.remove(kegiatan.getKegiatan());
-
+            Log.d("PerjalananDinasList", kegiatanCheckedPd.toString());
             StringBuffer buffer = new StringBuffer();
             if (kegiatanCheckedPd.size() == 1){
                 buffer.append(kegiatanCheckedPd.get(kegiatanCheckedPd.size()-1));
@@ -157,8 +176,7 @@ public class SppdActivity extends AppCompatActivity {
             }
 
         }
-
-        Log.d("PerjalananDinasList", kegiatanCheckedPd.toString());
+//        Log.d("PerjalananDinasList", kegiatanCheckedPd.toString());
 
     }
 
