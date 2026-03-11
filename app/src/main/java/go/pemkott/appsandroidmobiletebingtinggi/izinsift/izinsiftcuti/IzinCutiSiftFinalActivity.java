@@ -167,7 +167,7 @@ public class IzinCutiSiftFinalActivity extends AppCompatActivity implements OnMa
     int jamMasukPulang, menitMasukPulang;
     int mins, minspulang;
     DialogView dialogView = new DialogView(this);
-    String inisialsift, tipesift, masuksift, pulangsift, idsift, rbTanggal;
+    String inisialsift, tipesift, masuksift, pulangsift, idsift, rbTanggal, tanggalSift;
 
     private boolean mockLocationsEnabled;
     int mock_location = 0;
@@ -228,6 +228,7 @@ public class IzinCutiSiftFinalActivity extends AppCompatActivity implements OnMa
         tipesift = JadwalIzinSiftActivity.tipesift;
         masuksift = JadwalIzinSiftActivity.masuksift;
         pulangsift = JadwalIzinSiftActivity.pulangsift;
+        tanggalSift = JadwalIzinSiftActivity.tanggalSift;
 
 
         kegiatans.clear();
@@ -471,23 +472,23 @@ public class IzinCutiSiftFinalActivity extends AppCompatActivity implements OnMa
         }
 
 
-        Log.d("ABSEN_MASUK_PAGI", "===== REQUEST PARAMETER =====");
-        Log.d("ABSEN_MASUK_PAGI", "tanggal      : " + String.valueOf(tanggal));
-        Log.d("ABSEN_MASUK_PAGI", "posisi       : " + String.valueOf(posisi));
-        Log.d("ABSEN_MASUK_PAGI", "status       : " + String.valueOf(status));
-        Log.d("ABSEN_MASUK_PAGI", "lat          : " + String.valueOf(rbLat));
-        Log.d("ABSEN_MASUK_PAGI", "lng          : " + String.valueOf(rbLng));
-        Log.d("ABSEN_MASUK_PAGI", "eOPD         : " + String.valueOf(eOPD));
-        Log.d("ABSEN_MASUK_PAGI", "jampegawai   : " + String.valueOf(dariTanggal));
-        Log.d("ABSEN_MASUK_PAGI", "validasi     : " + String.valueOf(sampaiTanggal));
-        Log.d("ABSEN_MASUK_PAGI", "rbFakeGPS    : " + String.valueOf(rbFakeGPS));
-        Log.d("ABSEN_MASUK_PAGI", "masuksift    : " + String.valueOf(masuksift));
-        Log.d("ABSEN_MASUK_PAGI", "pulangsift   : " + String.valueOf(pulangsift));
-        Log.d("ABSEN_MASUK_PAGI", "inisialsift  : " + String.valueOf(inisialsift));
-        Log.d("ABSEN_MASUK_PAGI", "tipesift     : " + String.valueOf(tipesift));
-        Log.d("ABSEN_MASUK_PAGI", "idsift       : " + String.valueOf(idsift));
-        Log.d("ABSEN_MASUK_PAGI", "fotoPart     : " + (fotoPart != null ? "ADA" : "NULL"));
-        Log.d("ABSEN_MASUK_PAGI", "==============================");
+//        Log.d("ABSEN_MASUK_PAGI", "===== REQUEST PARAMETER =====");
+//        Log.d("ABSEN_MASUK_PAGI", "tanggal      : " + String.valueOf(tanggal));
+//        Log.d("ABSEN_MASUK_PAGI", "posisi       : " + String.valueOf(posisi));
+//        Log.d("ABSEN_MASUK_PAGI", "status       : " + String.valueOf(status));
+//        Log.d("ABSEN_MASUK_PAGI", "lat          : " + String.valueOf(rbLat));
+//        Log.d("ABSEN_MASUK_PAGI", "lng          : " + String.valueOf(rbLng));
+//        Log.d("ABSEN_MASUK_PAGI", "eOPD         : " + String.valueOf(eOPD));
+//        Log.d("ABSEN_MASUK_PAGI", "jampegawai   : " + String.valueOf(dariTanggal));
+//        Log.d("ABSEN_MASUK_PAGI", "validasi     : " + String.valueOf(sampaiTanggal));
+//        Log.d("ABSEN_MASUK_PAGI", "rbFakeGPS    : " + String.valueOf(rbFakeGPS));
+//        Log.d("ABSEN_MASUK_PAGI", "masuksift    : " + String.valueOf(masuksift));
+//        Log.d("ABSEN_MASUK_PAGI", "pulangsift   : " + String.valueOf(pulangsift));
+//        Log.d("ABSEN_MASUK_PAGI", "inisialsift  : " + String.valueOf(inisialsift));
+//        Log.d("ABSEN_MASUK_PAGI", "tipesift     : " + String.valueOf(tipesift));
+//        Log.d("ABSEN_MASUK_PAGI", "idsift       : " + String.valueOf(idsift));
+//        Log.d("ABSEN_MASUK_PAGI", "fotoPart     : " + (fotoPart != null ? "ADA" : "NULL"));
+//        Log.d("ABSEN_MASUK_PAGI", "==============================");
 
 
         Call<ResponsePOJO> call =
@@ -504,7 +505,8 @@ public class IzinCutiSiftFinalActivity extends AppCompatActivity implements OnMa
                         textPart(ekslampiran),
                         textPart(dariTanggal),
                         textPart(sampaiTanggal),
-                        textPart(rbFakeGPS)
+                        textPart(rbFakeGPS),
+                        textPart(tanggalSift)
                 );
 
         call.enqueue(new Callback<ResponsePOJO>() {

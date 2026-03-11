@@ -502,8 +502,10 @@ public interface ApiAddProduk {
             @Part("ekslampiran") RequestBody ekslampiran,
             @Part("mulai") RequestBody mulai,
             @Part("sampai") RequestBody sampai,
-            @Part("fakegps") RequestBody fakegps
+            @Part("fakegps") RequestBody fakegps,
+            @Part("tanggalSift") RequestBody tanggalSift
     );
+
     @FormUrlEncoded
     @POST("absensiizincutisift")
     Call<ResponsePOJO> uploadAbsenIzinCutiSift(

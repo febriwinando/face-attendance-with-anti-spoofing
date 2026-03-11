@@ -284,26 +284,24 @@ String userId;
 //                Log.d("ABSEN_MASUK_PAGI", s);
                 for (int i=0 ;i<listJadwalSift.size();i++){
                     if (tanggalJadwal.get(i).equals(s)){
-                        for (int j = 0 ; j<idSiftArray.size();j++){
+                        for (int j = 0 ; j< idSiftArray.size();j++){
                             if (idSiftJadwal.get(i).equals(idSiftArray.get(j))){
                                 idsift = idSiftArray.get(j);
                                 inisialsift = inisialSift.get(j);
                                 tipesift = tipeSift.get(j);
                                 masuksift = masukSift.get(j);
                                 pulangsift = pulangSift.get(j);
-
-                                Log.d("ABSEN_MASUK_PAGI", idsift );
-                                Log.d("ABSEN_MASUK_PAGI", inisialsift);
-                                Log.d("ABSEN_MASUK_PAGI", tipesift);
-                                Log.d("ABSEN_MASUK_PAGI", masuksift);
-                                Log.d("ABSEN_MASUK_PAGI", pulangsift);
-                                Log.d("ABSEN_MASUK_PAGI", tanggalSift);
-
+//
+//                                Log.d("ABSEN_MASUK_PAGI", idsift );
+//                                Log.d("ABSEN_MASUK_PAGI", inisialsift);
+//                                Log.d("ABSEN_MASUK_PAGI", tipesift);
+//                                Log.d("ABSEN_MASUK_PAGI", masuksift);
+//                                Log.d("ABSEN_MASUK_PAGI", pulangsift);
+//                                Log.d("ABSEN_MASUK_PAGI", tanggalSift);
                             }
                         }
                     }
                 }
-
 
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
