@@ -59,7 +59,7 @@ public class JadwalSiftActivity extends AppCompatActivity {
     static ArrayList<String> idSiftJadwal = new ArrayList<String>();
     static ArrayList<String> tanggalJadwal = new ArrayList<String>();
 
-    static ArrayList<String> idSift = new ArrayList<>();
+    static ArrayList<String> idSiftArray = new ArrayList<>();
     static ArrayList<String> opdSift = new ArrayList<String>();
     static ArrayList<String> tipeSift = new ArrayList<String>();
     static ArrayList<String> inisialSift = new ArrayList<String>();
@@ -169,7 +169,7 @@ String userId;
         tanggalJadwal.clear();
         idSiftJadwal.clear();
 
-        idSift.clear();
+        idSiftArray.clear();
         opdSift.clear();
         tipeSift.clear();
         inisialSift.clear();
@@ -216,7 +216,7 @@ String userId;
         Cursor resJamSift = databaseHelper.getJamSift(eOPD);
 
         while (resJamSift.moveToNext()){
-            idSift.add(resJamSift.getString(0));
+            idSiftArray.add(resJamSift.getString(0));
             opdSift.add(resJamSift.getString(1));
             tipeSift.add(resJamSift.getString(2));
             inisialSift.add(resJamSift.getString(3));
@@ -255,10 +255,10 @@ String userId;
         ArrayList<WaktuSift> waktuSifts = new ArrayList<>();
         waktuSifts.clear();
 
-        for (int position = 0; position < idSift.size(); position++) {
+        for (int position = 0; position < idSiftArray.size(); position++) {
 
             WaktuSift waktuSift = new WaktuSift();
-            waktuSift.setId(idSift.get(position));
+            waktuSift.setId(idSiftArray.get(position));
             waktuSift.setOpd_id(opdSift.get(position));
             waktuSift.setTipe(tipeSift.get(position));
             waktuSift.setInisial(inisialSift.get(position));
@@ -284,19 +284,20 @@ String userId;
 //                Log.d("ABSEN_MASUK_PAGI", s);
                 for (int i=0 ;i<listJadwalSift.size();i++){
                     if (tanggalJadwal.get(i).equals(s)){
-                        for (int j = 0 ; j<idSift.size();j++){
-                            if (idSiftJadwal.get(i).equals(idSift.get(j))){
-                                idsift = idSift.get(j);
+                        for (int j = 0 ; j<idSiftArray.size();j++){
+                            if (idSiftJadwal.get(i).equals(idSiftArray.get(j))){
+                                idsift = idSiftArray.get(j);
                                 inisialsift = inisialSift.get(j);
                                 tipesift = tipeSift.get(j);
                                 masuksift = masukSift.get(j);
                                 pulangsift = pulangSift.get(j);
 
-//                                Log.d("ABSEN_MASUK_PAGI", idsift );
-//                                Log.d("ABSEN_MASUK_PAGI", inisialsift);
-//                                Log.d("ABSEN_MASUK_PAGI", tipesift);
-//                                Log.d("ABSEN_MASUK_PAGI", masuksift);
+                                Log.d("ABSEN_MASUK_PAGI", idsift );
+                                Log.d("ABSEN_MASUK_PAGI", inisialsift);
+                                Log.d("ABSEN_MASUK_PAGI", tipesift);
+                                Log.d("ABSEN_MASUK_PAGI", masuksift);
                                 Log.d("ABSEN_MASUK_PAGI", pulangsift);
+                                Log.d("ABSEN_MASUK_PAGI", tanggalSift);
 
                             }
                         }
