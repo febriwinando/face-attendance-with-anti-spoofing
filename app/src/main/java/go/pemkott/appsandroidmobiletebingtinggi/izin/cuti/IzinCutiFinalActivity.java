@@ -945,10 +945,6 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
     }
 
 
-    public void backAbsenMasuk(View view){
-        stopLocationUpdates();
-        finish();
-    }
 
     private void setupViews() {
 
@@ -1155,24 +1151,7 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
         });
 
         dialogSukes.show();
-
     }
-//    public void handlerProgressDialog(){
-//        Handler handler = new Handler();
-//        handler.postDelayed(() -> {
-//            //your code here
-//            progressDialog.dismiss();
-//        }, 1500);
-//    }
-//
-//    public void handlerProgressDialog2(){
-//        Handler handler = new Handler();
-//        handler.postDelayed(() -> {
-//            //your code here
-//            progressDialog.dismiss();
-//            finish();
-//        }, 1500);
-//    }
 
     @Override
     protected void onStop() {

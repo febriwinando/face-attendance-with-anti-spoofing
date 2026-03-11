@@ -20,6 +20,7 @@ android {
             keyPassword = "123456"
         }
     }
+
     namespace = "go.pemkott.appsandroidmobiletebingtinggi"
     compileSdk {
         version = release(36)
@@ -29,24 +30,19 @@ android {
         applicationId = "go.pemkott.appsandroidmobiletebingtinggi"
         minSdk = 24
         targetSdk = 36
-        versionCode = 164
+        versionCode = 167
         versionName = "2.0.2"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = true
+            isMinifyEnabled = false
 
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-
-
-
-
         }
 
     }

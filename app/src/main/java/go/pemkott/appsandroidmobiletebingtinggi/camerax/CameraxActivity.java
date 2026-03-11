@@ -773,7 +773,7 @@ public class CameraxActivity extends AppCompatActivity {
 
         Random r = new Random();
 
-        while (temp.size() < 2) {
+        while (temp.size() < 1) {
             Challenge c = pool[r.nextInt(pool.length)];
             if (!temp.contains(c)) temp.add(c);
         }
@@ -801,12 +801,12 @@ public class CameraxActivity extends AppCompatActivity {
 
     private String getChallengeText(Challenge c) {
         switch (c) {
-            case BLINK: return "KEDIPKAN mata";
-            case SMILE: return "TERSENYUM";
-            case TURN_LEFT: return "HADAP ke KIRI";
-            case TURN_RIGHT: return "HADAP ke KANAN";
-            case LOOK_UP: return "ANGKAT dagu";
-            case LOOK_DOWN: return "TUNDUKKAN kepala";
+            case BLINK: return "Kedipkan mata";
+            case SMILE: return "Senyum";
+            case TURN_LEFT: return "Hadap ke kiri";
+            case TURN_RIGHT: return "Hadap ke kanan";
+            case LOOK_UP: return "Angkat dagu";
+            case LOOK_DOWN: return "Tundukkan kepala";
             default: return "";
         }
     }
