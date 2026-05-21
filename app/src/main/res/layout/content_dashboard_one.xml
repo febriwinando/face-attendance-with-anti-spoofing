@@ -65,8 +65,8 @@
 
                 <ImageView
                     android:id="@+id/ivIconNotif"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
                     android:src="@drawable/one_notif"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -135,8 +135,8 @@
 
                 >
                 <ImageView
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
                     android:src="@drawable/one_calendar"
                     android:layout_marginEnd="5dp"
                     />
@@ -187,8 +187,8 @@
 
                 <ImageView
                     android:layout_alignParentEnd="true"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
                     android:src="@drawable/one_search"
                     android:layout_gravity="center_vertical|end"
                     app:tint="@color/biru"
@@ -391,8 +391,8 @@
                             android:textSize="16sp"/>
 
                         <ImageView
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
+                            android:layout_width="38dp"
+                            android:layout_height="38dp"
                             android:src="@drawable/one_jadwal"
                             android:layout_alignParentEnd="true"
                             android:background="@drawable/backgoundovalmerah"
@@ -425,8 +425,8 @@
 
                         <ImageView
                             android:src="@drawable/one_lokasi"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
+                            android:layout_width="38dp"
+                            android:layout_height="38dp"
                             android:layout_alignParentEnd="true"
                             android:background="@drawable/backgoundovalkuning"
                             android:layout_centerVertical="true"
@@ -437,8 +437,8 @@
 
                         <ProgressBar
                             android:id="@+id/pgSingkronLokasi"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
+                            android:layout_width="38dp"
+                            android:layout_height="38dp"
                             android:layout_centerVertical="true"
                             android:layout_alignParentEnd="true"
                             android:indeterminateTint="@color/kuning"
@@ -472,8 +472,8 @@
                         <ImageView
                             android:src="@drawable/one_kegiatan"
                             android:padding="5dp"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
+                            android:layout_width="38dp"
+                            android:layout_height="38dp"
                             android:layout_alignParentEnd="true"
                             android:background="@drawable/backgoundovalhijau"
                             android:layout_centerVertical="true"
@@ -483,8 +483,8 @@
 
                         <ProgressBar
                             android:id="@+id/pgSingkronKegiatan"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
+                            android:layout_width="38dp"
+                            android:layout_height="38dp"
                             android:layout_centerVertical="true"
                             android:layout_alignParentEnd="true"
                             android:indeterminateTint="@color/hijau"

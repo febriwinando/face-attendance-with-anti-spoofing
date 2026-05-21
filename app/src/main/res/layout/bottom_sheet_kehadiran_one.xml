@@ -21,7 +21,7 @@
     >
 
     <View
-        android:layout_width="30dp"
+        android:layout_width="38dp"
         android:layout_height="5dp"
         android:layout_gravity="center_horizontal"
         android:background="@drawable/backgroundnavbar"
@@ -80,8 +80,8 @@
                     >
 
                     <ImageView
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
                         android:src="@drawable/one_office_kehadiran"
                         app:tint="@color/white"/>
 
@@ -125,8 +125,8 @@
                     >
 
                     <ImageView
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
                         android:src="@drawable/one_tl"
                         app:tint="@color/white"/>
 

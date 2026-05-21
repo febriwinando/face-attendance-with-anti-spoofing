@@ -22,8 +22,8 @@
             android:layout_height="wrap_content"
             >
             <ImageView
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
                 android:src="@drawable/one_left"
                 app:tint="@color/biru"
                 android:id="@+id/ivBack"

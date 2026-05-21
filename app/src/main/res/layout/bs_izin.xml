@@ -61,8 +61,8 @@
                     >
 
                     <ImageView
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
                         android:src="@drawable/one_tl"
                         app:tint="@color/text_putih"/>
 
@@ -107,8 +107,8 @@
                     >
 
                     <ImageView
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
                         android:src="@drawable/one_cuti"
                         app:tint="@color/text_putih"/>
 
@@ -153,8 +153,8 @@
                     >
 
                     <ImageView
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
                         android:src="@drawable/one_sick"
                         app:tint="@color/text_putih"/>
 

@@ -41,8 +41,8 @@
                 />
 
             <ImageView
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
                 android:layout_centerVertical="true"
                 android:layout_alignParentEnd="true"
                 app:srcCompat="@drawable/one_close"
@@ -113,15 +113,15 @@
 
                     <ImageView
                         android:id="@+id/ivListBerakhlah1"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
                         android:src="@drawable/one_rectangle_non"
                         android:layout_marginEnd="10dp"/>
 
                     <ImageView
                         android:id="@+id/ivCheckBer1"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
                         android:src="@drawable/one_rectangle"
                         android:layout_marginEnd="10dp"
                         android:visibility="gone"/>
@@ -155,15 +155,15 @@
 
                     <ImageView
                         android:id="@+id/ivListBerakhlah2"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
                         android:src="@drawable/one_rectangle_non"
                         android:layout_marginEnd="10dp"/>
 
                     <ImageView
                         android:id="@+id/ivCheckBer2"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
                         android:src="@drawable/one_rectangle"
                         android:layout_marginEnd="10dp"
                         android:visibility="gone"/>
@@ -198,15 +198,15 @@
 
                     <ImageView
                         android:id="@+id/ivListBerakhlah3"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
                         android:src="@drawable/one_rectangle_non"
                         android:layout_marginEnd="10dp"/>
 
                     <ImageView
                         android:id="@+id/ivCheckBer3"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
                         android:src="@drawable/one_rectangle"
                         android:layout_marginEnd="10dp"
                         android:visibility="gone"/>
@@ -239,14 +239,14 @@
 
                     <ImageView
                         android:id="@+id/ivListBerakhlah4"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
                         android:src="@drawable/one_rectangle_non"
                         android:layout_marginEnd="10dp"/>
                     <ImageView
                         android:id="@+id/ivCheckBer4"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
                         android:src="@drawable/one_rectangle"
                         android:layout_marginEnd="10dp"
                         android:visibility="gone"/>
@@ -280,15 +280,15 @@
 
                     <ImageView
                         android:id="@+id/ivListBerakhlah5"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
                         android:src="@drawable/one_rectangle_non"
                         android:layout_marginEnd="10dp"/>
 
                     <ImageView
                         android:id="@+id/ivCheckBer5"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
                         android:src="@drawable/one_rectangle"
                         android:layout_marginEnd="10dp"
                         android:visibility="gone"/>
@@ -322,14 +322,14 @@
 
                     <ImageView
                         android:id="@+id/ivListBerakhlah6"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
                         android:src="@drawable/one_rectangle_non"
                         android:layout_marginEnd="10dp"/>
                     <ImageView
                         android:id="@+id/ivCheckBer6"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
                         android:src="@drawable/one_rectangle"
                         android:layout_marginEnd="10dp"
                         android:visibility="gone"/>
@@ -363,15 +363,15 @@
 
                     <ImageView
                         android:id="@+id/ivListBerakhlah7"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
                         android:src="@drawable/one_rectangle_non"
                         android:layout_marginEnd="10dp"/>
 
                     <ImageView
                         android:id="@+id/ivCheckBer7"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
                         android:src="@drawable/one_rectangle"
                         android:layout_marginEnd="10dp"
                         android:visibility="gone"/>

@@ -42,8 +42,8 @@
             android:background="@drawable/backgoundovalputih"
             android:layout_centerInParent="true"
             android:gravity="center"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
             android:visibility="invisible">
 
             <TextView

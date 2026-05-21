@@ -31,13 +31,13 @@
             android:foreground="?attr/selectableItemBackground"
             android:onClick="backFinalDinasLuar"
             tools:ignore="TouchTargetSizeCheck,UsingOnClickInXml"
-            tools:targetApi="m">
+            >
 
 
             <ImageView
                 android:id="@+id/ivBack"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
                 android:layout_centerVertical="true"
                 android:contentDescription="@string/todo"
                 android:elevation="10dp"
@@ -260,6 +260,7 @@
                 android:textSize="18sp"
                 android:layout_marginEnd="5dp"
                 android:textStyle="bold"
+                android:padding="5dp"
                 android:textColor="@color/text_putih"/>
         </LinearLayout>
     </LinearLayout>

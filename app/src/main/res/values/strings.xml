@@ -108,5 +108,7 @@
     <string name="panduan_aplikasi">Panduan Aplikasi</string>
     <string name="privasi">Privasi</string>
     <string name="keluar">Keluar</string>
+    <string name="reset_password">Reset Password!</string>
+    <string name="lupa_password">Lupa Password,</string>
 
 </resources>

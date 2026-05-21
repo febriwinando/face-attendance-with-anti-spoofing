@@ -24,8 +24,8 @@
         <ImageView
             android:layout_marginTop="30dp"
             android:id="@+id/ivBack"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
             android:layout_centerVertical="true"
             android:contentDescription="@string/todo"
             android:elevation="10dp"
@@ -84,8 +84,8 @@
         <ImageView
             android:layout_centerVertical="true"
             android:layout_alignParentEnd="true"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
             android:src="@drawable/ic_image_search"
             app:tint="@color/biru_putih"
             />
@@ -132,8 +132,8 @@
                         app:srcCompat="@drawable/ic_jabatan"
                         android:background="@drawable/backgoundovalbirusift"
                         android:padding="5dp"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
                         app:tint="@color/white"
                         />
 
@@ -177,8 +177,8 @@
                     <ImageView
                         android:background="@drawable/backgoundovalbirusift"
                         android:padding="5dp"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
                         app:tint="@color/white"
                         app:srcCompat="@drawable/ic_baseline_person_24" />
 
@@ -222,8 +222,8 @@
                         android:background="@drawable/backgoundovalbirusift"
                         android:contentDescription="@string/kelompok"
                         android:padding="5dp"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
                         app:tint="@color/background_color"
                         app:srcCompat="@drawable/ic_group_work" />
 
@@ -250,8 +250,8 @@
                         android:background="@drawable/backgoundovalbirusift"
                         android:contentDescription="@string/kelompok"
                         android:padding="5dp"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
                         app:tint="@color/background_color"
                         app:srcCompat="@drawable/ic_group_work" />
 
@@ -278,8 +278,8 @@
                     <ImageView
                         android:background="@drawable/backgoundovalbirusift"
                         android:padding="5dp"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
                         app:tint="@color/white"
                         app:srcCompat="@drawable/ic_mail" />
 
@@ -321,8 +321,8 @@
                     <ImageView
                         android:background="@drawable/backgoundovalbirusift"
                         android:padding="5dp"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
                         app:tint="@color/white"
                         app:srcCompat="@drawable/ic_phone_android" />
 
@@ -363,8 +363,8 @@
                     <ImageView
                         android:background="@drawable/backgoundovalbirusift"
                         android:padding="5dp"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
                         app:tint="@color/white"
                         app:srcCompat="@drawable/ic_locasi_office" />
                     <LinearLayout
@@ -426,8 +426,8 @@
                     <ImageView
                         android:background="@drawable/backgoundovalbirusift"
                         android:padding="5dp"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
                         app:tint="@color/white"
                         app:srcCompat="@drawable/one_lock" />
 
@@ -455,8 +455,8 @@
                         android:background="@drawable/backgoundovalbirusift"
                         android:contentDescription="@string/panduan"
                         android:padding="5dp"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
                         app:tint="@color/white"
                         app:srcCompat="@drawable/ic_panduan" />
 
@@ -483,8 +483,8 @@
                     <ImageView
                         android:background="@drawable/backgoundovalbirusift"
                         android:padding="5dp"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
                         app:tint="@color/white"
                         app:srcCompat="@drawable/ic_privasi" />
 

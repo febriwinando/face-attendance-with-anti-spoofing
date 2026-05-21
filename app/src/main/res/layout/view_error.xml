@@ -59,8 +59,8 @@
 
             <ImageView
                 android:id="@+id/tvTutupDialog"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"
                 android:clickable="true"

@@ -19,8 +19,8 @@
         <ImageView
             android:layout_alignParentLeft="true"
             android:id="@+id/ivBackValidasi"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
             app:srcCompat="@drawable/one_left"
             android:layout_marginEnd="10dp"/>
 

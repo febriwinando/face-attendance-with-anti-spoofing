@@ -75,7 +75,7 @@
                 android:layout_height="wrap_content"
                 android:imeOptions="actionNext"
                 android:inputType="numberSigned"
-                android:textSize="16sp"
+                android:textSize="18sp"
                 android:textColor="@color/text_hitam"
                 />
         </com.google.android.material.textfield.TextInputLayout>
@@ -100,7 +100,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPassword"
-                android:textSize="16sp"
+                android:textSize="18sp"
                 android:textStyle="bold"
                 android:textColor="@color/text_hitam"
                 />
@@ -116,7 +116,8 @@
             android:text="@string/masuk"
             android:textAlignment="center"
             android:textColor="@color/text_putih"
-            android:textSize="16sp" />
+            android:textSize="18sp"
+            />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -128,16 +129,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/text_hitam"
-                android:text="Lupa Password, " />
+                android:text="@string/lupa_password"
+                android:textSize="16sp"/>
 
             <TextView
                 android:id="@+id/tvResetPassword"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-
-                android:text="Reset Password!"
+                android:text="@string/reset_password"
                 android:textColor="@color/biru"
-                android:textStyle="italic" />
+                android:textStyle="italic"
+                android:textSize="16sp"/>
         </LinearLayout>
 
         <View

@@ -78,8 +78,8 @@
                 android:paddingEnd="5dp">
 
                 <ImageView
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
                     app:srcCompat="@drawable/one_more"
                     app:tint="@color/biru_putih"
                     android:contentDescription="@string/todo" />
@@ -96,8 +96,8 @@
 
                 <ImageView
                     app:tint="@color/biru_putih"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
                     android:layout_marginStart="10dp"
                     app:srcCompat="@drawable/one_less"
                     android:contentDescription="@string/todo" />
