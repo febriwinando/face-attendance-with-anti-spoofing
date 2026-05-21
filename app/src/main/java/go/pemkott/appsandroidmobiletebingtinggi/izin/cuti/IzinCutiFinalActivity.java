@@ -405,6 +405,12 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
                 requestBody
         );
     }
+
+    private final Handler autoCloseHandler = new Handler();
+
+    private final Runnable autoCloseRunnable = () -> {
+        finish();
+    };
     public void kirimdata(String valid, String posisi, String status){
         Dialog dialogproses = new Dialog(IzinCutiFinalActivity.this, R.style.DialogStyle);
         dialogproses.setContentView(R.layout.view_proses);
@@ -465,6 +471,14 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
 
                 if (Objects.requireNonNull(response.body()).isStatus()){
                     dialogView.viewSukses(IzinCutiFinalActivity.this, data.getRemarks());
+
+                    autoCloseHandler.postDelayed(
+
+                            autoCloseRunnable,
+
+                            10000
+
+                    );
                 }else {
                     dialogView.viewNotifKosong(IzinCutiFinalActivity.this, data.getRemarks(),"");
                 }

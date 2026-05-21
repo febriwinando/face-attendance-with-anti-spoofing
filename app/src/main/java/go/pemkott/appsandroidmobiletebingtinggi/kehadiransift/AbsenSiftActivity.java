@@ -807,6 +807,12 @@ private boolean isHariSenin() {
         );
     }
 
+
+    private final Handler autoCloseHandler = new Handler();
+
+    private final Runnable autoCloseRunnable = () -> {
+        finish();
+    };
     public void kirimdataMasukPagi(String absensi, String eselon, String idpegawai, String tanggal, String jam, String posisi, String status,  String lat, String lng, String ket, int terlambat, String jampegawai, String validasi ){
         Dialog dialogproses = new Dialog(AbsenSiftActivity.this, R.style.DialogStyle);
         dialogproses.setContentView(R.layout.view_proses);
@@ -882,6 +888,16 @@ private boolean isHariSenin() {
                     dialogproses.dismiss();
                     dialogView.viewSukses(AbsenSiftActivity.this, data.getRemarks());
 
+                    // mulai hitung 10 detik
+
+                    autoCloseHandler.postDelayed(
+
+                            autoCloseRunnable,
+
+                            10000
+
+                    );
+
                 } else {
                     dialogproses.dismiss();
                     dialogView.viewNotifKosong(AbsenSiftActivity.this, response.body().getRemarks(), "");
@@ -949,6 +965,16 @@ private boolean isHariSenin() {
                     ResponsePOJO data = response.body();
                     dialogproses.dismiss();
                     dialogView.viewSukses(AbsenSiftActivity.this, data.getRemarks());
+
+                    // mulai hitung 10 detik
+
+                    autoCloseHandler.postDelayed(
+
+                            autoCloseRunnable,
+
+                            10000
+
+                    );
                 } else {
                     dialogproses.dismiss();
                     dialogView.viewNotifKosong(AbsenSiftActivity.this, response.body().getRemarks(), "");
@@ -1042,6 +1068,16 @@ private boolean isHariSenin() {
                     ResponsePOJO data = response.body();
                     dialogproses.dismiss();
                     dialogView.viewSukses(AbsenSiftActivity.this, data.getRemarks());
+
+                    // mulai hitung 10 detik
+
+                    autoCloseHandler.postDelayed(
+
+                            autoCloseRunnable,
+
+                            10000
+
+                    );
                 } else {
                     dialogproses.dismiss();
 
@@ -1139,6 +1175,16 @@ private boolean isHariSenin() {
                     ResponsePOJO data = response.body();
                     dialogproses.dismiss();
                     dialogView.viewSukses(AbsenSiftActivity.this, data.getRemarks());
+
+                    // mulai hitung 10 detik
+
+                    autoCloseHandler.postDelayed(
+
+                            autoCloseRunnable,
+
+                            10000
+
+                    );
                 } else {
                     dialogproses.dismiss();
 

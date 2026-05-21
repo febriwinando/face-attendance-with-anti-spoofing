@@ -857,6 +857,12 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
                 requestBody
         );
     }
+
+    private final Handler autoCloseHandler = new Handler();
+
+    private final Runnable autoCloseRunnable = () -> {
+        finish();
+    };
     public void kirimdata(String valid, String posisi, String status){
 
         Dialog dialogproses = new Dialog(PerjalananDinasFinalActivity.this, R.style.DialogStyle);
@@ -928,6 +934,16 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
 
                 if (Objects.requireNonNull(response.body()).isStatus()){
                     dialogView.viewSukses(PerjalananDinasFinalActivity.this, data.getRemarks());
+
+                    // mulai hitung 10 detik
+
+                    autoCloseHandler.postDelayed(
+
+                            autoCloseRunnable,
+
+                            10000
+
+                    );
                 }else {
                     dialogView.viewNotifKosong(PerjalananDinasFinalActivity.this, data.getRemarks(),"");
                 }

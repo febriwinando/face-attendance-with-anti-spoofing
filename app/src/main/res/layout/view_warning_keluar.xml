@@ -25,7 +25,7 @@
             android:layout_toEndOf="@+id/emoticon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Peringatan!"
+            android:text="@string/peringatan"
             android:textSize="25sp"
             android:textColor="@color/text_hitam"
             android:textStyle="bold"
@@ -47,9 +47,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="@color/font"
-                android:textSize="16sp"
+                android:textSize="18sp"
                 android:text="Apakah anda yakin akan keluar?"
                 android:textAlignment="textStart"
+                android:textStyle="bold"
                 android:shadowColor="@color/kuning"
                 />
 

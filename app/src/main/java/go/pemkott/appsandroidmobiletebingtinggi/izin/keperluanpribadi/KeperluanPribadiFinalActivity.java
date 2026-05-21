@@ -359,6 +359,11 @@ public class KeperluanPribadiFinalActivity extends AppCompatActivity implements 
         );
     }
 
+    private final Handler autoCloseHandler = new Handler();
+
+    private final Runnable autoCloseRunnable = () -> {
+        finish();
+    };
     public void kirimdataMasuk(String valid, String posisi, String status, String ketKehadiran, String jampegawai){
 
         Dialog dialogproses = new Dialog(KeperluanPribadiFinalActivity.this, R.style.DialogStyle);
@@ -430,6 +435,14 @@ public class KeperluanPribadiFinalActivity extends AppCompatActivity implements 
 
                 if (Objects.requireNonNull(response.body()).isStatus()){
                     dialogView.viewSukses(KeperluanPribadiFinalActivity.this, data.getRemarks());
+
+                    autoCloseHandler.postDelayed(
+
+                            autoCloseRunnable,
+
+                            10000
+
+                    );
                 }else {
                     dialogView.viewNotifKosong(KeperluanPribadiFinalActivity.this, data.getRemarks(),"");
                 }
@@ -517,6 +530,13 @@ public class KeperluanPribadiFinalActivity extends AppCompatActivity implements 
 
                 if (Objects.requireNonNull(response.body()).isStatus()){
                     dialogView.viewSukses(KeperluanPribadiFinalActivity.this, data.getRemarks());
+                    autoCloseHandler.postDelayed(
+
+                            autoCloseRunnable,
+
+                            10000
+
+                    );
                 }else {
                     dialogView.viewNotifKosong(KeperluanPribadiFinalActivity.this, data.getRemarks(),"");
                 }

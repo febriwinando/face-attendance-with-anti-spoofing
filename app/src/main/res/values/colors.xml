@@ -10,8 +10,8 @@
     <color name="hitam">#303642</color>
     <color name="black">#171717</color>
     <color name="font_highlight">#303642</color>
-    <color name="font">#87888c</color>
-    <color name="background_color">#f4f4f4</color>
+    <color name="font">#454545</color>
+    <color name="background_color">#FBFBFB</color>
     <color name="background_profil">#f4f4f4</color>
     <color name="background_layout">#fff</color>
     <color name="background_layout_lampiran">#fff</color>

@@ -237,6 +237,8 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
                 finish();
             }
         });
+
+        handlerTutupActivity();
     }
 
     private MultipartBody.Part prepareFilePart(String partName, byte[] imageBytes) {
@@ -658,6 +660,16 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
 
                 if (Objects.requireNonNull(response.body()).isStatus()){
                     dialogView.viewSukses(AbsensiKehadiranActivity.this, data.getRemarks());
+
+                    // mulai hitung 10 detik
+
+                    autoCloseHandler.postDelayed(
+
+                            autoCloseRunnable,
+
+                            10000
+
+                    );
                 }else {
                     dialogView.viewNotifKosong(AbsensiKehadiranActivity.this, data.getRemarks(),"");
                 }
@@ -676,6 +688,13 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
 
         dialogproses.show();
     }
+
+
+    private final Handler autoCloseHandler = new Handler();
+
+    private final Runnable autoCloseRunnable = () -> {
+        finish();
+    };
 
     public void kirimDataPulang(String absensi, String eselon, String idpegawai, String timetableid, String tanggal, String jam, String posisi, String status, String lat, String lng, String ket, int terlambat, String jampegawai, String validasi, String berakhlak){
         Dialog dialogproses = new Dialog(AbsensiKehadiranActivity.this, R.style.DialogStyle);
@@ -722,6 +741,15 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
 
                 if (Objects.requireNonNull(response.body()).isStatus()){
                     dialogView.viewSukses(AbsensiKehadiranActivity.this, data.getRemarks());
+                    // mulai hitung 10 detik
+
+                    autoCloseHandler.postDelayed(
+
+                            autoCloseRunnable,
+
+                            10000
+
+                    );
                 }else {
                     dialogView.viewNotifKosong(AbsensiKehadiranActivity.this, data.getRemarks(),"");
                 }
@@ -768,8 +796,6 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
         dialogSukes.show();
     }
 
-
-
     public void handlerTutupActivity(){
         Handler handler = new Handler();
         handler.postDelayed(() -> {
@@ -777,7 +803,6 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
                 cobarekamkembali();
             }
             }, 120000);
-
     }
 
     public void cobarekamkembali(){

@@ -34,7 +34,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/berhasil"
-                android:textSize="28sp"
+                android:textSize="22sp"
                 android:textStyle="bold"
                 android:textColor="@color/text_hitam"
                 />
@@ -44,6 +44,7 @@
             android:id="@+id/ivTutupDialogBerhasil"
             android:layout_width="38dp"
             android:layout_height="38dp"
+            android:contentDescription="@string/close_view_success"
             android:src="@drawable/one_close"
             android:layout_centerVertical="true"
             android:layout_alignParentEnd="true"

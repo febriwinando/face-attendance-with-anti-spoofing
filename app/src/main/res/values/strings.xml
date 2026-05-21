@@ -79,7 +79,7 @@
     <string name="p_pagi">P: Pagi</string>
     <string name="keterangan">Keterangan:</string>
     <string name="tfe_od_app_name" translation_description="Object Detection demo app [CHAR_LIMIT=40]">TFL Detect</string>
-    <string name="tfe_od_camera_error" translation_description="Error regarding camera support[CHAR_LIMIT=40]">This device doesn\'t support Camera2 API.</string>
+    <string name="tfe_od_camera_error" translation_description="Error regarding camera support[CHAR_LIMIT=40]">Perangkat ini tidak mendukung Camera2 API.</string>
     <string name="cari_rekap_kehadiran">Cari Rekap Kehadiran</string>
     <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyDpoOACMXG6YJoY-OD1z9JhPD56z-efFpE</string>
     <string name="tutup_modal_ganti_password">tutup modal ganti password</string>
@@ -110,5 +110,14 @@
     <string name="keluar">Keluar</string>
     <string name="reset_password">Reset Password!</string>
     <string name="lupa_password">Lupa Password,</string>
+    <string name="apakah_anda_yakin_akan_keluar">Apakah anda yakin akan keluar?</string>
+    <string name="batal">Batal</string>
+    <string name="peringatan">Peringatan!</string>
+    <string name="sedang_proses">Memproses…</string>
+    <string name="close_view_success">close view success</string>
+    <string name="survei_core_value">SURVEI CORE VALUE</string>
+    <string name="silahkan_pilih_core_values_asn_berakhlak_yang_anda_kerjakan_hari_ini">Silahkan pilih Core Values ASN BerAKHLAK yang anda kerjakan hari ini:</string>
+    <string name="coba_kembali">Coba Kembali</string>
+    <string name="rabu_09_februari_1994">Rabu, 09 Februari 1994</string>
 
 </resources>

@@ -15,8 +15,8 @@
         android:gravity="center_vertical">
 
         <ProgressBar
-            android:layout_width="38dp"
-            android:layout_height="38dp"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
             android:indeterminateTint="@color/white"
             />
 
@@ -24,10 +24,10 @@
             android:layout_margin="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="sedang proses ..."
+            android:text="@string/sedang_proses"
             android:textStyle="bold|italic"
             android:textColor="@color/text_putih"
-            android:textSize="16sp"
+            android:textSize="18sp"
             />
     </LinearLayout>
 

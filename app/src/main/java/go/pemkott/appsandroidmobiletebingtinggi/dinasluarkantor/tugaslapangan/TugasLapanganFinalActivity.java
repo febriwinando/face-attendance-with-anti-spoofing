@@ -445,6 +445,12 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
                 value
         );
     }
+
+    private final Handler autoCloseHandler = new Handler();
+
+    private final Runnable autoCloseRunnable = () -> {
+        finish();
+    };
     public void kirimdataMasuk(String valid, String posisi, String status, String ketKehadiran, String jampegawai){
         Dialog dialogproses = new Dialog(TugasLapanganFinalActivity.this, R.style.DialogStyle);
         dialogproses.setContentView(R.layout.view_proses);
@@ -514,6 +520,16 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
 
                 if (Objects.requireNonNull(response.body()).isStatus()){
                     dialogView.viewSukses(TugasLapanganFinalActivity.this, data.getRemarks());
+
+                    // mulai hitung 10 detik
+
+                    autoCloseHandler.postDelayed(
+
+                            autoCloseRunnable,
+
+                            10000
+
+                    );
                 }else {
                     dialogView.viewNotifKosong(TugasLapanganFinalActivity.this, data.getRemarks(),"");
                 }
@@ -599,6 +615,16 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
 
                 if (Objects.requireNonNull(response.body()).isStatus()){
                     dialogView.viewSukses(TugasLapanganFinalActivity.this, data.getRemarks());
+
+                    // mulai hitung 10 detik
+
+                    autoCloseHandler.postDelayed(
+
+                            autoCloseRunnable,
+
+                            10000
+
+                    );
                 }else {
                     dialogView.viewNotifKosong(TugasLapanganFinalActivity.this, data.getRemarks(),"");
                 }

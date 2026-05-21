@@ -468,6 +468,11 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
     }
 
 
+    private final Handler autoCloseHandler = new Handler();
+
+    private final Runnable autoCloseRunnable = () -> {
+        finish();
+    };
     public void kirimdataMasuk(String valid, String status, String ketKehadiran, String jampegawai){
         Dialog dialogproses = new Dialog(IzinSakitFinalActivity.this, R.style.DialogStyle);
         dialogproses.setContentView(R.layout.view_proses);
@@ -535,8 +540,18 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
                 ResponsePOJO data = response.body();
 
                 if (Objects.requireNonNull(response.body()).isStatus()){
-                    Log.d("Log Izin Sakit", "berhasil.");
+
                     dialogView.viewSukses(IzinSakitFinalActivity.this, data.getRemarks());
+
+                    // mulai hitung 10 detik
+
+                    autoCloseHandler.postDelayed(
+
+                            autoCloseRunnable,
+
+                            10000
+
+                    );
                 }else {
                     dialogView.viewNotifKosong(IzinSakitFinalActivity.this, data.getRemarks(),"");
                 }
@@ -623,8 +638,18 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
                 ResponsePOJO data = response.body();
 
                 if (Objects.requireNonNull(response.body()).isStatus()){
-                    Log.d("Log Izin Sakit", "berhasil.");
+
                     dialogView.viewSukses(IzinSakitFinalActivity.this, data.getRemarks());
+
+                    // mulai hitung 10 detik
+
+                    autoCloseHandler.postDelayed(
+
+                            autoCloseRunnable,
+
+                            10000
+
+                    );
                 }else {
                     dialogView.viewNotifKosong(IzinSakitFinalActivity.this, data.getRemarks(),"");
                 }

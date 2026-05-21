@@ -123,10 +123,10 @@ public class DashboardVersiOne extends AppCompatActivity {
     private static final String LOCATION_PERMISSION =
             Manifest.permission.ACCESS_FINE_LOCATION;
 
-    private static final String READ_STORAGE_PERMISSION =
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
-                    ? Manifest.permission.READ_MEDIA_IMAGES
-                    : Manifest.permission.READ_EXTERNAL_STORAGE;
+//    private static final String READ_STORAGE_PERMISSION =
+//            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+//                    ? Manifest.permission.READ_MEDIA_IMAGES
+//                    : Manifest.permission.READ_EXTERNAL_STORAGE;
     private static final int REQ_UPDATE = 2001;
 
 
@@ -423,21 +423,47 @@ public class DashboardVersiOne extends AppCompatActivity {
     }
 
 
+//    private void requestNotificationPermission() {
+//
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+//
+//            if (ContextCompat.checkSelfPermission(
+//                    this,
+//                    Manifest.permission.POST_NOTIFICATIONS
+//            ) != PackageManager.PERMISSION_GRANTED) {
+//
+//                ActivityCompat.requestPermissions(
+//                        this,
+//                        new String[]{Manifest.permission.POST_NOTIFICATIONS},
+//                        1001
+//                );
+//            }
+//        }
+//    }
+
     private void requestNotificationPermission() {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
 
             if (ContextCompat.checkSelfPermission(
                     this,
-                    Manifest.permission.POST_NOTIFICATIONS
-            ) != PackageManager.PERMISSION_GRANTED) {
+                    Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
 
                 ActivityCompat.requestPermissions(
                         this,
-                        new String[]{Manifest.permission.POST_NOTIFICATIONS},
-                        1001
+                        new String[]{
+                                Manifest.permission.POST_NOTIFICATIONS
+                        },
+                        REQ_NOTIFICATION
                 );
+
+            } else {
+                requestAppPermissions();
             }
+
+        } else {
+            requestAppPermissions();
         }
     }
 
@@ -462,31 +488,69 @@ public class DashboardVersiOne extends AppCompatActivity {
         }
     }
 
+//    private void requestAppPermissions() {
+//
+//        List<String> permissionsNeeded = new ArrayList<>();
+//
+//        if (ContextCompat.checkSelfPermission(this, CAMERA_PERMISSION)
+//                != PackageManager.PERMISSION_GRANTED) {
+//            permissionsNeeded.add(CAMERA_PERMISSION);
+//        }
+//
+//        if (ContextCompat.checkSelfPermission(this, LOCATION_PERMISSION)
+//                != PackageManager.PERMISSION_GRANTED) {
+//            permissionsNeeded.add(LOCATION_PERMISSION);
+//        }
+//
+//        if (ContextCompat.checkSelfPermission(this, READ_STORAGE_PERMISSION)
+//                != PackageManager.PERMISSION_GRANTED) {
+//            permissionsNeeded.add(READ_STORAGE_PERMISSION);
+//        }
+//
+//        if (!permissionsNeeded.isEmpty()) {
+//            ActivityCompat.requestPermissions(
+//                    this,
+//                    permissionsNeeded.toArray(new String[0]),
+//                    REQ_APP_PERMISSION
+//            );
+//        }
+//    }
+
     private void requestAppPermissions() {
 
         List<String> permissionsNeeded = new ArrayList<>();
 
-        if (ContextCompat.checkSelfPermission(this, CAMERA_PERMISSION)
+        if (ContextCompat.checkSelfPermission(
+                this,
+                CAMERA_PERMISSION)
                 != PackageManager.PERMISSION_GRANTED) {
+
             permissionsNeeded.add(CAMERA_PERMISSION);
         }
 
-        if (ContextCompat.checkSelfPermission(this, LOCATION_PERMISSION)
+        if (ContextCompat.checkSelfPermission(
+                this,
+                LOCATION_PERMISSION)
                 != PackageManager.PERMISSION_GRANTED) {
+
             permissionsNeeded.add(LOCATION_PERMISSION);
         }
 
-        if (ContextCompat.checkSelfPermission(this, READ_STORAGE_PERMISSION)
-                != PackageManager.PERMISSION_GRANTED) {
-            permissionsNeeded.add(READ_STORAGE_PERMISSION);
-        }
-
         if (!permissionsNeeded.isEmpty()) {
+
             ActivityCompat.requestPermissions(
                     this,
                     permissionsNeeded.toArray(new String[0]),
                     REQ_APP_PERMISSION
             );
+
+        } else {
+
+            Toast.makeText(
+                    this,
+                    "Semua permission diberikan",
+                    Toast.LENGTH_SHORT
+            ).show();
         }
     }
 

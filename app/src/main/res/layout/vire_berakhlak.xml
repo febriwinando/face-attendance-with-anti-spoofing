@@ -16,6 +16,7 @@
         android:backgroundTint="@color/background_color">
 
         <LinearLayout
+            android:paddingTop="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -31,9 +32,9 @@
                 android:layout_centerInParent="true"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Survei Core Values"
+                android:text="@string/survei_core_value"
                 android:textAlignment="center"
-                android:textSize="20sp"
+                android:textSize="18sp"
                 android:textColor="@color/text_hitam"
                 android:textStyle="bold"
                 android:layout_marginBottom="10dp"
@@ -69,14 +70,14 @@
 
                 <ImageView
                     android:id="@+id/ivBerakhlak"
-                    android:layout_width="100dp"
+                    android:layout_width="80dp"
                     android:layout_height="50dp"
                     android:src="@drawable/berakhlak"/>
 
                 <ImageView
                     android:layout_toEndOf="@+id/ivBerakhlak"
                     android:id="@+id/ivBangga"
-                    android:layout_width="70dp"
+                    android:layout_width="60dp"
                     android:layout_marginStart="10dp"
                     android:layout_height="50dp"
                     android:src="@drawable/bangga"/>
@@ -89,7 +90,7 @@
                 android:id="@+id/tvPeritahPilih"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Silahkan pilih Core Values ASN BerAKHLAK yang anda kerjakan hari ini:"
+                android:text="@string/silahkan_pilih_core_values_asn_berakhlak_yang_anda_kerjakan_hari_ini"
                 android:textColor="@color/text_hitam"
                 android:textSize="18sp"
                 android:textStyle="bold"
@@ -408,7 +409,7 @@
                 android:paddingEnd="15dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="KIRIM"
+                android:text="@string/kirim"
                 android:textSize="18sp"
                 android:layout_marginEnd="5dp"
                 android:textStyle="bold"
