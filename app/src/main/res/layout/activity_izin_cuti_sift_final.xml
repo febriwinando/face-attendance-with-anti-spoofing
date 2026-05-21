@@ -394,7 +394,7 @@
                 android:text="@string/kirim"
                 android:textSize="18sp"
                 android:layout_marginEnd="5dp"
-                android:textStyle="italic"
+                android:textStyle="bold"
                 android:padding="5dp"
                 android:textColor="@color/putih"/>
 
