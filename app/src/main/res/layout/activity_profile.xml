@@ -24,8 +24,8 @@
         <ImageView
             android:layout_marginTop="30dp"
             android:id="@+id/ivBack"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_centerVertical="true"
             android:contentDescription="@string/todo"
             android:elevation="10dp"
@@ -36,7 +36,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="PROFIL PEGAWAI"
+            android:text="@string/profil_pegawai"
             android:textStyle="bold"
             android:textColor="@color/text_hitam"
             android:layout_centerVertical="true"
@@ -64,7 +64,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:layout_marginStart="10dp"
-            >
+            tools:ignore="RelativeOverlap">
             <TextView
                 android:id="@+id/tvNamaPegawai"
                 android:layout_width="wrap_content"
@@ -105,7 +105,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Informasi Pegawai"
+                android:text="@string/informasi_pegawai"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="@color/font"
@@ -151,14 +151,14 @@
                             android:layout_height="wrap_content"
                             android:textSize="16sp"
                             android:textStyle="bold"
-                            android:text="Jabatan"
+                            android:text="@string/jabatan"
                             android:textColor="@color/text_hitam"
                             />
                         <TextView
                             android:id="@+id/tvJabatanEmploy"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Staf"
+                            android:text="@string/staf"
                             android:textColor="@color/font"
                             android:textSize="14sp" />
 
@@ -195,14 +195,14 @@
                             android:layout_height="wrap_content"
                             android:textSize="16sp"
                             android:textStyle="bold"
-                            android:text="Pegawai"
+                            android:text="@string/pegawai"
                             android:textColor="@color/text_hitam"
                             />
                         <TextView
                             android:id="@+id/tvKelompokEmploy"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Pengatur (II/c)"
+                            android:text="@string/pengatur_ii_c"
                             android:textSize="14sp"
                             android:textColor="@color/font"
                             />
@@ -217,8 +217,10 @@
                     android:paddingBottom="15dp"
                     android:visibility="gone"
                     android:gravity="center_vertical">
+
                     <ImageView
                         android:background="@drawable/backgoundovalbirusift"
+                        android:contentDescription="@string/kelompok"
                         android:padding="5dp"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
@@ -229,7 +231,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Bidang Aplikasi dan Informatika"
+                            android:text="@string/bidang_aplikasi_dan_informatika"
                             android:textSize="14sp"
                             android:textColor="@color/font"
                             />
@@ -246,6 +248,7 @@
 
                     <ImageView
                         android:background="@drawable/backgoundovalbirusift"
+                        android:contentDescription="@string/kelompok"
                         android:padding="5dp"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
@@ -257,7 +260,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
                         android:layout_weight="1"
-                        android:text="Pengembangan Aplikasi Informatika"
+                        android:text="@string/pengembangan_aplikasi_informatika"
                         android:textSize="16sp"
 
                         />
@@ -293,14 +296,14 @@
                             android:layout_height="wrap_content"
                             android:textSize="16sp"
                             android:textStyle="bold"
-                            android:text="Email"
+                            android:text="@string/email"
                             android:textColor="@color/text_hitam"
                             />
                         <TextView
                             android:id="@+id/tvEmailEmploy"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="febriwinando@gmail.com"
+                            android:text="@string/febriwinando_gmail_com"
                             android:textSize="14sp"
                             android:textColor="@color/font"
                             />
@@ -336,14 +339,14 @@
                             android:layout_height="wrap_content"
                             android:textSize="16sp"
                             android:textStyle="bold"
-                            android:text="Nomor HP"
+                            android:text="@string/nomor_hp"
                             android:textColor="@color/text_hitam"
                             />
                         <TextView
                             android:id="@+id/tvNoHpEmploye"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="085762183348"
+                            android:text="@string/strip"
                             android:textSize="14sp"
                             android:textColor="@color/font"
                             />
@@ -377,14 +380,14 @@
                             android:layout_height="wrap_content"
                             android:textSize="16sp"
                             android:textStyle="bold"
-                            android:text="OPD"
+                            android:text="@string/opd"
                             android:textColor="@color/text_hitam"
                             />
                         <TextView
                             android:id="@+id/tvDinasEmploy"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Jl. M. Akub Hasibuan, Kel. Tanjung Marulak, Kec. Rambutan, Tebing Tinggi"
+                            android:text="@string/jl_m_akub_hasibuan_kel_tanjung_marulak_kec_rambutan_tebing_tinggi"
                             android:textSize="14sp"
                             android:textColor="@color/font"
                             />
@@ -397,7 +400,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Pengaturan Profil"
+                android:text="@string/pengaturan_profil"
                 android:textStyle="bold"
                 android:textColor="@color/font"
                 android:layout_marginTop="20dp"
@@ -435,7 +438,7 @@
                         android:layout_marginStart="10dp"
                         android:layout_weight="1"
                         android:textColor="@color/font"
-                        android:text="Ganti Password"
+                        android:text="@string/ganti_password"
                         android:textSize="16sp" />
 
 
@@ -450,6 +453,7 @@
                     android:gravity="center_vertical">
                     <ImageView
                         android:background="@drawable/backgoundovalbirusift"
+                        android:contentDescription="@string/panduan"
                         android:padding="5dp"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
@@ -463,7 +467,7 @@
                         android:layout_weight="1"
                         android:textColor="@color/font"
                         android:layout_marginStart="10dp"
-                        android:text="Panduan Aplikasi"
+                        android:text="@string/panduan_aplikasi"
                         android:textSize="16sp" />
 
 
@@ -490,7 +494,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
                         android:layout_weight="1"
-                        android:text="Privasi"
+                        android:text="@string/privasi"
                         android:textColor="@color/font"
                         android:textSize="16sp" />
 
@@ -524,7 +528,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Keluar"
+                    android:text="@string/keluar"
                     android:textSize="16sp"
                     android:textColor="@color/font"/>
 

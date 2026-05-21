@@ -51,8 +51,8 @@
 
                 <ImageView
                     android:id="@+id/ivBack"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
                     android:layout_centerVertical="true"
                     app:srcCompat="@drawable/one_left"
                     />

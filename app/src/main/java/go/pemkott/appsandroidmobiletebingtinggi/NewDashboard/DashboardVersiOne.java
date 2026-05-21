@@ -41,6 +41,8 @@ import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -131,11 +133,19 @@ public class DashboardVersiOne extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Window window = this.getWindow();
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-        window.setStatusBarColor(this.getResources().getColor(R.color.background_color));
-        window.setNavigationBarColor(getResources().getColor(R.color.background_color));
+
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+
+        WindowInsetsControllerCompat controller =
+                new WindowInsetsControllerCompat(
+                        getWindow(),
+                        getWindow().getDecorView()
+                );
+
+        controller.setAppearanceLightStatusBars(true);
+        controller.setAppearanceLightNavigationBars(true);
+
         setContentView(R.layout.activity_dashboard_versi_one);
 
 
@@ -216,7 +226,7 @@ public class DashboardVersiOne extends AppCompatActivity {
         cvKehadiran.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (statusSift.equals("0")){
+                if ("0".equals(statusSift)){
                     bukaKehadiran();
                 }else{
                     jenisabsensi = 7;
@@ -238,7 +248,7 @@ public class DashboardVersiOne extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                if (statusSift.equals("0")){
+                if ("0".equals(statusSift)){
                     viewJadwalKerja();
                 }else{
                     Intent intentJadwalSifting = new Intent(DashboardVersiOne.this, CalendarJadwalSiftActivity.class);
@@ -271,7 +281,7 @@ public class DashboardVersiOne extends AppCompatActivity {
         cvMenuIzin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (statusSift.equals("0")){
+                if ("0".equals(statusSift)){
                     bukaIzin();
                 }else{
                     jenisabsensi = 8;
@@ -497,7 +507,7 @@ public class DashboardVersiOne extends AppCompatActivity {
     }
 
     public void dataValidasi(String verifikator, String idE){
-        if (verifikator.equals("verifikator1") || verifikator.equals("verifikator2")){
+        if ("verifikator1".equals(verifikator) || "verifikator2".equals(verifikator)){
             Call<List<ValidasiData>> callKegiatan = httpService.getUrlListValidasi("https://absensi.tebingtinggikota.go.id/api/newVeriFragment?verifikator="+verifikator+"&id="+idE);
             callKegiatan.enqueue(new Callback<List<ValidasiData>>() {
                 @Override
@@ -812,7 +822,7 @@ public class DashboardVersiOne extends AppCompatActivity {
                 }
 
                 Log.d("TESTING KOORDINAT", String.valueOf(koordinats.size()));
-                if (response.body().get(0).getStatus().equals("kosong")){
+                if ("kosong".equals(response.body().get(0).getStatus())){
                     databaseHelper.deleteDataKoordinatEmployee(sEmployee_id);
                 }else{
                     Cursor koorditaemplyeData = databaseHelper.getDataKoordinatEmp(sEmployee_id);

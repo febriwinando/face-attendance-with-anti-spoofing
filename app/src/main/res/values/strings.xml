@@ -82,5 +82,31 @@
     <string name="tfe_od_camera_error" translation_description="Error regarding camera support[CHAR_LIMIT=40]">This device doesn\'t support Camera2 API.</string>
     <string name="cari_rekap_kehadiran">Cari Rekap Kehadiran</string>
     <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyDpoOACMXG6YJoY-OD1z9JhPD56z-efFpE</string>
+    <string name="tutup_modal_ganti_password">tutup modal ganti password</string>
+    <string name="ganti_password">Ganti Password</string>
+    <string name="password_sebelumnya">password sebelumnya</string>
+    <string name="password_baru">password baru</string>
+    <string name="masukkan_kembali_password_baru">masukkan kembali password baru</string>
+    <string name="profil_pegawai">PROFIL PEGAWAI</string>
+    <string name="informasi_pegawai">Informasi Pegawai</string>
+    <string name="jabatan">Jabatan</string>
+    <string name="staf">Staf</string>
+    <string name="pegawai">Pegawai</string>
+    <string name="pengatur_ii_c">Pengatur (II/c)</string>
+    <string name="kelompok">Kelompok</string>
+    <string name="bidang_aplikasi_dan_informatika">Bidang Aplikasi dan Informatika</string>
+    <string name="pengembangan_aplikasi_informatika">Pengembangan Aplikasi Informatika</string>
+    <string name="email">Email</string>
+    <string name="febriwinando_gmail_com">febriwinando@gmail.com</string>
+    <string name="nomor_hp">Nomor HP</string>
+    <string name="_085762183348">085762183348</string>
+    <string name="strip">-</string>
+    <string name="opd">OPD</string>
+    <string name="jl_m_akub_hasibuan_kel_tanjung_marulak_kec_rambutan_tebing_tinggi">Jl. M. Akub Hasibuan, Kel. Tanjung Marulak, Kec. Rambutan, Tebing Tinggi</string>
+    <string name="pengaturan_profil">Pengaturan Profil</string>
+    <string name="panduan">panduan</string>
+    <string name="panduan_aplikasi">Panduan Aplikasi</string>
+    <string name="privasi">Privasi</string>
+    <string name="keluar">Keluar</string>
 
 </resources>

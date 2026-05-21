@@ -1,47 +1,47 @@
 [versions]
-agp = "9.1.0"
+agp = "9.2.1"
 junit = "4.13.2"
 junitVersion = "1.3.0"
 espressoCore = "3.7.0"
 appcompat = "1.7.1"
-material = "1.13.0"
-activity = "1.12.3"
+material = "1.14.0"
+activity = "1.13.0"
 constraintlayout = "2.2.1"
 pytorch_android_lite = "2.1.0"
 pytorch_android_torchvision_lite = "2.1.0"
 appUpdate = "2.1.0"
 faceDetection = "16.1.7"
-glide = "5.0.5"
+glide = "5.0.7"
 loggingInterceptor = "5.3.2"
-places = "5.1.1"
+places = "5.2.0"
 circleimageview = "3.1.0"
 recyclerview = "1.4.0"
 lifecycleExtensions = "2.2.0"
 cardview = "1.0.0"
-browser = "1.10.0-alpha02"
+browser = "1.10.0"
 playServicesAuthApiPhone = "18.3.0"
-playServicesAuth = "21.5.0"
-annotations = "26.0.2-1"
-multidex = "2.0.1"
+playServicesAuth = "21.5.1"
+annotations = "26.1.0"
+
 playServicesLocation = "21.3.0"
 playServicesMaps = "20.0.0"
 volley = "1.2.1"
-kotlinxCoroutinesAndroid = "1.10.2"
+kotlinxCoroutinesAndroid = "1.11.0"
 okhttp = "5.3.2"
-gson = "2.13.2"
+gson = "2.14.0"
 runner = "1.7.0"
 shimmer = "0.5.0"
 converterGson = "3.0.0"
-firebaseBom = "34.9.0"
+firebaseBom = "34.13.0"
 swiperefreshlayout = "1.2.0"
 
-cameraCore = "1.6.0-beta01"
-cameraCamera2 = "1.6.0-beta01"
-cameraLifecycle = "1.6.0-beta01"
-cameraView = "1.6.0-beta01"
-firebaseMessaging = "25.0.1"
+cameraCore = "1.6.1"
+cameraCamera2 = "1.6.1"
+cameraLifecycle = "1.6.1"
+cameraView = "1.6.1"
+firebaseMessaging = "25.0.2"
 googleServices = "4.4.4"
-firebaseAnalytics = "23.0.0"
+firebaseAnalytics = "23.2.0"
 appUpdateKtx = "2.1.0"
 
 
@@ -69,7 +69,6 @@ browser = { group = "androidx.browser", name = "browser", version.ref = "browser
 play-services-auth-api-phone = { group = "com.google.android.gms", name = "play-services-auth-api-phone", version.ref = "playServicesAuthApiPhone" }
 play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuth" }
 annotations = { group = "org.jetbrains", name = "annotations", version.ref = "annotations" }
-multidex = { group = "androidx.multidex", name = "multidex", version.ref = "multidex" }
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
 play-services-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "playServicesMaps" }
 volley = { group = "com.android.volley", name = "volley", version.ref = "volley" }

@@ -60,6 +60,7 @@ public class ProfileActivity extends AppCompatActivity {
     SessionManager session;
     String userId;
     ApiAddProduk api;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,6 +81,7 @@ public class ProfileActivity extends AppCompatActivity {
         tvKelompokEmploy = findViewById(R.id.tvKelompokEmploy);
         tvJabatanEmploy = findViewById(R.id.tvJabatanEmploy);
         tvDinasEmploy = findViewById(R.id.tvDinasEmploy);
+
         llKeluarProfil = findViewById(R.id.llKeluarProfil);
         trGantiPassword = findViewById(R.id.trGantiPassword);
         ivBack = findViewById(R.id.ivBack);
@@ -88,59 +90,62 @@ public class ProfileActivity extends AppCompatActivity {
                 .baseUrl("https://absensi.tebingtinggikota.go.id/api/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-        holderAPI = retrofit.create(HttpService.class);
 
+        holderAPI = retrofit.create(HttpService.class);
 
         databaseHelper = new DatabaseHelper(this);
 
         dataEmployee();
 
-        if (fotoProfile.equals("null")){
+        // Foto profil aman
+        if (fotoProfile == null ||
+                fotoProfile.trim().isEmpty() ||
+                "null".equals(fotoProfile)) {
+
             Glide.with(this)
-                    .load( R.drawable.profilpics )
-                    .into( civProfilPegawai );
-        }else{
+                    .load(R.drawable.profilpics)
+                    .into(civProfilPegawai);
+
+        } else {
+
             Glide.with(this)
-                    .load( "https://absensi.tebingtinggikota.go.id/storage/" +fotoProfile )
-                    .into( civProfilPegawai );
+                    .load("https://absensi.tebingtinggikota.go.id/storage/" + fotoProfile)
+                    .placeholder(R.drawable.profilpics)
+                    .error(R.drawable.profilpics)
+                    .into(civProfilPegawai);
         }
 
-
-        if(sNama.length()>14){
-            tvNamaPegawai.setText(sNama.substring(0,14)+" ...");
-        }else {
-            tvNamaPegawai.setText(sNama);
+        // Nama aman
+        if (sNama != null && sNama.length() > 14) {
+            tvNamaPegawai.setText(
+                    sNama.substring(0,14)+" ..."
+            );
+        } else {
+            tvNamaPegawai.setText(
+                    sNama != null ? sNama : ""
+            );
         }
-        tvNip.setText(sNIP);
-        tvEmailEmploy.setText(sEmail);
-        tvNoHpEmploye.setText(sNoHpEmployee);
-        tvKelompokEmploy.setText(sKelompok);
-        tvJabatanEmploy.setText(sJabatan);
-        tvDinasEmploy.setText(sKantor);
 
-        llKeluarProfil.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                peringatanKeluar();
-            }
+        tvNip.setText(sNIP != null ? sNIP : "");
+        tvEmailEmploy.setText(sEmail != null ? sEmail : "");
+        tvNoHpEmploye.setText(sNoHpEmployee != null ? sNoHpEmployee : "");
+        tvKelompokEmploy.setText(sKelompok != null ? sKelompok : "");
+        tvJabatanEmploy.setText(sJabatan != null ? sJabatan : "");
+        tvDinasEmploy.setText(sKantor != null ? sKantor : "");
+
+        llKeluarProfil.setOnClickListener(v -> {
+            peringatanKeluar();
         });
 
-        trGantiPassword.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                gantiPassView();
-            }
+        trGantiPassword.setOnClickListener(v -> {
+            gantiPassView();
         });
 
-        ivBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
+        ivBack.setOnClickListener(v -> {
+            onBackPressed();
         });
 
     }
-
     @Override
     public void onBackPressed() {
         super.onBackPressed();
@@ -151,35 +156,86 @@ public class ProfileActivity extends AppCompatActivity {
 
         Cursor res = databaseHelper.getAllData22(userId);
 
-        while (res.moveToNext()){
-            sEmployee_id = res.getString(1);
-            sAkses = res.getString(3);
-            sActive = res.getString(4);
-            sToken = res.getString(5);
+        if(res != null && res.moveToFirst()){
+
+            do{
+
+                sEmployee_id = res.getString(1) != null ?
+                        res.getString(1) : "";
+
+                sAkses = res.getString(3) != null ?
+                        res.getString(3) : "";
+
+                sActive = res.getString(4) != null ?
+                        res.getString(4) : "";
+
+                sToken = res.getString(5) != null ?
+                        res.getString(5) : "";
+
+            }
+            while(res.moveToNext());
+
+            res.close();
         }
+
 
         Cursor resa = databaseHelper.getDataEmployee(sEmployee_id);
 
-        while (resa.moveToNext()){
+        if(resa != null && resa.moveToFirst()){
 
-            sNIP = resa.getString(5);
-            sNama = resa.getString(6);
-            sEmail = resa.getString(7);
-            sNoHpEmployee = resa.getString(8);
-            sOPD = resa.getString(4);
+            do{
 
-            if (!resa.getString(9).equals("pns")){
-                sKelompok = "Non-PNS";
-            }else{
-                sKelompok = "Pegawai Negeri Sipil";
+                sNIP = resa.getString(5) != null ?
+                        resa.getString(5) : "";
+
+                sNama = resa.getString(6) != null ?
+                        resa.getString(6) : "";
+
+                sEmail = resa.getString(7) != null ?
+                        resa.getString(7) : "";
+
+                sNoHpEmployee = resa.getString(8) != null ?
+                        resa.getString(8) : "";
+
+                sOPD = resa.getString(4) != null ?
+                        resa.getString(4) : "";
+
+                String statusPegawai =
+                        resa.getString(9);
+
+                if(!"pns".equals(statusPegawai)){
+                    sKelompok = "Non-PNS";
+                }else{
+                    sKelompok = "Pegawai Negeri Sipil";
+                }
+
+                sJabatan = resa.getString(12) != null ?
+                        resa.getString(12) : "";
+
+                sKantor = resa.getString(13) != null ?
+                        resa.getString(13) : "";
+
+                fotoProfile = resa.getString(17);
+
+                fotoProfileUpdate = fotoProfile;
+
             }
+            while(resa.moveToNext());
 
-            sJabatan = resa.getString(12);
-            sKantor = resa.getString(13);
-            fotoProfile = resa.getString(17);
-            fotoProfileUpdate = resa.getString(17);
+            resa.close();
 
+        }else{
+
+            sNIP="";
+            sNama="";
+            sEmail="";
+            sNoHpEmployee="";
+            sKelompok="";
+            sJabatan="";
+            sKantor="";
+            fotoProfile="";
         }
+
     }
 
     DialogView dialogView = new DialogView(ProfileActivity.this);
@@ -346,7 +402,11 @@ public class ProfileActivity extends AppCompatActivity {
 
                 Handler handler = new Handler();
                 handler.postDelayed(() -> {
-                    dashboardVersiOne.finish();
+                    if(dashboardVersiOne != null){
+
+                        dashboardVersiOne.finish();
+
+                    }
                     Intent loginActivity = new Intent(ProfileActivity.this, LoginActivity.class);
                     loginActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(loginActivity);

@@ -16,6 +16,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.messaging.FirebaseMessaging;
+
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -336,36 +338,87 @@ public class DownloadDataActivity extends AppCompatActivity {
     }
 
 
+//    private void sendFcmTokenToServer() {
+//        updateUI("menyelesaikan proses...");
+//        SessionManager session = new SessionManager(this);
+//        String pegawaiId = session.getPegawaiId();
+//        String fcmToken  = session.getFcmToken();
+//
+//        if (pegawaiId == null || pegawaiId.equals("0") || fcmToken == null) {
+//            Log.w("FCM Keluar", "Pegawai ID / FCM Token belum siap, skip update");
+//            return;
+//        }
+//
+//        Call<ResponsePOJO> call = RetroClient.getInstance()
+//                .getApi()
+//                .updateFcmToken(pegawaiId, fcmToken);
+//
+//        call.enqueue(new Callback<ResponsePOJO>() {
+//            @Override
+//            public void onResponse(Call<ResponsePOJO> call, Response<ResponsePOJO> response) {
+//                executor.execute(() -> {
+//                    runOnUiThread(() -> finishFlow());
+//                });
+//            }
+//
+//            @Override
+//            public void onFailure(Call<ResponsePOJO> call, Throwable t) {
+//                Log.e("FCM", "Error update token: " + t.getMessage());
+//            }
+//        });
+//    }
+
     private void sendFcmTokenToServer() {
-        updateUI("menyelesaikan proses...");
+
         SessionManager session = new SessionManager(this);
         String pegawaiId = session.getPegawaiId();
-        String fcmToken  = session.getFcmToken();
 
-        if (pegawaiId == null || pegawaiId.equals("0") || fcmToken == null) {
-            Log.w("FCM", "Pegawai ID / FCM Token belum siap, skip update");
-            return;
-        }
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(task -> {
 
-        Call<ResponsePOJO> call = RetroClient.getInstance()
-                .getApi()
-                .updateFcmToken(pegawaiId, fcmToken);
+                    if (!task.isSuccessful()) {
+                        Log.e("FCM", "Gagal mendapatkan token");
+                        return;
+                    }
 
-        call.enqueue(new Callback<ResponsePOJO>() {
-            @Override
-            public void onResponse(Call<ResponsePOJO> call, Response<ResponsePOJO> response) {
-                executor.execute(() -> {
-                    runOnUiThread(() -> finishFlow());
+                    String token = task.getResult();
+
+                    Log.d("FCM", "pegawaiId = " + pegawaiId);
+                    Log.d("FCM", "token = " + token);
+
+                    if (pegawaiId == null ||
+                            pegawaiId.equals("0") ||
+                            token == null ||
+                            token.isEmpty()) {
+
+                        return;
+                    }
+
+                    RetroClient.getInstance()
+                            .getApi()
+                            .updateFcmToken(pegawaiId, token)
+                            .enqueue(new Callback<ResponsePOJO>() {
+
+                                @Override
+                                public void onResponse(
+                                        Call<ResponsePOJO> call,
+                                        Response<ResponsePOJO> response) {
+
+                                    finishFlow();
+                                }
+
+                                @Override
+                                public void onFailure(
+                                        Call<ResponsePOJO> call,
+                                        Throwable t) {
+
+                                    Log.e("FCM",
+                                            "Update gagal : "
+                                                    + t.getMessage());
+                                }
+                            });
                 });
-            }
-
-            @Override
-            public void onFailure(Call<ResponsePOJO> call, Throwable t) {
-                Log.e("FCM", "Error update token: " + t.getMessage());
-            }
-        });
     }
-
 
     /* =============================
        FINISH

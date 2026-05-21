@@ -237,58 +237,58 @@ public class AmbilFoto {
         return matrix;
     }
 
-    public Bitmap compressAndFixOrientation(File file) {
-
-        // ==== STEP 1: Decode ukuran awal ====
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(file.getAbsolutePath(), options);
-
-        int REQUIRED_SIZE = 500;
-        int scale = 1;
-
-        while ((options.outWidth / scale) >= REQUIRED_SIZE &&
-                (options.outHeight / scale) >= REQUIRED_SIZE) {
-            scale *= 2;
-        }
-
-        options.inJustDecodeBounds = false;
-        options.inSampleSize = scale;
-
-        Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath(), options);
-
-        // ==== STEP 2: FIX ROTASI EXIF ====
-        Matrix matrix = getExifRotation(file.getAbsolutePath());
-
-        bitmap = Bitmap.createBitmap(
-                bitmap,
-                0,
-                0,
-                bitmap.getWidth(),
-                bitmap.getHeight(),
-                matrix,
-                true
-        );
-
-        // ==== STEP 3: KOMPRES SAMPAI ≤ 50 KB ====
-        int quality = 60;
-        ByteArrayOutputStream stream;
-
-        while (true) {
-            stream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, stream);
-
-            int sizeKB = stream.toByteArray().length / 1024;
-
-            if (sizeKB <= 50 || quality <= 20) {
-                break;
-            }
-
-            quality -= 5;
-        }
-
-        return bitmap;
-    }
+//    public Bitmap compressAndFixOrientation(File file) {
+//
+//        // ==== STEP 1: Decode ukuran awal ====
+//        BitmapFactory.Options options = new BitmapFactory.Options();
+//        options.inJustDecodeBounds = true;
+//        BitmapFactory.decodeFile(file.getAbsolutePath(), options);
+//
+//        int REQUIRED_SIZE = 500;
+//        int scale = 1;
+//
+//        while ((options.outWidth / scale) >= REQUIRED_SIZE &&
+//                (options.outHeight / scale) >= REQUIRED_SIZE) {
+//            scale *= 2;
+//        }
+//
+//        options.inJustDecodeBounds = false;
+//        options.inSampleSize = scale;
+//
+//        Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath(), options);
+//
+//        // ==== STEP 2: FIX ROTASI EXIF ====
+//        Matrix matrix = getExifRotation(file.getAbsolutePath());
+//
+//        bitmap = Bitmap.createBitmap(
+//                bitmap,
+//                0,
+//                0,
+//                bitmap.getWidth(),
+//                bitmap.getHeight(),
+//                matrix,
+//                true
+//        );
+//
+//        // ==== STEP 3: KOMPRES SAMPAI ≤ 50 KB ====
+//        int quality = 60;
+//        ByteArrayOutputStream stream;
+//
+//        while (true) {
+//            stream = new ByteArrayOutputStream();
+//            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, stream);
+//
+//            int sizeKB = stream.toByteArray().length / 1024;
+//
+//            if (sizeKB <= 50 || quality <= 20) {
+//                break;
+//            }
+//
+//            quality -= 5;
+//        }
+//
+//        return bitmap;
+//    }
 
     public Bitmap compressBitmapTo80KB(File file) {
 
@@ -411,67 +411,6 @@ public class AmbilFoto {
         return baos.toByteArray();
     }
 
-
-//    public Bitmap fileBitmapCompress(File file){
-//
-//        BitmapFactory.Options o = new BitmapFactory.Options();
-//        o.inJustDecodeBounds = true;
-//
-//
-//        if (getFileExt(file.getName()).equals("png") || getFileExt(file.getName()).equals("PNG")) {
-//            o.inSampleSize = 2;
-//        } else {
-//            if (Build.VERSION.SDK_INT > 27){
-//                o.inSampleSize = 2;
-//            }else{
-//                o.inSampleSize = 2;
-//            }
-//        }
-//
-//        FileInputStream inputStream = null;
-//        try {
-//            inputStream = new FileInputStream(file);
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        }
-//
-//        BitmapFactory.decodeStream(inputStream, null, o);
-//        try {
-//            inputStream.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//        // The new size we want to scale to
-//        final int REQUIRED_SIZE = 70;
-//
-//        // Find the correct scale value. It should be the power of 2.
-//        int scale = 1;
-//        if (Build.VERSION.SDK_INT > 27){
-//            while (o.outWidth / scale / 2 >= REQUIRED_SIZE &&
-//                    o.outHeight / scale / 2 >= REQUIRED_SIZE) {
-//                scale *= 2;
-//            }
-//        }else{
-//            while (o.outWidth / scale / 2 >= REQUIRED_SIZE &&
-//                    o.outHeight / scale / 2 >= REQUIRED_SIZE) {
-//                scale *= 1;
-//            }
-//        }
-//
-//
-//        BitmapFactory.Options o2 = new BitmapFactory.Options();
-//        o2.inSampleSize = scale;
-//        try {
-//            inputStream = new FileInputStream(file);
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        }
-//
-//        Bitmap selectedBitmap = BitmapFactory.decodeStream(inputStream, null, o2);
-//
-//        return selectedBitmap;
-//    }
 
     public String getPDFPath(Uri uri, Context context, String idE, String time){
         String absolutePath = "";

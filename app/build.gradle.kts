@@ -30,7 +30,7 @@ android {
         applicationId = "go.pemkott.appsandroidmobiletebingtinggi"
         minSdk = 24
         targetSdk = 36
-        versionCode = 168
+        versionCode = 173
         versionName = "2.0.2"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -47,8 +47,8 @@ android {
 
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_14
+        targetCompatibility = JavaVersion.VERSION_14
     }
 }
 
@@ -70,7 +70,6 @@ dependencies {
     implementation(libs.play.services.auth.api.phone)
     implementation(libs.play.services.auth)
     implementation(libs.annotations)
-    implementation(libs.multidex)
     implementation(libs.play.services.location)
     implementation(libs.play.services.maps)
     implementation(libs.volley)

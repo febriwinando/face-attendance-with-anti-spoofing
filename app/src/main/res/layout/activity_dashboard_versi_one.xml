@@ -7,7 +7,8 @@
     android:layout_height="match_parent"
     tools:context=".NewDashboard.DashboardVersiOne"
     android:background="@color/background_color"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:fitsSystemWindows="true">
 
 
     <include layout="@layout/content_dashboard_one"/>
