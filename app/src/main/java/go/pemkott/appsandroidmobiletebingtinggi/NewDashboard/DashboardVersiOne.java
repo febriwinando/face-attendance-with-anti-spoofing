@@ -2,7 +2,6 @@ package go.pemkott.appsandroidmobiletebingtinggi.NewDashboard;
 
 import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.BULAN;
 import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.HARI_TEXT;
-import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.SIMPLE_FORMAT_TANGGAL;
 import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.TAHUN;
 import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.TANGGAL;
 import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.bulan;
@@ -23,17 +22,13 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -48,7 +43,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.bumptech.glide.Glide;
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.play.core.appupdate.AppUpdateManager;
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
 import com.google.android.play.core.install.model.AppUpdateType;
@@ -66,10 +60,6 @@ import go.pemkott.appsandroidmobiletebingtinggi.api.HttpService;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import go.pemkott.appsandroidmobiletebingtinggi.dinasluarkantor.perjalanandinas.SppdActivity;
-import go.pemkott.appsandroidmobiletebingtinggi.dinasluarkantor.tugaslapangan.TugasLapanganActivity;
-import go.pemkott.appsandroidmobiletebingtinggi.izin.cuti.CutiActivity;
-import go.pemkott.appsandroidmobiletebingtinggi.izin.keperluanpribadi.KeperluanPribadiActivity;
-import go.pemkott.appsandroidmobiletebingtinggi.izin.sakit.SakitActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.izinsift.JadwalIzinSiftActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.kehadiransift.JadwalSiftActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
@@ -90,14 +80,13 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class DashboardVersiOne extends AppCompatActivity {
 
-//    private BottomSheetBehavior sheetBehavior, sheetBehaviorIzin;
     CardView cvKehadiran, cvJadwal, cvLokasi, cvKegiatan, cvMenuIzin, cvMenuPerjalananDinas;
 
     LocationManager manager;
     DatabaseHelper databaseHelper;
     HttpService httpService;
 
-    public static String statusSift, fotoProfile, jam_masuk, jam_pulang, sOPD, sNip, sJabatan, sKantor, sEmployee_id, sUsername, sAkses, sActive,  sToken, sVerifikator, toDay = SIMPLE_FORMAT_TANGGAL.format(new Date());
+    public static String statusSift, fotoProfile, jam_masuk, jam_pulang, sOPD, sNip, sJabatan, sKantor, sEmployee_id, sUsername, sAkses, sActive,  sToken, sVerifikator;
 
     TextView tvNamaUser, tvTanggalHariIni;
     public static int jenisabsensi;
@@ -122,11 +111,6 @@ public class DashboardVersiOne extends AppCompatActivity {
 
     private static final String LOCATION_PERMISSION =
             Manifest.permission.ACCESS_FINE_LOCATION;
-
-//    private static final String READ_STORAGE_PERMISSION =
-//            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
-//                    ? Manifest.permission.READ_MEDIA_IMAGES
-//                    : Manifest.permission.READ_EXTERNAL_STORAGE;
     private static final int REQ_UPDATE = 2001;
 
 
@@ -180,10 +164,6 @@ public class DashboardVersiOne extends AppCompatActivity {
 
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
         cvKehadiran = findViewById(R.id.cvKehadiran);
-//        vOpenBottomSheet = findViewById(R.id.vOpenBottomSheet);
-//        vOpenBottomSheetIzin = findViewById(R.id.vOpenBottomSheetIzin);
-//        cvKehadiranKantor = findViewById(R.id.cvKehadiranKantor);
-//        cvTugasLapangan = findViewById(R.id.cvTugasLapangan);
         tvNamaUser = findViewById(R.id.tvNamaUser);
         ciUser = findViewById(R.id.ciUser);
         cvJadwal = findViewById(R.id.cvJadwal);
@@ -216,6 +196,7 @@ public class DashboardVersiOne extends AppCompatActivity {
                 startActivity(new Intent(DashboardVersiOne.this, RekapAbsensActivity.class));
             }
         });
+
         ciUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -408,17 +389,31 @@ public class DashboardVersiOne extends AppCompatActivity {
             boolean allGranted = true;
 
             for (int result : grantResults) {
+
                 if (result != PackageManager.PERMISSION_GRANTED) {
+
                     allGranted = false;
+
                     break;
+
                 }
+
             }
 
-            if (allGranted) {
-                Toast.makeText(this, "Semua permission diberikan", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(this, "Sebagian permission ditolak", Toast.LENGTH_SHORT).show();
+            if (!allGranted) {
+
+                Toast.makeText(
+
+                        this,
+
+                        "Sebagian izin ditolak",
+
+                        Toast.LENGTH_SHORT
+
+                ).show();
+
             }
+
         }
     }
 
@@ -488,33 +483,6 @@ public class DashboardVersiOne extends AppCompatActivity {
         }
     }
 
-//    private void requestAppPermissions() {
-//
-//        List<String> permissionsNeeded = new ArrayList<>();
-//
-//        if (ContextCompat.checkSelfPermission(this, CAMERA_PERMISSION)
-//                != PackageManager.PERMISSION_GRANTED) {
-//            permissionsNeeded.add(CAMERA_PERMISSION);
-//        }
-//
-//        if (ContextCompat.checkSelfPermission(this, LOCATION_PERMISSION)
-//                != PackageManager.PERMISSION_GRANTED) {
-//            permissionsNeeded.add(LOCATION_PERMISSION);
-//        }
-//
-//        if (ContextCompat.checkSelfPermission(this, READ_STORAGE_PERMISSION)
-//                != PackageManager.PERMISSION_GRANTED) {
-//            permissionsNeeded.add(READ_STORAGE_PERMISSION);
-//        }
-//
-//        if (!permissionsNeeded.isEmpty()) {
-//            ActivityCompat.requestPermissions(
-//                    this,
-//                    permissionsNeeded.toArray(new String[0]),
-//                    REQ_APP_PERMISSION
-//            );
-//        }
-//    }
 
     private void requestAppPermissions() {
 
@@ -538,35 +506,26 @@ public class DashboardVersiOne extends AppCompatActivity {
 
         if (!permissionsNeeded.isEmpty()) {
 
+            Toast.makeText(
+                    this,
+                    "Aplikasi memerlukan izin Kamera dan Lokasi",
+                    Toast.LENGTH_SHORT
+            ).show();
+
             ActivityCompat.requestPermissions(
                     this,
                     permissionsNeeded.toArray(new String[0]),
                     REQ_APP_PERMISSION
             );
-
-        } else {
-
-            Toast.makeText(
-                    this,
-                    "Semua permission diberikan",
-                    Toast.LENGTH_SHORT
-            ).show();
         }
+
+        // HAPUS else
     }
-
-
     @Override
     protected void onResume() {
         super.onResume();
 
         dataValidasi(sVerifikator, sEmployee_id);
-
-        createNotificationChannel();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            requestNotificationPermission();
-        } else {
-            requestAppPermissions();
-        }
 
     }
 
@@ -654,76 +613,6 @@ public class DashboardVersiOne extends AppCompatActivity {
         }
     }
 
-//    private void setUpReferences() {
-//        LinearLayout layoutBottomSheet = findViewById(R.id.bottom_sheet_kehadiran_one);
-//        sheetBehavior = BottomSheetBehavior.from(layoutBottomSheet);
-//        sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-//
-//        sheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
-//            @Override
-//            public void onStateChanged(@NonNull View bottomSheet, int newState) {
-//                if (newState == BottomSheetBehavior.STATE_EXPANDED){
-//                    Animation fadeInAnimation = AnimationUtils.loadAnimation(DashboardVersiOne.this, R.anim.fade_in);
-//                    vOpenBottomSheet.startAnimation(fadeInAnimation);
-//                    vOpenBottomSheet.setVisibility(View.VISIBLE);
-//                }else if (newState == BottomSheetBehavior.STATE_COLLAPSED){
-//                    vOpenBottomSheet.setVisibility(View.INVISIBLE);
-//                }
-//            }
-//
-//            @Override
-//            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-//                if (slideOffset > 0) {
-//                    vOpenBottomSheet.setVisibility(View.INVISIBLE);
-//                }
-//            }
-//        });
-//    }
-
-
-//    private void setUpReferencesIzin() {
-//        LinearLayout layoutBottomSheetIzin = findViewById(R.id.bottom_sheet_izin_one);
-//        sheetBehaviorIzin = BottomSheetBehavior.from(layoutBottomSheetIzin);
-//
-//        sheetBehaviorIzin.setState(BottomSheetBehavior.STATE_COLLAPSED);
-//        sheetBehaviorIzin.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
-//            @Override
-//            public void onStateChanged(@NonNull View bottomSheet, int newState) {
-//                if (newState == BottomSheetBehavior.STATE_EXPANDED){
-//                    Animation fadeInAnimation = AnimationUtils.loadAnimation(DashboardVersiOne.this, R.anim.fade_in);
-//                    vOpenBottomSheetIzin.startAnimation(fadeInAnimation);
-//                    vOpenBottomSheetIzin.setVisibility(View.VISIBLE);
-//                }else if (newState == BottomSheetBehavior.STATE_COLLAPSED){
-//                    vOpenBottomSheetIzin.setVisibility(View.INVISIBLE);
-//
-//                }
-//            }
-//
-//            @Override
-//            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-//                if (slideOffset > 0) {
-//                    vOpenBottomSheetIzin.setVisibility(View.INVISIBLE);
-//                }
-//            }
-//        });
-//    }
-
-//    private void bukaKehadiran() {
-//            if (sheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
-//                sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-//            } else if (sheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED){
-//                sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-//            }
-//    }
-//
-//    private void bukaMenuIzin() {
-//        if (sheetBehaviorIzin.getState() == BottomSheetBehavior.STATE_EXPANDED) {
-//            sheetBehaviorIzin.setState(BottomSheetBehavior.STATE_COLLAPSED);
-//        } else if (sheetBehaviorIzin.getState() == BottomSheetBehavior.STATE_COLLAPSED){
-//            sheetBehaviorIzin.setState(BottomSheetBehavior.STATE_EXPANDED);
-//
-//        }
-//    }
 
     List<TimeTebleSetting> timeTable = new ArrayList<>();
 

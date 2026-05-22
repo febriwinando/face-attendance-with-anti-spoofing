@@ -94,6 +94,7 @@ public class RekapAbsensActivity extends AppCompatActivity {
                 .baseUrl("https://absensi.tebingtinggikota.go.id/api/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
+
         holderAPI = retrofit.create(HttpService.class);
 
         rvRekapServer= findViewById(R.id.rvRekapServer);
