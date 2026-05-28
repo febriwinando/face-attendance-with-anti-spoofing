@@ -20,7 +20,7 @@ lifecycleExtensions = "2.2.0"
 cardview = "1.0.0"
 browser = "1.10.0"
 playServicesAuthApiPhone = "18.3.0"
-playServicesAuth = "21.5.1"
+playServicesAuth = "21.6.0"
 annotations = "26.1.0"
 
 playServicesLocation = "21.3.0"

@@ -390,6 +390,7 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
         String hari = sdf.format(new Date());
         return "Sen".equals(hari) || "Mon".equals(hari);
     }
+
     private double getRadiusAbsensi(String kelompok) {
 
         // CT selalu 150
@@ -472,6 +473,13 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
                 latList, lngList, latUser, lngUser
         );
 
+        Log.d("JARAK_DEBUG", "latlist: "+latList);
+        Log.d("JARAK_DEBUG", "lnglist: "+lngList);
+
+        Log.d("JARAK_DEBUG", "latUser: "+latUser);
+        Log.d("JARAK_DEBUG", "lngUser: "+lngUser);
+        Log.d("JARAK_DEBUG", "jarak utama: "+jarakUtama);
+
         if (jarakUtama != JARAK_TIDAK_VALID && jarakUtama <= radius) {
             totalJarak = jarakUtama;
             return;
@@ -510,8 +518,6 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
     AmbilFoto ambilFoto = new AmbilFoto(AbsensiKehadiranActivity.this);
     public void uploadImages(){
 
-
-
         if (file == null || !file.exists() || file.length() == 0) {
             dialogView.viewNotifKosong(
                     this,
@@ -528,7 +534,8 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
                 periksaWaktu();
                 hitungJarakAbsensi();
 
-                if (tagingTime.getTime() <= dateBatasWaktu.getTime()) {
+                if (tagingTime.before(dateBatasWaktu)){
+//                if (tagingTime.getTime() <= dateBatasWaktu.getTime()) {
                     dialogView.viewNotifKosong(AbsensiKehadiranActivity.this, "Anda hanya dapat mengisi absen masuk, "+batasWaktu+" menit sebelum Jam Masuk", "");
                 }
                 else{
@@ -538,9 +545,11 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
                     if (eJabatan.equals("2")){
                         totalJarak = 1;
                     }
+                    Log.d("JARAK_DEBUG", "total jarak: "+totalJarak);
 
-                    if (totalJarak > 150){
+                    if (totalJarak == JARAK_TIDAK_VALID || totalJarak > 150) {
                         dialogView.viewNotifKosong(AbsensiKehadiranActivity.this, "Andah harus berada dilingkungan kantor untuk melakukan absensi.", "");
+                        return;
                     }
                     else{
 
@@ -550,9 +559,25 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
                         String rbValid;
                         if (radioSelectedKehadiran.getText().toString().equals("MASUK")){
 
-                                if (tagingTime.getTime() >= jamPulangDate.getTime()){
-                                    dialogView.viewNotifKosong(AbsensiKehadiranActivity.this, "Anda tidak dapat melakukan absensi masuk pada jam pulang kerja.", "");
-                                }
+//                                if (tagingTime.getTime() >= jamPulangDate.getTime()){
+//                                    Log.d("JAM_DEBUG", tagingTime.getTime()+": " + jamPulangDate.getTime());
+//                                    dialogView.viewNotifKosong(AbsensiKehadiranActivity.this, "Anda tidak dapat melakukan absensi masuk pada jam pulang kerja.", "");
+//                                }
+
+                            if (!tagingTime.before(jamPulangDate)) {
+
+//                                Log.d("JAM_DEBUG",
+//                                        "Jam tagging : " + format.format(tagingTime)
+//                                                + " | Jam pulang : " + format.format(jamPulangDate));
+
+                                dialogView.viewNotifKosong(
+                                        AbsensiKehadiranActivity.this,
+                                        "Anda tidak dapat melakukan absensi masuk pada jam pulang kerja.",
+                                        ""
+                                );
+
+                                return;
+                            }
 
                                 else{
                                     ketKehadiran = "masuk";
@@ -834,53 +859,96 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
         dataKosong.show();
     }
 
+    SimpleDateFormat format = new SimpleDateFormat("HH:mm", localeID);
 
-    @SuppressLint("ResourceAsColor")
-    public void periksaWaktu(){
 
+    public void periksaWaktu() {
+        jamMasuk = jamMasuk.trim();
+        jamPulang = jamPulang.trim();
         try {
-            jamMasukDate = SIMPLE_FORMAT_JAM.parse(jamMasuk);
-            jamPulangDate = SIMPLE_FORMAT_JAM.parse(jamPulang);
 
-            jamTaging = SIMPLE_FORMAT_JAM_TAGING.format(new Date());
+            Log.d("JAM_DEBUG", "jamMasuk = [" + jamMasuk + "]");
+            Log.d("JAM_DEBUG", "jamPulang = [" + jamPulang + "]");
+            jamMasukDate = format.parse(jamMasuk);
+            jamPulangDate = format.parse(jamPulang);
 
-            SimpleDateFormat df = new SimpleDateFormat("HH:mm", localeID);
-            Date d = df.parse(jamMasuk);
-            cal.setTime(d);
-            cal.add(Calendar.MINUTE, -(Integer.parseInt(batasWaktu)));
-            String newTime = df.format(cal.getTime());
+            Log.d("JAM_DEBUG", "jamMasukDate = " + jamMasukDate);
+            Log.d("JAM_DEBUG", "jamPulangDate = " + jamPulangDate);
+            rbJam = format.format(new Date());
 
-            tagingTime = SIMPLE_FORMAT_JAM_TAGING.parse(jamTaging);
-            dateBatasWaktu = SIMPLE_FORMAT_JAM_TAGING.parse(newTime);
+            tagingTime = format.parse(rbJam);
 
-            long millis = tagingTime.getTime() - jamMasukDate.getTime();
-            int hours = (int) (millis / (1000 * 60 * 60));
+            Calendar batasCalendar = Calendar.getInstance();
+            batasCalendar.setTime(jamMasukDate);
+            batasCalendar.add(Calendar.MINUTE, -Integer.parseInt(batasWaktu));
 
-            mins = (int) ((millis / (1000 * 60)) % 60) + (hours * 60);
-            if (mins <= 0){
+            dateBatasWaktu = batasCalendar.getTime();
+
+            long selisihMasuk = tagingTime.getTime() - jamMasukDate.getTime();
+
+            mins = (int) (selisihMasuk / (1000 * 60));
+
+            if (mins <= 0) {
                 mins = 0;
-            }
-
-            long millispulang = jamPulangDate.getTime() - tagingTime.getTime();
-            int hourspulang = (int) (millispulang / (1000 * 60 * 60));
-            minspulang = (int) ((millispulang / (1000 * 60)) % 60) + (hourspulang * 60);
-
-            diff = hours + " jam :" + mins+" menit";
-
-            rbJam = SIMPLE_FORMAT_JAM.format(new Date());
-            if (tagingTime.getTime() <= jamMasukDate.getTime()) {
-
                 rbKet = "tepat waktu";
-                mins = 0;
-            }else if(tagingTime.getTime() > jamMasukDate.getTime()){
-
+            } else {
                 rbKet = "terlambat";
             }
 
-        }catch (Exception e){
+            long selisihPulang = jamPulangDate.getTime() - tagingTime.getTime();
+
+            minspulang = (int) (selisihPulang / (1000 * 60));
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
+//    @SuppressLint("ResourceAsColor")
+//    public void periksaWaktu(){
+//
+//        try {
+//            jamMasukDate = SIMPLE_FORMAT_JAM.parse(jamMasuk);
+//            jamPulangDate = SIMPLE_FORMAT_JAM.parse(jamPulang);
+//
+//            jamTaging = SIMPLE_FORMAT_JAM_TAGING.format(new Date());
+//
+//            SimpleDateFormat df = new SimpleDateFormat("HH:mm", localeID);
+//            Date d = df.parse(jamMasuk);
+//            cal.setTime(d);
+//            cal.add(Calendar.MINUTE, -(Integer.parseInt(batasWaktu)));
+//            String newTime = df.format(cal.getTime());
+//
+//            tagingTime = SIMPLE_FORMAT_JAM_TAGING.parse(jamTaging);
+//            dateBatasWaktu = SIMPLE_FORMAT_JAM_TAGING.parse(newTime);
+//
+//            long millis = tagingTime.getTime() - jamMasukDate.getTime();
+//            int hours = (int) (millis / (1000 * 60 * 60));
+//
+//            mins = (int) ((millis / (1000 * 60)) % 60) + (hours * 60);
+//            if (mins <= 0){
+//                mins = 0;
+//            }
+//
+//            long millispulang = jamPulangDate.getTime() - tagingTime.getTime();
+//            int hourspulang = (int) (millispulang / (1000 * 60 * 60));
+//            minspulang = (int) ((millispulang / (1000 * 60)) % 60) + (hourspulang * 60);
+//
+//            diff = hours + " jam :" + mins+" menit";
+//
+//            rbJam = SIMPLE_FORMAT_JAM.format(new Date());
+//            if (tagingTime.getTime() <= jamMasukDate.getTime()) {
+//
+//                rbKet = "tepat waktu";
+//                mins = 0;
+//            }else if(tagingTime.getTime() > jamMasukDate.getTime()){
+//
+//                rbKet = "terlambat";
+//            }
+//
+//        }catch (Exception e){
+//            e.printStackTrace();
+//        }
+//    }
 
 
     //  Maps
@@ -888,7 +956,6 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
     private void setupViewModel() {
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     public void checkLocationPermission() {
         int hasWriteStoragePermission;
         hasWriteStoragePermission = getApplicationContext().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION);

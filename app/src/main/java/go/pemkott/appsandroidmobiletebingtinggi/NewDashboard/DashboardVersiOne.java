@@ -77,11 +77,14 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import android.os.Environment;
+import android.os.StatFs;
 
 public class DashboardVersiOne extends AppCompatActivity {
 
     CardView cvKehadiran, cvJadwal, cvLokasi, cvKegiatan, cvMenuIzin, cvMenuPerjalananDinas;
-
+    private static final long MIN_STORAGE_MB = 200;
+//    private static final long MIN_STORAGE_GB = 40;
     LocationManager manager;
     DatabaseHelper databaseHelper;
     HttpService httpService;
@@ -204,16 +207,56 @@ public class DashboardVersiOne extends AppCompatActivity {
             }
         });
 
+//        cvKehadiran.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if ("0".equals(statusSift)){
+//                    bukaKehadiran();
+//                }else{
+//                    jenisabsensi = 7;
+//                    Intent intentJadwalSifting = new Intent(DashboardVersiOne.this, JadwalSiftActivity.class);
+//                    intentJadwalSifting.putExtra("jam_masuk", jam_masuk);
+//                    intentJadwalSifting.putExtra("jam_pulang", jam_pulang);
+//                    startActivity(intentJadwalSifting);
+//                }
+//            }
+//        });
+
         cvKehadiran.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if ("0".equals(statusSift)){
+
+                if (!isStorageEnough()) {
+
+                    showStorageFullDialog();
+
+                    return;
+                }
+
+                if ("0".equals(statusSift)) {
+
                     bukaKehadiran();
-                }else{
+
+                } else {
+
                     jenisabsensi = 7;
-                    Intent intentJadwalSifting = new Intent(DashboardVersiOne.this, JadwalSiftActivity.class);
-                    intentJadwalSifting.putExtra("jam_masuk", jam_masuk);
-                    intentJadwalSifting.putExtra("jam_pulang", jam_pulang);
+
+                    Intent intentJadwalSifting =
+                            new Intent(
+                                    DashboardVersiOne.this,
+                                    JadwalSiftActivity.class
+                            );
+
+                    intentJadwalSifting.putExtra(
+                            "jam_masuk",
+                            jam_masuk
+                    );
+
+                    intentJadwalSifting.putExtra(
+                            "jam_pulang",
+                            jam_pulang
+                    );
+
                     startActivity(intentJadwalSifting);
                 }
             }
@@ -259,24 +302,75 @@ public class DashboardVersiOne extends AppCompatActivity {
             }
         });
 
+//        cvMenuIzin.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if ("0".equals(statusSift)){
+//                    bukaIzin();
+//                }else{
+//                    jenisabsensi = 8;
+//                    Intent intentJadwalSifting = new Intent(DashboardVersiOne.this, JadwalIzinSiftActivity.class);
+//                    startActivity(intentJadwalSifting);
+//                }
+//            }
+//        });
+
         cvMenuIzin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if ("0".equals(statusSift)){
+
+                if (!isStorageEnough()) {
+
+                    showStorageFullDialog();
+
+                    return;
+                }
+
+                if ("0".equals(statusSift)) {
+
                     bukaIzin();
-                }else{
+
+                } else {
+
                     jenisabsensi = 8;
-                    Intent intentJadwalSifting = new Intent(DashboardVersiOne.this, JadwalIzinSiftActivity.class);
+
+                    Intent intentJadwalSifting =
+                            new Intent(
+                                    DashboardVersiOne.this,
+                                    JadwalIzinSiftActivity.class
+                            );
+
                     startActivity(intentJadwalSifting);
                 }
             }
         });
 
+//        cvMenuPerjalananDinas.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                jenisabsensi = 3;
+//                startActivity(new Intent(DashboardVersiOne.this, SppdActivity.class));
+//            }
+//        });
         cvMenuPerjalananDinas.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if (!isStorageEnough()) {
+
+                    showStorageFullDialog();
+
+                    return;
+                }
+
                 jenisabsensi = 3;
-                startActivity(new Intent(DashboardVersiOne.this, SppdActivity.class));
+
+                startActivity(
+                        new Intent(
+                                DashboardVersiOne.this,
+                                SppdActivity.class
+                        )
+                );
             }
         });
 
@@ -298,6 +392,60 @@ public class DashboardVersiOne extends AppCompatActivity {
 
     }
 
+    private boolean isStorageEnough() {
+
+        StatFs stat = new StatFs(
+                Environment.getDataDirectory().getPath()
+        );
+
+        long bytesAvailable;
+
+        bytesAvailable = stat.getAvailableBytes();
+
+        long megaAvailable =
+                bytesAvailable / (1024 * 1024);
+
+
+
+//        long gigaAvailable =
+//
+//                bytesAvailable / (1024L * 1024L * 1024L);
+
+        Log.d(
+                "STORAGE_CHECK",
+                "Sisa Storage: " + megaAvailable + " MB"
+        );
+
+        return megaAvailable >= MIN_STORAGE_MB;
+    }
+
+
+    private void showStorageFullDialog() {
+
+        new AlertDialog.Builder(this)
+                .setTitle("Storage Tidak Cukup")
+                .setMessage(
+                        "Sisa penyimpanan anda telah penuh.\n\n" +
+                                "Silakan kosongkan penyimpanan terlebih dahulu sebelum melakukan absensi."
+                )
+                .setCancelable(false)
+                .setPositiveButton(
+                        "Buka Pengaturan",
+                        (dialog, which) -> {
+
+                            Intent intent =
+                                    new Intent(
+                                            Settings.ACTION_INTERNAL_STORAGE_SETTINGS
+                                    );
+
+                            startActivity(intent);
+                        })
+                .setNegativeButton(
+                        "Tutup",
+                        (dialog, which) -> dialog.dismiss()
+                )
+                .show();
+    }
     private void bukaKehadiran() {
         KehadiranBottomSheet bottomSheet = new KehadiranBottomSheet();
         bottomSheet.show(getSupportFragmentManager(), "KEHADIRAN_BOTTOM_SHEET");
@@ -307,7 +455,6 @@ public class DashboardVersiOne extends AppCompatActivity {
         IzinBottomSheet bottomSheet = new IzinBottomSheet();
         bottomSheet.show(getSupportFragmentManager(), "IZIN_BOTTOM_SHEET");
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
