@@ -378,7 +378,13 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
             lngListExc.add(koordinatExc.getString(4));
         }
 
-        defaultLocation = new LatLng(Double.parseDouble( latList.get(0)), Double.parseDouble(lngList.get(0)));
+        if (!latList.isEmpty() && !lngList.isEmpty()) {
+            defaultLocation = new LatLng(
+                    Double.parseDouble(latList.get(0)),
+                    Double.parseDouble(lngList.get(0))
+            );
+        }
+//        defaultLocation = new LatLng(Double.parseDouble( latList.get(0)), Double.parseDouble(lngList.get(0)));
     }
 
     private static final double RADIUS_NORMAL = 150.0;
@@ -605,7 +611,7 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
                             rbPosisi = "pulang";
                             rbStatus = "hadir";
 
-                            if (tagingTime.getTime() > jamPulangDate.getTime()) {
+                            if (!tagingTime.before(jamPulangDate)) {
                                 rbKet = "sesuai waktu";
                                 mins = 0;
                             }else{
@@ -1158,9 +1164,39 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
     int ber = 0, a = 0, k = 0, h = 0, l = 0, ad = 0, ko = 0;
     StringBuffer stringBuffer = new StringBuffer();
 
-    public void viewBerakhlak(String pulang, String eselon, String sEmployId, String timetableid, String rbTanggal, String rbJam,
-                              String rbPosisi, String rbStatus, String rbLat, String rbLng, String rbKet, Integer terlambat, String jamPulang, String rbValid){
-        Dialog berakhlakDialog = new Dialog(AbsensiKehadiranActivity.this, R.style.DialogStyle);
+    public void viewBerakhlak(
+            String pulang,
+            String eselon,
+            String sEmployId,
+            String timetableid,
+            String rbTanggal,
+            String rbJam,
+            String rbPosisi,
+            String rbStatus,
+            String rbLat,
+            String rbLng,
+            String rbKet,
+            Integer terlambat,
+            String jamPulang,
+            String rbValid
+    ) {
+
+        // RESET STATE
+        ber = 0;
+        a = 0;
+        k = 0;
+        h = 0;
+        l = 0;
+        ad = 0;
+        ko = 0;
+
+        stringBuffer.setLength(0);
+
+        Dialog berakhlakDialog = new Dialog(
+                AbsensiKehadiranActivity.this,
+                R.style.DialogStyle
+        );
+
         berakhlakDialog.setContentView(R.layout.vire_berakhlak);
         berakhlakDialog.setCancelable(false);
 
@@ -1180,7 +1216,6 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
         ImageView ivListBerakhlah6 = berakhlakDialog.findViewById(R.id.ivListBerakhlah6);
         ImageView ivListBerakhlah7 = berakhlakDialog.findViewById(R.id.ivListBerakhlah7);
 
-
         ImageView ivCheckBer1 = berakhlakDialog.findViewById(R.id.ivCheckBer1);
         ImageView ivCheckBer2 = berakhlakDialog.findViewById(R.id.ivCheckBer2);
         ImageView ivCheckBer3 = berakhlakDialog.findViewById(R.id.ivCheckBer3);
@@ -1190,175 +1225,352 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
         ImageView ivCheckBer7 = berakhlakDialog.findViewById(R.id.ivCheckBer7);
 
         ImageView ivCloseBerakhlak = berakhlakDialog.findViewById(R.id.ivCloseBerakhlak);
-        TextView tvKirimSurveiBerakhlak = berakhlakDialog.findViewById(R.id.tvKirimSurveiBerakhlak);
 
-        ivCloseBerakhlak.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                berakhlakDialog.dismiss();
-            }
+        TextView tvKirimSurveiBerakhlak =
+                berakhlakDialog.findViewById(R.id.tvKirimSurveiBerakhlak);
+
+        ivCloseBerakhlak.setOnClickListener(v -> berakhlakDialog.dismiss());
+
+        llListBerakhlak1.setOnClickListener(v -> {
+            ber = toggleSelection(
+                    ber,
+                    ivListBerakhlah1,
+                    ivCheckBer1
+            );
         });
 
-        llListBerakhlak1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (ber == 0){
-                    ber = 1;
-                    ivListBerakhlah1.setVisibility(View.GONE);
-                    ivCheckBer1.setVisibility(View.VISIBLE);
-                }else{
-                    ber = 0;
-                    ivListBerakhlah1.setVisibility(View.VISIBLE);
-                    ivCheckBer1.setVisibility(View.GONE);
-                }
-            }
+        llListBerakhlak2.setOnClickListener(v -> {
+            a = toggleSelection(
+                    a,
+                    ivListBerakhlah2,
+                    ivCheckBer2
+            );
         });
 
-        llListBerakhlak2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (a == 0){
-                    a = 1;
-                    ivListBerakhlah2.setVisibility(View.GONE);
-                    ivCheckBer2.setVisibility(View.VISIBLE);
-                }else{
-                    a = 0;
-                    ivListBerakhlah2.setVisibility(View.VISIBLE);
-                    ivCheckBer2.setVisibility(View.GONE);
-                }
-            }
+        llListBerakhlak3.setOnClickListener(v -> {
+            k = toggleSelection(
+                    k,
+                    ivListBerakhlah3,
+                    ivCheckBer3
+            );
         });
 
-        llListBerakhlak3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (k == 0){
-                    k = 1;
-                    ivListBerakhlah3.setVisibility(View.GONE);
-                    ivCheckBer3.setVisibility(View.VISIBLE);
-                }else{
-                    k = 0;
-                    ivListBerakhlah3.setVisibility(View.VISIBLE);
-                    ivCheckBer3.setVisibility(View.GONE);
-                }
-            }
+        llListBerakhlak4.setOnClickListener(v -> {
+            h = toggleSelection(
+                    h,
+                    ivListBerakhlah4,
+                    ivCheckBer4
+            );
         });
 
-        llListBerakhlak4.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (h == 0){
-                    h = 1;
-                    ivListBerakhlah4.setVisibility(View.GONE);
-                    ivCheckBer4.setVisibility(View.VISIBLE);
-                }else{
-                    h = 0;
-                    ivListBerakhlah4.setVisibility(View.VISIBLE);
-                    ivCheckBer4.setVisibility(View.GONE);
-                }
-            }
+        llListBerakhlak5.setOnClickListener(v -> {
+            l = toggleSelection(
+                    l,
+                    ivListBerakhlah5,
+                    ivCheckBer5
+            );
         });
 
-        llListBerakhlak5.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (l == 0){
-                    l = 1;
-                    ivListBerakhlah5.setVisibility(View.GONE);
-                    ivCheckBer5.setVisibility(View.VISIBLE);
-                }else{
-                    l = 0;
-                    ivListBerakhlah5.setVisibility(View.VISIBLE);
-                    ivCheckBer5.setVisibility(View.GONE);
-                }
-            }
+        llListBerakhlak6.setOnClickListener(v -> {
+            ad = toggleSelection(
+                    ad,
+                    ivListBerakhlah6,
+                    ivCheckBer6
+            );
         });
 
-        llListBerakhlak6.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (ad == 0){
-                    ad = 1;
-                    ivListBerakhlah6.setVisibility(View.GONE);
-                    ivCheckBer6.setVisibility(View.VISIBLE);
-                }else{
-                    ad = 0;
-                    ivListBerakhlah6.setVisibility(View.VISIBLE);
-                    ivCheckBer6.setVisibility(View.GONE);
-                }
-            }
+        llListBerakhlak7.setOnClickListener(v -> {
+            ko = toggleSelection(
+                    ko,
+                    ivListBerakhlah7,
+                    ivCheckBer7
+            );
         });
 
+        tvKirimSurveiBerakhlak.setOnClickListener(v -> {
 
-        llListBerakhlak7.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (ko == 0){
-                    ko = 1;
-                    ivListBerakhlah7.setVisibility(View.GONE);
-                    ivCheckBer7.setVisibility(View.VISIBLE);
-                }else{
-                    ko = 0;
-                    ivListBerakhlah7.setVisibility(View.VISIBLE);
-                    ivCheckBer7.setVisibility(View.GONE);
-                }
+            stringBuffer.setLength(0);
+
+            if (ber == 0 &&
+                    a == 0 &&
+                    k == 0 &&
+                    h == 0 &&
+                    l == 0 &&
+                    ad == 0 &&
+                    ko == 0) {
+
+                Toast.makeText(
+                        mContext,
+                        "Tentukan Core Values",
+                        Toast.LENGTH_SHORT
+                ).show();
+
+                return;
             }
-        });
 
+            if (ber == 1) stringBuffer.append("1,");
+            if (a == 1) stringBuffer.append("2,");
+            if (k == 1) stringBuffer.append("3,");
+            if (h == 1) stringBuffer.append("4,");
+            if (l == 1) stringBuffer.append("5,");
+            if (ad == 1) stringBuffer.append("6,");
+            if (ko == 1) stringBuffer.append("7,");
 
-
-        tvKirimSurveiBerakhlak.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (ber == 0 && a == 0 && k == 0 && h ==  0 && l == 0 && ad == 0 && ko == 0){
-                    Toast.makeText(mContext, "Tentukan Core Values", Toast.LENGTH_SHORT).show();
-                }else{
-                    if (ber == 1){
-                        stringBuffer.append("1, ");
-                    }
-
-                    if(a == 1){
-                        stringBuffer.append("2, ");
-                    }
-
-                    if(k == 1){
-                        stringBuffer.append("3, ");
-                    }
-                    if(h == 1){
-                        stringBuffer.append("4, ");
-                    }
-
-                    if(l == 1){
-                        stringBuffer.append("5, ");
-                    }
-                    if(ad == 1){
-                        stringBuffer.append("6, ");
-                    }
-                    if(ko == 1){
-                        stringBuffer.append("7, ");
-                    }
-
-
-                    int length = stringBuffer.length();
-
-                    if (length > 0) {
-                        stringBuffer.deleteCharAt(length - 2);
-                    }
-
-                    berakhlak = stringBuffer.toString();
-
-                    berakhlakDialog.dismiss();
-
-
-                    kirimDataPulang("pulang", eselon, sEmployId, timetableid, rbTanggal, rbJam, rbPosisi, rbStatus, rbLat, rbLng, rbKet, 0,  jamPulang, rbValid, berakhlak);
-
-
-                }
-
+            // hapus koma terakhir
+            if (stringBuffer.length() > 0) {
+                stringBuffer.deleteCharAt(
+                        stringBuffer.length() - 1
+                );
             }
+
+            berakhlak = stringBuffer.toString();
+
+            berakhlakDialog.dismiss();
+
+            kirimDataPulang(
+                    "pulang",
+                    eselon,
+                    sEmployId,
+                    timetableid,
+                    rbTanggal,
+                    rbJam,
+                    rbPosisi,
+                    rbStatus,
+                    rbLat,
+                    rbLng,
+                    rbKet,
+                    0,
+                    jamPulang,
+                    rbValid,
+                    berakhlak
+            );
         });
 
         berakhlakDialog.show();
-
     }
+
+    private int toggleSelection(
+            int state,
+            ImageView uncheckedView,
+            ImageView checkedView
+    ) {
+
+        if (state == 0) {
+
+            uncheckedView.setVisibility(View.GONE);
+            checkedView.setVisibility(View.VISIBLE);
+
+            return 1;
+
+        } else {
+
+            uncheckedView.setVisibility(View.VISIBLE);
+            checkedView.setVisibility(View.GONE);
+
+            return 0;
+        }
+    }
+//    public void viewBerakhlak(String pulang, String eselon, String sEmployId, String timetableid, String rbTanggal, String rbJam,
+//                              String rbPosisi, String rbStatus, String rbLat, String rbLng, String rbKet, Integer terlambat, String jamPulang, String rbValid){
+//        Dialog berakhlakDialog = new Dialog(AbsensiKehadiranActivity.this, R.style.DialogStyle);
+//        berakhlakDialog.setContentView(R.layout.vire_berakhlak);
+//        berakhlakDialog.setCancelable(false);
+//
+//        LinearLayout llListBerakhlak1 = berakhlakDialog.findViewById(R.id.llListBerakhlak1);
+//        LinearLayout llListBerakhlak2 = berakhlakDialog.findViewById(R.id.llListBerakhlak2);
+//        LinearLayout llListBerakhlak3 = berakhlakDialog.findViewById(R.id.llListBerakhlak3);
+//        LinearLayout llListBerakhlak4 = berakhlakDialog.findViewById(R.id.llListBerakhlak4);
+//        LinearLayout llListBerakhlak5 = berakhlakDialog.findViewById(R.id.llListBerakhlak5);
+//        LinearLayout llListBerakhlak6 = berakhlakDialog.findViewById(R.id.llListBerakhlak6);
+//        LinearLayout llListBerakhlak7 = berakhlakDialog.findViewById(R.id.llListBerakhlak7);
+//
+//        ImageView ivListBerakhlah1 = berakhlakDialog.findViewById(R.id.ivListBerakhlah1);
+//        ImageView ivListBerakhlah2 = berakhlakDialog.findViewById(R.id.ivListBerakhlah2);
+//        ImageView ivListBerakhlah3 = berakhlakDialog.findViewById(R.id.ivListBerakhlah3);
+//        ImageView ivListBerakhlah4 = berakhlakDialog.findViewById(R.id.ivListBerakhlah4);
+//        ImageView ivListBerakhlah5 = berakhlakDialog.findViewById(R.id.ivListBerakhlah5);
+//        ImageView ivListBerakhlah6 = berakhlakDialog.findViewById(R.id.ivListBerakhlah6);
+//        ImageView ivListBerakhlah7 = berakhlakDialog.findViewById(R.id.ivListBerakhlah7);
+//
+//
+//        ImageView ivCheckBer1 = berakhlakDialog.findViewById(R.id.ivCheckBer1);
+//        ImageView ivCheckBer2 = berakhlakDialog.findViewById(R.id.ivCheckBer2);
+//        ImageView ivCheckBer3 = berakhlakDialog.findViewById(R.id.ivCheckBer3);
+//        ImageView ivCheckBer4 = berakhlakDialog.findViewById(R.id.ivCheckBer4);
+//        ImageView ivCheckBer5 = berakhlakDialog.findViewById(R.id.ivCheckBer5);
+//        ImageView ivCheckBer6 = berakhlakDialog.findViewById(R.id.ivCheckBer6);
+//        ImageView ivCheckBer7 = berakhlakDialog.findViewById(R.id.ivCheckBer7);
+//
+//        ImageView ivCloseBerakhlak = berakhlakDialog.findViewById(R.id.ivCloseBerakhlak);
+//        TextView tvKirimSurveiBerakhlak = berakhlakDialog.findViewById(R.id.tvKirimSurveiBerakhlak);
+//
+//        ivCloseBerakhlak.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                berakhlakDialog.dismiss();
+//            }
+//        });
+//
+//        llListBerakhlak1.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (ber == 0){
+//                    ber = 1;
+//                    ivListBerakhlah1.setVisibility(View.GONE);
+//                    ivCheckBer1.setVisibility(View.VISIBLE);
+//                }else{
+//                    ber = 0;
+//                    ivListBerakhlah1.setVisibility(View.VISIBLE);
+//                    ivCheckBer1.setVisibility(View.GONE);
+//                }
+//            }
+//        });
+//
+//        llListBerakhlak2.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (a == 0){
+//                    a = 1;
+//                    ivListBerakhlah2.setVisibility(View.GONE);
+//                    ivCheckBer2.setVisibility(View.VISIBLE);
+//                }else{
+//                    a = 0;
+//                    ivListBerakhlah2.setVisibility(View.VISIBLE);
+//                    ivCheckBer2.setVisibility(View.GONE);
+//                }
+//            }
+//        });
+//
+//        llListBerakhlak3.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (k == 0){
+//                    k = 1;
+//                    ivListBerakhlah3.setVisibility(View.GONE);
+//                    ivCheckBer3.setVisibility(View.VISIBLE);
+//                }else{
+//                    k = 0;
+//                    ivListBerakhlah3.setVisibility(View.VISIBLE);
+//                    ivCheckBer3.setVisibility(View.GONE);
+//                }
+//            }
+//        });
+//
+//        llListBerakhlak4.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (h == 0){
+//                    h = 1;
+//                    ivListBerakhlah4.setVisibility(View.GONE);
+//                    ivCheckBer4.setVisibility(View.VISIBLE);
+//                }else{
+//                    h = 0;
+//                    ivListBerakhlah4.setVisibility(View.VISIBLE);
+//                    ivCheckBer4.setVisibility(View.GONE);
+//                }
+//            }
+//        });
+//
+//        llListBerakhlak5.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (l == 0){
+//                    l = 1;
+//                    ivListBerakhlah5.setVisibility(View.GONE);
+//                    ivCheckBer5.setVisibility(View.VISIBLE);
+//                }else{
+//                    l = 0;
+//                    ivListBerakhlah5.setVisibility(View.VISIBLE);
+//                    ivCheckBer5.setVisibility(View.GONE);
+//                }
+//            }
+//        });
+//
+//        llListBerakhlak6.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (ad == 0){
+//                    ad = 1;
+//                    ivListBerakhlah6.setVisibility(View.GONE);
+//                    ivCheckBer6.setVisibility(View.VISIBLE);
+//                }else{
+//                    ad = 0;
+//                    ivListBerakhlah6.setVisibility(View.VISIBLE);
+//                    ivCheckBer6.setVisibility(View.GONE);
+//                }
+//            }
+//        });
+//
+//
+//        llListBerakhlak7.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (ko == 0){
+//                    ko = 1;
+//                    ivListBerakhlah7.setVisibility(View.GONE);
+//                    ivCheckBer7.setVisibility(View.VISIBLE);
+//                }else{
+//                    ko = 0;
+//                    ivListBerakhlah7.setVisibility(View.VISIBLE);
+//                    ivCheckBer7.setVisibility(View.GONE);
+//                }
+//            }
+//        });
+//
+//
+//
+//        tvKirimSurveiBerakhlak.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (ber == 0 && a == 0 && k == 0 && h ==  0 && l == 0 && ad == 0 && ko == 0){
+//                    Toast.makeText(mContext, "Tentukan Core Values", Toast.LENGTH_SHORT).show();
+//                }else{
+//                    if (ber == 1){
+//                        stringBuffer.append("1, ");
+//                    }
+//
+//                    if(a == 1){
+//                        stringBuffer.append("2, ");
+//                    }
+//
+//                    if(k == 1){
+//                        stringBuffer.append("3, ");
+//                    }
+//                    if(h == 1){
+//                        stringBuffer.append("4, ");
+//                    }
+//
+//                    if(l == 1){
+//                        stringBuffer.append("5, ");
+//                    }
+//                    if(ad == 1){
+//                        stringBuffer.append("6, ");
+//                    }
+//                    if(ko == 1){
+//                        stringBuffer.append("7, ");
+//                    }
+//
+//
+//                    int length = stringBuffer.length();
+//
+//                    if (length > 0) {
+//                        stringBuffer.deleteCharAt(length - 2);
+//                    }
+//
+//                    berakhlak = stringBuffer.toString();
+//
+//                    berakhlakDialog.dismiss();
+//
+//
+//                    kirimDataPulang("pulang", eselon, sEmployId, timetableid, rbTanggal, rbJam, rbPosisi, rbStatus, rbLat, rbLng, rbKet, 0,  jamPulang, rbValid, berakhlak);
+//
+//
+//                }
+//
+//            }
+//        });
+//
+//        berakhlakDialog.show();
+//
+//    }
 }
