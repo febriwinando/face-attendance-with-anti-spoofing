@@ -425,7 +425,7 @@ public class DashboardVersiOne extends AppCompatActivity {
         new AlertDialog.Builder(this)
                 .setTitle("Storage Tidak Cukup")
                 .setMessage(
-                        "Sisa penyimpanan anda telah penuh.\n\n" +
+                        "Penyimpanan anda telah penuh.\n" +
                                 "Silakan kosongkan penyimpanan terlebih dahulu sebelum melakukan absensi."
                 )
                 .setCancelable(false)

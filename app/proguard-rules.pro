@@ -20,3 +20,17 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 -keep class com.google.android.play.core.** { *; }
+-keep class com.google.firebase.** { *; }
+-keep class firebase.** { *; }
+-dontwarn com.google.firebase.**
+# Gson
+-keepattributes Signature
+-keepattributes *Annotation*
+
+# Retrofit
+-dontwarn retrofit2.**
+-keep class retrofit2.** { *; }
+
+# OkHttp
+-dontwarn okhttp3.**
+-keep class okhttp3.** { *; }
