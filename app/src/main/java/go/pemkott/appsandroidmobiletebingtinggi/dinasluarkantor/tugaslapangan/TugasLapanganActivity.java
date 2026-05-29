@@ -22,7 +22,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.model.Kegiatan;
 
 public class TugasLapanganActivity extends AppCompatActivity {
 
-    private static ArrayList<Kegiatan> list = new ArrayList<>();
+    private final ArrayList<Kegiatan> list = new ArrayList<>();
     public static ArrayList<String> kegiatanChecked = new ArrayList<String>();
     private ArrayList<String>  kegiatanAdded = new ArrayList<String>();
     static ArrayList<String> kegiatansList = new ArrayList<String>();
@@ -47,7 +47,7 @@ public class TugasLapanganActivity extends AppCompatActivity {
 
         list.clear();
         kegiatansList.clear();
-
+        kegiatanChecked.clear();
 
 
         databaseHelper = new DatabaseHelper(this);
@@ -135,15 +135,16 @@ public class TugasLapanganActivity extends AppCompatActivity {
 
     private void showSelectedKegiatan(Kegiatan kegiatan) {
 
-        if (kegiatan.isChecked() == true ){
-            kegiatanChecked.add(kegiatan.getKegiatan());
+        if (kegiatan.isChecked()) {
 
-            buffer2 = new StringBuffer();
-            for (int i = 0; i<kegiatanChecked.size()-1;i++){
-                buffer2.append(kegiatanChecked.get(i)+", ");
+            if (!kegiatanChecked.contains(kegiatan.getKegiatan())) {
+                kegiatanChecked.add(kegiatan.getKegiatan());
+                buffer2 = new StringBuffer();
+                for (int i = 0; i<kegiatanChecked.size()-1;i++){
+                    buffer2.append(kegiatanChecked.get(i)+", ");
+                }
+                buffer2.append(kegiatanChecked.get(kegiatanChecked.size()-1));
             }
-            buffer2.append(kegiatanChecked.get(kegiatanChecked.size()-1));
-
 
         }else{
 

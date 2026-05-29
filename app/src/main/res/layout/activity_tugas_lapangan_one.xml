@@ -7,6 +7,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/background_color">
 
+    <androidx.fragment.app.FragmentContainerView
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/llDataTugasLapangan"
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        class="com.google.android.gms.maps.SupportMapFragment"
+        />
+
     <RelativeLayout
         android:layout_marginTop="40dp"
         android:id="@+id/titleHeaderFinalTl"
@@ -60,18 +71,6 @@
 
     </RelativeLayout>
 
-    <androidx.fragment.app.FragmentContainerView
-        app:layout_constraintTop_toBottomOf="@+id/titleHeaderFinalTl"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/llDataTugasLapangan"
-        android:id="@+id/map"
-        android:layout_margin="20dp"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        class="com.google.android.gms.maps.SupportMapFragment"
-        />
-
     <ImageView
         app:layout_constraintBottom_toBottomOf="@+id/map"
         app:layout_constraintEnd_toEndOf="@+id/map"
@@ -90,6 +89,7 @@
         android:onClick="fokusLokasi"
         android:background="@drawable/backgroundtranshitam"
         />
+
     <LinearLayout
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

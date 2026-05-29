@@ -95,6 +95,7 @@
         android:onClick="fokusLokasi"
         android:background="@drawable/backgroundtranshitam"
         />
+
     <LinearLayout
         android:id="@+id/llKeteranganPd"
         android:layout_width="match_parent"

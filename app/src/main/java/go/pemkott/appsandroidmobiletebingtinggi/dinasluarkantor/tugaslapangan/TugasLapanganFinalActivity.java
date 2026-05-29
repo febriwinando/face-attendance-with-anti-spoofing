@@ -59,6 +59,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.fragment.app.FragmentContainerView;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -186,10 +188,25 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         EdgeToEdge.enable(this);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-        getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.background_color));
-        getWindow().setNavigationBarColor(getResources().getColor(R.color.background_color));
+//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+//        getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.background_color));
+//        getWindow().setNavigationBarColor(getResources().getColor(R.color.background_color));
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+
+        WindowInsetsControllerCompat controller =
+                new WindowInsetsControllerCompat(
+                        getWindow(),
+                        getWindow().getDecorView()
+                );
+
+        // icon status bar terang/gelap
+        controller.setAppearanceLightStatusBars(true);
+
+        // icon navigation terang/gelap
+        controller.setAppearanceLightNavigationBars(true);
+
         setContentView(R.layout.activity_tugas_lapangan_one);
 
 
@@ -429,7 +446,7 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
                     rbPosisi = "tl-masuk";
 
                     if (tagingTimePeriksa.getTime() >= pulangPeriksa.getTime()){
-                        showMessage("Peringatan", "Anda tidak dapat melakukan absensi masuk pada jam pulang kerja.");
+                        dialogView.viewNotifKosong(TugasLapanganFinalActivity.this, "Anda tidak dapat melakukan absensi masuk pada jam pulang kerja.","");
                     }else{
                         kirimdataMasuk(rbValid, rbPosisi, rbStatus, "masuk", jamMasuk);
                     }
@@ -607,6 +624,7 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
         Dialog dialogproses = new Dialog(TugasLapanganFinalActivity.this, R.style.DialogStyle);
         dialogproses.setContentView(R.layout.view_proses);
         dialogproses.setCancelable(false);
+
         byte[] imageBytes = ambilFoto.compressToMax80KB(file);
         MultipartBody.Part fotoPart =
                 prepareFilePart("fototaging", imageBytes);
@@ -632,7 +650,7 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
                         textPart(eJabatan),
                         textPart(sEmployeID),
                         textPart(timetableid),
-                        textPart(tanggal),
+                        textPart(rbTanggal),
                         textPart(rbJam),
                         textPart(posisi),
                         textPart(status),
@@ -648,6 +666,30 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
                         textPart(rbFakeGPS),
                         textPart(batasWaktu)
                 );
+
+        Log.d("TL_UPLOAD", "ketKehadiran = " + ketKehadiran);
+        Log.d("TL_UPLOAD", "eJabatan = " + eJabatan);
+        Log.d("TL_UPLOAD", "sEmployeID = " + sEmployeID);
+        Log.d("TL_UPLOAD", "timetableid = " + timetableid);
+        Log.d("TL_UPLOAD", "tanggal = " + rbTanggal);
+        Log.d("TL_UPLOAD", "rbJam = " + rbJam);
+        Log.d("TL_UPLOAD", "posisi = " + posisi);
+        Log.d("TL_UPLOAD", "status = " + status);
+        Log.d("TL_UPLOAD", "rbLat = " + rbLat);
+        Log.d("TL_UPLOAD", "rbLng = " + rbLng);
+        Log.d("TL_UPLOAD", "rbKet = " + rbKet);
+        Log.d("TL_UPLOAD", "mins = " + mins);
+        Log.d("TL_UPLOAD", "eOPD = " + eOPD);
+        Log.d("TL_UPLOAD", "jampegawai = " + jampegawai);
+        Log.d("TL_UPLOAD", "valid = " + valid);
+        Log.d("TL_UPLOAD", "ekslampiran = " + ekslampiran);
+        Log.d("TL_UPLOAD", "rbFakeGPS = " + rbFakeGPS);
+        Log.d("TL_UPLOAD", "batasWaktu = " + batasWaktu);
+
+        if (file != null) {
+            Log.d("TL_UPLOAD", "foto = " + file.getAbsolutePath());
+            Log.d("TL_UPLOAD", "foto size = " + file.length());
+        }
 
         call.enqueue(new Callback<ResponsePOJO>() {
             @Override
@@ -689,10 +731,9 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
             public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
                 dialogproses.dismiss();
                 dialogView.pesanError(TugasLapanganFinalActivity.this);
-
-
             }
         });
+        dialogproses.show();
     }
 
 
@@ -746,7 +787,7 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
     private void datauser(){
         Cursor res = databaseHelper.getAllData22(userId);
         if (res.getCount()==0){
-            showMessage("Error", "Nothing found");
+            dialogView.viewNotifKosong(TugasLapanganFinalActivity.this, "Error:","Data pengguna tidak ditemukan");
             return;
         }
 
@@ -1146,13 +1187,13 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
 
 
 
-    public void showMessage(String title, String Message){
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.ThemeOverlay_App_MaterialAlertDialog);
-        builder.setCancelable(true);
-        builder.setTitle(title);
-        builder.setMessage(Message);
-        builder.show();
-    }
+//    public void showMessage(String title, String Message){
+//        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.ThemeOverlay_App_MaterialAlertDialog);
+//        builder.setCancelable(true);
+//        builder.setTitle(title);
+//        builder.setMessage(Message);
+//        builder.show();
+//    }
 
     public void viewSukses(Context context){
         Dialog dialogSukes = new Dialog(context, R.style.DialogStyle);
