@@ -451,4 +451,16 @@ public class DownloadDataActivity extends AppCompatActivity {
         super.onDestroy();
         if (executor != null) executor.shutdownNow();
     }
+
+    private void debug(String pesan){
+        Log.e("DOWNLOAD_DEBUG", pesan);
+
+        runOnUiThread(() ->
+                Toast.makeText(
+                        DownloadDataActivity.this,
+                        pesan,
+                        Toast.LENGTH_LONG
+                ).show()
+        );
+    }
 }

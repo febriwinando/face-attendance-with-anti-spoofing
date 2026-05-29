@@ -27,6 +27,8 @@
 # Gson
 -keepattributes Signature
 -keepattributes *Annotation*
+-keep class com.google.gson.** { *; }
+-dontwarn com.google.gson.**
 
 # Retrofit
 -dontwarn retrofit2.**
@@ -35,3 +37,19 @@
 # OkHttp
 -dontwarn okhttp3.**
 -keep class okhttp3.** { *; }
+
+
+# Model aplikasi
+-keep class go.pemkott.appsandroidmobiletebingtinggi.model.** { *; }
+-keep class go.pemkott.appsandroidmobiletebingtinggi.viewmodel.** { *; }
+
+# API
+-keep interface go.pemkott.appsandroidmobiletebingtinggi.api.** { *; }
+
+# Response
+-keep class go.pemkott.appsandroidmobiletebingtinggi.api.** { *; }
+
+# Retrofit Annotation
+
+-keepattributes RuntimeVisibleAnnotations
+-keepattributes RuntimeVisibleParameterAnnotations

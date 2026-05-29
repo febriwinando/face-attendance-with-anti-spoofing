@@ -50,6 +50,8 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.fragment.app.FragmentContainerView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -154,7 +156,16 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
         EdgeToEdge.enable(this);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.biru));
-
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+        WindowInsetsControllerCompat controller =
+                new WindowInsetsControllerCompat(
+                        getWindow(),
+                        getWindow().getDecorView()
+                );
+        // icon status bar terang/gelap
+        controller.setAppearanceLightStatusBars(true);
+        // icon navigation terang/gelap
+        controller.setAppearanceLightNavigationBars(true);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_kehadiran_one);
 

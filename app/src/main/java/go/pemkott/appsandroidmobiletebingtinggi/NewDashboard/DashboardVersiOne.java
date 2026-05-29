@@ -653,11 +653,11 @@ public class DashboardVersiOne extends AppCompatActivity {
 
         if (!permissionsNeeded.isEmpty()) {
 
-            Toast.makeText(
-                    this,
-                    "Aplikasi memerlukan izin Kamera dan Lokasi",
-                    Toast.LENGTH_SHORT
-            ).show();
+//            Toast.makeText(
+//                    this,
+//                    "Aplikasi memerlukan izin Kamera dan Lokasi",
+//                    Toast.LENGTH_SHORT
+//            ).show();
 
             ActivityCompat.requestPermissions(
                     this,
