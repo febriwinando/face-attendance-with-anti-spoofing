@@ -23,6 +23,7 @@
 -keep class com.google.firebase.** { *; }
 -keep class firebase.** { *; }
 -dontwarn com.google.firebase.**
+
 # Gson
 -keepattributes Signature
 -keepattributes *Annotation*

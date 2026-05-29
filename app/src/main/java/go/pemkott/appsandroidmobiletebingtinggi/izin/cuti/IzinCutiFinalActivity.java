@@ -46,6 +46,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
@@ -247,18 +248,70 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
 
 
 
-        String myDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString()+ "/eabsensi";
-        String fileName = intent.getStringExtra("namafile");
+        String uriString =
+                intent.getStringExtra("namafile");
 
-        File originalFile = new File(myDir, fileName);
-        try {
-            file = ambilFoto.compressToFile(this, originalFile);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        if (uriString == null) {
+            Toast.makeText(
+                    this,
+                    "Foto tidak ditemukan",
+                    Toast.LENGTH_SHORT
+            ).show();
+            finish();
+            return;
         }
 
-        Bitmap preview = BitmapFactory.decodeFile(file.getAbsolutePath());
-        ivFinalKegiatan.setImageBitmap(preview);
+        Uri imageUri = Uri.parse(uriString);
+
+        try {
+
+            File originalFile = createTempFileFromUri(imageUri);
+            file = ambilFoto.compressToFile(
+                    this,
+                    originalFile
+            );
+            if (file == null || !file.exists()) {
+                Toast.makeText(
+                        this,
+                        "Gagal memproses foto",
+                        Toast.LENGTH_SHORT
+                ).show();
+
+                finish();
+                return;
+            }
+
+            Bitmap preview =
+                    BitmapFactory.decodeFile(file.getAbsolutePath());
+            if (preview != null) {
+                ivFinalKegiatan.setImageBitmap(preview);
+            } else {
+                Toast.makeText(
+                        this,
+                        "Gagal membaca foto",
+                        Toast.LENGTH_SHORT
+                ).show();
+
+                finish();
+                return;
+            }
+            // hapus file sementara hasil copy dari Uri
+            if (originalFile.exists()) {
+                originalFile.delete();
+            }
+
+        } catch (Exception e) {
+            Log.e("FOTO_ERROR",
+                    "Gagal memproses foto", e);
+            Toast.makeText(
+                    this,
+                    "Gagal memproses foto",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            finish();
+            return;
+        }
 
         resultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
             @SuppressLint("Range")
@@ -322,7 +375,33 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
         });
     }
 
+    private File createTempFileFromUri(Uri uri)
+            throws IOException {
 
+        InputStream is =
+                getContentResolver().openInputStream(uri);
+
+        File tempFile =
+                new File(
+                        getCacheDir(),
+                        "IMG_" + System.currentTimeMillis() + ".jpg"
+                );
+
+        FileOutputStream fos =
+                new FileOutputStream(tempFile);
+
+        byte[] buffer = new byte[8192];
+        int len;
+
+        while ((len = is.read(buffer)) > 0) {
+            fos.write(buffer, 0, len);
+        }
+
+        fos.close();
+        is.close();
+
+        return tempFile;
+    }
     private void setRoundedBackground(FragmentContainerView view) {
         // Ganti warna dan radius sesuai kebutuhan Anda
         int backgroundColor = getResources().getColor(R.color.biru);

@@ -34,6 +34,8 @@ xmlns:dist="http://schemas.android.com/apk/distribution">
 <uses-permission
     android:name="android.permission.READ_EXTERNAL_STORAGE"
     android:maxSdkVersion="32" />
+
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
 <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 <uses-permission
     android:name="android.permission.ACCESS_COARSE_LOCATION"
@@ -49,7 +51,11 @@ xmlns:dist="http://schemas.android.com/apk/distribution">
     android:roundIcon="@drawable/logoabsensilogin"
     android:supportsRtl="true"
     android:theme="@style/Theme.AppPemko">
-
+    <activity
+        android:name=".resetpassword.ResetPasswprdActivity"
+        android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
+        android:exported="false"
+        android:windowSoftInputMode="adjustResize" />
     <activity
         android:name=".pdf.ReadPdfActivity"
         android:exported="false" />

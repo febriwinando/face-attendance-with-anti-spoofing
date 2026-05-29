@@ -13,7 +13,8 @@
         app:cardCornerRadius="20dp"
         app:cardElevation="5dp"
         android:layout_margin="10dp"
-        android:backgroundTint="@color/background_color">
+        app:cardBackgroundColor="@color/background_color"
+        >
 
         <LinearLayout
             android:paddingTop="10dp"
@@ -113,7 +114,7 @@
                     android:layout_marginBottom="10dp">
 
                     <ImageView
-                        android:id="@+id/ivListBerakhlah1"
+                        android:id="@+id/ivListBerakhlak1"
                         android:layout_width="38dp"
                         android:layout_height="38dp"
                         android:src="@drawable/one_rectangle_non"
@@ -155,7 +156,7 @@
 
 
                     <ImageView
-                        android:id="@+id/ivListBerakhlah2"
+                        android:id="@+id/ivListBerakhlak2"
                         android:layout_width="38dp"
                         android:layout_height="38dp"
                         android:src="@drawable/one_rectangle_non"
@@ -198,7 +199,7 @@
 
 
                     <ImageView
-                        android:id="@+id/ivListBerakhlah3"
+                        android:id="@+id/ivListBerakhlak3"
                         android:layout_width="38dp"
                         android:layout_height="38dp"
                         android:src="@drawable/one_rectangle_non"
@@ -239,7 +240,7 @@
 
 
                     <ImageView
-                        android:id="@+id/ivListBerakhlah4"
+                        android:id="@+id/ivListBerakhlak4"
                         android:layout_width="38dp"
                         android:layout_height="38dp"
                         android:src="@drawable/one_rectangle_non"
@@ -280,7 +281,7 @@
 
 
                     <ImageView
-                        android:id="@+id/ivListBerakhlah5"
+                        android:id="@+id/ivListBerakhlak5"
                         android:layout_width="38dp"
                         android:layout_height="38dp"
                         android:src="@drawable/one_rectangle_non"
@@ -322,7 +323,7 @@
 
 
                     <ImageView
-                        android:id="@+id/ivListBerakhlah6"
+                        android:id="@+id/ivListBerakhlak6"
                         android:layout_width="38dp"
                         android:layout_height="38dp"
                         android:src="@drawable/one_rectangle_non"
@@ -363,7 +364,7 @@
 
 
                     <ImageView
-                        android:id="@+id/ivListBerakhlah7"
+                        android:id="@+id/ivListBerakhlak7"
                         android:layout_width="38dp"
                         android:layout_height="38dp"
                         android:src="@drawable/one_rectangle_non"

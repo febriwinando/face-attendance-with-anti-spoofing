@@ -354,13 +354,84 @@ public class AmbilFoto {
         return bitmap;
     }
 
-    public File compressToFile(Context context, File sourceFile) throws IOException {
+//    public File compressToFile(Context context, File sourceFile) throws IOException {
+//
+//        byte[] compressedBytes = compressToMax80KB(sourceFile);
+//
+//        File compressedDir = new File(
+//                context.getCacheDir(), "compressed"
+//        );
+//        if (!compressedDir.exists()) {
+//            compressedDir.mkdirs();
+//        }
+//
+//        File compressedFile = new File(
+//                compressedDir,
+//                "IMG_" + System.currentTimeMillis() + ".jpg"
+//        );
+//
+//        FileOutputStream fos = new FileOutputStream(compressedFile);
+//        fos.write(compressedBytes);
+//        fos.flush();
+//        fos.close();
+//
+//        return compressedFile;
+//    }
+//
+//
+//    public byte[] compressToMax80KB(File file) {
+//
+//        BitmapFactory.Options options = new BitmapFactory.Options();
+//        options.inSampleSize = 2;
+//
+//        Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath(), options);
+//
+//        Matrix matrix = getExifRotation(file.getAbsolutePath());
+//        bitmap = Bitmap.createBitmap(
+//                bitmap, 0, 0,
+//                bitmap.getWidth(),
+//                bitmap.getHeight(),
+//                matrix, true
+//        );
+//
+//        int quality = 80;
+//        ByteArrayOutputStream baos;
+//
+//        while (true) {
+//            baos = new ByteArrayOutputStream();
+//            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, baos);
+//
+//            int sizeKB = baos.size() / 1024;
+//            if (sizeKB <= 50 || quality <= 20) break;
+//
+//            quality -= 5;
+//        }
+//
+//        bitmap.recycle();
+//        return baos.toByteArray();
+//    }
 
-        byte[] compressedBytes = compressToMax80KB(sourceFile);
+    public File compressToFile(
+            Context context,
+            File sourceFile
+    ) throws IOException {
+
+        if (sourceFile == null || !sourceFile.exists()) {
+            return null;
+        }
+
+        byte[] compressedBytes =
+                compressToMax80KB(sourceFile);
+
+        if (compressedBytes == null) {
+            return null;
+        }
 
         File compressedDir = new File(
-                context.getCacheDir(), "compressed"
+                context.getCacheDir(),
+                "compressed"
         );
+
         if (!compressedDir.exists()) {
             compressedDir.mkdirs();
         }
@@ -370,7 +441,9 @@ public class AmbilFoto {
                 "IMG_" + System.currentTimeMillis() + ".jpg"
         );
 
-        FileOutputStream fos = new FileOutputStream(compressedFile);
+        FileOutputStream fos =
+                new FileOutputStream(compressedFile);
+
         fos.write(compressedBytes);
         fos.flush();
         fos.close();
@@ -378,37 +451,98 @@ public class AmbilFoto {
         return compressedFile;
     }
 
-
     public byte[] compressToMax80KB(File file) {
 
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inSampleSize = 2;
+        try {
 
-        Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath(), options);
+            if (file == null || !file.exists()) {
 
-        Matrix matrix = getExifRotation(file.getAbsolutePath());
-        bitmap = Bitmap.createBitmap(
-                bitmap, 0, 0,
-                bitmap.getWidth(),
-                bitmap.getHeight(),
-                matrix, true
-        );
+                Log.e("COMPRESS", "File tidak ditemukan");
 
-        int quality = 80;
-        ByteArrayOutputStream baos;
+                return null;
+            }
 
-        while (true) {
-            baos = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, baos);
+            BitmapFactory.Options options =
+                    new BitmapFactory.Options();
 
-            int sizeKB = baos.size() / 1024;
-            if (sizeKB <= 50 || quality <= 20) break;
+            options.inSampleSize = 2;
 
-            quality -= 5;
+            Bitmap bitmap = BitmapFactory.decodeFile(
+                    file.getAbsolutePath(),
+                    options
+            );
+
+            // INI PENYEBAB CRASH XIAOMI
+            if (bitmap == null) {
+
+                Log.e(
+                        "COMPRESS",
+                        "Bitmap gagal decode: "
+                                + file.getAbsolutePath()
+                );
+
+                return null;
+            }
+
+            Matrix matrix =
+                    getExifRotation(file.getAbsolutePath());
+
+            Bitmap rotatedBitmap = Bitmap.createBitmap(
+                    bitmap,
+                    0,
+                    0,
+                    bitmap.getWidth(),
+                    bitmap.getHeight(),
+                    matrix,
+                    true
+            );
+
+            if (rotatedBitmap == null) {
+
+                bitmap.recycle();
+
+                return null;
+            }
+
+            int quality = 80;
+
+            ByteArrayOutputStream baos;
+
+            while (true) {
+
+                baos = new ByteArrayOutputStream();
+
+                rotatedBitmap.compress(
+                        Bitmap.CompressFormat.JPEG,
+                        quality,
+                        baos
+                );
+
+                int sizeKB = baos.size() / 1024;
+
+                if (sizeKB <= 50 || quality <= 20) {
+                    break;
+                }
+
+                quality -= 5;
+            }
+
+            if (!bitmap.isRecycled()) {
+                bitmap.recycle();
+            }
+
+            if (!rotatedBitmap.isRecycled()) {
+                rotatedBitmap.recycle();
+            }
+
+            return baos.toByteArray();
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+            return null;
         }
-
-        bitmap.recycle();
-        return baos.toByteArray();
     }
 
 

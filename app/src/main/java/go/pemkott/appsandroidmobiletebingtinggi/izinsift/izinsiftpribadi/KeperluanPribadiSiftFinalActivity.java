@@ -39,10 +39,10 @@ import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
-import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -67,6 +67,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.ParseException;
@@ -74,6 +75,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Objects;
 
 import go.pemkott.appsandroidmobiletebingtinggi.NewDashboard.DashboardVersiOne;
 import go.pemkott.appsandroidmobiletebingtinggi.R;
@@ -90,6 +92,9 @@ import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
 import go.pemkott.appsandroidmobiletebingtinggi.utils.ClsGlobal;
 import go.pemkott.appsandroidmobiletebingtinggi.utils.NetworkUtils;
 import go.pemkott.appsandroidmobiletebingtinggi.viewmodel.LocationViewModel;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -110,9 +115,8 @@ public class KeperluanPribadiSiftFinalActivity extends AppCompatActivity  implem
     //Gmaps
 
     DatabaseHelper databaseHelper;
-    ActivityResultLauncher<Intent> resultLauncher;
     private static final String TAG = KeperluanPribadiFinalActivity.class.getSimpleName();
-    File imageFile;
+
     private String  currentPhotoPath;
     private String rbLat;
     private String rbLng;
@@ -217,12 +221,72 @@ File file;
         mockLocationsEnabled = false;
         Intent intent = getIntent();
 
-        String myDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString()+ "/eabsensi";
-        String fileName = intent.getStringExtra("fileName");
-        file = new File(myDir, fileName);
 
-        Bitmap gambardeteksi = BitmapFactory.decodeFile(file.getAbsolutePath());
-        ivFinalKegiatan.setImageBitmap(gambardeteksi);
+        String uriString =
+                intent.getStringExtra("namafile");
+
+        if (uriString == null) {
+            Toast.makeText(
+                    this,
+                    "Foto tidak ditemukan",
+                    Toast.LENGTH_SHORT
+            ).show();
+            finish();
+            return;
+        }
+
+        Uri imageUri = Uri.parse(uriString);
+
+        try {
+
+            File originalFile = createTempFileFromUri(imageUri);
+            file = ambilFoto.compressToFile(
+                    this,
+                    originalFile
+            );
+            if (file == null || !file.exists()) {
+                Toast.makeText(
+                        this,
+                        "Gagal memproses foto",
+                        Toast.LENGTH_SHORT
+                ).show();
+
+                finish();
+                return;
+            }
+
+            Bitmap preview =
+                    BitmapFactory.decodeFile(file.getAbsolutePath());
+            if (preview != null) {
+                ivFinalKegiatan.setImageBitmap(preview);
+            } else {
+                Toast.makeText(
+                        this,
+                        "Gagal membaca foto",
+                        Toast.LENGTH_SHORT
+                ).show();
+
+                finish();
+                return;
+            }
+            // hapus file sementara hasil copy dari Uri
+            if (originalFile.exists()) {
+                originalFile.delete();
+            }
+
+        } catch (Exception e) {
+            Log.e("FOTO_ERROR",
+                    "Gagal memproses foto", e);
+            Toast.makeText(
+                    this,
+                    "Gagal memproses foto",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            finish();
+            return;
+        }
+
         Bitmap selectedBitmap = ambilFoto.fileBitmapCompress(file);
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -239,6 +303,33 @@ File file;
 
     }
 
+    private File createTempFileFromUri(Uri uri)
+            throws IOException {
+
+        InputStream is =
+                getContentResolver().openInputStream(uri);
+
+        File tempFile =
+                new File(
+                        getCacheDir(),
+                        "IMG_" + System.currentTimeMillis() + ".jpg"
+                );
+
+        FileOutputStream fos =
+                new FileOutputStream(tempFile);
+
+        byte[] buffer = new byte[8192];
+        int len;
+
+        while ((len = is.read(buffer)) > 0) {
+            fos.write(buffer, 0, len);
+        }
+
+        fos.close();
+        is.close();
+
+        return tempFile;
+    }
 
     public void kirimDataDinasLuar(View view){
         requestPermission();
@@ -298,18 +389,19 @@ File file;
                 if(jam_masuk == null){
 
                     if (tanggal.equals(rbTanggal)){
-                        kirimdata(rbValid, rbPosisi, rbStatus, "masuk", masuksift);
+                        kirimdataMasuk(rbValid, rbPosisi, rbStatus, "masuk", masuksift);
                     } else if (infoJadwalhariini.equals(rbTanggal)) {
                         if (tagingTime.getTime()> jamPulangDate.getTime()){
                             dialogView.viewNotifKosong(KeperluanPribadiSiftFinalActivity.this, "Anda tidak dapat melakukan absensi masuk pada jam pulang kerja.", "");
                         }else{
-                            kirimdata(rbValid, rbPosisi, rbStatus, "masuk", masuksift);
+                            kirimdataMasuk(rbValid, rbPosisi, rbStatus, "masuk", masuksift);
                         }
                     }
                 }else{
                     dialogView.viewNotifKosong(KeperluanPribadiSiftFinalActivity.this, "Anda sudah mengisi absensi masuk.", "");
                 }
             }//Masuk
+
             //Pulang
             else {
 
@@ -317,7 +409,7 @@ File file;
                     if (jam_masuk == null){
                         dialogView.viewNotifKosong(KeperluanPribadiSiftFinalActivity.this, "Harap mengisi absensi masuk, untuk izin Keperluan pribadi.", "");
                     }else{
-                        kirimdata(rbValid, rbPosisi, rbStatus, "pulang", pulangsift);
+                        kirimdataPulang(rbValid, rbPosisi, rbStatus, "pulang", pulangsift);
                     }
                 }else{
                     if (infoJadwalhariini.equals(rbTanggal)){
@@ -330,9 +422,9 @@ File file;
                         if (tagingTime.getTime() < batasWaktuJamMalam.getTime()){
                             if (tagingTime.getTime() > jamPulangDate.getTime()){
                                 if (jam_masuk == null) {
-                                    kirimdata(rbValid, rbPosisi, rbStatus, "masukpulang", pulangsift);
+                                    kirimdataPulang(rbValid, rbPosisi, rbStatus, "masukpulang", pulangsift);
                                 } else {
-                                    kirimdata(rbValid, rbPosisi, rbStatus, "pulang", pulangsift);
+                                    kirimdataPulang(rbValid, rbPosisi, rbStatus, "pulang", pulangsift);
                                 }
                             }
                         }else {
@@ -356,7 +448,7 @@ File file;
                         if (tagingTimePeriksa.getTime() >= pulangPeriksa.getTime()) {
                             showMessage("Peringatan", "Anda tidak dapat melakukan absensi masuk pada jam pulang kerja.");
                         } else {
-                            kirimdata(rbValid, rbPosisi, rbStatus, "masuk", masuksift);
+                            kirimdataMasuk(rbValid, rbPosisi, rbStatus, "masuk", masuksift);
                         }
 
                     } else {
@@ -369,9 +461,9 @@ File file;
                     if (jam_pulang == null) {
 
                         if (jam_masuk == null) {
-                            kirimdata(rbValid, rbPosisi, rbStatus, "masukpulang", pulangsift);
+                            kirimdataPulang(rbValid, rbPosisi, rbStatus, "masukpulang", pulangsift);
                         } else {
-                            kirimdata(rbValid, rbPosisi, rbStatus, "pulang", pulangsift);
+                            kirimdataPulang(rbValid, rbPosisi, rbStatus, "pulang", pulangsift);
                         }
 
                     } else {
@@ -382,53 +474,229 @@ File file;
         }
     }
 
-    public void kirimdata(String valid, String posisi, String status, String ketKehadiran, String jampegawai){
+    private MultipartBody.Part prepareFilePart(String partName, byte[] imageBytes) {
+        RequestBody requestBody =
+                RequestBody.create(
+                        imageBytes,
+                        MediaType.parse("image/jpeg")
+                );
 
-        Call<ResponsePOJO> call = RetroClient.getInstance().getApi().uploadAbsenKpSift(
-                fotoTaging,
-                ketKehadiran,
-                eJabatan,
-                sEmployeID,
-                timetableid,
-                rbTanggal,
-                rbJam,
-                posisi,
-                status,
-                rbLat,
-                rbLng,
-                rbKet,
-                mins,
-                eOPD,
-                jampegawai,
-                valid,
-                lampiran,
-                ekslampiran,
-                rbFakeGPS,
-                batasWaktu
+        return MultipartBody.Part.createFormData(
+                partName,
+                "fototaging.jpg",
+                requestBody
         );
+    }
+//    public void kirimdata(String valid, String posisi, String status, String ketKehadiran, String jampegawai){
+//
+//        byte[] imageBytes = ambilFoto.compressToMax80KB(file);
+//        MultipartBody.Part fotoPart =
+//                prepareFilePart("fototaging", imageBytes);
+//
+//        Call<ResponsePOJO> call = RetroClient.getInstance().getApi().uploadAbsenKpSift(
+//                fotoTaging,
+//                ketKehadiran,
+//                eJabatan,
+//                sEmployeID,
+//                timetableid,
+//                rbTanggal,
+//                rbJam,
+//                posisi,
+//                status,
+//                rbLat,
+//                rbLng,
+//                rbKet,
+//                mins,
+//                eOPD,
+//                jampegawai,
+//                valid,
+//                lampiran,
+//                ekslampiran,
+//                rbFakeGPS,
+//                batasWaktu
+//        );
+//
+//        call.enqueue(new Callback<ResponsePOJO>() {
+//            @Override
+//            public void onResponse(@NonNull Call<ResponsePOJO> call, @NonNull Response<ResponsePOJO> response) {
+//                if (!response.isSuccessful()){
+//                    dialogView.viewNotifKosong(KeperluanPribadiSiftFinalActivity.this, "Gagal mengisi absensi,", "silahkan coba kembali.");
+//                    return;
+//                }
+//                if(response.body().isStatus()){
+//                    viewSukses(KeperluanPribadiSiftFinalActivity.this, response.body().getRemarks(), "");
+//
+//                }else{
+//                    dialogView.viewNotifKosong(KeperluanPribadiSiftFinalActivity.this, response.body().getRemarks(), "");
+//                }
+//
+//            }
+//
+//            @Override
+//            public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
+//                dialogView.viewNotifKosong(KeperluanPribadiSiftFinalActivity.this, "Gagal mengisi absensi,", "silahkan coba kembali.");
+//            }
+//        });
+//    }
+
+    private RequestBody textPart(String value) {
+        return RequestBody.create(
+                okhttp3.MediaType.parse("text/plain"),
+                value
+        );
+    }
+    public void kirimdataMasuk(String valid, String posisi, String status, String ketKehadiran, String jampegawai){
+
+        Dialog dialogproses = new Dialog(KeperluanPribadiSiftFinalActivity.this, R.style.DialogStyle);
+        dialogproses.setContentView(R.layout.view_proses);
+        dialogproses.setCancelable(false);
+
+        byte[] imageBytes = ambilFoto.compressToMax80KB(file);
+        MultipartBody.Part fotoPart = prepareFilePart("fototaging", imageBytes);
+
+        Call<ResponsePOJO> call =
+                RetroClient.getInstance().getApi().uploadIzinKpMasuk(
+                        fotoPart,
+                        textPart(ketKehadiran),
+                        textPart(eJabatan),
+                        textPart(sEmployeID),
+                        textPart(timetableid),
+                        textPart(rbTanggal),
+                        textPart(rbJam),
+                        textPart(posisi),
+                        textPart(status),
+                        textPart(rbLat),
+                        textPart(rbLng),
+                        textPart(rbKet),
+                        textPart(String.valueOf(mins)),
+                        textPart(eOPD),
+                        textPart(jampegawai),
+                        textPart(valid),
+                        textPart(rbFakeGPS),
+                        textPart(batasWaktu)
+                );
 
         call.enqueue(new Callback<ResponsePOJO>() {
             @Override
             public void onResponse(@NonNull Call<ResponsePOJO> call, @NonNull Response<ResponsePOJO> response) {
-                if (!response.isSuccessful()){
-                    dialogView.viewNotifKosong(KeperluanPribadiSiftFinalActivity.this, "Gagal mengisi absensi,", "silahkan coba kembali.");
+                dialogproses.dismiss();
+
+                if (!response.isSuccessful()) {
+
+                    dialogView.viewNotifKosong(
+                            KeperluanPribadiSiftFinalActivity.this,
+                            "Gagal mengisi absensi",
+                            "Silahkan coba kembali."
+                    );
                     return;
                 }
-                if(response.body().isStatus()){
-                    viewSukses(KeperluanPribadiSiftFinalActivity.this, response.body().getRemarks(), "");
 
-                }else{
-                    dialogView.viewNotifKosong(KeperluanPribadiSiftFinalActivity.this, response.body().getRemarks(), "");
+                ResponsePOJO data = response.body();
+
+                if (Objects.requireNonNull(response.body()).isStatus()){
+                    dialogView.viewSukses(KeperluanPribadiSiftFinalActivity.this, data.getRemarks());
+                    autoCloseHandler.postDelayed(
+                            autoCloseRunnable,
+                            10000
+
+                    );
+                }else {
+                    dialogView.viewNotifKosong(KeperluanPribadiSiftFinalActivity.this, data.getRemarks(),"");
                 }
 
             }
 
             @Override
             public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
-                dialogView.viewNotifKosong(KeperluanPribadiSiftFinalActivity.this, "Gagal mengisi absensi,", "silahkan coba kembali.");
+                dialogproses.dismiss();
+                dialogView.pesanError(KeperluanPribadiSiftFinalActivity.this);
             }
         });
+
+        dialogproses.show();
+
     }
+
+    private final Handler autoCloseHandler = new Handler();
+
+    private final Runnable autoCloseRunnable = () -> {
+        finish();
+    };
+
+    public void kirimdataPulang(String valid, String posisi, String status, String ketKehadiran, String jampegawai){
+
+        Dialog dialogproses = new Dialog(KeperluanPribadiSiftFinalActivity.this, R.style.DialogStyle);
+        dialogproses.setContentView(R.layout.view_proses);
+        dialogproses.setCancelable(false);
+
+        byte[] imageBytes = ambilFoto.compressToMax80KB(file);
+        MultipartBody.Part fotoPart = prepareFilePart("fototaging", imageBytes);
+
+        Call<ResponsePOJO> call =
+                RetroClient.getInstance().getApi().uploadIzinKpPulang(
+                        fotoPart,
+                        textPart(ketKehadiran),
+                        textPart(eJabatan),
+                        textPart(sEmployeID),
+                        textPart(timetableid),
+                        textPart(rbTanggal),
+                        textPart(rbJam),
+                        textPart(posisi),
+                        textPart(status),
+                        textPart(rbLat),
+                        textPart(rbLng),
+                        textPart(rbKet),
+                        textPart(String.valueOf(mins)),
+                        textPart(eOPD),
+                        textPart(jampegawai),
+                        textPart(valid),
+                        textPart(rbFakeGPS),
+                        textPart(batasWaktu)
+                );
+
+        call.enqueue(new Callback<ResponsePOJO>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponsePOJO> call, @NonNull Response<ResponsePOJO> response) {
+                dialogproses.dismiss();
+
+                if (!response.isSuccessful()) {
+
+                    dialogView.viewNotifKosong(
+                            KeperluanPribadiSiftFinalActivity.this,
+                            "Gagal mengisi absensi",
+                            "Silahkan coba kembali."
+                    );
+                    return;
+                }
+
+                ResponsePOJO data = response.body();
+
+                if (Objects.requireNonNull(response.body()).isStatus()){
+                    dialogView.viewSukses(KeperluanPribadiSiftFinalActivity.this, data.getRemarks());
+                    autoCloseHandler.postDelayed(
+
+                            autoCloseRunnable,
+
+                            10000
+
+                    );
+                }else {
+                    dialogView.viewNotifKosong(KeperluanPribadiSiftFinalActivity.this, data.getRemarks(),"");
+                }
+
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
+                dialogproses.dismiss();
+                dialogView.pesanError(KeperluanPribadiSiftFinalActivity.this);
+            }
+        });
+
+        dialogproses.show();
+
+    }
+
 
     public void hitungjarak(){
 

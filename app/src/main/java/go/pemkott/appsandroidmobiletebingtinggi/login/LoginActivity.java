@@ -37,6 +37,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.api.ResponsePOJO;
 import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
+import go.pemkott.appsandroidmobiletebingtinggi.resetpassword.ResetPasswprdActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.utils.NetworkUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -95,9 +96,9 @@ public class LoginActivity extends AppCompatActivity {
         tvResetPassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Intent intentReset = new Intent(LoginActivity.this, ResetPasswprdActivity.class);
+                Intent intentReset = new Intent(LoginActivity.this, ResetPasswprdActivity.class);
 //                intentReset.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-//                startActivity(intentReset);
+                startActivity(intentReset);
             }
         });
 
@@ -114,6 +115,7 @@ public class LoginActivity extends AppCompatActivity {
         datauser();
 
     }
+
 
 
     public void loginUser(View view){
@@ -218,6 +220,7 @@ public class LoginActivity extends AppCompatActivity {
                 }, error -> {
                 dialogproses.dismiss();
                     dialogView.pesanError(LoginActivity.this);
+                    Log.d("Error Logi", ""+error.toString());
 
                 }
         );

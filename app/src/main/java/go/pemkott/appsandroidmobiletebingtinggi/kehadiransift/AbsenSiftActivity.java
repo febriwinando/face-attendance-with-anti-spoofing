@@ -22,6 +22,7 @@ import android.graphics.Canvas;
 import android.graphics.Outline;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -37,6 +38,7 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -64,7 +66,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.imageview.ShapeableImageView;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -200,20 +204,72 @@ public class AbsenSiftActivity extends AppCompatActivity implements OnMapReadyCa
         masuksift = JadwalSiftActivity.masuksift;
         pulangsift = JadwalSiftActivity.pulangsift;
 
-        String myDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString()+ "/eabsensi";
+//        String myDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString()+ "/eabsensi";
         Intent intent = getIntent();
-        String fileName = intent.getStringExtra("namafile");
+        String uriString =
+                intent.getStringExtra("namafile");
 
-
-        File originalFile = new File(myDir, fileName);
-        try {
-            file = ambilFoto.compressToFile(this, originalFile);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        if (uriString == null) {
+            Toast.makeText(
+                    this,
+                    "Foto tidak ditemukan",
+                    Toast.LENGTH_SHORT
+            ).show();
+            finish();
+            return;
         }
 
-        Bitmap preview = BitmapFactory.decodeFile(file.getAbsolutePath());
-        ivTaging.setImageBitmap(preview);
+        Uri imageUri = Uri.parse(uriString);
+
+        try {
+
+            File originalFile = createTempFileFromUri(imageUri);
+            file = ambilFoto.compressToFile(
+                    this,
+                    originalFile
+            );
+            if (file == null || !file.exists()) {
+                Toast.makeText(
+                        this,
+                        "Gagal memproses foto",
+                        Toast.LENGTH_SHORT
+                ).show();
+
+                finish();
+                return;
+            }
+
+            Bitmap preview =
+                    BitmapFactory.decodeFile(file.getAbsolutePath());
+            if (preview != null) {
+                ivTaging.setImageBitmap(preview);
+            } else {
+                Toast.makeText(
+                        this,
+                        "Gagal membaca foto",
+                        Toast.LENGTH_SHORT
+                ).show();
+
+                finish();
+                return;
+            }
+            // hapus file sementara hasil copy dari Uri
+            if (originalFile.exists()) {
+                originalFile.delete();
+            }
+
+        } catch (Exception e) {
+            Log.e("FOTO_ERROR",
+                    "Gagal memproses foto", e);
+            Toast.makeText(
+                    this,
+                    "Gagal memproses foto",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            finish();
+            return;
+        }
 //        String myDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString()+ "/eabsensi";
 //        Intent intent = getIntent();
 //        String fileName = intent.getStringExtra("fileName");
@@ -242,6 +298,34 @@ public class AbsenSiftActivity extends AppCompatActivity implements OnMapReadyCa
         startLocationUpdates();
 
 
+    }
+
+    private File createTempFileFromUri(Uri uri)
+            throws IOException {
+
+        InputStream is =
+                getContentResolver().openInputStream(uri);
+
+        File tempFile =
+                new File(
+                        getCacheDir(),
+                        "IMG_" + System.currentTimeMillis() + ".jpg"
+                );
+
+        FileOutputStream fos =
+                new FileOutputStream(tempFile);
+
+        byte[] buffer = new byte[8192];
+        int len;
+
+        while ((len = is.read(buffer)) > 0) {
+            fos.write(buffer, 0, len);
+        }
+
+        fos.close();
+        is.close();
+
+        return tempFile;
     }
     private void setRoundedBackground(FragmentContainerView view) {
         float radius = getResources().getDimension(R.dimen.radius);

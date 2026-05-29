@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.media.Image;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -392,10 +393,29 @@ public class CameraxActivity extends AppCompatActivity {
                 ContextCompat.getMainExecutor(this),
                 new ImageCapture.OnImageSavedCallback() {
 
+//                    @Override
+//                    public void onImageSaved(@NonNull ImageCapture.OutputFileResults output) {
+//                        dialogproses.dismiss();
+//                        kirimHasil(fileName);
+//                    }
+
                     @Override
-                    public void onImageSaved(@NonNull ImageCapture.OutputFileResults output) {
+                    public void onImageSaved(
+                            @NonNull ImageCapture.OutputFileResults output
+                    ) {
                         dialogproses.dismiss();
-                        kirimHasil(fileName);
+
+                        Uri savedUri = output.getSavedUri();
+
+                        if (savedUri != null) {
+                            kirimHasil(savedUri.toString());
+                        } else {
+                            Toast.makeText(
+                                    CameraxActivity.this,
+                                    "Gagal mendapatkan lokasi foto",
+                                    Toast.LENGTH_SHORT
+                            ).show();
+                        }
                     }
 
                     @Override
