@@ -1,4 +1,4 @@
-package go.pemkott.appsandroidmobiletebingtinggi.rekap;
+package go.pemkott.appsandroidmobiletebingtinggi.model;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;

@@ -13,7 +13,6 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -35,7 +34,6 @@ import android.os.Looper;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.provider.Settings;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewOutlineProvider;
@@ -61,6 +59,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.fragment.app.FragmentContainerView;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -100,18 +100,15 @@ import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.api.ResponsePOJO;
 import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
 import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraXLActivity;
-import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraxActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import go.pemkott.appsandroidmobiletebingtinggi.dinasluarkantor.perjalanandinas.PerjalananDinasFinalActivity;
-import go.pemkott.appsandroidmobiletebingtinggi.dinasluarkantor.tugaslapangan.TugasLapanganFinalActivity;
-import go.pemkott.appsandroidmobiletebingtinggi.kehadiran.AbsensiKehadiranActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFoto;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFotoLampiran;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.Lokasi;
 import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
 import go.pemkott.appsandroidmobiletebingtinggi.utils.NetworkUtils;
-import go.pemkott.appsandroidmobiletebingtinggi.viewmodel.LocationViewModel;
+import go.pemkott.appsandroidmobiletebingtinggi.model.LocationViewModel;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -193,8 +190,19 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-        getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.background_color));
-        getWindow().setNavigationBarColor(getResources().getColor(R.color.background_color));
+//        getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.background_color));
+//        getWindow().setNavigationBarColor(getResources().getColor(R.color.background_color));
+
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+        WindowInsetsControllerCompat controller =
+                new WindowInsetsControllerCompat(
+                        getWindow(),
+                        getWindow().getDecorView()
+                );
+        // icon status bar terang/gelap
+        controller.setAppearanceLightStatusBars(true);
+        // icon navigation terang/gelap
+        controller.setAppearanceLightNavigationBars(true);
         setContentView(R.layout.activity_izin_sakit_final);
 
         session = new SessionManager(this);

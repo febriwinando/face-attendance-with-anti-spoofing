@@ -27,7 +27,6 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
@@ -51,6 +50,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.fragment.app.FragmentContainerView;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -95,7 +96,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFoto;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.Lokasi;
 import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
 import go.pemkott.appsandroidmobiletebingtinggi.utils.NetworkUtils;
-import go.pemkott.appsandroidmobiletebingtinggi.viewmodel.LocationViewModel;
+import go.pemkott.appsandroidmobiletebingtinggi.model.LocationViewModel;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -171,8 +172,18 @@ public class KeperluanPribadiFinalActivity extends AppCompatActivity implements 
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-        getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.background_color));
-        getWindow().setNavigationBarColor(getResources().getColor(R.color.background_color));
+//        getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.background_color));
+//        getWindow().setNavigationBarColor(getResources().getColor(R.color.background_color));
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+        WindowInsetsControllerCompat controller =
+                new WindowInsetsControllerCompat(
+                        getWindow(),
+                        getWindow().getDecorView()
+                );
+        // icon status bar terang/gelap
+        controller.setAppearanceLightStatusBars(true);
+        // icon navigation terang/gelap
+        controller.setAppearanceLightNavigationBars(true);
         setContentView(R.layout.activity_keperluan_pribadi_final);
 
         session = new SessionManager(this);

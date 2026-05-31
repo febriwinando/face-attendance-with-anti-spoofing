@@ -1,4 +1,4 @@
-package go.pemkott.appsandroidmobiletebingtinggi.viewmodel;
+package go.pemkott.appsandroidmobiletebingtinggi.model;
 
 import android.content.Context;
 

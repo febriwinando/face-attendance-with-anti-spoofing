@@ -91,7 +91,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.konstanta.Lokasi;
 import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
 import go.pemkott.appsandroidmobiletebingtinggi.utils.ClsGlobal;
 import go.pemkott.appsandroidmobiletebingtinggi.utils.NetworkUtils;
-import go.pemkott.appsandroidmobiletebingtinggi.viewmodel.LocationViewModel;
+import go.pemkott.appsandroidmobiletebingtinggi.model.LocationViewModel;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;

@@ -25,13 +25,11 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewOutlineProvider;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -45,6 +43,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.fragment.app.FragmentContainerView;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -85,7 +85,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.konstanta.Lokasi;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat;
 import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
 import go.pemkott.appsandroidmobiletebingtinggi.utils.NetworkUtils;
-import go.pemkott.appsandroidmobiletebingtinggi.viewmodel.LocationViewModel;
+import go.pemkott.appsandroidmobiletebingtinggi.model.LocationViewModel;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -163,7 +163,18 @@ public class AbsenSiftActivity extends AppCompatActivity implements OnMapReadyCa
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-        getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.biru));
+//        getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.biru));
+
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+        WindowInsetsControllerCompat controller =
+                new WindowInsetsControllerCompat(
+                        getWindow(),
+                        getWindow().getDecorView()
+                );
+        // icon status bar terang/gelap
+        controller.setAppearanceLightStatusBars(true);
+        // icon navigation terang/gelap
+        controller.setAppearanceLightNavigationBars(true);
         setContentView(R.layout.activity_absen_sift);
         mContext = AbsenSiftActivity.this;
         session = new SessionManager(this);
@@ -172,9 +183,9 @@ public class AbsenSiftActivity extends AppCompatActivity implements OnMapReadyCa
         databaseHelper = new DatabaseHelper(mContext);
         databases();
         //Google Maps
-        Window window = this.getWindow();
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.setStatusBarColor(getResources().getColor(R.color.putih));
+//        Window window = this.getWindow();
+//        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+//        window.setStatusBarColor(getResources().getColor(R.color.putih));
 
 
         if (savedInstanceState != null) {

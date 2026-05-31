@@ -42,10 +42,10 @@
 # Model aplikasi
 -keep class go.pemkott.appsandroidmobiletebingtinggi.model.** { *; }
 -keep class go.pemkott.appsandroidmobiletebingtinggi.viewmodel.** { *; }
+-keep class go.pemkott.appsandroidmobiletebingtinggi.singkronjadwal.** { *; }
 
 # API
 -keep interface go.pemkott.appsandroidmobiletebingtinggi.api.** { *; }
-
 # Response
 -keep class go.pemkott.appsandroidmobiletebingtinggi.api.** { *; }
 

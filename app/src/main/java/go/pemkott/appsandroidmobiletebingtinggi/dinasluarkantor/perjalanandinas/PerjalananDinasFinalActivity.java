@@ -17,7 +17,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -107,7 +106,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFotoLampiran;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.Lokasi;
 import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
 import go.pemkott.appsandroidmobiletebingtinggi.utils.NetworkUtils;
-import go.pemkott.appsandroidmobiletebingtinggi.viewmodel.LocationViewModel;
+import go.pemkott.appsandroidmobiletebingtinggi.model.LocationViewModel;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -964,6 +963,32 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
                     prepareFilePart("lampiran", imageBytesLampiran);
             Log.d("TugasLapanganFinalActivity", "JPG");
         }
+
+
+        Log.d("UPLOAD_PD", "===== DATA UPLOAD PERJALANAN DINAS =====");
+        Log.d("UPLOAD_PD", "eJabatan      = " + eJabatan);
+        Log.d("UPLOAD_PD", "sEmployeID    = " + sEmployeID);
+        Log.d("UPLOAD_PD", "timetableid   = " + timetableid);
+        Log.d("UPLOAD_PD", "rbJam         = " + rbJam);
+        Log.d("UPLOAD_PD", "posisi        = " + posisi);
+        Log.d("UPLOAD_PD", "status        = " + status);
+        Log.d("UPLOAD_PD", "rbLat         = " + rbLat);
+        Log.d("UPLOAD_PD", "rbLng         = " + rbLng);
+        Log.d("UPLOAD_PD", "rbKet         = " + rbKet);
+        Log.d("UPLOAD_PD", "eOPD          = " + eOPD);
+        Log.d("UPLOAD_PD", "valid         = " + valid);
+        Log.d("UPLOAD_PD", "ekslampiran   = " + ekslampiran);
+        Log.d("UPLOAD_PD", "dariTanggal   = " + dariTanggal);
+        Log.d("UPLOAD_PD", "sampaiTanggal = " + sampaiTanggal);
+        Log.d("UPLOAD_PD", "rbFakeGPS     = " + rbFakeGPS);
+
+        Log.d("UPLOAD_PD", "fotoPart      = " +
+                (fotoPart != null ? fotoPart : "NULL"));
+
+        Log.d("UPLOAD_PD", "lampiranPart  = " +
+                (lampiranPart != null ? lampiranPart : "NULL"));
+
+        Log.d("UPLOAD_PD", "====================================");
 
         Call<ResponsePOJO> call =
                 RetroClient.getInstance().getApi().uploadAbsenPerjalananDinas(

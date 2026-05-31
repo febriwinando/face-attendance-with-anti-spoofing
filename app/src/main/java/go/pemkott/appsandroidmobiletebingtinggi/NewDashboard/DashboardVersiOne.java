@@ -83,7 +83,7 @@ import android.os.StatFs;
 public class DashboardVersiOne extends AppCompatActivity {
 
     CardView cvKehadiran, cvJadwal, cvLokasi, cvKegiatan, cvMenuIzin, cvMenuPerjalananDinas;
-    private static final long MIN_STORAGE_MB = 200;
+    private static final long MIN_STORAGE_MB = 300;
 //    private static final long MIN_STORAGE_GB = 40;
     LocationManager manager;
     DatabaseHelper databaseHelper;
