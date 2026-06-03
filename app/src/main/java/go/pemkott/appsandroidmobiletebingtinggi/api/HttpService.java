@@ -14,6 +14,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.model.InfoMP;
 import go.pemkott.appsandroidmobiletebingtinggi.model.JadwalSift;
 import go.pemkott.appsandroidmobiletebingtinggi.model.KegiatanIzin;
 import go.pemkott.appsandroidmobiletebingtinggi.model.Koordinat;
+import go.pemkott.appsandroidmobiletebingtinggi.model.LoginResponse;
 import go.pemkott.appsandroidmobiletebingtinggi.model.Presensi;
 import go.pemkott.appsandroidmobiletebingtinggi.model.RekapMasukFragment;
 import go.pemkott.appsandroidmobiletebingtinggi.model.RekapMasukKeduaFragment;
@@ -41,6 +42,20 @@ import retrofit2.http.Part;
 import retrofit2.http.Url;
 
 public interface HttpService {
+
+
+
+    @FormUrlEncoded
+
+    @POST("login")
+
+    Call<List<LoginResponse>> login(
+
+            @Field("username") String username,
+
+            @Field("password") String password
+
+    );
 
     @FormUrlEncoded
     @POST("dataEmployee")

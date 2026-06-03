@@ -6,8 +6,8 @@
     android:layout_height="match_parent"
     tools:context=".verifikasi.fragvalidasi.masuk.MasukFragment"
     android:background="@color/putih"
-    android:paddingRight="20dp"
-    android:paddingLeft="20dp"
+    android:paddingStart="20dp"
+    android:paddingEnd="20dp"
     android:orientation="vertical">
 
     <RelativeLayout
@@ -17,7 +17,7 @@
         >
 
         <ImageView
-            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
             android:id="@+id/ivBackValidasi"
             android:layout_width="38dp"
             android:layout_height="38dp"
@@ -31,7 +31,7 @@
         android:layout_toEndOf="@+id/ivBackValidasi"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="VALIDASI MASUK"
+        android:text="@string/validasi_masuk"
         android:textColor="@color/font_highlight"
         android:textSize="18sp"
 
@@ -82,17 +82,13 @@
         android:textColor="@color/putih"
         android:visibility="gone"
         />
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
 
-        <androidx.recyclerview.widget.RecyclerView
+
+    <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvVerivikatorKedua"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:listitem="@layout/item_validasi_new"
             />
-
-    </LinearLayout>
 
 </LinearLayout>

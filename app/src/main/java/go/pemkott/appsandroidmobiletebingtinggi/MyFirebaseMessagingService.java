@@ -55,7 +55,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
 
     private void stepPegawai() {
-        HttpService api = RetroClient.getInstance2().getApi2();
+        HttpService api = RetroClient.getInstance().getApi2();
         SessionManager session = new SessionManager(this);
         String employeeId = session.getEmployeeId();
         DatabaseHelper db = new DatabaseHelper(this);
@@ -90,7 +90,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
 
     private void stepTimetable() {
-        HttpService api = RetroClient.getInstance2().getApi2();
+        HttpService api = RetroClient.getInstance().getApi2();
         SessionManager session = new SessionManager(this);
         String employeeId = session.getEmployeeId();
         String token = session.getToken();
@@ -131,7 +131,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
 
     private void koordinat_e() {
-        HttpService api = RetroClient.getInstance2().getApi2();
+        HttpService api = RetroClient.getInstance().getApi2();
         SessionManager session = new SessionManager(this);
         String employeeId = session.getEmployeeId();
         String token = session.getToken();

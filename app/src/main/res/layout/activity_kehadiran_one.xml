@@ -88,7 +88,7 @@
         android:layout_centerVertical="true"
         android:foreground="?attr/selectableItemBackground"
         android:focusable="true"
-        android:onClick="fokusLokasi"
+        android:onClick="fokusLokasiKehadiran"
         android:background="@drawable/backgroundtranshitam"
         app:layout_constraintBottom_toBottomOf="@+id/mapKehadiranOne"
         app:layout_constraintEnd_toEndOf="@+id/mapKehadiranOne"

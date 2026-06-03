@@ -373,8 +373,7 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
         selected = rgKehadiran.getCheckedRadioButtonId();
         radioSelectedKehadiran = findViewById(selected);
 
-        if (Build.VERSION.SDK_INT < 18 &&
-                !Settings.Secure.getString(this.getContentResolver(), Settings
+        if (!Settings.Secure.getString(this.getContentResolver(), Settings
                         .Secure.ALLOW_MOCK_LOCATION).equals("0")) {
             mockLocationsEnabled = true;
         } else{
@@ -433,7 +432,7 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
             }
         });
     }
-    public void fokusLokasi(View view){
+    public void fokusLokasiIzinSakit(View view){
         startLocationUpdates();
     }
     private void startLocationUpdates() {
@@ -464,7 +463,7 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
         }
     };
 
-    public void kirimdataizincuti(View view){
+    public void kirimIzinSakit(View view){
         requestPermission();
 
         if (mock_location == 1){
@@ -513,13 +512,16 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
                 e.printStackTrace();
             }
 
+            Log.d("IzinSakitFinalActivity 123", "Tahap -1");
             if (radioSelectedKehadiran.getText().toString().equals("MASUK")){
-
+                Log.d("IzinSakitFinalActivity 123", "Tahap 0");
                 assert tagingTimePeriksa != null;
                 assert pulangPeriksa != null;
                 if (tagingTimePeriksa.getTime() >= pulangPeriksa.getTime()){
-                    showMessage("Peringatan", "Anda tidak dapat melakukan absensi masuk pada jam pulang kerja.");
+                    dialogView.viewNotifKosong(IzinSakitFinalActivity.this, "Anda tidak dapat melakukan absensi masuk pada jam pulang kerja.", "");
+
                 }else{
+                    Log.d("IzinSakitFinalActivity 123", "Tahap 1");
                     kirimdataMasuk(rbValid,  rbStatus, "masuk", jamMasuk);
                 }
 
@@ -583,6 +585,8 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
                     prepareFilePart("lampiran", imageBytesLampiran);
             Log.d("TugasLapanganFinalActivity", "JPG");
         }
+
+        Log.d("IzinSakitFinalActivity 123", "Tahap 2");
 
         Call<ResponsePOJO> call =
                 RetroClient.getInstance().getApi().uploadizinsakitmasuk(
@@ -777,7 +781,7 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
     private void datauser(){
         Cursor res = databaseHelper.getAllData22(userId);
         if (res.getCount()==0){
-            showMessage("Error", "Nothing found");
+            dialogView.viewNotifKosong(IzinSakitFinalActivity.this, "Error: data pegawai tidak ditemukan", "Silahkan hubungi pengembang anda!");
             return;
         }
 
@@ -1321,14 +1325,6 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
     protected void onResume() {
         super.onResume();
         rbTanggal = SIMPLE_FORMAT_TANGGAL.format(new Date());
-    }
-
-    public void showMessage(String title, String Message){
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.ThemeOverlay_App_MaterialAlertDialog);
-        builder.setCancelable(true);
-        builder.setTitle(title);
-        builder.setMessage(Message);
-        builder.show();
     }
 
     public void viewSukses(Context context){

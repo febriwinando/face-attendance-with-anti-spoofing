@@ -30,7 +30,7 @@ android {
         applicationId = "go.pemkott.appsandroidmobiletebingtinggi"
         minSdk = 24
         targetSdk = 36
-        versionCode = 195
+        versionCode = 197
         versionName = "2.0.4"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -61,6 +61,7 @@ dependencies {
     implementation(libs.face.detection)
     implementation(libs.glide)
     implementation(libs.logging.interceptor)
+    implementation(libs.okhttp3.logging.interceptor)
     implementation(libs.places)
     implementation(libs.circleimageview)
     implementation(libs.recyclerview)

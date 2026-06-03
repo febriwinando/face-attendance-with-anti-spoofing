@@ -28,6 +28,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.util.Base64;
 import android.util.Log;
@@ -45,12 +46,16 @@ import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -162,13 +167,23 @@ public class KeperluanPribadiSiftFinalActivity extends AppCompatActivity  implem
     String inisialsift, tipesift, masuksift, pulangsift, idsift;
     SessionManager session;
     String userId;
-File file;
+
+    FusedLocationProviderClient fusedLocationProviderClient;
+    LocationRequest locationRequest;
+    File file;
     @SuppressLint("WrongThread")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_keperluan_pribadi_sift_final);
+
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        locationRequest = LocationRequest.create();
+        locationRequest.setInterval(3000);
+        locationRequest.setFastestInterval(3000);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
         session = new SessionManager(this);
         userId = session.getPegawaiId();
 
@@ -302,6 +317,40 @@ File file;
         });
 
     }
+
+
+    public void fokusLokasiSiftIzinKp(View view){
+        startLocationUpdates();
+    }
+
+    private void startLocationUpdates() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
+        }
+    }
+
+    private void stopLocationUpdates() {
+        fusedLocationProviderClient.removeLocationUpdates(locationCallback);
+    }
+
+
+    LocationCallback locationCallback = new LocationCallback() {
+        @Override
+        public void onLocationResult(@NonNull LocationResult locationResult) {
+            super.onLocationResult(locationResult);
+
+            boolean isMock = mockLocationsEnabled || locationResult.getLastLocation().isFromMockProvider();
+            if (isMock){
+                mock_location = 1;
+                rbFakeGPS ="1";
+            }else{
+                mock_location = 0;
+            }
+            if (map != null) {
+                plotMarkers(locationResult.getLastLocation());
+            }
+        }
+    };
 
     private File createTempFileFromUri(Uri uri)
             throws IOException {
@@ -446,15 +495,13 @@ File file;
                     if (jam_masuk == null) {
 
                         if (tagingTimePeriksa.getTime() >= pulangPeriksa.getTime()) {
-                            showMessage("Peringatan", "Anda tidak dapat melakukan absensi masuk pada jam pulang kerja.");
+                            dialogView.viewNotifKosong(KeperluanPribadiSiftFinalActivity.this, "Anda tidak dapat melakukan absensi masuk pada jam pulang kerja.", "");
                         } else {
                             kirimdataMasuk(rbValid, rbPosisi, rbStatus, "masuk", masuksift);
                         }
 
                     } else {
-
-                        showMessage("Peringatan", "Anda sudah mengisi absensi masuk.");
-
+                        dialogView.viewNotifKosong(KeperluanPribadiSiftFinalActivity.this, "Anda sudah mengisi absensi masuk.", "");
                     }
                 } else {
                     rbPosisi = "kp";
@@ -467,7 +514,7 @@ File file;
                         }
 
                     } else {
-                        showMessage("Peringatan", "Anda sudah mengisi absensi pulang.");
+                        dialogView.viewNotifKosong(KeperluanPribadiSiftFinalActivity.this, "Anda sudah mengisi absensi pulang.", "");
                     }
                 }
             }
@@ -720,7 +767,7 @@ File file;
     private void datauser(){
         Cursor res = databaseHelper.getAllData22(userId);
         if (res.getCount()==0){
-            showMessage("Error", "Nothing found");
+            dialogView.viewNotifKosong(KeperluanPribadiSiftFinalActivity.this, "Error: data pegawai tidak ditemuka.", "Silahkan hubungi admin anda!");
             return;
         }
 
@@ -991,11 +1038,6 @@ File file;
 
     }
 
-    private void stopLocationUpdates() {
-        locationViewModel.getLocationHelper(mContext).stopLocationUpdates();
-    }
-
-
 
     private void subscribeToLocationUpdate() {
         locationViewModel.getLocationHelper(mContext).observe(this, location -> {
@@ -1183,13 +1225,6 @@ File file;
         }, 1500);
     }
 
-    public void showMessage(String title, String Message){
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.ThemeOverlay_App_MaterialAlertDialog);
-        builder.setCancelable(true);
-        builder.setTitle(title);
-        builder.setMessage(Message);
-        builder.show();
-    }
 
     public void viewSukses(Context context, String info1, String info2){
         Dialog dialogSukes = new Dialog(context, R.style.DialogStyle);

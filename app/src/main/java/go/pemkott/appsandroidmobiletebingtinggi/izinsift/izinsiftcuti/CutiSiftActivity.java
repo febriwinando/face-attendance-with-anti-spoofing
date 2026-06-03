@@ -20,6 +20,8 @@ import java.util.List;
 import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraxActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
+import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
+import go.pemkott.appsandroidmobiletebingtinggi.dinasluarkantor.perjalanandinas.PerjalananDinasFinalActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.izin.cuti.CutiAdapter;
 import go.pemkott.appsandroidmobiletebingtinggi.model.Kegiatan;
 
@@ -140,6 +142,7 @@ public class CutiSiftActivity extends AppCompatActivity {
     }
 
     public static String kegiatansCutiLainnya;
+    DialogView dialogView = new DialogView(this);
 
     public void nextKegiatanCuti(View view){
         if (!etkegiatanCutiLainnya.getText().toString().isEmpty()){
@@ -149,7 +152,10 @@ public class CutiSiftActivity extends AppCompatActivity {
         }
 
         if (kegiatanCheckedCuti.isEmpty() && kegiatansCutiLainnya.equals("kosong")){
-            showMessage("Peringatan!", "Anda Harus Mengisi Kegiatan Yang Dilaksanakan.");
+
+
+            dialogView.viewNotifKosong(CutiSiftActivity.this, "Anda Harus Mengisi Kegiatan Yang Dilaksanakan.", "");
+
         }else {
 
             Intent intentTL = new Intent(CutiSiftActivity.this, CameraxActivity.class);
@@ -159,13 +165,7 @@ public class CutiSiftActivity extends AppCompatActivity {
         }
     }
 
-    public void showMessage(String title, String Message){
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.ThemeOverlay_App_MaterialAlertDialog);
-        builder.setCancelable(true);
-        builder.setTitle(title);
-        builder.setMessage(Message);
-        builder.show();
-    }
+
 
 
     public void backCuti(View view){

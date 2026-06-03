@@ -166,7 +166,7 @@ public class MasukFragment extends Fragment {
                 }
 
                 List<RekapMasukKeduaFragment> rekapMasukKeduaFragments = response.body();
-                if (rekapMasukKeduaFragments.isEmpty()){
+                if (rekapMasukKeduaFragments == null || rekapMasukKeduaFragments.isEmpty()) {
                     tvv2.setVisibility(View.GONE);
                 }else{
                     tvv2.setVisibility(View.VISIBLE);
@@ -353,17 +353,33 @@ public class MasukFragment extends Fragment {
         nama.setText(data.getNama());
         pukul.setText(data.getJam_masuk());
         aktivitas.setText(data.getKet_masuk());
-        if (data.getPosisi_masuk().equals("tl-masuk")){
+//        if (data.getPosisi_masuk().equals("tl-masuk")){
+//            kegiatan.setText("Tugas Lapangan");
+//        }else if (data.getPosisi_masuk().equals("tl-pulang")){
+//            kegiatan.setText("Tugas Lapangan");
+//        }else if (data.getPosisi_masuk().equals("cuti")){
+//            kegiatan.setText("Cuti");
+//        }else if (data.getPosisi_masuk().equals("kp")){
+//            kegiatan.setText("Keperluan Pribadi");
+//        }else if (data.getPosisi_masuk().equals("sk")){
+//            kegiatan.setText("Sakit");
+//        }else if (data.getPosisi_masuk().equals("pd")){
+//            kegiatan.setText("Perjalanan Dinas");
+//        }
+
+        String posisi = data.getPosisi_masuk();
+
+        if ("tl-masuk".equals(posisi)) {
             kegiatan.setText("Tugas Lapangan");
-        }else if (data.getPosisi_masuk().equals("tl-pulang")){
+        } else if ("tl-pulang".equals(posisi)) {
             kegiatan.setText("Tugas Lapangan");
-        }else if (data.getPosisi_masuk().equals("cuti")){
+        } else if ("cuti".equals(posisi)) {
             kegiatan.setText("Cuti");
-        }else if (data.getPosisi_masuk().equals("kp")){
+        } else if ("kp".equals(posisi)) {
             kegiatan.setText("Keperluan Pribadi");
-        }else if (data.getPosisi_masuk().equals("sk")){
+        } else if ("sk".equals(posisi)) {
             kegiatan.setText("Sakit");
-        }else if (data.getPosisi_masuk().equals("pd")){
+        } else if ("pd".equals(posisi)) {
             kegiatan.setText("Perjalanan Dinas");
         }
 

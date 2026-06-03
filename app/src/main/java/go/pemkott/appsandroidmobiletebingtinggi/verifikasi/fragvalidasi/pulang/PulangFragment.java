@@ -236,18 +236,20 @@ public class PulangFragment extends Fragment {
         nama.setText(data.getNama());
         pukul.setText(data.getJam_pulang());
         aktivitas.setText(data.getKet_pulang());
-        if (data.getPosisi_pulang().equals("tl-masuk")){
+        String posisi = data.getPosisi_pulang();
+
+        if ("tl-masuk".equals(posisi) || "tl-pulang".equals(posisi)) {
             kegiatan.setText("Tugas Lapangan");
-        }else if (data.getPosisi_pulang().equals("tl-pulang")){
-            kegiatan.setText("Tugas Lapangan");
-        }else if (data.getPosisi_pulang().equals("cuti")){
+        } else if ("cuti".equals(posisi)) {
             kegiatan.setText("Cuti");
-        }else if (data.getPosisi_pulang().equals("kp")){
+        } else if ("kp".equals(posisi)) {
             kegiatan.setText("Keperluan Pribadi");
-        }else if (data.getPosisi_pulang().equals("sk")){
+        } else if ("sk".equals(posisi)) {
             kegiatan.setText("Sakit");
-        }else if (data.getPosisi_pulang().equals("pd")){
+        } else if ("pd".equals(posisi)) {
             kegiatan.setText("Perjalanan Dinas");
+        } else {
+            kegiatan.setText("-");
         }
 
         if (data.getPhoto_tagging_pulang() ==  null){

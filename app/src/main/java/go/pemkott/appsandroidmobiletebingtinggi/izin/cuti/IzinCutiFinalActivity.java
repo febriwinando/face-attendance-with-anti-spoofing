@@ -101,6 +101,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraXLActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import go.pemkott.appsandroidmobiletebingtinggi.dinasluarkantor.perjalanandinas.PerjalananDinasFinalActivity;
+import go.pemkott.appsandroidmobiletebingtinggi.izinsift.izinsiftcuti.IzinCutiSiftFinalActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFoto;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFotoLampiran;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.Lokasi;
@@ -636,7 +637,7 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
     private void datauser() {
         Cursor res = databaseHelper.getAllData22(userId);
         if (res.getCount() == 0) {
-            showMessage("Error", "Nothing found");
+            dialogView.viewNotifKosong(IzinCutiFinalActivity.this, "Error: data pegawai tidak ditemukan.", "Silahkan hubungi admin anda!");
             return;
         }
 
@@ -1089,7 +1090,7 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
 
 
 
-    public void fokusLokasi(View view){
+    public void fokusLokasiIzinCuti(View view){
         startLocationUpdates();
     }
 
@@ -1261,13 +1262,7 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
         finish();
     }
 
-    public void showMessage(String title, String Message){
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.ThemeOverlay_App_MaterialAlertDialog);
-        builder.setCancelable(true);
-        builder.setTitle(title);
-        builder.setMessage(Message);
-        builder.show();
-    }
+
 
     public void viewSukses(Context context){
         Dialog dialogSukes = new Dialog(context, R.style.DialogStyle);

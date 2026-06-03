@@ -1104,7 +1104,7 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
 
     }
 
-    public void fokusLokasi(View view){
+    public void fokusLokasiPerjalananDinas(View view){
         startLocationUpdates();
     }
     private void startLocationUpdates() {
@@ -1295,17 +1295,6 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
     protected void onResume() {
         super.onResume();
         rbTanggal = SIMPLE_FORMAT_TANGGAL.format(new Date());
-    }
-
-
-
-
-    public void showMessage(String title, String Message){
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.ThemeOverlay_App_MaterialAlertDialog);
-        builder.setCancelable(true);
-        builder.setTitle(title);
-        builder.setMessage(Message);
-        builder.show();
     }
 
     public void viewSukses(Context context){

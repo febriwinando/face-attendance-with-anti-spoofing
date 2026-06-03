@@ -8,6 +8,17 @@
     android:background="@color/background_color"
     tools:context=".izinsift.izinsiftpribadi.KeperluanPribadiSiftFinalActivity">
 
+    <androidx.fragment.app.FragmentContainerView
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/llKeperluanPribadi"
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        class="com.google.android.gms.maps.SupportMapFragment"
+        />
+
 
     <RelativeLayout
         app:layout_constraintTop_toTopOf="parent"
@@ -58,19 +69,6 @@
     </RelativeLayout>
 
 
-
-    <androidx.fragment.app.FragmentContainerView
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/titleHeaderFinalKp"
-        android:id="@+id/map"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_margin="20dp"
-        class="com.google.android.gms.maps.SupportMapFragment"
-        app:layout_constraintBottom_toTopOf="@+id/llKeperluanPribadi"
-        />
-
     <ImageView
         android:visibility="visible"
         android:layout_width="35dp"
@@ -83,7 +81,7 @@
         android:layout_centerVertical="true"
         android:foreground="?attr/selectableItemBackground"
         android:focusable="true"
-        android:onClick="fokusLokasi"
+        android:onClick="fokusLokasiSiftIzinKp"
         android:layout_marginBottom="10dp"
         android:background="@drawable/backgroundtranshitam"
         app:layout_constraintEnd_toEndOf="@+id/map"

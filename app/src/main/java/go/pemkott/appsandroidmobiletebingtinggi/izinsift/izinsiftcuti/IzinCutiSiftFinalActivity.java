@@ -421,7 +421,7 @@ public class IzinCutiSiftFinalActivity extends AppCompatActivity implements OnMa
     }
 
 
-    public void fokusLokasi(View view){
+    public void fokusLokasiSiftIzinCuti(View view){
         startLocationUpdates();
     }
 
@@ -645,7 +645,8 @@ public class IzinCutiSiftFinalActivity extends AppCompatActivity implements OnMa
     private void datauser() {
         Cursor res = databaseHelper.getAllData22(userId);
         if (res.getCount() == 0) {
-            showMessage("Error", "Nothing found");
+            dialogView.viewNotifKosong(IzinCutiSiftFinalActivity.this, "Error: data pegawai tidak ditemukan.", "Silahkan hubungi admin anda!");
+
             return;
         }
 
@@ -1275,14 +1276,6 @@ public class IzinCutiSiftFinalActivity extends AppCompatActivity implements OnMa
             finish();
 
         }, 1500);
-    }
-
-    public void showMessage(String title, String Message){
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.ThemeOverlay_App_MaterialAlertDialog);
-        builder.setCancelable(true);
-        builder.setTitle(title);
-        builder.setMessage(Message);
-        builder.show();
     }
 
     public void viewSukses(Context context, String info1, String info2){

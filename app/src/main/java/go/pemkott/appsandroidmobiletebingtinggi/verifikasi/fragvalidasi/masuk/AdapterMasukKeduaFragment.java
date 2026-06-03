@@ -65,10 +65,17 @@ public class AdapterMasukKeduaFragment extends RecyclerView.Adapter<AdapterMasuk
                 }
 
 
-        holder.cvValidasi.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onItemClickCallback.onItemClicked(rekapServers.get(holder.getAdapterPosition()));
+//        holder.cvValidasi.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                onItemClickCallback.onItemClicked(rekapServers.get(holder.getAdapterPosition()));
+//            }
+//        });
+
+        holder.cvValidasi.setOnClickListener(v -> {
+            if (onItemClickCallback != null) {
+                onItemClickCallback.onItemClicked(
+                        rekapServers.get(holder.getAdapterPosition()));
             }
         });
 

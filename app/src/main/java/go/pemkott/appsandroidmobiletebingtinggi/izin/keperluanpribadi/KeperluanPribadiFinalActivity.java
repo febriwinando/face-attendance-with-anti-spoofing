@@ -46,7 +46,6 @@ import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -417,7 +416,7 @@ public class KeperluanPribadiFinalActivity extends AppCompatActivity implements 
 
                 if (radioSelectedKehadiran.getText().toString().equals("MASUK")){
                     if (tagingTimePeriksa.getTime() >= pulangPeriksa.getTime()){
-                        showMessage("Peringatan", "Anda tidak dapat melakukan absensi masuk pada jam pulang kerja.");
+                        dialogView.viewNotifKosong(KeperluanPribadiFinalActivity.this, "Anda tidak dapat melakukan absensi masuk pada jam pulang kerja.", "");
                     }else{
                         kirimdataMasuk(rbValid, rbPosisi, rbStatus, "masuk", jamMasuk);
                     }
@@ -648,7 +647,7 @@ public class KeperluanPribadiFinalActivity extends AppCompatActivity implements 
     private void datauser(){
         Cursor res = databaseHelper.getAllData22(userId);
         if (res.getCount()==0){
-            showMessage("Error", "Nothing found");
+            dialogView.viewNotifKosong(KeperluanPribadiFinalActivity.this, "Error: Data pegawai tidak ditemuka.", "Silahkan hubungi admin anda!");
             return;
         }
 
@@ -826,7 +825,7 @@ public class KeperluanPribadiFinalActivity extends AppCompatActivity implements 
         mapFragment.getMapAsync(this);
 
     }
-    public void fokusLokasi(View view){
+    public void fokusLokasiIzinKP(View view){
         startLocationUpdates();
     }
     private void startLocationUpdates() {
@@ -1020,14 +1019,6 @@ public class KeperluanPribadiFinalActivity extends AppCompatActivity implements 
             finish();
 
         }, 1500);
-    }
-
-    public void showMessage(String title, String Message){
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.ThemeOverlay_App_MaterialAlertDialog);
-        builder.setCancelable(true);
-        builder.setTitle(title);
-        builder.setMessage(Message);
-        builder.show();
     }
 
     public void viewSukses(Context context){

@@ -28,6 +28,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.provider.Settings;
@@ -58,6 +59,11 @@ import androidx.core.content.FileProvider;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -171,6 +177,9 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
     File file, filelampiran;
     SessionManager session;
     String userId;
+
+    FusedLocationProviderClient fusedLocationProviderClient;
+    LocationRequest locationRequest;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -190,6 +199,12 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
         rgKehadiran = findViewById(R.id.rgKehadiran);
         title_content = findViewById(R.id.title_contentsakit);
         title_content.setText(R.string.sakit);
+
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        locationRequest = LocationRequest.create();
+        locationRequest.setInterval(3000);
+        locationRequest.setFastestInterval(3000);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
 //        Image View
         ivFinalKegiatan = findViewById(R.id.ivFinalKegiatanSakit);
@@ -354,6 +369,8 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
             mockLocationsEnabled = false;
         }
 
+        startLocationUpdates();
+
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
@@ -362,6 +379,38 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
         });
     }
 
+    public void fokusLokasiSiftIzinSakit(View view){
+        startLocationUpdates();
+    }
+
+    private void startLocationUpdates() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
+        }
+    }
+
+    private void stopLocationUpdates() {
+        fusedLocationProviderClient.removeLocationUpdates(locationCallback);
+    }
+
+
+    LocationCallback locationCallback = new LocationCallback() {
+        @Override
+        public void onLocationResult(@NonNull LocationResult locationResult) {
+            super.onLocationResult(locationResult);
+
+            boolean isMock = mockLocationsEnabled || locationResult.getLastLocation().isFromMockProvider();
+            if (isMock){
+                mock_location = 1;
+                rbFakeGPS ="1";
+            }else{
+                mock_location = 0;
+            }
+            if (map != null) {
+                plotMarkers(locationResult.getLastLocation());
+            }
+        }
+    };
     private File createTempFileFromUri(Uri uri)
             throws IOException {
 
@@ -517,14 +566,15 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
                     assert tagingTimePeriksa != null;
                     assert pulangPeriksa != null;
                     if (tagingTimePeriksa.getTime() >= pulangPeriksa.getTime()){
-                        showMessage("Peringatan", "Anda tidak dapat melakukan absensi masuk pada jam pulang kerja.");
+                        dialogView.viewNotifKosong(IzinSakitSiftFinalActivity.this, "Anda tidak dapat melakukan absensi masuk pada jam pulang kerja.", "");
                     }else{
                         kirimdataMasuk(rbValid,  rbStatus, "masuk", masuksift);
                     }
 
                 }else{
 
-                    showMessage("Peringatan", "Anda sudah mengisi absensi masuk.");
+                    dialogView.viewNotifKosong(IzinSakitSiftFinalActivity.this, "Anda sudah mengisi absensi masuk.", "");
+
 
                 }
             }
@@ -538,7 +588,7 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
                     }
 
                 }else{
-                    showMessage("Peringatan", "Anda sudah mengisi absensi pulang.");
+                    dialogView.viewNotifKosong(IzinSakitSiftFinalActivity.this, "Anda sudah mengisi absensi pulang.", "");
                 }
             }
         }
@@ -762,7 +812,7 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
     private void datauser(){
         Cursor res = databaseHelper.getAllData22(userId);
         if (res.getCount()==0){
-            showMessage("Error", "Nothing found");
+            dialogView.viewNotifKosong(IzinSakitSiftFinalActivity.this, "Error: data pegawai tidak ditemukan.","Silahkan hubungi admin anda!");
             return;
         }
 
@@ -1138,10 +1188,6 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
 
     }
 
-    private void stopLocationUpdates() {
-        locationViewModel.getLocationHelper(mContext).stopLocationUpdates();
-    }
-
 
 
     private void subscribeToLocationUpdate() {
@@ -1323,13 +1369,6 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
         }, 1500);
     }
 
-    public void showMessage(String title, String Message){
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.ThemeOverlay_App_MaterialAlertDialog);
-        builder.setCancelable(true);
-        builder.setTitle(title);
-        builder.setMessage(Message);
-        builder.show();
-    }
 
     public void viewSukses(Context context, String info1, String info2){
         Dialog dialogSukes = new Dialog(context, R.style.DialogStyle);

@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraxActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
+import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import go.pemkott.appsandroidmobiletebingtinggi.izin.sakit.SakitAdapter;
 import go.pemkott.appsandroidmobiletebingtinggi.model.Kegiatan;
 
@@ -38,7 +39,7 @@ public class SakitSiftActivity extends AppCompatActivity {
     SakitAdapter sakitAdapter;
 
     public static AppCompatActivity sakit ;
-    String inisialsift, tipesift, masuksift, pulangsift, idsift, rbTanggal;
+    DialogView dialogView = new DialogView(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,17 +125,10 @@ public class SakitSiftActivity extends AppCompatActivity {
             intentTL.putExtra("aktivitas", "shiftizinsakit");
             startActivity(intentTL);
         }else {
-            showMessage("Peringatan!", "Anda Harus Mengisi Kegiatan Yang Dilaksanakan.");
+            dialogView.viewNotifKosong(SakitSiftActivity.this, "Anda Harus Mengisi Kegiatan Yang Dilaksanakan.", "");
         }
     }
 
-    public void showMessage(String title, String Message){
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.ThemeOverlay_App_MaterialAlertDialog);
-        builder.setCancelable(true);
-        builder.setTitle(title);
-        builder.setMessage(Message);
-        builder.show();
-    }
 
     private void showRecyclerList(){
         rvKegiatanSakit.setLayoutManager(new LinearLayoutManager(this));

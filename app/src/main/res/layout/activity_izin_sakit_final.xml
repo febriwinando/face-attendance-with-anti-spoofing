@@ -8,6 +8,19 @@
     android:background="@color/background_color"
     tools:context=".izin.sakit.IzinSakitFinalActivity">
 
+
+    <androidx.fragment.app.FragmentContainerView
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/llDataSakit"
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        class="com.google.android.gms.maps.SupportMapFragment"
+        />
+
+
     <RelativeLayout
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -61,21 +74,6 @@
 
     </RelativeLayout>
 
-
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/map"
-        android:layout_margin="20dp"
-        app:layout_constraintTop_toBottomOf="@+id/titleHeaderFinalSakit"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/llDataSakit"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginLeft="0dp"
-        android:layout_marginRight="0dp"
-        class="com.google.android.gms.maps.SupportMapFragment"
-        />
-
     <ImageView
         app:layout_constraintBottom_toBottomOf="@+id/map"
         app:layout_constraintEnd_toEndOf="@+id/map"
@@ -91,7 +89,7 @@
         android:layout_centerVertical="true"
         android:foreground="?attr/selectableItemBackground"
         android:focusable="true"
-        android:onClick="fokusLokasi"
+        android:onClick="fokusLokasiIzinSakit"
         android:background="@drawable/backgroundtranshitam"
         />
 
@@ -154,6 +152,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
                     android:orientation="vertical"
+                    android:layout_marginEnd="5dp"
                     >
 
                     <TextView
@@ -335,7 +334,7 @@
             android:paddingEnd="10dp"
             android:clickable="true"
             android:foreground="?attr/selectableItemBackground"
-            android:onClick="kirimDataDinasLuar"
+            android:onClick="kirimIzinSakit"
             android:gravity="center_vertical"
             android:focusable="true">
 

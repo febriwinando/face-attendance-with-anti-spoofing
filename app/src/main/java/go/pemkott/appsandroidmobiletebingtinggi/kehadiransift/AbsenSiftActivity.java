@@ -1343,7 +1343,7 @@ statusAbsen = true;
         stopLocationUpdates();
     }
 
-    public void fokusLokasi(View view){
+    public void fokusLokasiSiftActivty(View view){
         startLocationUpdates();
     }
 

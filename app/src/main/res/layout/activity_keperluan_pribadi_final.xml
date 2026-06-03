@@ -9,6 +9,18 @@
     tools:context=".izin.keperluanpribadi.KeperluanPribadiFinalActivity">
 
 
+    <androidx.fragment.app.FragmentContainerView
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/llKeperluanPribadi"
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        class="com.google.android.gms.maps.SupportMapFragment"
+        />
+
+
     <RelativeLayout
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -63,20 +75,6 @@
 
     </RelativeLayout>
 
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/map"
-        android:layout_margin="20dp"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginLeft="0dp"
-        android:layout_marginRight="0dp"
-        app:layout_constraintTop_toBottomOf="@+id/titleHeaderFinalKp"
-        app:layout_constraintBottom_toTopOf="@+id/llKeperluanPribadi"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        class="com.google.android.gms.maps.SupportMapFragment"
-        />
-
     <ImageView
         app:layout_constraintEnd_toEndOf="@+id/map"
         app:layout_constraintBottom_toBottomOf="@+id/map"
@@ -92,7 +90,7 @@
         android:layout_centerVertical="true"
         android:foreground="?attr/selectableItemBackground"
         android:focusable="true"
-        android:onClick="fokusLokasi"
+        android:onClick="fokusLokasiIzinKP"
         android:background="@drawable/backgroundtranshitam"
         />
 

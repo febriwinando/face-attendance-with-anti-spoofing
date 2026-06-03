@@ -86,7 +86,7 @@
         android:layout_centerVertical="true"
         android:foreground="?attr/selectableItemBackground"
         android:focusable="true"
-        android:onClick="fokusLokasi"
+        android:onClick="fokusLokasiTugasLapangan"
         android:background="@drawable/backgroundtranshitam"
         />
 

@@ -368,21 +368,14 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
             }
         });
     }
-    public void fokusLokasi(View view){
+    public void fokusLokasiKehadiran(View view){
         startLocationUpdates();
     }
 
     private void startLocationUpdates() {
-
-
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-
             fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
-        }else{
-
         }
-
-
     }
 
     private void stopLocationUpdates() {
@@ -512,6 +505,9 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
             double lngUser
     ) {
         if (latList == null || lngList == null || latList.isEmpty()) {
+
+            startLocationUpdates();
+
             return JARAK_TIDAK_VALID;
         }
 
@@ -574,7 +570,6 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
 
         Log.d("JARAK_DEBUG", "latlist: "+latList);
         Log.d("JARAK_DEBUG", "lnglist: "+lngList);
-
         Log.d("JARAK_DEBUG", "latUser: "+latUser);
         Log.d("JARAK_DEBUG", "lngUser: "+lngUser);
         Log.d("JARAK_DEBUG", "jarak utama: "+jarakUtama);
@@ -645,7 +640,7 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
                     Log.d("JARAK_DEBUG", "total jarak: "+totalJarak);
 
                     if (totalJarak == JARAK_TIDAK_VALID || totalJarak > 150) {
-                        dialogView.viewNotifKosong(AbsensiKehadiranActivity.this, "Andah harus berada dilingkungan kantor untuk melakukan absensi.", "");
+                        dialogView.viewNotifKosong(AbsensiKehadiranActivity.this, "Anda harus berada dilingkungan kantor untuk melakukan absensi.", "");
                         return;
                     }
                     else{
@@ -740,6 +735,29 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
         byte[] imageBytes = ambilFoto.compressToMax80KB(file);
         MultipartBody.Part fotoPart = prepareFilePart("fototaging", imageBytes);
 
+
+        Log.d("ABSEN_MASUK", "===== DATA ABSEN MASUK =====");
+        Log.d("ABSEN_MASUK", "absensi      = " + absensi);
+        Log.d("ABSEN_MASUK", "eselon       = " + eselon);
+        Log.d("ABSEN_MASUK", "idpegawai    = " + idpegawai);
+        Log.d("ABSEN_MASUK", "timetableid  = " + timetableid);
+        Log.d("ABSEN_MASUK", "tanggal      = " + tanggal);
+        Log.d("ABSEN_MASUK", "jam          = " + jam);
+        Log.d("ABSEN_MASUK", "posisi       = " + posisi);
+        Log.d("ABSEN_MASUK", "status       = " + status);
+        Log.d("ABSEN_MASUK", "lat          = " + lat);
+        Log.d("ABSEN_MASUK", "lng          = " + lng);
+        Log.d("ABSEN_MASUK", "ket          = " + ket);
+        Log.d("ABSEN_MASUK", "terlambat    = " + terlambat);
+        Log.d("ABSEN_MASUK", "eOPD         = " + eOPD);
+        Log.d("ABSEN_MASUK", "jampegawai   = " + jampegawai);
+        Log.d("ABSEN_MASUK", "validasi     = " + validasi);
+        Log.d("ABSEN_MASUK", "rbFakeGPS    = " + rbFakeGPS);
+        Log.d("ABSEN_MASUK", "batasWaktu   = " + batasWaktu);
+        Log.d("ABSEN_MASUK", "berakhlak    = " + berakhlak);
+        Log.d("ABSEN_MASUK", "fotoPart     = " + fotoPart);
+        Log.d("ABSEN_MASUK", "===========================");
+
         Call<ResponsePOJO> call =
                 RetroClient.getInstance().getApi().uploadAbsenKehadiranMasuk(
                         fotoPart,
@@ -782,8 +800,6 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
 
                 if (Objects.requireNonNull(response.body()).isStatus()){
                     dialogView.viewSukses(AbsensiKehadiranActivity.this, data.getRemarks());
-
-                    // mulai hitung 10 detik
 
                     autoCloseHandler.postDelayed(
 
@@ -854,7 +870,7 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
                 dialogproses.dismiss();
 
                 if (!response.isSuccessful()){
-                    dialogView.viewNotifKosong(AbsensiKehadiranActivity.this, "Gagal mengisi absensi,", "silahkan coba kembali  iii.");
+                    dialogView.viewNotifKosong(AbsensiKehadiranActivity.this, "Gagal mengisi absensi,", "silahkan coba kembali.");
                     return;
                 }
 

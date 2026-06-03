@@ -86,7 +86,7 @@ public class DownloadDataActivity extends AppCompatActivity {
         session = new SessionManager(this);
         userId = session.getPegawaiId();
 
-        api = RetroClient.getInstance2().getApi2();
+        api = RetroClient.getInstance().getApi2();
 
         if (!NetworkUtils.isConnectedFast(this)) {
             dialogView.viewNotifKosong(this,
