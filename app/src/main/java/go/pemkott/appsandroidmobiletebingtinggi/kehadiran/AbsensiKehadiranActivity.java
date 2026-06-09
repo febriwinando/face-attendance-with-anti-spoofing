@@ -731,7 +731,7 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
         Dialog dialogproses = new Dialog(AbsensiKehadiranActivity.this, R.style.DialogStyle);
         dialogproses.setContentView(R.layout.view_proses);
         dialogproses.setCancelable(false);
-
+        dialogproses.show();
         byte[] imageBytes = ambilFoto.compressToMax80KB(file);
         MultipartBody.Part fotoPart = prepareFilePart("fototaging", imageBytes);
 
@@ -824,7 +824,6 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
             }
         });
 
-        dialogproses.show();
     }
 
 
@@ -838,6 +837,7 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
         Dialog dialogproses = new Dialog(AbsensiKehadiranActivity.this, R.style.DialogStyle);
         dialogproses.setContentView(R.layout.view_proses);
         dialogproses.setCancelable(false);
+        dialogproses.show();
 
         byte[] imageBytes = ambilFoto.compressToMax80KB(file);
         MultipartBody.Part fotoPart = prepareFilePart("fototaging", imageBytes);
@@ -898,11 +898,12 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
             public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
                 Log.e("Response Status Normal", "Gagal memanggil API absensi: " + t.getMessage(), t);
                 dialogproses.dismiss();
-                dialogView.pesanError(AbsensiKehadiranActivity.this);
+                dialogView.viewNotifKosong(AbsensiKehadiranActivity.this, "Gagal terhubung","silahkan coba kembali");
+
             }
         });
 
-        dialogproses.show();
+
     }
 
     Boolean statusRekam = false;
@@ -1016,53 +1017,6 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
             e.printStackTrace();
         }
     }
-//    @SuppressLint("ResourceAsColor")
-//    public void periksaWaktu(){
-//
-//        try {
-//            jamMasukDate = SIMPLE_FORMAT_JAM.parse(jamMasuk);
-//            jamPulangDate = SIMPLE_FORMAT_JAM.parse(jamPulang);
-//
-//            jamTaging = SIMPLE_FORMAT_JAM_TAGING.format(new Date());
-//
-//            SimpleDateFormat df = new SimpleDateFormat("HH:mm", localeID);
-//            Date d = df.parse(jamMasuk);
-//            cal.setTime(d);
-//            cal.add(Calendar.MINUTE, -(Integer.parseInt(batasWaktu)));
-//            String newTime = df.format(cal.getTime());
-//
-//            tagingTime = SIMPLE_FORMAT_JAM_TAGING.parse(jamTaging);
-//            dateBatasWaktu = SIMPLE_FORMAT_JAM_TAGING.parse(newTime);
-//
-//            long millis = tagingTime.getTime() - jamMasukDate.getTime();
-//            int hours = (int) (millis / (1000 * 60 * 60));
-//
-//            mins = (int) ((millis / (1000 * 60)) % 60) + (hours * 60);
-//            if (mins <= 0){
-//                mins = 0;
-//            }
-//
-//            long millispulang = jamPulangDate.getTime() - tagingTime.getTime();
-//            int hourspulang = (int) (millispulang / (1000 * 60 * 60));
-//            minspulang = (int) ((millispulang / (1000 * 60)) % 60) + (hourspulang * 60);
-//
-//            diff = hours + " jam :" + mins+" menit";
-//
-//            rbJam = SIMPLE_FORMAT_JAM.format(new Date());
-//            if (tagingTime.getTime() <= jamMasukDate.getTime()) {
-//
-//                rbKet = "tepat waktu";
-//                mins = 0;
-//            }else if(tagingTime.getTime() > jamMasukDate.getTime()){
-//
-//                rbKet = "terlambat";
-//            }
-//
-//        }catch (Exception e){
-//            e.printStackTrace();
-//        }
-//    }
-
 
     //  Maps
     //    Maps
@@ -1266,10 +1220,6 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
         super.onDestroy();
         stopLocationUpdates();
     }
-
-//    String berakhlak;
-//    int ber = 0, a = 0, k = 0, h = 0, l = 0, ad = 0, ko = 0;
-//    StringBuffer stringBuffer = new StringBuffer();
 
     private final StringBuffer stringBuffer = new StringBuffer();
 

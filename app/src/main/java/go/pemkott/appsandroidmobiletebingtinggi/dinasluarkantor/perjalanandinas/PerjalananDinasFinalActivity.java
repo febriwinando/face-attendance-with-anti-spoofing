@@ -772,7 +772,7 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
         Date today = new Date();
         Calendar c = Calendar.getInstance();
         c.setTime(today);
-        c.add( Calendar.MONTH, 0);
+        c.add( Calendar.MONTH, 1);
         long maxDate = c.getTime().getTime();
 
         Calendar d = Calendar.getInstance();
@@ -819,7 +819,7 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
 
         Calendar d = Calendar.getInstance();
         d.setTime(today);
-        d.add( Calendar.MONTH, 0);
+        d.add( Calendar.MONTH, -1);
         long minDate = d.getTime().getTime();
         datePickerDialogSampai = new DatePickerDialog(this, style, dateSetListener, tahun, bulan, hari);
         datePickerDialogSampai.getDatePicker().setMaxDate(maxDate);

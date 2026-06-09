@@ -150,12 +150,6 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        finish();
-    }
-
     DialogView dialogView = new DialogView(LoginActivity.this);
     Dialog dialogproses;
 //    private void login_app(){

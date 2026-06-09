@@ -46,13 +46,9 @@ public interface HttpService {
 
 
     @FormUrlEncoded
-
     @POST("login")
-
     Call<List<LoginResponse>> login(
-
             @Field("username") String username,
-
             @Field("password") String password
 
     );
@@ -61,7 +57,6 @@ public interface HttpService {
     @POST("dataEmployee")
     Call<DataEmployee> dataEmployee(
             @Field("id") String id
-
     );
     // UPLOAD
     @Multipart
