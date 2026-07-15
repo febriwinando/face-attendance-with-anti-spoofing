@@ -99,7 +99,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
                     @Override
                     public void onResponse(Call<List<TimeTables>> call, Response<List<TimeTables>> res) {
-
+                        Log.d("TIMETABLE Percobaan Update","HTTP = "+res.code());
                         if (res.isSuccessful()) {
                             db.deleteTimeTableAll();
                             for (TimeTables t : res.body()) {
@@ -119,7 +119,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
                     @Override
                     public void onFailure(Call<List<TimeTables>> call, Throwable t) {
-                        
+                        Log.e("TIMETABLE Percobaan Update",
+
+                                "ERROR",
+
+                                t);
                     }
                 });
     }
@@ -163,7 +167,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         if(title.equals("Lokasi")){
             koordinat_e();
-        } else if (title.equals("Jadwal")) {
+        } else if ("Jadwal".equalsIgnoreCase(title.trim())) {
             stepTimetable();
         }else if (title.equals("Data Pegawai")){
             stepPegawai();
@@ -180,7 +184,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             );
             manager.createNotificationChannel(channel);
         }
-
 
         Notification notification = new NotificationCompat.Builder(this, channelId)
                 .setContentTitle(title)

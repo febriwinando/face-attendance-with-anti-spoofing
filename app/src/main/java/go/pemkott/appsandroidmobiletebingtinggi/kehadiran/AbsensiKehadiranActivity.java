@@ -384,6 +384,7 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
         startLocationUpdates();
         llUpload.setEnabled(true);
         llUpload.setClickable(true);
+        llUpload.setAlpha(1.0f);
     }
 
     private void startLocationUpdates() {
@@ -640,6 +641,7 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
                     dialogView.viewNotifKosong(AbsensiKehadiranActivity.this, "Anda hanya dapat mengisi absen masuk, "+batasWaktu+" menit sebelum Jam Masuk", "");
                     llUpload.setEnabled(true);
                     llUpload.setClickable(true);
+                    llUpload.setAlpha(1.0f);
                 } else{
                     selected = rgKehadiran.getCheckedRadioButtonId();
                     radioSelectedKehadiran = findViewById(selected);
@@ -657,7 +659,7 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
                         );
                         llUpload.setEnabled(true);
                         llUpload.setClickable(true);
-
+                        llUpload.setAlpha(1.0f);
                         return;
 
                     }
@@ -666,7 +668,7 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
                         dialogView.viewNotifKosong(AbsensiKehadiranActivity.this, "Anda harus berada dilingkungan kantor untuk melakukan absensi.", "");
                         llUpload.setEnabled(true);
                         llUpload.setClickable(true);
-                        
+                        llUpload.setAlpha(1.0f);
                         return;
                     }
                     else{
@@ -821,6 +823,7 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
 
                     llUpload.setEnabled(true);
                     llUpload.setClickable(true);
+                    llUpload.setAlpha(1.0f);
                     return;
                 }
 
@@ -838,6 +841,7 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
                     dialogView.viewNotifKosong(AbsensiKehadiranActivity.this, data.getRemarks(),"");
                     llUpload.setEnabled(true);
                     llUpload.setClickable(true);
+                    llUpload.setAlpha(1.0f);
                 }
 
             }
@@ -847,6 +851,7 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
                 dialogproses.dismiss();
                 llUpload.setEnabled(true);
                 llUpload.setClickable(true);
+                llUpload.setAlpha(1.0f);
                 dialogView.pesanError(AbsensiKehadiranActivity.this);
             }
         });
@@ -901,6 +906,7 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
                     dialogView.viewNotifKosong(AbsensiKehadiranActivity.this, "Gagal mengisi absensi,", "silahkan coba kembali.");
                     llUpload.setEnabled(true);
                     llUpload.setClickable(true);
+                    llUpload.setAlpha(1.0f);
                     return;
                 }
 
@@ -920,6 +926,7 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
                     dialogView.viewNotifKosong(AbsensiKehadiranActivity.this, data.getRemarks(),"");
                     llUpload.setEnabled(true);
                     llUpload.setClickable(true);
+                    llUpload.setAlpha(1.0f);
                 }
 
             }
@@ -930,6 +937,7 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
                 dialogproses.dismiss();
                 llUpload.setEnabled(true);
                 llUpload.setClickable(true);
+                llUpload.setAlpha(1.0f);
                 dialogView.viewNotifKosong(AbsensiKehadiranActivity.this, "Gagal terhubung","silahkan coba kembali");
 
             }

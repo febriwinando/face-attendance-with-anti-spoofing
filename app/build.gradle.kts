@@ -23,15 +23,15 @@ android {
 
     namespace = "go.pemkott.appsandroidmobiletebingtinggi"
     compileSdk {
-        version = release(36)
+        version = release(37)
     }
 
     defaultConfig {
         applicationId = "go.pemkott.appsandroidmobiletebingtinggi"
         minSdk = 24
-        targetSdk = 36
-        versionCode = 203
-        versionName = "2.0.8"
+//        targetSdk = 36
+        versionCode = 209
+        versionName = "2.0.9"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -60,7 +60,7 @@ dependencies {
     implementation(libs.app.update)
     implementation(libs.face.detection)
     implementation(libs.glide)
-    implementation(libs.logging.interceptor)
+//    implementation(libs.logging.interceptor)
     implementation(libs.okhttp3.logging.interceptor)
     implementation(libs.places)
     implementation(libs.circleimageview)
