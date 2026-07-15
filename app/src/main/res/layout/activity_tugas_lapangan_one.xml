@@ -168,7 +168,7 @@
                     android:orientation="vertical"
                     android:gravity="center_horizontal"
                     android:background="@drawable/backgroundnavbarputih"
-                    android:id="@+id/llLampiranDinasLuar"
+                    android:id="@+id/llLampiranDinasLuarOne"
                     android:clickable="true"
                     android:foreground="?attr/selectableItemBackground"
                     android:onClick="addFotoSuratPerintah"

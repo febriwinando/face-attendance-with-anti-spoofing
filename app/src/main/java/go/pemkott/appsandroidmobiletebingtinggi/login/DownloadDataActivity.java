@@ -373,8 +373,7 @@ public class DownloadDataActivity extends AppCompatActivity {
         SessionManager session = new SessionManager(this);
         String pegawaiId = session.getPegawaiId();
 
-        FirebaseMessaging.getInstance().getToken()
-                .addOnCompleteListener(task -> {
+        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
 
                     if (!task.isSuccessful()) {
                         Log.e("FCM", "Gagal mendapatkan token");
@@ -428,8 +427,6 @@ public class DownloadDataActivity extends AppCompatActivity {
         startActivity(new Intent(this, DashboardVersiOne.class));
         finish();
     }
-
-
 
 
     /* =============================

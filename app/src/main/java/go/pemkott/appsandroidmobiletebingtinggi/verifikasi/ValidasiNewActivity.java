@@ -85,11 +85,6 @@ public class ValidasiNewActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    public void onBackPressed() {
-        finish();
-    }
-
     private void crossfade() {
 
         contentView.clearAnimation();

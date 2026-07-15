@@ -72,6 +72,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.rekap.RekapAbsensActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.singkronjadwal.SettingAdapter;
 import go.pemkott.appsandroidmobiletebingtinggi.singkronjadwal.TimeTebleSetting;
 import go.pemkott.appsandroidmobiletebingtinggi.singkronjadwalsift.CalendarJadwalSiftActivity;
+import go.pemkott.appsandroidmobiletebingtinggi.utils.NetworkUtil;
 import go.pemkott.appsandroidmobiletebingtinggi.verifikasi.ValidasiNewActivity;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -117,6 +118,7 @@ public class DashboardVersiOne extends AppCompatActivity {
             Manifest.permission.ACCESS_FINE_LOCATION;
     private static final int REQ_UPDATE = 2001;
 
+    Retrofit retrofit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,6 +131,12 @@ public class DashboardVersiOne extends AppCompatActivity {
                         getWindow(),
                         getWindow().getDecorView()
                 );
+
+        String ipPerangkat = NetworkUtil.getDeviceIp(this);
+        if ("-".equals(ipPerangkat)) {
+            ipPerangkat = NetworkUtil.getDeviceIpFallback();
+        }
+        Log.d("IP_PERANGKAT", ipPerangkat);
 
         controller.setAppearanceLightStatusBars(true);
         controller.setAppearanceLightNavigationBars(true);
@@ -158,7 +166,7 @@ public class DashboardVersiOne extends AppCompatActivity {
 
         datauser();
 
-        Retrofit retrofit = new Retrofit.Builder()
+        retrofit = new Retrofit.Builder()
                 .baseUrl("https://absensi.tebingtinggikota.go.id/api/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
@@ -206,7 +214,6 @@ public class DashboardVersiOne extends AppCompatActivity {
                 startActivity(new Intent(DashboardVersiOne.this, ProfileActivity.class));
             }
         });
-
 //        cvKehadiran.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
@@ -264,9 +271,12 @@ public class DashboardVersiOne extends AppCompatActivity {
 
 
         tvNamaUser.setText(sUsername);
+
         Glide.with(this)
-                .load( "https://absensi.tebingtinggikota.go.id/storage/"+fotoProfile )
-                .into( ciUser );
+                .load("https://absensi.tebingtinggikota.go.id/storage/foto-pegawai/" + fotoProfile)
+                .placeholder(R.drawable.profil_pic)
+                .error(R.drawable.profil_pic)
+                .into(ciUser);
 
         cvJadwal.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -672,7 +682,9 @@ public class DashboardVersiOne extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        dataValidasi(sVerifikator, sEmployee_id);
+        if (sVerifikator != null && sEmployee_id != null){
+            dataValidasi(sVerifikator, sEmployee_id);
+        }
 
     }
 
@@ -688,7 +700,7 @@ public class DashboardVersiOne extends AppCompatActivity {
                     }
 
                     List<ValidasiData> validasiDatas = response.body();
-                    if (!validasiDatas.isEmpty()){
+                    if (validasiDatas != null && !validasiDatas.isEmpty()) {
                         clVerifikasi.setVisibility(View.VISIBLE);
                     }else{
                         clVerifikasi.setVisibility(View.GONE);
@@ -739,23 +751,34 @@ public class DashboardVersiOne extends AppCompatActivity {
         }
 
 
-        while (res.moveToNext()){
-            sEmployee_id = res.getString(1);
-            sAkses = res.getString(3);
-            sActive = res.getString(4);
-            sToken = res.getString(5);
-            sVerifikator = res.getString(6);
+        try {
+            while (res.moveToNext()){
+                sEmployee_id = res.getString(1);
+                sAkses = res.getString(3);
+                sActive = res.getString(4);
+                sToken = res.getString(5);
+                sVerifikator = res.getString(6);
+            }
+        } finally {
+            res.close();
+
         }
 
         Cursor dataPegawai = databaseHelper.getDataEmployee(sEmployee_id);
-        while (dataPegawai.moveToNext()){
-            sNip = dataPegawai.getString(5);
-            sUsername = dataPegawai.getString(6);
-            sJabatan = dataPegawai.getString(12);
-            sKantor = dataPegawai.getString(13);
-            sOPD = dataPegawai.getString(4);
-            fotoProfile = dataPegawai.getString(17);
-            statusSift = dataPegawai.getString(19);
+        try {
+            while (dataPegawai.moveToNext()){
+                sNip = dataPegawai.getString(5);
+                sUsername = dataPegawai.getString(6);
+                sJabatan = dataPegawai.getString(12);
+                sKantor = dataPegawai.getString(13);
+                sOPD = dataPegawai.getString(4);
+                fotoProfile = dataPegawai.getString(17);
+                statusSift = dataPegawai.getString(19);
+
+            }
+
+        } finally {
+            dataPegawai.close();
 
         }
     }
@@ -781,19 +804,22 @@ public class DashboardVersiOne extends AppCompatActivity {
         if (jadwal.getCount() == 0){
             tvInfoJamKerja.setVisibility(View.VISIBLE);
         }
+        try{
+            while (jadwal.moveToNext()){
+                TimeTebleSetting timeTables = new TimeTebleSetting();
+                timeTables.setId(jadwal.getString(0));
+                timeTables.setEmployee_id(jadwal.getString(1));
+                timeTables.setTimetable_id(jadwal.getString(2));
+                timeTables.setInisial(jadwal.getString(3));
+                timeTables.setHari(jadwal.getString(4));
+                timeTables.setMasuk(jadwal.getString(5));
+                timeTables.setPulang(jadwal.getString(6));
+                timeTable.add(timeTables);
+            }
+        } finally {
+                jadwal.close();
 
-        while (jadwal.moveToNext()){
-            TimeTebleSetting timeTables = new TimeTebleSetting();
-            timeTables.setId(jadwal.getString(0));
-            timeTables.setEmployee_id(jadwal.getString(1));
-            timeTables.setTimetable_id(jadwal.getString(2));
-            timeTables.setInisial(jadwal.getString(3));
-            timeTables.setHari(jadwal.getString(4));
-            timeTables.setMasuk(jadwal.getString(5));
-            timeTables.setPulang(jadwal.getString(6));
-            timeTable.add(timeTables);
         }
-
 
         rvJadwalKerja.setLayoutManager(new GridLayoutManager(DashboardVersiOne.this, 1));
         SettingAdapter settingAdapter = new SettingAdapter(timeTable);
@@ -811,20 +837,15 @@ public class DashboardVersiOne extends AppCompatActivity {
             public void onClick(View v) {
                 progressBarSingkron.setVisibility(View.VISIBLE);
                 btnSingkronJadwalKerja.setVisibility(View.GONE);
-                Retrofit retrofit = new Retrofit.Builder()
-                        .baseUrl("https://absensi.tebingtinggikota.go.id/api/")
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .build();
-                HttpService holderAPI = retrofit.create(HttpService.class);
 
-
-                Call<List<TimeTebleSetting>> callKegiatan = holderAPI.getUrlTimeTableSetting("https://absensi.tebingtinggikota.go.id/api/timetable?employee_id="+sEmployee_id, "Bearer "+sToken);
+                Call<List<TimeTebleSetting>> callKegiatan = httpService.getUrlTimeTableSetting("https://absensi.tebingtinggikota.go.id/api/timetable?employee_id="+sEmployee_id, "Bearer "+sToken);
                 callKegiatan.enqueue(new Callback<List<TimeTebleSetting>>() {
                     @Override
                     public void onResponse(@NonNull Call<List<TimeTebleSetting>> call, @NonNull Response<List<TimeTebleSetting>> response) {
                         List<TimeTebleSetting> timeTables = response.body();
                         if (!response.isSuccessful()){
                             dialogView.viewNotifKosong(DashboardVersiOne.this, "Gagal melakukan singkronisasi jadwal.","Silahkan coba kembali.");
+                            return;
                         }
 
                         Integer deleteTimeTable = databaseHelper.deleteTimeTable(sEmployee_id);
@@ -833,7 +854,7 @@ public class DashboardVersiOne extends AppCompatActivity {
                             timeTable = timeTables;
                         }
 
-                        timeTables.size();
+//                        timeTables.size();
                         for (TimeTebleSetting timeTable : timeTables){
                             databaseHelper.insertDataTimeTable(timeTable.getId(), timeTable.getEmployee_id(), timeTable.getTimetable_id(),
                                     timeTable.getInisial(), timeTable.getHari(), timeTable.getMasuk(), timeTable.getPulang());
@@ -866,19 +887,14 @@ public class DashboardVersiOne extends AppCompatActivity {
 
     public void koordinatOPD(){
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://absensi.tebingtinggikota.go.id/api/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        HttpService holderAPI = retrofit.create(HttpService.class);
-
-        Call<List<Koordinat>> calllokasi = holderAPI.getUrlKoordinat("https://absensi.tebingtinggikota.go.id/api/koordinat?opdid="+sOPD);
+        Call<List<Koordinat>> calllokasi = httpService.getUrlKoordinat("https://absensi.tebingtinggikota.go.id/api/koordinat?opdid="+sOPD);
         calllokasi.enqueue(new Callback<List<Koordinat>>() {
             @Override
             public void onResponse(@NonNull Call<List<Koordinat>> call, @NonNull Response<List<Koordinat>> response) {
                 List<Koordinat> koordinats = response.body();
                 if (!response.isSuccessful()){
                     dialogView.viewNotifKosong(DashboardVersiOne.this, "Gagal melakukan singkronisasi lokasi.","Silahkan coba kembali.");
+                    return;
                 }
 
                 Integer deleteKoordinatOPD = databaseHelper.deleteDataKoordinatOPD(sOPD);
@@ -905,23 +921,27 @@ public class DashboardVersiOne extends AppCompatActivity {
 
     public void koordintaEmployee(){
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://absensi.tebingtinggikota.go.id/api/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        HttpService holderAPI = retrofit.create(HttpService.class);
-
-
-        Call<List<Koordinat>> callKegiatan = holderAPI.getUrlKoordinat("https://absensi.tebingtinggikota.go.id/api/koordinatemployee?id="+sEmployee_id);
+        Call<List<Koordinat>> callKegiatan = httpService.getUrlKoordinat("https://absensi.tebingtinggikota.go.id/api/koordinatemployee?id="+sEmployee_id);
         callKegiatan.enqueue(new Callback<List<Koordinat>>() {
             @Override
             public void onResponse(@NonNull Call<List<Koordinat>> call, @NonNull Response<List<Koordinat>> response) {
                 List<Koordinat> koordinats = response.body();
                 if (!response.isSuccessful()){
                     dialogView.viewNotifKosong(DashboardVersiOne.this, "Gagal melakukan singkronisasi lokasi.","Silahkan coba kembali.");
+                    return;
                 }
 
-                Log.d("TESTING KOORDINAT", String.valueOf(koordinats.size()));
+//                Log.d("TESTING KOORDINAT", String.valueOf(koordinats.size()));
+
+                if (koordinats == null || koordinats.isEmpty()) {
+
+                    pgSingkronLokasi.setVisibility(View.GONE);
+
+                    ivSingkronLokasi.setVisibility(View.VISIBLE);
+
+                    return;
+
+                }
                 if ("kosong".equals(response.body().get(0).getStatus())){
                     databaseHelper.deleteDataKoordinatEmployee(sEmployee_id);
                 }else{
@@ -960,13 +980,8 @@ public class DashboardVersiOne extends AppCompatActivity {
 
 
     public void singkronKegiatan(){
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://absensi.tebingtinggikota.go.id/api/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        HttpService holderAPI = retrofit.create(HttpService.class);
 
-        Call<List<KegiatanIzin>> callKegiatan = holderAPI.getUrlKegiatanNew("https://absensi.tebingtinggikota.go.id/api/kegiatannew?opd="+sOPD);
+        Call<List<KegiatanIzin>> callKegiatan = httpService.getUrlKegiatanNew("https://absensi.tebingtinggikota.go.id/api/kegiatannew?opd="+sOPD);
         callKegiatan.enqueue(new Callback<List<KegiatanIzin>>() {
 
             @Override
@@ -974,6 +989,7 @@ public class DashboardVersiOne extends AppCompatActivity {
                 List<KegiatanIzin> kegiatanIzins = response.body();
                 if (!response.isSuccessful()){
                     dialogView.viewNotifKosong(DashboardVersiOne.this, "Gagal melakukan singkronisasi kegiatan.","Silahkan coba kembali.");
+                    return;
                 }
 
                 Integer deleteKegiatan = databaseHelper.deleteKegiatanIzin();

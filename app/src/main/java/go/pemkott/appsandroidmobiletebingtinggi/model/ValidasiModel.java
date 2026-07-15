@@ -1,8 +1,12 @@
 package go.pemkott.appsandroidmobiletebingtinggi.model;
 
+import com.google.gson.annotations.SerializedName;
+
 public class ValidasiModel {
-    boolean status;
-    String message;
+    @SerializedName("status")
+    private boolean status;
+    @SerializedName("message")
+    private String message;
 
     public boolean isStatus() {
         return status;

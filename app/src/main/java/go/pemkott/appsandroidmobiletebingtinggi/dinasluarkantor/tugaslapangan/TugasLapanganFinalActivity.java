@@ -148,7 +148,7 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
     String kegiatanlainnya, jamMasuk, jamPulang, hariIni;
     String tanggal;
     StringBuilder keterangan;
-    String batasWaktu;
+    String batasWaktu, statushift;
     SimpleDateFormat hari;
 
     String ekslampiran;
@@ -181,6 +181,7 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
     File file, filelampiran;
     SessionManager session;
     String userId;
+    private Uri capturedImageUri;
     @SuppressLint("WrongThread")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -235,7 +236,7 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
 
 //        Linear Layout
         llPdfDinasLuar = findViewById(R.id.llPdfDinasLuar);
-        llLampiranDinasLuar = findViewById(R.id.llLampiranDinasLuar);
+        llLampiranDinasLuar = findViewById(R.id.llLampiranDinasLuarOne);
 
         mContext = this;
         setupViews();
@@ -269,7 +270,7 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
         }
 
         Uri imageUri = Uri.parse(uriString);
-
+        capturedImageUri = Uri.parse(uriString);
         try {
 
             File originalFile = createTempFileFromUri(imageUri);
@@ -562,7 +563,8 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
                         lampiranPart,
                         textPart(ekslampiran),
                         textPart(rbFakeGPS),
-                        textPart(batasWaktu)
+                        textPart(batasWaktu),
+                        textPart(statushift)
                 );
 
 
@@ -586,6 +588,7 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
                 ResponsePOJO data = response.body();
 
                 if (Objects.requireNonNull(response.body()).isStatus()){
+                    hapusFileSementara();
                     dialogView.viewSukses(TugasLapanganFinalActivity.this, data.getRemarks());
 
                     // mulai hitung 10 detik
@@ -617,6 +620,29 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
         dialogproses.show();
     }
 
+    private void hapusFileSementara() {
+        if (capturedImageUri != null) {
+
+            getContentResolver().delete(
+                    capturedImageUri,
+                    null,
+                    null
+            );
+
+        }
+        if (file != null && file.exists()) {
+
+            boolean deleted = file.delete();
+
+            Log.d("CACHE_DELETE",
+                    "deleted=" + deleted +
+                            " path=" + file.getAbsolutePath());
+
+            file = null;
+        }
+
+
+    }
     public void kirimdataPulang(String valid, String posisi, String status, String ketKehadiran, String jampegawai){
         Dialog dialogproses = new Dialog(TugasLapanganFinalActivity.this, R.style.DialogStyle);
         dialogproses.setContentView(R.layout.view_proses);
@@ -661,27 +687,10 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
                         lampiranPart,
                         textPart(ekslampiran),
                         textPart(rbFakeGPS),
-                        textPart(batasWaktu)
+                        textPart(batasWaktu),
+                        textPart(statushift)
                 );
 
-        Log.d("TL_UPLOAD", "ketKehadiran = " + ketKehadiran);
-        Log.d("TL_UPLOAD", "eJabatan = " + eJabatan);
-        Log.d("TL_UPLOAD", "sEmployeID = " + sEmployeID);
-        Log.d("TL_UPLOAD", "timetableid = " + timetableid);
-        Log.d("TL_UPLOAD", "tanggal = " + rbTanggal);
-        Log.d("TL_UPLOAD", "rbJam = " + rbJam);
-        Log.d("TL_UPLOAD", "posisi = " + posisi);
-        Log.d("TL_UPLOAD", "status = " + status);
-        Log.d("TL_UPLOAD", "rbLat = " + rbLat);
-        Log.d("TL_UPLOAD", "rbLng = " + rbLng);
-        Log.d("TL_UPLOAD", "rbKet = " + rbKet);
-        Log.d("TL_UPLOAD", "mins = " + mins);
-        Log.d("TL_UPLOAD", "eOPD = " + eOPD);
-        Log.d("TL_UPLOAD", "jampegawai = " + jampegawai);
-        Log.d("TL_UPLOAD", "valid = " + valid);
-        Log.d("TL_UPLOAD", "ekslampiran = " + ekslampiran);
-        Log.d("TL_UPLOAD", "rbFakeGPS = " + rbFakeGPS);
-        Log.d("TL_UPLOAD", "batasWaktu = " + batasWaktu);
 
         if (file != null) {
             Log.d("TL_UPLOAD", "foto = " + file.getAbsolutePath());
@@ -706,8 +715,8 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
                 ResponsePOJO data = response.body();
 
                 if (Objects.requireNonNull(response.body()).isStatus()){
+                    hapusFileSementara();
                     dialogView.viewSukses(TugasLapanganFinalActivity.this, data.getRemarks());
-
                     // mulai hitung 10 detik
 
                     autoCloseHandler.postDelayed(
@@ -822,6 +831,7 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
             latOffice = employe.getString(15);
             lngOffice = employe.getString(16);
             batasWaktu = employe.getString(18);
+            statushift = employe.getString(19);
         }
     }
 

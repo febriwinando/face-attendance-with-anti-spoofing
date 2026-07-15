@@ -586,8 +586,6 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
             Log.d("TugasLapanganFinalActivity", "JPG");
         }
 
-        Log.d("IzinSakitFinalActivity 123", "Tahap 2");
-
         Call<ResponsePOJO> call =
                 RetroClient.getInstance().getApi().uploadizinsakitmasuk(
                         fotoPart,

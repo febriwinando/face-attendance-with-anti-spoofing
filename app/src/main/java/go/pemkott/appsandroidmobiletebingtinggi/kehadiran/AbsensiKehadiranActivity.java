@@ -112,7 +112,7 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
     private String rbLat;
     private String rbLng;
     private String rbKet;
-    private String batasWaktu;
+    private String batasWaktu, statushift;
     private String rbFakeGPS ="0";
     DatabaseHelper databaseHelper;
     ShapeableImageView ivTaging;
@@ -120,9 +120,10 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
     Date dateBatasWaktu;
     String jamTaging, jamMasuk, jamPulang, hariIni, eKelompok, eJabatan, timetableid;
     String tanggal;
-    String diff, latOffice, lngOffice,eOPD;
+    String latOffice, lngOffice,eOPD;
 
-    Calendar cal = Calendar.getInstance();
+//    Calendar cal = Calendar.getInstance();
+    private boolean lokasiSiap = false;
 
     RadioGroup rgKehadiran;
     RadioButton radioSelectedKehadiran;
@@ -149,6 +150,7 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
 
     SessionManager session;
     String userId;
+    private Uri capturedImageUri;
 
     @SuppressLint("WrongThread")
     @Override
@@ -207,8 +209,6 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
         setRoundedBackground(fragmentContainerView);
 
 
-
-
         Intent intent = getIntent();
         String uriString =
                 intent.getStringExtra("namafile");
@@ -224,7 +224,7 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
         }
 
         Uri imageUri = Uri.parse(uriString);
-
+        capturedImageUri = Uri.parse(uriString);
         try {
 
             File originalFile = createTempFileFromUri(imageUri);
@@ -274,19 +274,31 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
             finish();
             return;
         }
-//
-//        Bitmap preview = BitmapFactory.decodeFile(file.getAbsolutePath());
-//        ivTaging.setImageBitmap(preview);
 
         // upload pakai imageBytes
         title_content.setText("KEHADIRAN");
+        llUpload.setEnabled(false);
+        llUpload.setClickable(false);
+        llUpload.setAlpha(0.5f);
 
         llUpload.setOnClickListener(view -> {
-            if (mock_location == 1){
-                dialogView.viewNotifKosong(AbsensiKehadiranActivity.this, "Anda terdeteksi menggunakan Fake GPS.", "Jika ditemukan berulang kali, akun anda akan terblokir otomatis dan tercatat Alpa.");
-            }else {
-                uploadImages();
+            if (!lokasiSiap) {
+                dialogView.viewNotifKosong(
+                        this,
+                        "Lokasi belum diperoleh",
+                        "Mohon tunggu beberapa detik."
+                );
+                return;
+
             }
+//            if (mock_location == 1){
+//                dialogView.viewNotifKosong(AbsensiKehadiranActivity.this, "Anda terdeteksi menggunakan Fake GPS.", "Jika ditemukan berulang kali, akun anda akan terblokir otomatis dan tercatat Alpa.");
+//            }else {
+                llUpload.setEnabled(false);
+                llUpload.setClickable(false);
+                llUpload.setAlpha(0.5f);
+                uploadImages();
+//            }
         });
         startLocationUpdates();
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
@@ -370,6 +382,8 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
     }
     public void fokusLokasiKehadiran(View view){
         startLocationUpdates();
+        llUpload.setEnabled(true);
+        llUpload.setClickable(true);
     }
 
     private void startLocationUpdates() {
@@ -404,7 +418,6 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
 
 
     public void databases(){
-
         Cursor tUser = databaseHelper.getAllData22(userId);
         while (tUser.moveToNext()){
             sEmployId = tUser.getString(1);
@@ -435,7 +448,7 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
             latOffice = employe.getString(15);
             lngOffice = employe.getString(16);
             batasWaktu = employe.getString(18);
-
+            statushift = employe.getString(19);
         }
 
         latList.clear();
@@ -568,12 +581,6 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
                 latList, lngList, latUser, lngUser
         );
 
-        Log.d("JARAK_DEBUG", "latlist: "+latList);
-        Log.d("JARAK_DEBUG", "lnglist: "+lngList);
-        Log.d("JARAK_DEBUG", "latUser: "+latUser);
-        Log.d("JARAK_DEBUG", "lngUser: "+lngUser);
-        Log.d("JARAK_DEBUG", "jarak utama: "+jarakUtama);
-
         if (jarakUtama != JARAK_TIDAK_VALID && jarakUtama <= radius) {
             totalJarak = jarakUtama;
             return;
@@ -589,6 +596,7 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
         } else {
             totalJarak = JARAK_TIDAK_VALID;
         }
+
     }
 
 
@@ -630,6 +638,8 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
 
                 if (tagingTime.before(dateBatasWaktu)){
                     dialogView.viewNotifKosong(AbsensiKehadiranActivity.this, "Anda hanya dapat mengisi absen masuk, "+batasWaktu+" menit sebelum Jam Masuk", "");
+                    llUpload.setEnabled(true);
+                    llUpload.setClickable(true);
                 } else{
                     selected = rgKehadiran.getCheckedRadioButtonId();
                     radioSelectedKehadiran = findViewById(selected);
@@ -639,8 +649,24 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
                     }
                     Log.d("JARAK_DEBUG", "total jarak: "+totalJarak);
 
-                    if (totalJarak == JARAK_TIDAK_VALID || totalJarak > 150) {
+                    if (latGMap == 0.0 && lngGMap == 0.0) {
+                        dialogView.viewNotifKosong(
+                                AbsensiKehadiranActivity.this,
+                                "Lokasi belum berhasil diperoleh.",
+                                "Mohon tunggu beberapa detik atau fokuskan lokasi."
+                        );
+                        llUpload.setEnabled(true);
+                        llUpload.setClickable(true);
+
+                        return;
+
+                    }
+
+                    if (totalJarak == JARAK_TIDAK_VALID || totalJarak > 75) {
                         dialogView.viewNotifKosong(AbsensiKehadiranActivity.this, "Anda harus berada dilingkungan kantor untuk melakukan absensi.", "");
+                        llUpload.setEnabled(true);
+                        llUpload.setClickable(true);
+                        
                         return;
                     }
                     else{
@@ -651,16 +677,7 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
                         String rbValid;
                         if (radioSelectedKehadiran.getText().toString().equals("MASUK")){
 
-//                                if (tagingTime.getTime() >= jamPulangDate.getTime()){
-//                                    Log.d("JAM_DEBUG", tagingTime.getTime()+": " + jamPulangDate.getTime());
-//                                    dialogView.viewNotifKosong(AbsensiKehadiranActivity.this, "Anda tidak dapat melakukan absensi masuk pada jam pulang kerja.", "");
-//                                }
-
                             if (!tagingTime.before(jamPulangDate)) {
-
-//                                Log.d("JAM_DEBUG",
-//                                        "Jam tagging : " + format.format(tagingTime)
-//                                                + " | Jam pulang : " + format.format(jamPulangDate));
 
                                 dialogView.viewNotifKosong(
                                         AbsensiKehadiranActivity.this,
@@ -688,9 +705,7 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
                                     }
 
                                     kirimDataMasuk(ketKehadiran, eselon, sEmployId, timetableid, rbTanggal, rbJam, rbPosisi, rbStatus, rbLat, rbLng, rbKet, mins, jamMasuk, rbValid, "100");
-
                                 }
-
                         }
                         else{
 
@@ -725,6 +740,29 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
             }
         }
     }
+    private void hapusFileSementara() {
+        if (capturedImageUri != null) {
+
+            getContentResolver().delete(
+                    capturedImageUri,
+                    null,
+                    null
+            );
+
+        }
+        if (file != null && file.exists()) {
+
+            boolean deleted = file.delete();
+
+            Log.d("CACHE_DELETE",
+                    "deleted=" + deleted +
+                            " path=" + file.getAbsolutePath());
+
+            file = null;
+        }
+
+
+    }
 
     public void kirimDataMasuk(String absensi, String eselon, String idpegawai, String timetableid, String tanggal, String jam, String posisi, String status, String lat, String lng, String ket, int terlambat, String jampegawai, String validasi, String berakhlak){
 
@@ -734,29 +772,6 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
         dialogproses.show();
         byte[] imageBytes = ambilFoto.compressToMax80KB(file);
         MultipartBody.Part fotoPart = prepareFilePart("fototaging", imageBytes);
-
-
-        Log.d("ABSEN_MASUK", "===== DATA ABSEN MASUK =====");
-        Log.d("ABSEN_MASUK", "absensi      = " + absensi);
-        Log.d("ABSEN_MASUK", "eselon       = " + eselon);
-        Log.d("ABSEN_MASUK", "idpegawai    = " + idpegawai);
-        Log.d("ABSEN_MASUK", "timetableid  = " + timetableid);
-        Log.d("ABSEN_MASUK", "tanggal      = " + tanggal);
-        Log.d("ABSEN_MASUK", "jam          = " + jam);
-        Log.d("ABSEN_MASUK", "posisi       = " + posisi);
-        Log.d("ABSEN_MASUK", "status       = " + status);
-        Log.d("ABSEN_MASUK", "lat          = " + lat);
-        Log.d("ABSEN_MASUK", "lng          = " + lng);
-        Log.d("ABSEN_MASUK", "ket          = " + ket);
-        Log.d("ABSEN_MASUK", "terlambat    = " + terlambat);
-        Log.d("ABSEN_MASUK", "eOPD         = " + eOPD);
-        Log.d("ABSEN_MASUK", "jampegawai   = " + jampegawai);
-        Log.d("ABSEN_MASUK", "validasi     = " + validasi);
-        Log.d("ABSEN_MASUK", "rbFakeGPS    = " + rbFakeGPS);
-        Log.d("ABSEN_MASUK", "batasWaktu   = " + batasWaktu);
-        Log.d("ABSEN_MASUK", "berakhlak    = " + berakhlak);
-        Log.d("ABSEN_MASUK", "fotoPart     = " + fotoPart);
-        Log.d("ABSEN_MASUK", "===========================");
 
         Call<ResponsePOJO> call =
                 RetroClient.getInstance().getApi().uploadAbsenKehadiranMasuk(
@@ -778,7 +793,8 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
                         textPart(validasi),
                         textPart(rbFakeGPS),
                         textPart(batasWaktu),
-                        textPart(berakhlak)
+                        textPart(berakhlak),
+                        textPart(statushift)
                 );
 
         call.enqueue(new Callback<ResponsePOJO>() {
@@ -787,39 +803,50 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
                 dialogproses.dismiss();
 
                 if (!response.isSuccessful()) {
+                    try {
+                        if (response.errorBody() != null) {
+                            Log.e("ABSENSI_HTTP",
+                                    "Error Body: " + response.errorBody().string());
+                        }
+                    } catch (Exception e) {
+                        Log.e("ABSENSI_HTTP",
+                                "Gagal baca error body", e);
+                    }
 
                     dialogView.viewNotifKosong(
                             AbsensiKehadiranActivity.this,
                             "Gagal mengisi absensi",
-                            "Silahkan coba kembali ya gagal terima."
+                            "HTTP " + response.code()
                     );
+
+                    llUpload.setEnabled(true);
+                    llUpload.setClickable(true);
                     return;
                 }
 
                 ResponsePOJO data = response.body();
 
                 if (Objects.requireNonNull(response.body()).isStatus()){
+                    hapusFileSementara();
                     dialogView.viewSukses(AbsensiKehadiranActivity.this, data.getRemarks());
-
                     autoCloseHandler.postDelayed(
-
                             autoCloseRunnable,
-
                             10000
 
                     );
                 }else {
                     dialogView.viewNotifKosong(AbsensiKehadiranActivity.this, data.getRemarks(),"");
+                    llUpload.setEnabled(true);
+                    llUpload.setClickable(true);
                 }
 
             }
 
             @Override
             public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
-
-                Log.e("ABSENSI_API_ERROR", "Gagal memanggil API absensi: " + t.getMessage(), t);
                 dialogproses.dismiss();
-
+                llUpload.setEnabled(true);
+                llUpload.setClickable(true);
                 dialogView.pesanError(AbsensiKehadiranActivity.this);
             }
         });
@@ -862,7 +889,8 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
                         textPart(validasi),
                         textPart(rbFakeGPS),
                         textPart(batasWaktu),
-                        textPart(berakhlak)
+                        textPart(berakhlak),
+                        textPart(statushift)
                 );
         call.enqueue(new Callback<ResponsePOJO>() {
             @Override
@@ -871,6 +899,8 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
 
                 if (!response.isSuccessful()){
                     dialogView.viewNotifKosong(AbsensiKehadiranActivity.this, "Gagal mengisi absensi,", "silahkan coba kembali.");
+                    llUpload.setEnabled(true);
+                    llUpload.setClickable(true);
                     return;
                 }
 
@@ -878,18 +908,18 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
                 ResponsePOJO data = response.body();
 
                 if (Objects.requireNonNull(response.body()).isStatus()){
+                    hapusFileSementara();
                     dialogView.viewSukses(AbsensiKehadiranActivity.this, data.getRemarks());
                     // mulai hitung 10 detik
-
                     autoCloseHandler.postDelayed(
-
                             autoCloseRunnable,
-
                             10000
-
                     );
+
                 }else {
                     dialogView.viewNotifKosong(AbsensiKehadiranActivity.this, data.getRemarks(),"");
+                    llUpload.setEnabled(true);
+                    llUpload.setClickable(true);
                 }
 
             }
@@ -898,6 +928,8 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
             public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
                 Log.e("Response Status Normal", "Gagal memanggil API absensi: " + t.getMessage(), t);
                 dialogproses.dismiss();
+                llUpload.setEnabled(true);
+                llUpload.setClickable(true);
                 dialogView.viewNotifKosong(AbsensiKehadiranActivity.this, "Gagal terhubung","silahkan coba kembali");
 
             }
@@ -1061,6 +1093,7 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
     }
 
     ArrayList<Location> locationArrayList = new ArrayList<>();
+
     private void plotMarkers(Location locationObj) {
 
         if(map != null){
@@ -1069,6 +1102,8 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
             map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(locationObj.getLatitude(), locationObj.getLongitude()), 18f));
             latGMap = locationObj.getLatitude();
             lngGMap = locationObj.getLongitude();
+
+
 
             locationArrayList.add(locationObj);
 
@@ -1092,6 +1127,13 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
             map.getUiSettings().setMyLocationButtonEnabled(true);
         }
 
+        if (!lokasiSiap) {
+            lokasiSiap = true;
+
+            llUpload.setEnabled(true);
+            llUpload.setClickable(true);
+            llUpload.setAlpha(1f);
+        }
         stopLocationUpdates();
 
     }
@@ -1217,8 +1259,9 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         stopLocationUpdates();
+        autoCloseHandler.removeCallbacksAndMessages(null);
+        super.onDestroy();
     }
 
     private final StringBuffer stringBuffer = new StringBuffer();
@@ -1352,8 +1395,30 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
         // =========================
 
         if (llListBerakhlak1 == null ||
+                llListBerakhlak2 == null ||
+                llListBerakhlak3 == null ||
+                llListBerakhlak4 == null ||
+                llListBerakhlak5 == null ||
+                llListBerakhlak6 == null ||
+                llListBerakhlak7 == null ||
+
                 ivListBerakhlak1 == null ||
+                ivListBerakhlak2 == null ||
+                ivListBerakhlak3 == null ||
+                ivListBerakhlak4 == null ||
+                ivListBerakhlak5 == null ||
+                ivListBerakhlak6 == null ||
+                ivListBerakhlak7 == null ||
+
                 ivCheckBer1 == null ||
+                ivCheckBer2 == null ||
+                ivCheckBer3 == null ||
+                ivCheckBer4 == null ||
+                ivCheckBer5 == null ||
+                ivCheckBer6 == null ||
+                ivCheckBer7 == null ||
+
+                ivCloseBerakhlak == null ||
                 tvKirimSurveiBerakhlak == null) {
 
             Toast.makeText(
@@ -1500,7 +1565,13 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
         });
 
         try {
-            berakhlakDialog.show();
+            if (!isFinishing() &&
+                    !isDestroyed() &&
+                    !berakhlakDialog.isShowing()) {
+
+                berakhlakDialog.show();
+            }
+//            berakhlakDialog.show();
         } catch (Exception e) {
             e.printStackTrace();
 

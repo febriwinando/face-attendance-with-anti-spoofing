@@ -8,6 +8,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -37,6 +39,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.model.RekapPulangFragment;
 import go.pemkott.appsandroidmobiletebingtinggi.model.RekapPulangKeduaFragment;
 import go.pemkott.appsandroidmobiletebingtinggi.model.ValidasiModel;
 import go.pemkott.appsandroidmobiletebingtinggi.pdf.ReadPdfActivity;
+import go.pemkott.appsandroidmobiletebingtinggi.utils.NetworkUtil;
 import go.pemkott.appsandroidmobiletebingtinggi.utils.NetworkUtils;
 import go.pemkott.appsandroidmobiletebingtinggi.verifikasi.ValidasiNewActivity;
 import retrofit2.Call;
@@ -59,7 +62,7 @@ public class PulangFragment extends Fragment {
 
     SessionManager session;
     String userId;
-
+    String ipPerangkat = NetworkUtil.getDeviceIp(getContext());
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -301,7 +304,7 @@ public class PulangFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 viewDataValidasi.dismiss();
-                validasi("3", data.getId(), "1");
+                validasi("0", data.getId(), "1");
             }
         });
 
@@ -423,7 +426,7 @@ public class PulangFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 viewDataValidasi.dismiss();
-                validasi("4", data.getId(), "2");
+                validasi("0", data.getId(), "2");
             }
         });
 
@@ -434,7 +437,7 @@ public class PulangFragment extends Fragment {
             public void onClick(View v) {
                 viewDataValidasi.dismiss();
 
-                validasi("2", data.getId(), "2");
+                validasi("1", data.getId(), "2");
 
             }
         });
@@ -479,7 +482,7 @@ public class PulangFragment extends Fragment {
 
         title.setText("Peringatan!");
 
-        if (hasil.equals("3") || hasil.equals("4")){
+        if (hasil.equals("0")){
             tvWarning1.setText("Apakah anda yakin tidak akan memvalidasi?");
         }else{
             tvWarning1.setText("Apakah anda yakin akan memvalidasi?");
@@ -507,59 +510,159 @@ public class PulangFragment extends Fragment {
     }
 
     DialogView dialogView = new DialogView(getActivity());
-    public void hasilValidasi(String hasil, String idabsen, String cttValidator, String validator){
+
+    public void hasilValidasi(String hasil,
+                              String idabsen,
+                              String cttValidator,
+                              String validator) {
 
         Dialog dialogproses = new Dialog(getActivity(), R.style.DialogStyle);
         dialogproses.setContentView(R.layout.view_proses);
         dialogproses.setCancelable(false);
+        dialogproses.show();
 
-        String statusvalidasi;
-        if (hasil.equals("1")){
-            statusvalidasi = "1";
-        }else if(hasil.equals("2")){
-            statusvalidasi = "2";
-        }else if(hasil.equals("3")){
-            statusvalidasi = "3";
-        }else{
-            statusvalidasi = "4";
+        if ("-".equals(ipPerangkat)) {
+            ipPerangkat = NetworkUtil.getDeviceIpFallback();
         }
 
+        Call<ValidasiModel> call = holderAPI.hasilValidasiPulangPertama(
+                idabsen,
+                validator,
+                hasil,
+                cttValidator,
+                sEmployee_id,
+                ipPerangkat
+        );
 
-        Call<List<ValidasiModel>> callKegiatan = holderAPI.getUrlHasilValidasiMasukPertama("https://absensi.tebingtinggikota.go.id/api/validasipulangpertama?id="+idabsen+"&tahap="+validator+"&statusvalidasi="+statusvalidasi+"&ctt="+cttValidator);
-        callKegiatan.enqueue(new Callback<List<ValidasiModel>>() {
+        call.enqueue(new Callback<ValidasiModel>() {
+
             @Override
-            public void onResponse(Call<List<ValidasiModel>> call, Response<List<ValidasiModel>> response) {
-                if (!response.isSuccessful()){
-                    dialogView.viewNotifKosong(getActivity(), "Gagal, mohon lakukan verifikasi kembali.", "");
+            public void onResponse(@NonNull Call<ValidasiModel> call,
+                                   @NonNull Response<ValidasiModel> response) {
+
+                dialogproses.dismiss();
+
+                if (!response.isSuccessful()) {
+                    dialogView.viewNotifKosong(
+                            getActivity(),
+                            "Gagal melakukan verifikasi.",
+                            "Silakan coba kembali."
+                    );
                     return;
                 }
 
-                List<ValidasiModel> validasiDatas = response.body();
-                dialogproses.dismiss();
+                ValidasiModel hasil = response.body();
 
-                for (ValidasiModel hasilValidasi : validasiDatas){
-                    if (hasilValidasi.isStatus() == true){
-                        dataRekapServerV1(sEmployee_id);
-                        dataRekapServerV2(sEmployee_id);
-                        viewSuksesValidasi(hasilValidasi.getMessage());
-                    }else{
-                        viewGagalValidasi(hasilValidasi.getMessage());
-                    }
+                if (hasil == null) {
+                    dialogView.viewNotifKosong(
+                            getActivity(),
+                            "Response server kosong.",
+                            ""
+                    );
+                    return;
                 }
 
+                if (hasil.isStatus()) {
+
+                    dataRekapServerV1(sEmployee_id);
+                    dataRekapServerV2(sEmployee_id);
+
+                    viewSuksesValidasi(
+                            hasil.getMessage()
+                    );
+
+                } else {
+
+                    viewGagalValidasi(
+                            hasil.getMessage()
+                    );
+
+                }
 
             }
 
             @Override
-            public void onFailure(Call<List<ValidasiModel>> call, Throwable t) {
+            public void onFailure(@NonNull Call<ValidasiModel> call,
+                                  @NonNull Throwable t) {
+
                 dialogproses.dismiss();
-                dialogView.viewNotifKosong(getActivity(), "Gagal terhubung ke server, mohon dicoba kembali", "");
+
+                Log.e(
+                        "VALIDASI",
+                        "Error : " + t.getMessage(),
+                        t
+                );
+
+                dialogView.viewNotifKosong(
+                        getActivity(),
+                        "Gagal terhubung ke server.",
+                        "Silakan coba kembali."
+                );
 
             }
+
         });
 
-        dialogproses.show();
     }
+//    public void hasilValidasi(String hasil, String idabsen, String cttValidator, String validator){
+//
+//        Dialog dialogproses = new Dialog(getActivity(), R.style.DialogStyle);
+//        dialogproses.setContentView(R.layout.view_proses);
+//        dialogproses.setCancelable(false);
+//
+//        String statusvalidasi;
+//        if (hasil.equals("1")){
+//            statusvalidasi = "1";
+//        }else if(hasil.equals("2")){
+//            statusvalidasi = "2";
+//        }else if(hasil.equals("3")){
+//            statusvalidasi = "3";
+//        }else{
+//            statusvalidasi = "4";
+//        }
+//
+//
+//
+//        if ("-".equals(ipPerangkat)) {
+//            ipPerangkat = NetworkUtil.getDeviceIpFallback();
+//        }
+//
+//
+//        Call<List<ValidasiModel>> callKegiatan = holderAPI.getUrlHasilValidasiMasukPertama("https://absensi.tebingtinggikota.go.id/api/validasipulangpertama?id="+idabsen+"&tahap="+validator+"&statusvalidasi="+statusvalidasi+"&ctt="+cttValidator+"&ipp="+ipPerangkat);
+//        callKegiatan.enqueue(new Callback<List<ValidasiModel>>() {
+//            @Override
+//            public void onResponse(Call<List<ValidasiModel>> call, Response<List<ValidasiModel>> response) {
+//                if (!response.isSuccessful()){
+//                    dialogView.viewNotifKosong(getActivity(), "Gagal, mohon lakukan verifikasi kembali.", "");
+//                    return;
+//                }
+//
+//                List<ValidasiModel> validasiDatas = response.body();
+//                dialogproses.dismiss();
+//
+//                for (ValidasiModel hasilValidasi : validasiDatas){
+//                    if (hasilValidasi.isStatus() == true){
+//                        dataRekapServerV1(sEmployee_id);
+//                        dataRekapServerV2(sEmployee_id);
+//                        viewSuksesValidasi(hasilValidasi.getMessage());
+//                    }else{
+//                        viewGagalValidasi(hasilValidasi.getMessage());
+//                    }
+//                }
+//
+//
+//            }
+//
+//            @Override
+//            public void onFailure(Call<List<ValidasiModel>> call, Throwable t) {
+//                dialogproses.dismiss();
+//                dialogView.viewNotifKosong(getActivity(), "Gagal terhubung ke server, mohon dicoba kembali", "");
+//
+//            }
+//        });
+//
+//        dialogproses.show();
+//    }
 
     public void viewSuksesValidasi(String info1){
         Dialog dialogSukes = new Dialog(getContext(), R.style.DialogStyle);

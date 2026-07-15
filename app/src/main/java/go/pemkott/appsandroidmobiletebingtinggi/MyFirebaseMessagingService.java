@@ -30,15 +30,12 @@ import retrofit2.Response;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
-
-
     @Override
     public void onNewToken(@NonNull String token) {
         super.onNewToken(token);
         Log.d("FCM", "Token: " + token);
         SessionManager session = new SessionManager(this);
         session.saveFcmToken(token);
-
     }
 
     @Override
@@ -48,8 +45,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     remoteMessage.getNotification().getTitle(),
                     remoteMessage.getNotification().getBody()
             );
-
-
         }
     }
 

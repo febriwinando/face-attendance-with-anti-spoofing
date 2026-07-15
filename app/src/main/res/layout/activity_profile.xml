@@ -88,6 +88,7 @@
             android:layout_height="38dp"
             android:src="@drawable/ic_image_search"
             app:tint="@color/biru_putih"
+            android:id="@+id/ivGantiProfil"
             />
     </RelativeLayout>
 

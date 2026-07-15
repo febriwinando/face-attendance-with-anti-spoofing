@@ -43,7 +43,27 @@ import retrofit2.http.Url;
 
 public interface HttpService {
 
-
+    @FormUrlEncoded
+    @POST("validasipulangpertamaterbaru")
+    Call<ValidasiModel> hasilValidasiPulangPertama(
+            @Field("id") String id,
+            @Field("tahap") String tahap,
+            @Field("statusvalidasi") String statusvalidasi,
+            @Field("ctt") String ctt,
+            @Field("pegawai") String pegawai,
+            @Field("ipp") String ipp
+    );
+    
+    @FormUrlEncoded
+    @POST("validasimasukpertamaterbaru")
+    Call<ValidasiModel> hasilValidasiMasukPertama(
+            @Field("id") String id,
+            @Field("tahap") String tahap,
+            @Field("statusvalidasi") String statusvalidasi,
+            @Field("ctt") String ctt,
+            @Field("verifikatorid") String verifikatorid,
+            @Field("ipp") String ipp
+    );
 
     @FormUrlEncoded
     @POST("login")

@@ -33,7 +33,7 @@ public interface ApiAddProduk {
     );
 
     @Multipart
-    @POST("kehadiran/masuk")
+    @POST("kehadiran/masuk2")
     Call<ResponsePOJO> uploadAbsenKehadiranMasuk(
             @Part MultipartBody.Part fototaging,
             @Part("absensi") RequestBody absensi,
@@ -53,12 +53,13 @@ public interface ApiAddProduk {
             @Part("valid_masuk") RequestBody valid_masuk,
             @Part("fakegps") RequestBody fakegps,
             @Part("batas_waktu") RequestBody batas_waktu,
-            @Part("berakhlak") RequestBody berakhlak
+            @Part("berakhlak") RequestBody berakhlak,
+            @Part("statussift") RequestBody statussift
     );
 
 
     @Multipart
-    @POST("kehadiran/pulang")
+    @POST("kehadiran/pulang2")
     Call<ResponsePOJO> uploadAbsenKehadiranPulang(
             @Part MultipartBody.Part fototaging,
             @Part("absensi") RequestBody absensi,
@@ -78,8 +79,10 @@ public interface ApiAddProduk {
             @Part("valid_pulang") RequestBody valid_pulang,
             @Part("fakegps") RequestBody fakegps,
             @Part("batas_waktu") RequestBody batas_waktu,
-            @Part("berakhlak") RequestBody berakhlak
+            @Part("berakhlak") RequestBody berakhlak,
+            @Part("statussift") RequestBody statussift
     );
+
 
     @Multipart
     @POST("sift/masuk/pagi")
@@ -218,6 +221,15 @@ public interface ApiAddProduk {
     );
 
 
+
+
+    @Multipart
+    @POST("pegawai/foto")
+    Call<ResponsePOJO> updateProfile(
+            @Part MultipartBody.Part fototaging,
+            @Part("employee_id") RequestBody employee_id
+    );
+
     @Multipart
     @POST("tl/masuk")
     Call<ResponsePOJO> uploadTLMasuk(
@@ -240,7 +252,8 @@ public interface ApiAddProduk {
             @Part MultipartBody.Part lampiran,
             @Part("ekslampiran") RequestBody ekslampiran,
             @Part("fakegps") RequestBody fakegps,
-            @Part("batas_waktu") RequestBody batas_waktu
+            @Part("batas_waktu") RequestBody batas_waktu,
+            @Part("statussift") RequestBody statussift
     );
 
 
@@ -312,7 +325,8 @@ public interface ApiAddProduk {
             @Part MultipartBody.Part lampiran,
             @Part("ekslampiran") RequestBody ekslampiran,
             @Part("fakegps") RequestBody fakegps,
-            @Part("batas_waktu") RequestBody batas_waktu
+            @Part("batas_waktu") RequestBody batas_waktu,
+            @Part("statussift") RequestBody statussift
     );
 
 

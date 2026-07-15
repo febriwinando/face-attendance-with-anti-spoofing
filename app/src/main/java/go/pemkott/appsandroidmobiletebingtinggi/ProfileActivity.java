@@ -1,14 +1,22 @@
 package go.pemkott.appsandroidmobiletebingtinggi;
 
 import static go.pemkott.appsandroidmobiletebingtinggi.NewDashboard.DashboardVersiOne.dashboardVersiOne;
+import static go.pemkott.appsandroidmobiletebingtinggi.utils.FileUtil.getDriveFilePath;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -21,21 +29,36 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
+import com.google.gson.Gson;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import go.pemkott.appsandroidmobiletebingtinggi.api.ApiAddProduk;
 import go.pemkott.appsandroidmobiletebingtinggi.api.HttpService;
+import go.pemkott.appsandroidmobiletebingtinggi.api.ResponsePOJO;
+import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
 import go.pemkott.appsandroidmobiletebingtinggi.api.RetrofitBuilder;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
+import go.pemkott.appsandroidmobiletebingtinggi.dinasluarkantor.tugaslapangan.TugasLapanganFinalActivity;
+import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFoto;
 import go.pemkott.appsandroidmobiletebingtinggi.login.LoginActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
 import go.pemkott.appsandroidmobiletebingtinggi.model.Updatep;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -61,6 +84,7 @@ public class ProfileActivity extends AppCompatActivity {
     String userId;
     ApiAddProduk api;
 
+    ImageView ivGantiProfil;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,6 +105,7 @@ public class ProfileActivity extends AppCompatActivity {
         tvKelompokEmploy = findViewById(R.id.tvKelompokEmploy);
         tvJabatanEmploy = findViewById(R.id.tvJabatanEmploy);
         tvDinasEmploy = findViewById(R.id.tvDinasEmploy);
+        ivGantiProfil = findViewById(R.id.ivGantiProfil);
 
         llKeluarProfil = findViewById(R.id.llKeluarProfil);
         trGantiPassword = findViewById(R.id.trGantiPassword);
@@ -109,7 +134,7 @@ public class ProfileActivity extends AppCompatActivity {
         } else {
 
             Glide.with(this)
-                    .load("https://absensi.tebingtinggikota.go.id/storage/" + fotoProfile)
+                    .load("https://absensi.tebingtinggikota.go.id/storage/foto-pegawai/" + fotoProfile)
                     .placeholder(R.drawable.profilpics)
                     .error(R.drawable.profilpics)
                     .into(civProfilPegawai);
@@ -145,13 +170,163 @@ public class ProfileActivity extends AppCompatActivity {
             onBackPressed();
         });
 
-    }
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        finish();
+        ivGantiProfil.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent();
+                i.setType("image/*");
+                i.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(Intent.createChooser(i, "Pilih Gambar"), 33);
+            }
+        });
+
     }
 
+    File fileUpdateProfile;
+    AmbilFoto ambilFoto = new AmbilFoto(ProfileActivity.this);
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode != RESULT_CANCELED){
+            if (requestCode == 33 && resultCode == Activity.RESULT_OK && data != null){
+                requestPermission();
+
+                Uri selectedImageUri = data.getData();
+                String FilePath2  = getDriveFilePath(selectedImageUri, ProfileActivity.this);
+
+                File originalLampiran = new File(FilePath2);
+                try {
+                    fileUpdateProfile = ambilFoto.compressToFile(this, originalLampiran);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                Bitmap preview = BitmapFactory.decodeFile(fileUpdateProfile.getAbsolutePath());
+                civProfilPegawai.setImageBitmap(preview);
+
+                kirimfotoprofile();
+            }
+        }
+
+
+    }
+
+    private MultipartBody.Part prepareFilePart(String partName, byte[] imageBytes) {
+        RequestBody requestBody =
+                RequestBody.create(
+                        imageBytes,
+                        MediaType.parse("image/jpeg")
+                );
+
+        return MultipartBody.Part.createFormData(
+                partName,
+                "profil.jpg",
+                requestBody
+        );
+    }
+
+    private RequestBody textPart(String value) {
+        return RequestBody.create(
+                okhttp3.MediaType.parse("text/plain"),
+                value
+        );
+    }
+    public void kirimfotoprofile(){
+        Dialog dialogproses = new Dialog(ProfileActivity.this, R.style.DialogStyle);
+        dialogproses.setContentView(R.layout.view_proses);
+        dialogproses.setCancelable(false);
+
+        byte[] imageBytes = ambilFoto.compressToMax80KB(fileUpdateProfile);
+        MultipartBody.Part fotoPart =
+                prepareFilePart("fototaging", imageBytes);
+
+        Call<ResponsePOJO> call =
+                RetroClient.getInstance().getApi().updateProfile(
+                        fotoPart,
+                        textPart(sEmployee_id)
+                );
+
+        call.enqueue(new Callback<ResponsePOJO>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponsePOJO> call, @NonNull Response<ResponsePOJO> response) {
+
+                dialogproses.dismiss();
+
+                Log.d("PROFILE", "HTTP CODE : " + response.code());
+
+                if (!response.isSuccessful()) {
+
+                    try {
+
+                        Log.e("UpdateFotoProfil",
+
+                                "ERROR BODY : " + response.errorBody().string());
+
+                    } catch (Exception e) {
+
+                        e.printStackTrace();
+
+                    }
+
+                    dialogView.viewNotifKosong(
+
+                            ProfileActivity.this,
+
+                            "Gagal mengganti foto profil",
+
+                            "HTTP : " + response.code()
+
+                    );
+
+                    return;
+
+                }
+
+                ResponsePOJO data = response.body();
+
+                Log.d("UpdateFotoProfil", "BODY : " + new Gson().toJson(data));
+
+                if (data != null && data.isStatus()) {
+
+                    dialogView.viewSukses(
+
+                            ProfileActivity.this,
+
+                            data.getRemarks()
+
+                    );
+
+                } else {
+
+                    dialogView.viewNotifKosong(
+
+                            ProfileActivity.this,
+
+                            data != null ? data.getRemarks() : "Response kosong",
+
+                            ""
+
+                    );
+
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
+                dialogproses.dismiss();
+                dialogView.pesanError(ProfileActivity.this);
+
+            }
+        });
+
+        dialogproses.show();
+    }
+
+    private void requestPermission(){
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+            int REQUEST_CODE_ASK_PERMISSIONS = 123;
+            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE_ASK_PERMISSIONS);
+        }
+    }
     public void dataEmployee(){
 
         Cursor res = databaseHelper.getAllData22(userId);
