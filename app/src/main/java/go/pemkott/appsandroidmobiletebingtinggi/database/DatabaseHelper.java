@@ -268,6 +268,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                             ")"
             );
 
+            // Insert data awal
+            db.execSQL(
+                    "INSERT INTO face_detection(id, status) VALUES(1, 0)"
+            );
+
             db.execSQL(
                     "CREATE TABLE employees(" +
                             "id INTEGER PRIMARY KEY," +
@@ -297,7 +302,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.beginTransaction();
         }
     }
-
+    public void deleteDataFacedetection(){
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete("face_detection",null,null);
+    }
 
     public void deleteAllEmployees(){
         SQLiteDatabase db = getWritableDatabase();

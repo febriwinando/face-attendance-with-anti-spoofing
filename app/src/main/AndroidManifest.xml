@@ -154,9 +154,8 @@ xmlns:dist="http://schemas.android.com/apk/distribution">
         android:name=".login.DownloadDataActivity"
         android:exported="false" />
     <activity
-        android:name="go.pemkott.appsandroidmobiletebingtinggi.EmployeeSyncActivity"
+        android:name=".EmployeeSyncActivity"
         android:exported="false"
-
         android:windowSoftInputMode="adjustResize" />
     <activity
         android:name=".login.LoginActivity"

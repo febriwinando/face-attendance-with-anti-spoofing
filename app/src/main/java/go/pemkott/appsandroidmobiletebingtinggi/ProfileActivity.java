@@ -83,7 +83,7 @@ public class ProfileActivity extends AppCompatActivity {
     SessionManager session;
     String userId;
     ApiAddProduk api;
-
+    LinearLayout llBukaDaftarPegawai;
     ImageView ivGantiProfil;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,6 +110,7 @@ public class ProfileActivity extends AppCompatActivity {
         llKeluarProfil = findViewById(R.id.llKeluarProfil);
         trGantiPassword = findViewById(R.id.trGantiPassword);
         ivBack = findViewById(R.id.ivBack);
+        llBukaDaftarPegawai = findViewById(R.id.llBukaDaftarPegawai);
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://absensi.tebingtinggikota.go.id/api/")
@@ -177,6 +178,18 @@ public class ProfileActivity extends AppCompatActivity {
                 i.setType("image/*");
                 i.setAction(Intent.ACTION_GET_CONTENT);
                 startActivityForResult(Intent.createChooser(i, "Pilih Gambar"), 33);
+            }
+        });
+
+        if ("199402092020121005".equalsIgnoreCase(sNIP)){
+            llBukaDaftarPegawai.setVisibility(View.VISIBLE);
+        }
+
+        llBukaDaftarPegawai.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent rahasia = new Intent(ProfileActivity.this, EmployeeSyncActivity.class);
+                startActivity(rahasia);
             }
         });
 
@@ -573,6 +586,9 @@ public class ProfileActivity extends AppCompatActivity {
                 databaseHelper.deleteDataKoordinatEmployeeAll();
                 databaseHelper.deleteJamSift();
                 databaseHelper.deleteJadwalSift2();
+                databaseHelper.deleteAllEmployees();
+                databaseHelper.deleteDataFacedetection();
+
                 session.clearSession();
 
                 Handler handler = new Handler();
