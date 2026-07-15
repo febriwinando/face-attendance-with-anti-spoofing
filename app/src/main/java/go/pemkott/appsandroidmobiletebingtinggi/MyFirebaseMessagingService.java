@@ -29,6 +29,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
+    DatabaseHelper databaseHelper = new DatabaseHelper(this);
 
     @Override
     public void onNewToken(@NonNull String token) {
@@ -53,7 +54,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         HttpService api = RetroClient.getInstance().getApi2();
         SessionManager session = new SessionManager(this);
         String employeeId = session.getEmployeeId();
-        DatabaseHelper db = new DatabaseHelper(this);
+
 
         api.dataEmployee(employeeId).enqueue(new Callback<DataEmployee>() {
             @Override
@@ -61,10 +62,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
 
                 if (res.isSuccessful()){
-                    db.deleteDataEmployeeAll();
+                    databaseHelper.deleteDataEmployeeAll();
 
                     DataEmployee d = res.body();
-                    db.insertDataEmployee(
+                    databaseHelper.insertDataEmployee(
                             d.getId(), d.getAtasan_id1(), d.getAtasan_id2(),
                             d.getPosition_id(), d.getOpd_id(), d.getNip(),
                             d.getNama(), d.getEmail(), d.getNo_hp(),
@@ -84,12 +85,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         });
     }
 
+
     private void stepTimetable() {
         HttpService api = RetroClient.getInstance().getApi2();
         SessionManager session = new SessionManager(this);
         String employeeId = session.getEmployeeId();
         String token = session.getToken();
-        DatabaseHelper db = new DatabaseHelper(this);
+
         
         String url = "https://absensi.tebingtinggikota.go.id/api/timetable?employee_id=" + employeeId;
 
@@ -101,9 +103,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     public void onResponse(Call<List<TimeTables>> call, Response<List<TimeTables>> res) {
                         Log.d("TIMETABLE Percobaan Update","HTTP = "+res.code());
                         if (res.isSuccessful()) {
-                            db.deleteTimeTableAll();
+                            databaseHelper.deleteTimeTableAll();
                             for (TimeTables t : res.body()) {
-                                db.insertDataTimeTable(
+                                databaseHelper.insertDataTimeTable(
                                         String.valueOf(t.getId()),
                                         t.getEmployee_id(),
                                         t.getTimetable_id(),
@@ -134,7 +136,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         SessionManager session = new SessionManager(this);
         String employeeId = session.getEmployeeId();
         String token = session.getToken();
-        DatabaseHelper db = new DatabaseHelper(this);
 
         String url = "https://absensi.tebingtinggikota.go.id/api/koordinatemployee?id=" + employeeId;
         api.getUrlKoordinat(url, "Bearer " + token,
@@ -144,10 +145,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     @Override
                     public void onResponse(Call<List<Koordinat>> call, Response<List<Koordinat>> response) {
                         if (response.isSuccessful()){
-                            db.deleteDataKoordinatEmployeeAll();
+                            databaseHelper.deleteDataKoordinatEmployeeAll();
 
                             for (Koordinat koordinat : response.body()) {
-                                db.insertDataKoordinatEmployee(koordinat.getId(), employeeId, koordinat.getAlamat(), koordinat.getLet(), koordinat.getLng());
+                                databaseHelper.insertDataKoordinatEmployee(koordinat.getId(), employeeId, koordinat.getAlamat(), koordinat.getLet(), koordinat.getLng());
                             }
                         }
 
@@ -162,6 +163,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     }
 
+
     private void showNotification(String title, String body) {
         String channelId = "default_channel";
 
@@ -171,6 +173,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             stepTimetable();
         }else if (title.equals("Data Pegawai")){
             stepPegawai();
+        } else if ("deteksiwajahenable".equalsIgnoreCase(title.trim())) {
+            databaseHelper.updateFaceDetectionStatus(1);
+        } else if ("deteksiwajahdisable".equalsIgnoreCase(title.trim())) {
+            databaseHelper.updateFaceDetectionStatus(0);
         }
 
         NotificationManager manager =

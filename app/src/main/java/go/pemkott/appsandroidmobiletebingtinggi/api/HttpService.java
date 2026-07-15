@@ -8,6 +8,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.login.Logout;
 import go.pemkott.appsandroidmobiletebingtinggi.model.CheckUpdate;
 import go.pemkott.appsandroidmobiletebingtinggi.model.DataEmployee;
 import go.pemkott.appsandroidmobiletebingtinggi.model.Employee;
+import go.pemkott.appsandroidmobiletebingtinggi.model.EmployeeResponse;
 import go.pemkott.appsandroidmobiletebingtinggi.model.FileModel;
 import go.pemkott.appsandroidmobiletebingtinggi.model.HasilValidasi;
 import go.pemkott.appsandroidmobiletebingtinggi.model.InfoMP;
@@ -34,6 +35,7 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.Multipart;
@@ -42,7 +44,8 @@ import retrofit2.http.Part;
 import retrofit2.http.Url;
 
 public interface HttpService {
-
+    @GET("employees")
+    Call<EmployeeResponse> getEmployees();
     @FormUrlEncoded
     @POST("validasipulangpertamaterbaru")
     Call<ValidasiModel> hasilValidasiPulangPertama(

@@ -68,7 +68,7 @@
                 android:textSize="18sp"
                 android:textColor="@color/biru"
                 android:textStyle="bold"
-                android:text="KEMBALI"/>
+                android:text="@string/kembali"/>
 
 
         </RelativeLayout>

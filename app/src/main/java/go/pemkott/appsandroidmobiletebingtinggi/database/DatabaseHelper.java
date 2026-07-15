@@ -30,6 +30,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.Date;
 
+import go.pemkott.appsandroidmobiletebingtinggi.model.EmployeesData;
+
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     // =========================
@@ -104,28 +106,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String JW_EMPLOYEE_ID = "EMPLOYEEID";
     public static final String JW_SIFT = "SIFT_ID";
     public static final String JW_TANGGAL = "TANGGAL";
-
-    // =========================
-    // TABLE: PRESENCES
-    // =========================
-//    public static final String PRESENCES = "presences";
-//    public static final String P_ID = "ID";
-//    public static final String P_EMPLOYEE_ID = "EMPLOYEEID";
-//    public static final String P_TANGGAL = "TANGGAL";
-//    public static final String P_JAM_MASUK = "JAM_MASUK";
-//    public static final String P_JAM_PULANG = "JAM_PULANG";
-//    public static final String P_POSISI_MASUK = "POSISI_MASUK";
-//    public static final String P_POSISI_PULANG = "POSISI_PULANG";
-//    public static final String P_STATUS_MASUK = "STATUS_MASUK";
-//    public static final String P_STATUS_PULANG = "STATUS_PULANG";
-//    public static final String P_LAT_MASUK = "LAT_MASUK";
-//    public static final String P_LAT_PULANG = "LAT_PULANG";
-//    public static final String P_LNG_MASUK = "LNG_MASUK";
-//    public static final String P_LNG_PULANG = "LNG_PULANG";
-//    public static final String P_KET_MASUK = "KET_MASUK";
-//    public static final String P_KET_PULANG = "KET_PULANG";
-//    public static final String P_VALID_MASUK = "VALID_MASUK";
-//    public static final String P_VALID_PULANG = "VALID_PULANG";
 
     // =========================
     // TABLE: KOORDINAT
@@ -271,28 +251,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     JW_TANGGAL + " TEXT)");
 
             // =========================
-            // TABLE: PRESENCES
-            // =========================
-//            db.execSQL("CREATE TABLE " + PRESENCES + " (" +
-//                    P_ID + " TEXT, " +
-//                    P_EMPLOYEE_ID + " TEXT, " +
-//                    P_TANGGAL + " TEXT, " +
-//                    P_JAM_MASUK + " TEXT, " +
-//                    P_JAM_PULANG + " TEXT, " +
-//                    P_POSISI_MASUK + " TEXT, " +
-//                    P_POSISI_PULANG + " TEXT, " +
-//                    P_STATUS_MASUK + " TEXT, " +
-//                    P_STATUS_PULANG + " TEXT, " +
-//                    P_LAT_MASUK + " TEXT, " +
-//                    P_LAT_PULANG + " TEXT, " +
-//                    P_LNG_MASUK + " TEXT, " +
-//                    P_LNG_PULANG + " TEXT, " +
-//                    P_KET_MASUK + " TEXT, " +
-//                    P_KET_PULANG + " TEXT, " +
-//                    P_VALID_MASUK + " TEXT, " +
-//                    P_VALID_PULANG + " TEXT)");
-
-            // =========================
             // TABLE: EMPLOYEE
             // =========================
             db.execSQL("CREATE TABLE " + EMPLOYEE + " (" +
@@ -303,12 +261,119 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     "NAMA_OPD TEXT, ALAMAT TEXT, LAT TEXT, LNG TEXT, FOTO TEXT, " +
                     "BATAS_WAKTU TEXT, PEGAWAI_SIFT TEXT)");
 
+            db.execSQL(
+                    "CREATE TABLE face_detection (" +
+                            "id INTEGER PRIMARY KEY," +
+                            "status INTEGER NOT NULL DEFAULT 0" +
+                            ")"
+            );
+
+            db.execSQL(
+                    "CREATE TABLE employees(" +
+                            "id INTEGER PRIMARY KEY," +
+                            "atasan_id1 INTEGER," +
+                            "atasan_id2 INTEGER," +
+                            "position_id INTEGER," +
+                            "opd_id INTEGER," +
+                            "nip TEXT," +
+                            "nama TEXT," +
+                            "email TEXT," +
+                            "no_hp TEXT," +
+                            "kelompok TEXT," +
+                            "s_jabatan TEXT," +
+                            "eselon INTEGER," +
+                            "foto TEXT," +
+                            "shift INTEGER," +
+                            "active INTEGER," +
+                            "opd TEXT," +
+                            "alamat TEXT," +
+                            "let TEXT," +
+                            "lng TEXT," +
+                            "awal_waktu TEXT," +
+                            "opd_shift INTEGER)"
+            );
+
         } catch (Exception e) {
             db.beginTransaction();
         }
     }
 
 
+    public void deleteAllEmployees(){
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete("employees",null,null);
+    }
+
+    public void insertEmployee(EmployeesData e){
+
+        SQLiteDatabase db = getWritableDatabase();
+
+        ContentValues cv = new ContentValues();
+
+        cv.put("id",e.getId());
+        cv.put("atasan_id1",e.getAtasanId1());
+        cv.put("atasan_id2",e.getAtasanId2());
+        cv.put("position_id",e.getPositionId());
+        cv.put("opd_id",e.getOpdId());
+
+        cv.put("nip",e.getNip());
+        cv.put("nama",e.getNama());
+        cv.put("email",e.getEmail());
+        cv.put("no_hp",e.getNoHp());
+
+        cv.put("kelompok",e.getKelompok());
+        cv.put("s_jabatan",e.getsJabatan());
+        cv.put("eselon",e.getEselon());
+
+        cv.put("foto",e.getFoto());
+
+        cv.put("shift",e.getShift());
+        cv.put("active",e.getActive());
+
+        cv.put("opd",e.getOpd());
+        cv.put("alamat",e.getAlamat());
+        cv.put("let",e.getLet());
+        cv.put("lng",e.getLng());
+
+        cv.put("awal_waktu",e.getAwalWaktu());
+        cv.put("opd_shift",e.getOpdShift());
+
+        db.insert("employees",null,cv);
+
+    }
+
+
+    public void updateFaceDetectionStatus(int status) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("status", status);
+        db.update(
+                "face_detection",
+                values,
+                "id=?",
+                new String[]{"1"}
+        );
+    }
+
+    public int getFaceDetectionStatus() {
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.rawQuery(
+                "SELECT status FROM face_detection WHERE id=1",
+                null
+        );
+
+        int status = 0;
+
+        if (cursor.moveToFirst()) {
+            status = cursor.getInt(0);
+        }
+
+        cursor.close();
+
+        return status;
+    }
     @Override
     public void onUpgrade(SQLiteDatabase absensi, int oldVersion, int newVersion) {
             if(newVersion > oldVersion){
