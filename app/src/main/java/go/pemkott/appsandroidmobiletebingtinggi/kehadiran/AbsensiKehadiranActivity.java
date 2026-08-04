@@ -45,6 +45,7 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -903,7 +904,33 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
                 dialogproses.dismiss();
 
                 if (!response.isSuccessful()){
-                    dialogView.viewNotifKosong(AbsensiKehadiranActivity.this, "Gagal mengisi absensi,", "silahkan coba kembali.");
+
+
+                    String errorBody = "";
+
+                    try {
+
+                        if (response.errorBody() != null) {
+
+                            errorBody = response.errorBody().string();
+
+                        }
+
+                    } catch (Exception e) {
+
+                        e.printStackTrace();
+
+                    }
+
+                    dialogView.viewNotifKosong(
+
+                            AbsensiKehadiranActivity.this,
+                            "Error " + response.code(),
+                            errorBody
+
+                    );
+
+//                    dialogView.viewNotifKosong(AbsensiKehadiranActivity.this, "Gagal mengisi absensi,", "silahkan coba kembali.");
                     llUpload.setEnabled(true);
                     llUpload.setClickable(true);
                     llUpload.setAlpha(1.0f);

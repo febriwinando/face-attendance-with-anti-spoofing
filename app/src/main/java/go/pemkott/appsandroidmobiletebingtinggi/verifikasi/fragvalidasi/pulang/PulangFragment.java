@@ -26,6 +26,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.google.android.material.imageview.ShapeableImageView;
 
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
@@ -542,13 +544,55 @@ public class PulangFragment extends Fragment {
 
                 dialogproses.dismiss();
 
+//                if (!response.isSuccessful()) {
+//                    dialogView.viewNotifKosong(
+//                            getActivity(),
+//                            "Gagal melakukan verifikasi.",
+//                            "Silakan coba kembali."
+//                    );
+//                    return;
+//                }
+
                 if (!response.isSuccessful()) {
+
+                    String pesan = "Silakan coba kembali.";
+
+                    try {
+
+                        if (response.errorBody() != null) {
+
+                            String error = response.errorBody().string();
+
+                            Log.e("API_ERROR", error);
+
+                            JSONObject json = new JSONObject(error);
+
+                            if (json.has("message")) {
+
+                                pesan = json.getString("message");
+
+                            }
+
+                        }
+
+                    } catch (Exception e) {
+
+                        e.printStackTrace();
+
+                    }
+
                     dialogView.viewNotifKosong(
+
                             getActivity(),
-                            "Gagal melakukan verifikasi.",
-                            "Silakan coba kembali."
+
+                            "Gagal melakukan verifikasi",
+
+                            pesan
+
                     );
+
                     return;
+
                 }
 
                 ValidasiModel hasil = response.body();

@@ -298,24 +298,18 @@ public class MasukFragment extends Fragment {
             }
         });
 
-
-
         terima.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 viewDataValidasi.dismiss();
-
                 validasi("1", data.getId(), "1");
 
             }
         });
-
-
         viewDataValidasi.show();
 
     }
     public void viewDialogValidasiKedua(RekapMasukKeduaFragment data){
-
         viewDataValidasi = new Dialog(getActivity(), R.style.DialogStyle);
         viewDataValidasi.setContentView(R.layout.view_rekap_validasi_kedua);
         viewDataValidasi.setCancelable(true);
@@ -472,7 +466,7 @@ public class MasukFragment extends Fragment {
         EditText cttValidator = dataKosong.findViewById(R.id.catatanvalidator);
         Button btnkirimvalidasi = dataKosong.findViewById(R.id.btnkirimvalidasi);
 
-        title.setText("Peringatan!");
+        title.setText("Peringatan ini kedua!");
 
         if (hasil.equals("0")){
             tvWarning1.setText("Apakah anda yakin tidak akan memvalidasi?");
@@ -521,11 +515,9 @@ public class MasukFragment extends Fragment {
                 cttValidator,
                 sEmployee_id,
                 ipPerangkat
-
         );
 
         call.enqueue(new Callback<ValidasiModel>() {
-
             @Override
             public void onResponse(@NonNull Call<ValidasiModel> call,
                                    @NonNull Response<ValidasiModel> response) {
