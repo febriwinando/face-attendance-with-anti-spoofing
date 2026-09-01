@@ -10,6 +10,7 @@
     android:paddingEnd="5dp"
     android:orientation="vertical"
     android:background="@drawable/backgoundovalputih"
+    android:backgroundTint="@color/surface_main"
     >
 
 
@@ -26,7 +27,7 @@
             android:textSize="20sp"
             android:textStyle="bold"
             android:id="@+id/tvTitleValidasi"
-            android:textColor="@color/biru"
+            android:textColor="@color/primary_brand"
             android:layout_centerInParent="true"
             />
 
@@ -78,18 +79,18 @@
                         <TextView
                             android:text="Nama"
                             android:textStyle="bold"
-                            android:textColor="@color/font_highlight"
+                            android:textColor="@color/text_primary"
                             android:textSize="14sp"
                             />
                         <TextView
                             android:text=" : "
                             android:textStyle="bold"
-                            android:textColor="@color/font_highlight"
+                            android:textColor="@color/text_primary"
                             android:textSize="14sp"
                             />
                         <TextView
                             android:id="@+id/tvNamaRekapValid"
-                            android:textColor="@color/font"
+                            android:textColor="@color/text_secondary"
                             android:textSize="14dp"
                             android:layout_weight="1"
                             />
@@ -100,18 +101,18 @@
                         <TextView
                             android:text="Tanggal"
                             android:textStyle="bold"
-                            android:textColor="@color/font_highlight"
+                            android:textColor="@color/text_primary"
                             android:textSize="14sp"
                             />
                         <TextView
                             android:text=" : "
                             android:textStyle="bold"
-                            android:textColor="@color/font_highlight"
+                            android:textColor="@color/text_primary"
                             android:textSize="12dp"
                             />
                         <TextView
                             android:id="@+id/tvTanggalRekapValid"
-                            android:textColor="@color/font"
+                            android:textColor="@color/text_secondary"
                             android:textSize="14sp"
                             android:layout_weight="1"
                             />
@@ -122,18 +123,18 @@
                         <TextView
                             android:text="Pukul"
                             android:textStyle="bold"
-                            android:textColor="@color/font_highlight"
+                            android:textColor="@color/text_primary"
                             android:textSize="14sp"
                             />
                         <TextView
                             android:text=" : "
                             android:textStyle="bold"
-                            android:textColor="@color/font_highlight"
+                            android:textColor="@color/text_primary"
                             android:textSize="14sp"
                             />
                         <TextView
                             android:id="@+id/tvJamRekapValid"
-                            android:textColor="@color/font"
+                            android:textColor="@color/text_secondary"
                             android:textSize="14sp"
                             android:layout_weight="1"
                             />
@@ -146,7 +147,7 @@
 
                             android:id="@+id/tvFieldRekapValid"
                             android:text="Aktivitas"
-                            android:textColor="@color/font_highlight"
+                            android:textColor="@color/text_primary"
                             android:textSize="14sp"
                             android:textStyle="bold"
 
@@ -155,13 +156,13 @@
                         <TextView
                             android:text=" : "
                             android:textStyle="bold"
-                            android:textColor="@color/font_highlight"
+                            android:textColor="@color/text_primary"
                             android:textSize="14sp"
                             />
                         <TextView
                             android:id="@+id/tvAktivitasRekapValid"
                             android:text="melaksanakan tugas"
-                            android:textColor="@color/font"
+                            android:textColor="@color/text_secondary"
                             android:textSize="14sp"
                             android:layout_weight="1"
                             />
@@ -174,13 +175,13 @@
                             android:id="@+id/tvKegiatanLabelValid"
                             android:text="Kegiatan"
                             android:textStyle="bold"
-                            android:textColor="@color/font_highlight"
+                            android:textColor="@color/text_primary"
                             android:textSize="14sp"
                             />
                         <TextView
                             android:text=" : "
                             android:textStyle="bold"
-                            android:textColor="@color/font_highlight"
+                            android:textColor="@color/text_primary"
                             android:textSize="14sp"
                             />
 
@@ -188,7 +189,7 @@
                             android:id="@+id/tvKegiatanRekapValid"
                             android:layout_weight="1"
                             android:text="melaksanakan tugas"
-                            android:textColor="@color/font"
+                            android:textColor="@color/text_secondary"
                             android:textSize="14sp" />
                     </TableRow>
 
@@ -198,13 +199,13 @@
                         <TextView
                             android:text="Lokasi"
                             android:textStyle="bold"
-                            android:textColor="@color/font_highlight"
+                            android:textColor="@color/text_primary"
                             android:textSize="14sp"
                             />
                         <TextView
                             android:text=" : "
                             android:textStyle="bold"
-                            android:textColor="@color/font_highlight"
+                            android:textColor="@color/text_primary"
                             android:textSize="14sp"
                             />
 
@@ -212,7 +213,7 @@
                             android:id="@+id/tvLokasiAlamatLuarKantorValid"
                             android:layout_weight="1"
                             android:text="melaksanakan tugas"
-                            android:textColor="@color/font"
+                            android:textColor="@color/text_secondary"
                             android:textSize="14sp" />
                     </TableRow>
 
@@ -227,7 +228,7 @@
                     android:layout_margin="10dp"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    android:textColor="@color/font"
+                    android:textColor="@color/text_secondary"
                     android:id="@+id/tvTagFotoRekapValid"
 
                     />
@@ -238,7 +239,7 @@
                     android:layout_height="500dp"
                     android:maxWidth="375dp"
                     android:maxHeight="500dp"
-                    android:outlineAmbientShadowColor="@color/biru"
+                    android:outlineAmbientShadowColor="@color/primary_brand"
                     android:scaleType="centerCrop"
                     app:shapeAppearance="@style/ImageStyle2"
                     />
@@ -251,7 +252,7 @@
                     android:text="Lampiran Absensi Masuk"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    android:textColor="@color/font"
+                    android:textColor="@color/text_secondary"
                     android:id="@+id/tvTagLampiranRekapValid"
 
                     />
@@ -262,7 +263,7 @@
                     android:layout_height="500dp"
                     android:maxWidth="375dp"
                     android:maxHeight="500dp"
-                    android:outlineAmbientShadowColor="@color/biru"
+                    android:outlineAmbientShadowColor="@color/primary_brand"
                     android:scaleType="centerCrop"
                     app:shapeAppearance="@style/ImageStyle2"
                     android:visibility="gone"
@@ -277,7 +278,7 @@
                     android:padding="10dp"
                     android:textStyle="bold|italic"
                     android:textAlignment="center"
-                    android:textColor="@color/white"
+                    android:textColor="@color/on_primary_brand"
                     android:background="@drawable/backgoundovalbirusift"
                     android:id="@+id/txtOpenPdf"/>
 
@@ -294,7 +295,7 @@
                     android:layout_width="70dp"
                     android:textAlignment="center"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/putih"
+                    android:textColor="@color/on_primary_brand"
                     android:text="Terima"
                     android:padding="10dp"
                     android:textSize="14sp"
@@ -305,7 +306,7 @@
                     android:id="@+id/btnTolak"
                     android:textSize="14sp"
                     android:padding="10dp"
-                    android:textColor="@color/putih"
+                    android:textColor="@color/on_primary_brand"
                     android:layout_marginStart="5dp"
                     android:background="@drawable/backgoundovalmerah"
                     android:layout_width="70dp"

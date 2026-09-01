@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/background_color"
+    android:background="@color/background_main"
     tools:context=".rekap.RekapAbsensActivity">
 
     <LinearLayout
@@ -25,7 +25,7 @@
                 android:layout_width="38dp"
                 android:layout_height="38dp"
                 android:src="@drawable/one_left"
-                app:tint="@color/biru"
+                app:tint="@color/primary_brand"
                 android:id="@+id/ivBack"
                 android:layout_centerVertical="true"/>
             <TextView
@@ -35,7 +35,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:text="DAFTAR PRESENSI"
-                android:textColor="@color/text_hitam"
+                android:textColor="@color/text_primary"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:id="@+id/titleHeaderListPresensi"/>
@@ -67,13 +67,13 @@
                         android:text="Mulai"
                         android:layout_marginEnd="10dp"
                         android:textSize="16sp"
-                        android:textColor="@color/text_hitam"
+                        android:textColor="@color/text_primary"
                         />
 
                     <TextView
                         android:layout_gravity="center_vertical"
                         android:text=":"
-                        android:textColor="@color/text_hitam"
+                        android:textColor="@color/text_primary"
                         android:layout_marginEnd="10dp"
                         android:textSize="16sp"/>
 
@@ -90,7 +90,7 @@
                             android:layout_height="wrap_content"
 
                             android:text="-"
-                            android:textColor="@color/abuabu_font"
+                            android:textColor="@color/text_hint"
                             android:textSize="16sp"
                             android:id="@+id/tvHariMulaiRekap"/>
 
@@ -99,7 +99,7 @@
                             android:layout_height="wrap_content"
 
                             android:text="/"
-                            android:textColor="@color/abuabu_font" />
+                            android:textColor="@color/text_hint" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -107,7 +107,7 @@
 
                             android:text="-"
                             android:textSize="16sp"
-                            android:textColor="@color/abuabu_font"
+                            android:textColor="@color/text_hint"
                             android:id="@+id/tvBulanTahunMulaiRekap"/>
 
 
@@ -123,7 +123,7 @@
                         android:layout_height="wrap_content"
                         android:text="Sampai"
                         android:layout_marginEnd="10dp"
-                        android:textColor="@color/text_hitam"
+                        android:textColor="@color/text_primary"
                         android:textSize="16sp"/>
 
                     <TextView
@@ -131,7 +131,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text=":"
-                        android:textColor="@color/text_hitam"
+                        android:textColor="@color/text_primary"
                         android:layout_marginEnd="10dp"
                         android:textSize="16sp"/>
 
@@ -149,7 +149,7 @@
                             android:textSize="16sp"
                             android:text="-"
 
-                            android:textColor="@color/abuabu_font"
+                            android:textColor="@color/text_hint"
                             android:id="@+id/tvHariSampaiRekap"
                             />
 
@@ -157,14 +157,14 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="/"
-                            android:textColor="@color/abuabu_font"/>
+                            android:textColor="@color/text_hint"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="-"
                             android:textSize="16sp"
-                            android:textColor="@color/abuabu_font"
+                            android:textColor="@color/text_hint"
                             android:id="@+id/tvBulanTahunSampaiRekap"/>
                     </LinearLayout>
 

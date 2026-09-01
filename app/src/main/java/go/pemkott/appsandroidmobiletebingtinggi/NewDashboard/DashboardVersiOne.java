@@ -138,8 +138,9 @@ public class DashboardVersiOne extends AppCompatActivity {
         }
         Log.d("IP_PERANGKAT", ipPerangkat);
 
-        controller.setAppearanceLightStatusBars(true);
-        controller.setAppearanceLightNavigationBars(true);
+        boolean isDarkMode = (getResources().getConfiguration().uiMode & android.content.res.Configuration.UI_MODE_NIGHT_MASK) == android.content.res.Configuration.UI_MODE_NIGHT_YES;
+        controller.setAppearanceLightStatusBars(!isDarkMode);
+        controller.setAppearanceLightNavigationBars(!isDarkMode);
 
         setContentView(R.layout.activity_dashboard_versi_one);
 

@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".singkronjadwalsift.CalendarJadwalSiftActivity"
-    android:background="@color/background_color"
+    android:background="@color/background_main"
     android:orientation="vertical">
 
     <RelativeLayout
@@ -40,7 +40,7 @@
                 android:text="@string/jadwal_sift"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:textColor="@color/text_hitam"
+                android:textColor="@color/text_primary"
                 tools:ignore="UnusedAttribute" />
 
             <ImageView
@@ -48,7 +48,7 @@
                 android:layout_height="38dp"
                 app:srcCompat="@drawable/one_down"
                 android:contentDescription="@string/todo"
-                app:tint="@color/biru_putih"/>
+                app:tint="@color/primary_brand"/>
         </LinearLayout>
 
         <ImageView
@@ -59,7 +59,7 @@
             app:srcCompat="@drawable/one_download"
             android:layout_marginEnd="10dp"
             android:contentDescription="@string/todo"
-            app:tint="@color/biru_putih"
+            app:tint="@color/primary_brand"
             android:id="@+id/ivUnduhJadwalSift"/>
         <ImageView
             android:layout_alignParentEnd="true"
@@ -71,14 +71,14 @@
             android:contentDescription="@string/todo"
             android:id="@+id/ivSyncJadwalSift"
             android:visibility="gone"
-            app:tint="@color/biru_putih"/>
+            app:tint="@color/primary_brand"/>
     </RelativeLayout>
 
     <com.facebook.shimmer.ShimmerFrameLayout
         android:id="@+id/shimmerJadwalSift"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:shimmer_base_color="#CACACA"
+        app:shimmer_base_color="@color/text_hint"
         app:shimmer_colored="true"
         >
         <ScrollView
@@ -110,7 +110,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/keterangan"
-                        android:textColor="@color/text_hitam"
+                        android:textColor="@color/text_primary"
                         android:textStyle="bold"
                         android:textSize="18sp"/>
 
@@ -118,19 +118,19 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/p_pagi"
-                        android:textColor="@color/text_hitam"
+                        android:textColor="@color/text_secondary"
                         android:textSize="16sp"/>
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/s_sore"
-                        android:textColor="@color/text_hitam"
+                        android:textColor="@color/text_secondary"
                         android:textSize="16sp"/>
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/m_malam"
-                        android:textColor="@color/text_hitam"
+                        android:textColor="@color/text_secondary"
                         android:textSize="16sp"/>
 
                 </LinearLayout>

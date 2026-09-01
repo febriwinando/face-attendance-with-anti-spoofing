@@ -8,6 +8,7 @@
     android:padding="10dp"
     android:orientation="vertical"
     android:background="@drawable/backgoundovalputih"
+    android:backgroundTint="@color/surface_main"
     >
 
     <RelativeLayout
@@ -23,7 +24,7 @@
             android:textSize="18sp"
             android:textAlignment="center"
             android:textStyle="bold"
-            android:textColor="@color/text_hitam"
+            android:textColor="@color/text_primary"
             android:layout_marginBottom="10dp"/>
 
         <ImageView
@@ -33,7 +34,7 @@
             android:layout_height="38dp"
             android:layout_gravity="center_horizontal"
             app:srcCompat="@drawable/one_close"
-            app:tint="@color/text_hitam"
+            app:tint="@color/text_primary"
             android:id="@+id/ivTutupViewListKehdiran"
             />
 
@@ -64,7 +65,7 @@
                     android:layout_margin="10dp"
                     android:textSize="20dp"
                     android:textStyle="bold"
-                    android:textColor="@color/biru"
+                    android:textColor="@color/primary_brand"
 
                     />
 
@@ -81,19 +82,19 @@
                         <TextView
                             android:text="Pukul"
                             android:textStyle="bold"
-                            android:textColor="@color/text_hitam"
+                            android:textColor="@color/text_primary"
                             android:textSize="16sp"
                             />
                         <TextView
                             android:text=" : "
                             android:textStyle="bold"
-                            android:textColor="@color/text_hitam"
+                            android:textColor="@color/text_primary"
                             android:textSize="16sp"
                             />
 
                         <TextView
                             android:id="@+id/tvJamRekapMasuk"
-                            android:textColor="@color/font"
+                            android:textColor="@color/text_secondary"
                             android:textSize="16sp"
                             android:layout_weight="1"
                             />
@@ -107,20 +108,20 @@
                             android:id="@+id/tvKehadiranlabel"
                             android:text="Kehadiran"
                             android:textStyle="bold"
-                            android:textColor="@color/text_hitam"
+                            android:textColor="@color/text_primary"
                             android:textSize="16sp"
                             />
                         <TextView
                             android:text=" : "
                             android:textStyle="bold"
-                            android:textColor="@color/text_hitam"
+                            android:textColor="@color/text_primary"
                             android:textSize="16sp"
                             />
 
                         <TextView
                             android:id="@+id/tvKehadiranRekapMasuk"
                             android:layout_weight="1"
-                            android:textColor="@color/font"
+                            android:textColor="@color/text_secondary"
                             android:textSize="16sp" />
                     </TableRow>
                     <TableRow
@@ -129,7 +130,7 @@
                         <TextView
                             android:id="@+id/tvFieldRekapMasuk"
                             android:text="Keterangan"
-                            android:textColor="@color/text_hitam"
+                            android:textColor="@color/text_primary"
                             android:textSize="16sp"
                             android:textStyle="bold"
                             />
@@ -137,12 +138,12 @@
                         <TextView
                             android:text=" : "
                             android:textStyle="bold"
-                            android:textColor="@color/text_hitam"
+                            android:textColor="@color/text_primary"
                             android:textSize="16sp"
                             />
                         <TextView
                             android:id="@+id/tvKeteranganRekapMasuk"
-                            android:textColor="@color/font"
+                            android:textColor="@color/text_secondary"
                             android:textSize="16sp"
                             android:layout_weight="1"
                             />
@@ -153,7 +154,7 @@
                         <TextView
                             android:id="@+id/tvFieldStatusMasuk"
                             android:text="Status"
-                            android:textColor="@color/text_hitam"
+                            android:textColor="@color/text_primary"
                             android:textSize="16sp"
                             android:textStyle="bold"
                             />
@@ -161,14 +162,14 @@
                         <TextView
                             android:text=" : "
                             android:textStyle="bold"
-                            android:textColor="@color/text_hitam"
+                            android:textColor="@color/text_primary"
                             android:textSize="16sp"
                             />
 
                         <TextView
                             android:id="@+id/tvStatusRekapMasuk"
                             android:text="melaksanakan tugas"
-                            android:textColor="@color/font"
+                            android:textColor="@color/text_secondary"
                             android:textSize="16sp"
                             android:layout_weight="1"
                             />
@@ -180,14 +181,14 @@
                         <TextView
                             android:text="Lokasi"
                             android:textStyle="bold"
-                            android:textColor="@color/text_hitam"
+                            android:textColor="@color/text_primary"
                             android:textSize="16sp"
                             />
 
                         <TextView
                             android:text=" : "
                             android:textStyle="bold"
-                            android:textColor="@color/text_hitam"
+                            android:textColor="@color/text_primary"
                             android:textSize="16sp"
                             />
 
@@ -195,7 +196,7 @@
                             android:id="@+id/tvLokasiAlamatLuarKantor"
                             android:layout_weight="1"
                             android:text="melaksanakan tugas"
-                            android:textColor="@color/font"
+                            android:textColor="@color/text_secondary"
                             android:textSize="16sp" />
                     </TableRow>
 
@@ -210,7 +211,7 @@
                 android:layout_margin="10dp"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:textColor="@color/font"
+                android:textColor="@color/text_secondary"
                 android:id="@+id/tvTagFotoRekapMasuk"
 
                 />
@@ -221,7 +222,7 @@
                 android:layout_height="500dp"
                 android:maxWidth="375dp"
                 android:maxHeight="500dp"
-                android:outlineAmbientShadowColor="@color/biru"
+                android:outlineAmbientShadowColor="@color/primary_brand"
                 android:scaleType="centerCrop"
                 app:shapeAppearance="@style/ImageStyle2"/>
 
@@ -233,7 +234,7 @@
                 android:text="Lampiran Absensi Masuk"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:textColor="@color/font"
+                android:textColor="@color/text_secondary"
                 android:id="@+id/tvTagLampiranRekapMasuk"
 
                 />
@@ -244,7 +245,7 @@
                 android:layout_height="500dp"
                 android:maxWidth="375dp"
                 android:maxHeight="500dp"
-                android:outlineAmbientShadowColor="@color/biru"
+                android:outlineAmbientShadowColor="@color/primary_brand"
                 android:scaleType="centerCrop"
                 app:shapeAppearance="@style/ImageStyle2"
                 />
@@ -272,7 +273,7 @@
                     android:layout_margin="10dp"
                     android:textSize="20sp"
                     android:textStyle="bold"
-                    android:textColor="@color/biru"
+                    android:textColor="@color/primary_brand"
 
                     />
 
@@ -288,18 +289,18 @@
                         <TextView
                             android:text="Pukul"
                             android:textStyle="bold"
-                            android:textColor="@color/text_hitam"
+                            android:textColor="@color/text_primary"
                             android:textSize="16sp"
                             />
                         <TextView
                             android:text=" : "
                             android:textStyle="bold"
-                            android:textColor="@color/text_hitam"
+                            android:textColor="@color/text_primary"
                             android:textSize="16sp"
                             />
                         <TextView
                             android:id="@+id/tvJamRekapPulang"
-                            android:textColor="@color/font"
+                            android:textColor="@color/text_secondary"
                             android:textSize="16sp"
                             android:layout_weight="1"
                             />
@@ -310,20 +311,20 @@
                         <TextView
                             android:text="Kehadiran"
                             android:textStyle="bold"
-                            android:textColor="@color/text_hitam"
+                            android:textColor="@color/text_primary"
                             android:textSize="16sp"
                             android:id="@+id/tvLabelKehadiran"
                             />
                         <TextView
                             android:text=" : "
                             android:textStyle="bold"
-                            android:textColor="@color/text_hitam"
+                            android:textColor="@color/text_primary"
                             android:textSize="16sp"
                             />
                         <TextView
                             android:id="@+id/tvKehadiranRekapPulang"
                             android:text="melaksanakan tugas"
-                            android:textColor="@color/font"
+                            android:textColor="@color/text_secondary"
                             android:textSize="16sp"
                             android:layout_weight="1"
                             />
@@ -336,7 +337,7 @@
 
                             android:text="Keterangan"
                             android:textStyle="bold"
-                            android:textColor="@color/text_hitam"
+                            android:textColor="@color/text_primary"
                             android:textSize="16sp"
                             android:id="@+id/tvFieldRekapPulang"
 
@@ -344,12 +345,12 @@
                         <TextView
                             android:text=" : "
                             android:textStyle="bold"
-                            android:textColor="@color/text_hitam"
+                            android:textColor="@color/text_primary"
                             android:textSize="16sp"
                             />
                         <TextView
                             android:id="@+id/tvKeteranganRekapPulang"
-                            android:textColor="@color/font"
+                            android:textColor="@color/text_secondary"
                             android:textSize="16sp"
                             android:layout_weight="1"
                             />
@@ -361,7 +362,7 @@
 
                             android:id="@+id/tvFieldStatusPulang"
                             android:text="Status"
-                            android:textColor="@color/text_hitam"
+                            android:textColor="@color/text_primary"
                             android:textSize="16sp"
                             android:textStyle="bold"
 
@@ -370,13 +371,13 @@
                         <TextView
                             android:text=" : "
                             android:textStyle="bold"
-                            android:textColor="@color/text_hitam"
+                            android:textColor="@color/text_primary"
                             android:textSize="16sp"
                             />
                         <TextView
                             android:id="@+id/tvStatusRekapPulang"
                             android:text="melaksanakan tugas"
-                            android:textColor="@color/font"
+                            android:textColor="@color/text_secondary"
                             android:textSize="16sp"
                             android:layout_weight="1"
                             />
@@ -389,13 +390,13 @@
                         <TextView
                             android:text="Lokasi"
                             android:textStyle="bold"
-                            android:textColor="@color/text_hitam"
+                            android:textColor="@color/text_primary"
                             android:textSize="16sp"
                             />
                         <TextView
                             android:text=" : "
                             android:textStyle="bold"
-                            android:textColor="@color/text_hitam"
+                            android:textColor="@color/text_primary"
                             android:textSize="16sp"
                             />
 
@@ -403,7 +404,7 @@
                             android:id="@+id/tvLokasiAlamatLuarKantorPulang"
                             android:layout_weight="1"
                             android:text="melaksanakan tugas"
-                            android:textColor="@color/font"
+                            android:textColor="@color/text_secondary"
                             android:textSize="16sp" />
                     </TableRow>
                 </TableLayout>
@@ -417,7 +418,7 @@
                     android:layout_margin="10dp"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    android:textColor="@color/font"
+                    android:textColor="@color/text_secondary"
                     android:id="@+id/tvTagFotoRekapPulang"
 
                     />
@@ -428,7 +429,7 @@
                     android:layout_height="500dp"
                     android:maxWidth="375dp"
                     android:maxHeight="500dp"
-                    android:outlineAmbientShadowColor="@color/biru"
+                    android:outlineAmbientShadowColor="@color/primary_brand"
                     android:scaleType="centerCrop"
                     app:shapeAppearance="@style/ImageStyle2"/>
 
@@ -440,7 +441,7 @@
                     android:text="Lampiran Absensi Pulang"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    android:textColor="@color/font"
+                    android:textColor="@color/text_secondary"
                     android:id="@+id/tvTagLampiranRekapPulang"
 
                     />
@@ -451,7 +452,7 @@
                     android:layout_height="500dp"
                     android:maxWidth="375dp"
                     android:maxHeight="500dp"
-                    android:outlineAmbientShadowColor="@color/biru"
+                    android:outlineAmbientShadowColor="@color/primary_brand"
                     android:scaleType="centerCrop"
                     app:shapeAppearance="@style/ImageStyle2"
                     />

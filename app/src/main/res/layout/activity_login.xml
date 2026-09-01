@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".login.LoginActivity"
-    android:background="@color/background_color"
+    android:background="@color/background_main"
     >
 
     <TextView
@@ -15,7 +15,7 @@
         android:layout_marginBottom="40dp"
         android:text="@string/versiapp"
         android:textAlignment="center"
-        android:textColor="@color/abuabu_font"
+        android:textColor="@color/text_hint"
         android:textSize="16sp"
 
         />
@@ -43,18 +43,17 @@
 
             android:text="@string/eabsensi"
             android:textAlignment="center"
-            android:textColor="@color/biru"
-            android:textSize="24sp"
-            android:textStyle="bold" />
+            android:textColor="@color/primary_brand"
+            style="@style/AppTypography.Headline" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/silahkan_masuk_ke_akun_anda"
             android:textAlignment="center"
-            android:textColor="@color/font"
-            android:textSize="16sp"
-            android:textStyle="bold"/>
+            android:textColor="@color/text_secondary"
+            style="@style/AppTypography.Body"
+            android:fontFamily="sans-serif-medium"/>
 
 
         <com.google.android.material.textfield.TextInputLayout
@@ -62,21 +61,21 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/nip_nik"
-            app:endIconTint="@color/biru"
+            app:endIconTint="@color/primary_brand"
             app:hintAnimationEnabled="true"
             app:hintTextAppearance="@style/TextStyleInputLogin"
             app:startIconDrawable="@drawable/ic_card"
-            app:startIconTint="@color/biru_putih">
+            app:startIconTint="@color/primary_brand">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etUsername"
-                android:textStyle="bold"
+                android:fontFamily="sans-serif-medium"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:imeOptions="actionNext"
                 android:inputType="numberSigned"
                 android:textSize="18sp"
-                android:textColor="@color/text_hitam"
+                android:textColor="@color/text_primary"
                 />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -88,12 +87,12 @@
             android:layout_marginBottom="10dp"
             android:hint="@string/password"
             app:endIconMode="password_toggle"
-            app:endIconTint="@color/biru_putih"
+            app:endIconTint="@color/primary_brand"
             app:expandedHintEnabled="true"
             app:hintAnimationEnabled="true"
             app:hintTextAppearance="@style/TextStyleInputLogin"
             app:startIconDrawable="@drawable/one_lock"
-            app:startIconTint="@color/biru_putih">
+            app:startIconTint="@color/primary_brand">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etPassword"
@@ -101,8 +100,8 @@
                 android:layout_height="wrap_content"
                 android:inputType="textPassword"
                 android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="@color/text_hitam"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="@color/text_primary"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -116,6 +115,7 @@
             android:text="@string/masuk"
             android:textAlignment="center"
             android:textColor="@color/text_putih"
+            android:fontFamily="sans-serif-medium"
             android:textSize="18sp"
             />
 
@@ -128,7 +128,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/text_hitam"
+                android:textColor="@color/text_primary"
                 android:text="@string/lupa_password"
                 android:textSize="16sp"/>
 
@@ -137,7 +137,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/reset_password"
-                android:textColor="@color/biru"
+                android:textColor="@color/primary_brand"
                 android:textStyle="italic"
                 android:textSize="16sp"/>
         </LinearLayout>
@@ -147,7 +147,7 @@
             android:layout_height="1dp"
             android:layout_marginTop="20dp"
             android:layout_marginBottom="20dp"
-            android:background="#BF87888C" />
+            android:background="@color/divider_color" />
 
         <TextView
             android:id="@+id/textdb"
@@ -156,7 +156,7 @@
 
             android:text="@string/cttan"
             android:textAlignment="center"
-            android:textColor="@color/abuabu_font"
+            android:textColor="@color/text_hint"
             android:textSize="14sp" />
 
     </LinearLayout>

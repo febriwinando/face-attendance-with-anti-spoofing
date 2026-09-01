@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="@color/putih"
+    android:background="@color/surface_main"
     android:id="@+id/llTanggalGridJadwal"
     android:layout_margin="2dp">
 
@@ -32,7 +32,7 @@
             android:layout_marginBottom="10dp"
             android:text="@string/_10"
 
-            android:textColor="#757575"
+            android:textColor="@color/text_secondary"
             android:textFontWeight="200"
             android:textSize="14sp"
             tools:ignore="RelativeOverlap" />
@@ -40,6 +40,7 @@
         <LinearLayout
             android:id="@+id/txtTanggalJadwalSift"
             android:background="@drawable/backgoundovalputih"
+            android:backgroundTint="@color/surface_main"
             android:layout_centerInParent="true"
             android:gravity="center"
             android:layout_width="38dp"
@@ -50,9 +51,9 @@
                 android:id="@+id/tanggalJadwal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/text_hitam"
+                android:textColor="@color/text_primary"
                 android:textSize="16sp"
-                android:textStyle="bold"
+                android:fontFamily="sans-serif-medium"
                 />
 
         </LinearLayout>

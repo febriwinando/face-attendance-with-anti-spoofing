@@ -19,7 +19,7 @@
             android:text="Kehadiran"
             android:textAlignment="center"
             android:textSize="20sp"
-            android:textColor="@color/putih"
+            android:textColor="@color/surface_main"
             android:layout_marginBottom="10dp"
             android:id="@+id/titleHeaderViewIzin"
             />
@@ -47,7 +47,7 @@
             android:layout_marginStart="30dp"
             android:layout_marginEnd="30dp"
             android:layout_marginBottom="10dp"
-            android:backgroundTint="@color/putih"
+            android:backgroundTint="@color/surface_main"
             android:id="@+id/ivTKantor"
             >
 
@@ -68,7 +68,7 @@
                     android:layout_marginBottom="10dp"
 
                     android:text="Masuk/Pulang Kantor"
-                    android:textColor="@color/font_highlight"
+                    android:textColor="@color/text_primary"
                     android:textSize="14sp" />
             </RelativeLayout>
         </androidx.cardview.widget.CardView>
@@ -78,7 +78,7 @@
             app:cardCornerRadius="50dp"
             android:layout_marginStart="30dp"
             android:layout_marginEnd="30dp"
-            android:backgroundTint="@color/putih"
+            android:backgroundTint="@color/surface_main"
             android:id="@+id/ivTLapangan"
 
             >
@@ -98,7 +98,7 @@
                     android:layout_height="wrap_content"
                     android:text="Tugas Lapangan"
                     android:textSize="14sp"
-                    android:textColor="@color/font_highlight"
+                    android:textColor="@color/text_primary"
 
                     android:layout_margin="10dp"
                     />

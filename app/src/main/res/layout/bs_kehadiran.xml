@@ -22,7 +22,7 @@
         android:text="Pilih Kehadiran"
         android:textStyle="bold"
         android:textSize="18sp"
-        android:textColor="@color/black"
+        android:textColor="@color/text_primary"
         android:gravity="center"
         android:layout_marginBottom="10dp"/>
 
@@ -42,7 +42,7 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:backgroundTint="@color/biru"
+                android:backgroundTint="@color/primary_brand"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="2dp"
                 android:layout_margin="4dp"
@@ -62,7 +62,7 @@
                         android:layout_width="38dp"
                         android:layout_height="38dp"
                         android:src="@drawable/one_office_kehadiran"
-                        app:tint="@color/white"/>
+                        app:tint="@color/on_primary_brand"/>
 
                     <TextView
                         android:layout_marginTop="5dp"
@@ -70,7 +70,7 @@
                         android:layout_height="wrap_content"
                         android:textAlignment="center"
                         android:text="Masuk/Pulang Kantor"
-                        android:textColor="@color/text_putih"/>
+                        android:textColor="@color/on_primary_brand"/>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
         </LinearLayout>
@@ -88,7 +88,7 @@
                 android:id="@+id/cvTugasLapangan"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:backgroundTint="@color/biru"
+                android:backgroundTint="@color/primary_brand"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="2dp"
                 android:layout_margin="4dp"
@@ -107,7 +107,7 @@
                         android:layout_width="38dp"
                         android:layout_height="38dp"
                         android:src="@drawable/one_tl"
-                        app:tint="@color/white"/>
+                        app:tint="@color/on_primary_brand"/>
 
                     <TextView
                         android:layout_marginTop="5dp"
@@ -115,7 +115,7 @@
                         android:layout_height="wrap_content"
                         android:textAlignment="center"
                         android:text="Tugas Lapangan"
-                        android:textColor="@color/text_putih"/>
+                        android:textColor="@color/on_primary_brand"/>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
         </LinearLayout>

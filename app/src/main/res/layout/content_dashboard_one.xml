@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_color"
+    android:background="@color/background_main"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:showIn="@layout/activity_dashboard_versi_one"
     android:orientation="vertical"
@@ -92,7 +92,7 @@
                 android:layout_toStartOf="@+id/ciUser"
                 android:textColor="@color/white"
                 android:textSize="16sp"
-                android:textStyle="bold" />
+                android:fontFamily="sans-serif-medium" />
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/ciUser"
@@ -105,7 +105,7 @@
                 android:layout_marginEnd="10dp"
                 android:layout_marginBottom="10dp"
                 android:src="@drawable/one_person"
-                app:tint="@color/background_color"/>
+                app:tint="@color/surface_main"/>
 
         </RelativeLayout>
 
@@ -146,7 +146,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
-                    android:textColor="@color/text_hitam"
+                    android:textColor="@color/text_primary"
+                    android:fontFamily="sans-serif-medium"
                     android:text="@string/rabu_09_februari_1994"/>
             </LinearLayout>
 
@@ -180,7 +181,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
-                    android:textColor="@color/abuabu_font"
+                    android:textColor="@color/text_secondary"
                     android:text="@string/cari_rekap_kehadiran"/>
 
                 <ImageView
@@ -189,7 +190,7 @@
                     android:layout_height="38dp"
                     android:src="@drawable/one_search"
                     android:layout_gravity="center_vertical|end"
-                    app:tint="@color/biru"
+                    app:tint="@color/primary_brand"
                     android:contentDescription="@string/todo" />
             </RelativeLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -217,7 +218,7 @@
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:backgroundTint="@color/biru"
+                    android:backgroundTint="@color/primary_brand"
                     app:cardCornerRadius="20dp"
                     app:cardElevation="2dp"
                     android:layout_margin="4dp"
@@ -267,7 +268,7 @@
                     android:id="@+id/cvMenuPerjalananDinas"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:backgroundTint="@color/biru"
+                    android:backgroundTint="@color/primary_brand"
                     app:cardCornerRadius="20dp"
                     app:cardElevation="2dp"
                     android:layout_margin="4dp"
@@ -313,7 +314,7 @@
                     android:id="@+id/cvMenuIzin"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:backgroundTint="@color/biru"
+                    android:backgroundTint="@color/primary_brand"
                     app:cardCornerRadius="20dp"
                     app:cardElevation="2dp"
                     android:layout_margin="4dp"
@@ -371,7 +372,7 @@
                     android:layout_height="wrap_content"
                     app:cardCornerRadius="20dp"
                     app:cardElevation="2dp"
-                    android:backgroundTint="@color/background_layout"
+                    android:backgroundTint="@color/surface_main"
                     android:layout_margin="10dp"
                     android:clickable="true"
                     android:focusable="true">
@@ -385,7 +386,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Singkronkan Jadwal"
-                            android:textColor="@color/text_hitam"
+                            android:textColor="@color/text_primary"
                             android:textSize="16sp"/>
 
                         <ImageView
@@ -406,7 +407,7 @@
                     android:layout_height="wrap_content"
                     app:cardCornerRadius="20dp"
                     app:cardElevation="2dp"
-                    android:backgroundTint="@color/background_layout"
+                    android:backgroundTint="@color/surface_main"
                     android:layout_margin="10dp">
                     <RelativeLayout
                         android:layout_width="match_parent"
@@ -418,7 +419,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Singkronkan Lokasi"
-                            android:textColor="@color/text_hitam"
+                            android:textColor="@color/text_primary"
                             android:textSize="16sp"/>
 
                         <ImageView
@@ -452,7 +453,7 @@
                     android:layout_height="wrap_content"
                     app:cardCornerRadius="20dp"
                     app:cardElevation="2dp"
-                    android:backgroundTint="@color/background_layout"
+                    android:backgroundTint="@color/surface_main"
                     android:layout_margin="10dp">
                     <RelativeLayout
                         android:layout_width="match_parent"
@@ -464,7 +465,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Singkronkan Kegiatan"
-                            android:textColor="@color/text_hitam"
+                            android:textColor="@color/text_primary"
                             android:textSize="16sp"/>
 
                         <ImageView

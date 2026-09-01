@@ -34,7 +34,7 @@
                 android:src="@drawable/take"
                 android:scaleType="centerCrop"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                app:tint="#fff"
+                app:tint="@color/on_primary_brand"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"/>
@@ -45,7 +45,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_margin="10sp"
                 android:src="@drawable/flash"
-                app:tint="#fff"
+                app:tint="@color/on_primary_brand"
                 android:id="@+id/toggleFlash"
                 android:visibility="gone"
                 android:background="?attr/selectableItemBackgroundBorderless"
@@ -60,7 +60,7 @@
                 android:id="@+id/flipCamera"
                 android:src="@drawable/flip"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                app:tint="#fff"
+                app:tint="@color/on_primary_brand"
                 android:visibility="gone"
                 tools:ignore="MissingConstraints" />
 

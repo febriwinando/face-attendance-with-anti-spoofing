@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_color"
+    android:background="@color/background_main"
     tools:context=".izinsift.izinsiftsakit.IzinSakitSiftFinalActivity">
 
 
@@ -53,7 +53,7 @@
             android:layout_centerVertical="true"
             android:elevation="10dp"
             android:textStyle="bold"
-            android:textColor="@color/text_hitam"
+            android:textColor="@color/text_primary"
             android:textSize="18sp"/>
 
     </RelativeLayout>
@@ -106,7 +106,7 @@
                 android:layout_marginBottom="5dp"
                 android:layout_weight="2"
                 android:textAlignment="center"
-                android:textColor="#444"
+                android:textColor="@color/text_primary"
                 android:textSize="18sp"
 
                 android:id="@+id/titleDinasLuar"/>
@@ -152,7 +152,7 @@
                         android:layout_height="wrap_content"
                         android:text="Foto Absen"
                         android:layout_marginBottom="5dp"
-                        android:textColor="@color/font"
+                        android:textColor="@color/text_secondary"
                         />
                     <LinearLayout
                         android:layout_width="150dp"
@@ -190,7 +190,7 @@
                         android:layout_height="wrap_content"
                         android:text="Surat Sakit"
                         android:layout_marginBottom="5dp"
-                        android:textColor="@color/font"
+                        android:textColor="@color/text_secondary"
                         />
 
                     <LinearLayout
@@ -287,7 +287,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/masuk"
-                    android:textColor="@color/font"
+                    android:textColor="@color/text_secondary"
                     android:theme="@style/TextLabel"
                     android:textSize="18sp"
                     android:layout_margin="5dp"
@@ -300,7 +300,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/pulang"
-                    android:textColor="@color/font"
+                    android:textColor="@color/text_secondary"
                     android:textSize="18sp"
                     android:theme="@style/TextLabel"
                     />

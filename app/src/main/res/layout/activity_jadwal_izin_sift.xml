@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".izinsift.JadwalIzinSiftActivity"
-    android:background="@color/background_color"
+    android:background="@color/background_main"
     android:orientation="vertical">
 
     <RelativeLayout
@@ -31,7 +31,7 @@
             android:layout_centerVertical="true"
             android:elevation="10dp"
             android:text="@string/jadwal_sift"
-            android:textColor="@color/text_hitam"
+            android:textColor="@color/text_primary"
             android:textSize="20sp"
             android:textStyle="bold"
             tools:ignore="UnusedAttribute" />
@@ -44,7 +44,7 @@
             app:srcCompat="@drawable/one_sync"
             android:layout_marginEnd="10dp"
             android:contentDescription="@string/todo"
-            app:tint="@color/biru_putih"
+            app:tint="@color/primary_brand"
             android:id="@+id/ivSyncJadwalSift"/>
     </RelativeLayout>
 
@@ -83,7 +83,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Keterangan:"
-
+                        android:textColor="@color/text_primary"
                         android:textStyle="bold"
                         android:textSize="18sp"/>
 
@@ -91,19 +91,19 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="P: Pagi"
-
+                        android:textColor="@color/text_secondary"
                         android:textSize="16sp"/>
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="S: Sore"
-
+                        android:textColor="@color/text_secondary"
                         android:textSize="16sp"/>
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="M: Malam"
-
+                        android:textColor="@color/text_secondary"
                         android:textSize="16sp"/>
                 </LinearLayout>
 

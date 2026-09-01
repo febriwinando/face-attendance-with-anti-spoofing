@@ -10,10 +10,10 @@
 
 
     <style name="TextLabel"  >
-        <item name="android:textColorHint">@color/font</item>
-        <item name="colorAccent">@color/biru</item>
-        <item name="colorControlNormal">@color/biru</item>
-        <item name="colorControlActivated">@color/kuning</item>
+        <item name="android:textColorHint">@color/text_hint</item>
+        <item name="colorAccent">@color/primary_brand</item>
+        <item name="colorControlNormal">@color/primary_brand</item>
+        <item name="colorControlActivated">@color/primary_brand</item>
 
     </style>
     <style name="ImageStyle10">
@@ -82,38 +82,34 @@
     <style name="MaterialAlertDialog.App.Title.Text" parent="MaterialAlertDialog.MaterialComponents.Title.Text">
         <item name="android:textColor">@color/kuning</item>
         <item name="android:textSize">24sp</item>
-        <item name="android:textStyle">bold</item>
-
+        <item name="android:fontFamily">sans-serif-black</item>
     </style>
     <style name="MaterialAlertDialog.App.Title.TextHijau" parent="MaterialAlertDialog.MaterialComponents.Title.Text">
         <item name="android:textColor">@color/kuning</item>
         <item name="android:textSize">24sp</item>
-        <item name="android:textStyle">bold</item>
-
+        <item name="android:fontFamily">sans-serif-black</item>
     </style>
 
     <style name="AppCompatAlertDialogStyle" parent="Theme.AppCompat.Light.Dialog.Alert">
-        <item name="colorAccent">@color/kuning</item>
-        <item name="android:textColorPrimary">@color/font_highlight</item>
-        <item name="background">@color/putih</item>
-        <item name="android:textColor">@color/biru</item>
-        <item name="android:textStyle">bold</item>
-
+        <item name="colorAccent">@color/primary_brand</item>
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="background">@color/surface_main</item>
+        <item name="android:textColor">@color/primary_brand</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
     </style>
 
 
     <style name="MaterialAlertDialog.App.Title.TextMerah" parent="MaterialAlertDialog.MaterialComponents.Title.Text">
         <item name="android:textColor">@color/merah</item>
         <item name="android:textSize">24sp</item>
-        <item name="android:textStyle">bold</item>
-
+        <item name="android:fontFamily">sans-serif-black</item>
     </style>
 
     <style name="Widget.App.Button" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
-        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:textSize">20sp</item>
         <item name="android:textAlignment">textEnd</item>
-        <item name="android:textColor">@color/font_highlight</item>
+        <item name="android:textColor">@color/text_primary</item>
         <item name="android:layout_marginEnd">10dp</item>
 
     </style>
@@ -140,7 +136,7 @@
     <style name="TextStyleInputLogin" parent="Theme.AppPemko">
         <item name="android:textSize">12sp</item>
         <item name="android:translationY">-10dp</item>
-        <item name="background">@color/biru</item>
+        <item name="background">@color/primary_brand</item>
 
     </style>
 
@@ -153,6 +149,31 @@
     <style name="ListFont" parent="@android:style/Widget.ListView">
         <item name="android:textColor">#FFFFFF</item>
 
+    </style>
+
+    <!-- App Typography -->
+    <style name="AppTypography.Headline" parent="">
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:textColor">@color/text_primary</item>
+    </style>
+
+    <style name="AppTypography.Title" parent="">
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/text_primary</item>
+    </style>
+
+    <style name="AppTypography.Body" parent="">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/text_secondary</item>
+    </style>
+
+    <style name="AppTypography.Caption" parent="">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/text_hint</item>
     </style>
 
 

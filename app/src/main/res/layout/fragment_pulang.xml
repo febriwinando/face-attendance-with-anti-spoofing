@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".verifikasi.fragvalidasi.pulang.PulangFragment"
-    android:background="@color/putih"
+    android:background="@color/background_main"
     android:paddingRight="20dp"
     android:paddingLeft="20dp"
     android:paddingBottom="20dp"
@@ -33,7 +33,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="VALIDASI PULANG"
-            android:textColor="@color/font_highlight"
+            android:textColor="@color/text_primary"
             android:textSize="18sp"
             android:textStyle="bold"/>
     </RelativeLayout>
@@ -50,7 +50,7 @@
         android:padding="5dp"
         android:layout_marginTop="15dp"
         android:layout_marginBottom="5dp"
-        android:textColor="@color/putih"
+        android:textColor="@color/background_main"
         android:visibility="gone"
         />
 
@@ -79,7 +79,7 @@
         android:padding="5dp"
         android:layout_marginTop="15dp"
         android:layout_marginBottom="5dp"
-        android:textColor="@color/putih"
+        android:textColor="@color/background_main"
         android:visibility="gone"
         />
     <LinearLayout

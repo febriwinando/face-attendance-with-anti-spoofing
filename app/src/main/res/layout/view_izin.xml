@@ -22,7 +22,7 @@
 
             android:text="@string/izin"
             android:textAlignment="center"
-            android:textColor="@color/putih"
+            android:textColor="@color/on_primary_brand"
             android:textSize="20sp" />
 
         <ImageView
@@ -49,7 +49,7 @@
             android:layout_marginStart="30dp"
             android:layout_marginEnd="30dp"
             android:layout_marginBottom="10dp"
-            android:backgroundTint="@color/putih"
+            android:backgroundTint="@color/on_primary_brand"
             android:id="@+id/cardKp"
             >
 
@@ -67,7 +67,7 @@
                     android:text="@string/keperluan_pribadi"
                     android:textSize="14sp"
                     android:textStyle="bold"
-                    android:textColor="@color/font_highlight"
+                    android:textColor="@color/text_primary"
 
                     android:layout_margin="10dp"
                     />
@@ -82,7 +82,7 @@
             android:layout_marginStart="30dp"
             android:layout_marginEnd="30dp"
             android:layout_marginBottom="10dp"
-            android:backgroundTint="@color/putih"
+            android:backgroundTint="@color/on_primary_brand"
             android:id="@+id/cardCuti"
             >
 
@@ -100,7 +100,7 @@
                     android:text="Cuti"
                     android:textSize="14sp"
                     android:textStyle="bold"
-                    android:textColor="@color/font_highlight"
+                    android:textColor="@color/text_primary"
 
                     android:layout_margin="10dp"
                     />
@@ -115,7 +115,7 @@
             android:layout_marginStart="30dp"
             android:layout_marginEnd="30dp"
             android:layout_marginBottom="10dp"
-            android:backgroundTint="@color/putih"
+            android:backgroundTint="@color/on_primary_brand"
             android:id="@+id/cardSakit"
             >
 
@@ -133,7 +133,7 @@
                     android:text="Sakit"
                     android:textSize="14sp"
                     android:textStyle="bold"
-                    android:textColor="@color/font_highlight"
+                    android:textColor="@color/text_primary"
 
                     android:layout_margin="10dp"
                     />

@@ -1,5 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -8,6 +6,7 @@
     android:orientation="vertical"
     android:padding="10dp"
     android:background="@drawable/backgroundnavbarputih"
+    android:backgroundTint="@color/surface_main"
     >
 
 
@@ -29,7 +28,7 @@
 
                 android:text="Info Jadwal Sift"
                 android:textAlignment="center"
-                android:textColor="@color/text_hitam"
+                android:textColor="@color/text_primary"
                 android:textSize="20sp"
                 />
             <ImageView
@@ -38,7 +37,7 @@
                 android:layout_centerVertical="true"
                 android:layout_alignParentEnd="true"
                 app:srcCompat="@drawable/one_close"
-                app:tint="@color/text_hitam"
+                app:tint="@color/text_primary"
                 android:id="@+id/ivTutupViewInfoSift"
                 />
         </RelativeLayout>
@@ -57,7 +56,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Jam Masuk"
-                    android:textColor="@color/text_hitam"
+                    android:textColor="@color/text_primary"
                     android:textSize="16sp"
 
                     />
@@ -71,7 +70,7 @@
                     android:text="24:00"
                     android:padding="5dp"
                     android:background="@drawable/backgroundovalkuning"
-                    android:textColor="@color/text_putih"
+                    android:textColor="@color/on_primary_brand"
                     android:textStyle="bold"
                     android:textSize="16sp"
 
@@ -88,7 +87,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Jam Pulang"
-                    android:textColor="@color/text_hitam"
+                    android:textColor="@color/text_primary"
                     android:textSize="16sp"
                      />
 
@@ -101,7 +100,7 @@
                     android:text="08:00"
                     android:padding="5dp"
                     android:background="@drawable/backgroundovalkuning"
-                    android:textColor="@color/text_putih"
+                    android:textColor="@color/on_primary_brand"
                     android:textStyle="bold"
                     android:textSize="16sp"
 
@@ -124,7 +123,7 @@
                 android:layout_height="wrap_content"
                 android:text="Masuk/Pulang Kantor"
                 android:background="@drawable/backgroundnavbar"
-                android:textColor="@color/text_putih"
+                android:textColor="@color/on_primary_brand"
                 android:textStyle="bold"
                 android:paddingStart="10dp"
                 android:paddingEnd="10dp"

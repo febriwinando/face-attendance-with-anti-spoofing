@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/backgoundovalputih"
+    android:backgroundTint="@color/surface_main"
     android:gravity="center"
     android:padding="20dp"
     android:layout_margin="20dp"
@@ -19,7 +20,8 @@
             android:layout_height="38dp"
             android:layout_centerVertical="true"
             android:layout_marginEnd="10dp"
-            app:srcCompat="@drawable/one_warning" />
+            app:srcCompat="@drawable/one_warning"
+            app:tint="@color/kuning" />
         <TextView
             android:layout_centerVertical="true"
             android:layout_toEndOf="@+id/emoticon"
@@ -27,7 +29,7 @@
             android:layout_height="wrap_content"
             android:text="@string/peringatan"
             android:textSize="25sp"
-            android:textColor="@color/text_hitam"
+            android:textColor="@color/text_primary"
             android:textStyle="bold"
             />
 
@@ -40,18 +42,18 @@
             android:layout_alignParentEnd="true"
             android:clickable="true"
             android:src="@drawable/one_close"
+            app:tint="@color/text_primary"
             android:focusable="true" />
     </RelativeLayout>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/font"
+                android:textColor="@color/text_secondary"
                 android:textSize="18sp"
                 android:text="Apakah anda yakin akan keluar?"
                 android:textAlignment="textStart"
                 android:textStyle="bold"
-                android:shadowColor="@color/kuning"
                 />
 
 

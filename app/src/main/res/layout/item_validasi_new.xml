@@ -55,7 +55,7 @@
                 android:layout_toEndOf="@+id/llnotif"
                 android:textSize="14sp"
                 android:text="Ini adalah nama pegawai"
-                android:textColor="@color/black"
+                android:textColor="@color/text_primary"
                 android:textStyle="bold"/>
 
             <TextView

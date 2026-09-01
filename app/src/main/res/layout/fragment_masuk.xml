@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".verifikasi.fragvalidasi.masuk.MasukFragment"
-    android:background="@color/putih"
+    android:background="@color/background_main"
     android:paddingStart="20dp"
     android:paddingEnd="20dp"
     android:orientation="vertical">
@@ -32,7 +32,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/validasi_masuk"
-        android:textColor="@color/font_highlight"
+        android:textColor="@color/text_primary"
         android:textSize="18sp"
 
         android:textStyle="bold"/>
@@ -50,7 +50,7 @@
         android:padding="5dp"
         android:layout_marginTop="15dp"
         android:layout_marginBottom="5dp"
-        android:textColor="@color/putih"
+        android:textColor="@color/background_main"
         android:visibility="gone"
         />
 
@@ -79,7 +79,7 @@
         android:padding="5dp"
         android:layout_marginTop="15dp"
         android:layout_marginBottom="5dp"
-        android:textColor="@color/putih"
+        android:textColor="@color/background_main"
         android:visibility="gone"
         />
 

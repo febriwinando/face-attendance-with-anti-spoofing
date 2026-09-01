@@ -13,7 +13,7 @@
             android:layout_height="wrap_content"
             android:background="@drawable/backgoundovalkuning"
             android:textAlignment="center"
-            android:textColor="@color/black"
+            android:textColor="@color/text_primary"
             android:textStyle="bold"
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:textAlignment="center"
-            android:textColor="@color/text_putih"
+            android:textColor="@color/on_primary_brand"
             android:background="@drawable/backgoundovalbirusift"
             android:padding="5dp"
             android:layout_margin="2dp"
@@ -36,7 +36,7 @@
             />
 
         <TextView
-            android:textColor="@color/text_putih"
+            android:textColor="@color/on_primary_brand"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textStyle="bold"

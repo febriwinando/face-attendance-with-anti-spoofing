@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="200dp"
     android:background="@drawable/backgroundnavbarkuning"
+    android:backgroundTint="@color/surface_main"
     android:gravity="center"
     android:padding="10dp"
     android:layout_margin="20dp">
@@ -20,6 +21,7 @@
             android:layout_height="100dp"
             android:layout_centerVertical="true"
             app:srcCompat="@drawable/ic_empty"
+            app:tint="@color/primary_brand"
             android:layout_marginEnd="20dp"/>
 
         <LinearLayout
@@ -35,7 +37,7 @@
                 android:layout_height="wrap_content"
                 android:text="Oops!"
                 android:textSize="30sp"
-                android:textColor="@color/font_highlight"
+                android:textColor="@color/primary_brand"
 
                 />
 
@@ -43,20 +45,18 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Anda harus mengisi,"
-                android:textColor="@color/putih"
+                android:textColor="@color/text_primary"
                 android:textSize="12sp"
 
-                android:shadowColor="@color/font"
                 />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="rentang waktu dari rekap yang diperlukan."
-                android:textColor="@color/putih"
+                android:textColor="@color/text_secondary"
                 android:textSize="12sp"
 
-                android:shadowColor="@color/font"
                 />
 
         </LinearLayout>
@@ -70,6 +70,7 @@
             android:layout_alignParentEnd="true"
             android:clickable="true"
             android:src="@drawable/one_close"
+            app:tint="@color/text_primary"
             android:focusable="true" />
 
     </RelativeLayout>

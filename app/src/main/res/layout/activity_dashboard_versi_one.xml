@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".NewDashboard.DashboardVersiOne"
-    android:background="@color/background_color"
+    android:background="@color/background_main"
     android:orientation="vertical"
     android:fitsSystemWindows="true">
 

@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="200dp"
     android:background="@drawable/backgoundovalputih"
+    android:backgroundTint="@color/surface_main"
     android:layout_margin="20dp"
     >
         <RelativeLayout
@@ -15,6 +16,7 @@
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 app:srcCompat="@drawable/ic_emot_error"
+                app:tint="@color/merah"
                 android:id="@+id/emoticon"
                 android:layout_centerVertical="true"/>
 
@@ -31,27 +33,24 @@
                     android:layout_height="wrap_content"
                     android:text="Oops!"
                     android:textSize="35sp"
-                    android:textColor="@color/kuning"
+                    android:textColor="@color/primary_brand"
                     />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Gagal mengakses server,"
-                    android:textColor="@color/font_highlight"
+                    android:textColor="@color/text_primary"
 
                     android:textSize="14sp"
-                    android:shadowColor="@color/font"
                     />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="periksa jaringan internet anda, \ndan coba kembali."
-                    android:textColor="@color/font_highlight"
+                    android:textColor="@color/text_secondary"
                     android:textSize="14sp"
-
-                    android:shadowColor="@color/font"
                     />
 
             </LinearLayout>
@@ -65,6 +64,7 @@
                 android:layout_alignParentEnd="true"
                 android:clickable="true"
                 android:src="@drawable/one_close"
+                app:tint="@color/text_primary"
                 android:focusable="true"/>
 
         </RelativeLayout>

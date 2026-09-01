@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ProfileActivity"
-    android:background="@color/putih"
+    android:background="@color/background_main"
     android:paddingStart="20dp"
     android:paddingEnd="20dp"
     android:orientation="vertical">
@@ -37,8 +37,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/profil_pegawai"
-            android:textStyle="bold"
-            android:textColor="@color/text_hitam"
+            android:fontFamily="sans-serif-black"
+            android:textColor="@color/text_primary"
             android:layout_centerVertical="true"
             android:textSize="18sp"
             android:layout_toEndOf="@+id/ivBack"/>
@@ -70,15 +70,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="16sp"
-                android:textColor="@color/text_hitam"
-                android:textStyle="bold"/>
+                android:textColor="@color/text_primary"
+                android:fontFamily="sans-serif-medium"/>
 
             <TextView
                 android:id="@+id/tvNip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
-                android:textColor="@color/font"/>
+                android:textColor="@color/text_secondary"/>
         </LinearLayout>
 
         <ImageView
@@ -87,7 +87,7 @@
             android:layout_width="38dp"
             android:layout_height="38dp"
             android:src="@drawable/ic_image_search"
-            app:tint="@color/biru_putih"
+            app:tint="@color/primary_brand"
             android:id="@+id/ivGantiProfil"
             />
     </RelativeLayout>
@@ -108,8 +108,8 @@
                 android:layout_height="wrap_content"
                 android:text="@string/informasi_pegawai"
                 android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="@color/font"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="@color/text_secondary"
                 android:layout_marginBottom="10dp"
                 />
 
@@ -135,7 +135,7 @@
                         android:padding="5dp"
                         android:layout_width="38dp"
                         android:layout_height="38dp"
-                        app:tint="@color/white"
+                        app:tint="@color/on_primary_brand"
                         />
 
 
@@ -151,16 +151,16 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="16sp"
-                            android:textStyle="bold"
+                            android:fontFamily="sans-serif-medium"
                             android:text="@string/jabatan"
-                            android:textColor="@color/text_hitam"
+                            android:textColor="@color/text_primary"
                             />
                         <TextView
                             android:id="@+id/tvJabatanEmploy"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/staf"
-                            android:textColor="@color/font"
+                            android:textColor="@color/text_secondary"
                             android:textSize="14sp" />
 
 
@@ -180,7 +180,7 @@
                         android:padding="5dp"
                         android:layout_width="38dp"
                         android:layout_height="38dp"
-                        app:tint="@color/white"
+                        app:tint="@color/on_primary_brand"
                         app:srcCompat="@drawable/ic_baseline_person_24" />
 
                     <LinearLayout
@@ -197,7 +197,7 @@
                             android:textSize="16sp"
                             android:textStyle="bold"
                             android:text="@string/pegawai"
-                            android:textColor="@color/text_hitam"
+                            android:textColor="@color/text_primary"
                             />
                         <TextView
                             android:id="@+id/tvKelompokEmploy"
@@ -205,7 +205,7 @@
                             android:layout_height="wrap_content"
                             android:text="@string/pengatur_ii_c"
                             android:textSize="14sp"
-                            android:textColor="@color/font"
+                            android:textColor="@color/text_secondary"
                             />
                     </LinearLayout>
 
@@ -225,7 +225,7 @@
                         android:padding="5dp"
                         android:layout_width="38dp"
                         android:layout_height="38dp"
-                        app:tint="@color/background_color"
+                        app:tint="@color/background_main"
                         app:srcCompat="@drawable/ic_group_work" />
 
 
@@ -234,7 +234,7 @@
                             android:layout_height="wrap_content"
                             android:text="@string/bidang_aplikasi_dan_informatika"
                             android:textSize="14sp"
-                            android:textColor="@color/font"
+                            android:textColor="@color/text_secondary"
                             />
 
                 </TableRow>
@@ -253,7 +253,7 @@
                         android:padding="5dp"
                         android:layout_width="38dp"
                         android:layout_height="38dp"
-                        app:tint="@color/background_color"
+                        app:tint="@color/background_main"
                         app:srcCompat="@drawable/ic_group_work" />
 
                     <TextView
@@ -281,7 +281,7 @@
                         android:padding="5dp"
                         android:layout_width="38dp"
                         android:layout_height="38dp"
-                        app:tint="@color/white"
+                        app:tint="@color/on_primary_brand"
                         app:srcCompat="@drawable/ic_mail" />
 
                     <LinearLayout
@@ -298,7 +298,7 @@
                             android:textSize="16sp"
                             android:textStyle="bold"
                             android:text="@string/email"
-                            android:textColor="@color/text_hitam"
+                            android:textColor="@color/text_primary"
                             />
                         <TextView
                             android:id="@+id/tvEmailEmploy"
@@ -306,7 +306,7 @@
                             android:layout_height="wrap_content"
                             android:text="@string/febriwinando_gmail_com"
                             android:textSize="14sp"
-                            android:textColor="@color/font"
+                            android:textColor="@color/text_secondary"
                             />
                         </LinearLayout>
 
@@ -324,7 +324,7 @@
                         android:padding="5dp"
                         android:layout_width="38dp"
                         android:layout_height="38dp"
-                        app:tint="@color/white"
+                        app:tint="@color/on_primary_brand"
                         app:srcCompat="@drawable/ic_phone_android" />
 
                     <LinearLayout
@@ -341,7 +341,7 @@
                             android:textSize="16sp"
                             android:textStyle="bold"
                             android:text="@string/nomor_hp"
-                            android:textColor="@color/text_hitam"
+                            android:textColor="@color/text_primary"
                             />
                         <TextView
                             android:id="@+id/tvNoHpEmploye"
@@ -349,7 +349,7 @@
                             android:layout_height="wrap_content"
                             android:text="@string/strip"
                             android:textSize="14sp"
-                            android:textColor="@color/font"
+                            android:textColor="@color/text_secondary"
                             />
                         </LinearLayout>
                 </TableRow>
@@ -366,7 +366,7 @@
                         android:padding="5dp"
                         android:layout_width="38dp"
                         android:layout_height="38dp"
-                        app:tint="@color/white"
+                        app:tint="@color/on_primary_brand"
                         app:srcCompat="@drawable/ic_locasi_office" />
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -382,7 +382,7 @@
                             android:textSize="16sp"
                             android:textStyle="bold"
                             android:text="@string/opd"
-                            android:textColor="@color/text_hitam"
+                            android:textColor="@color/text_primary"
                             />
                         <TextView
                             android:id="@+id/tvDinasEmploy"
@@ -390,7 +390,7 @@
                             android:layout_height="wrap_content"
                             android:text="@string/jl_m_akub_hasibuan_kel_tanjung_marulak_kec_rambutan_tebing_tinggi"
                             android:textSize="14sp"
-                            android:textColor="@color/font"
+                            android:textColor="@color/text_secondary"
                             />
                         </LinearLayout>
                 </TableRow>
@@ -403,7 +403,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/pengaturan_profil"
                 android:textStyle="bold"
-                android:textColor="@color/font"
+                android:textColor="@color/text_secondary"
                 android:layout_marginTop="20dp"
                 android:textSize="16sp"
                 android:layout_marginBottom="10dp"
@@ -429,7 +429,7 @@
                         android:padding="5dp"
                         android:layout_width="38dp"
                         android:layout_height="38dp"
-                        app:tint="@color/white"
+                        app:tint="@color/on_primary_brand"
                         app:srcCompat="@drawable/one_lock" />
 
                     <TextView
@@ -438,7 +438,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
                         android:layout_weight="1"
-                        android:textColor="@color/font"
+                        android:textColor="@color/text_secondary"
                         android:text="@string/ganti_password"
                         android:textSize="16sp" />
 
@@ -458,7 +458,7 @@
                         android:padding="5dp"
                         android:layout_width="38dp"
                         android:layout_height="38dp"
-                        app:tint="@color/white"
+                        app:tint="@color/on_primary_brand"
                         app:srcCompat="@drawable/ic_panduan" />
 
                     <TextView
@@ -466,7 +466,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:textColor="@color/font"
+                        android:textColor="@color/text_secondary"
                         android:layout_marginStart="10dp"
                         android:text="@string/panduan_aplikasi"
                         android:textSize="16sp" />
@@ -486,7 +486,7 @@
                         android:padding="5dp"
                         android:layout_width="38dp"
                         android:layout_height="38dp"
-                        app:tint="@color/white"
+                        app:tint="@color/on_primary_brand"
                         app:srcCompat="@drawable/ic_privasi" />
 
                     <TextView
@@ -496,7 +496,7 @@
                         android:layout_marginStart="10dp"
                         android:layout_weight="1"
                         android:text="@string/privasi"
-                        android:textColor="@color/font"
+                        android:textColor="@color/text_secondary"
                         android:textSize="16sp" />
 
                 </TableRow>
@@ -530,7 +530,7 @@
                     android:layout_height="wrap_content"
                     android:text="Daftar Pegawai"
                     android:textSize="16sp"
-                    android:textColor="@color/font"/>
+                    android:textColor="@color/text_secondary"/>
 
             </LinearLayout>
             <LinearLayout
@@ -560,7 +560,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/keluar"
                     android:textSize="16sp"
-                    android:textColor="@color/font"/>
+                    android:textColor="@color/text_secondary"/>
 
             </LinearLayout>
 

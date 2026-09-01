@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_color"
+    android:background="@color/background_main"
     tools:context=".izin.cuti.IzinCutiFinalActivity">
 
     <androidx.fragment.app.FragmentContainerView
@@ -49,8 +49,8 @@
                 android:layout_centerVertical="true"
                 android:contentDescription="@string/todo"
                 android:elevation="10dp"
-                android:outlineAmbientShadowColor="@color/font_highlight"
-                android:outlineSpotShadowColor="@color/font_highlight"
+                android:outlineAmbientShadowColor="@color/text_primary"
+                android:outlineSpotShadowColor="@color/text_primary"
                 app:srcCompat="@drawable/one_left" />
 
         </RelativeLayout>
@@ -64,9 +64,9 @@
             android:textSize="18sp"
             android:elevation="10dp"
             android:textStyle="bold"
-            android:textColor="@color/text_hitam"
-            android:outlineAmbientShadowColor="@color/font_highlight"
-            android:outlineSpotShadowColor="@color/font_highlight"/>
+            android:textColor="@color/text_primary"
+            android:outlineAmbientShadowColor="@color/text_primary"
+            android:outlineSpotShadowColor="@color/text_primary"/>
 
     </RelativeLayout>
 
@@ -107,7 +107,7 @@
                 android:layout_weight="2"
                 android:textAlignment="center"
                 android:text="@string/data_perjalanan_dinas"
-                android:textColor="@color/font"
+                android:textColor="@color/text_secondary"
                 android:textSize="18sp"
 
                 android:id="@+id/titleDinasLuarCuti"/>
@@ -154,7 +154,7 @@
                         android:text="Foto Absen"
                         android:layout_marginBottom="5dp"
 
-                        android:textColor="@color/font"
+                        android:textColor="@color/text_secondary"
                         />
 
                     <LinearLayout
@@ -172,7 +172,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_centerHorizontal="true"
-                            android:outlineAmbientShadowColor="@color/biru"
+                            android:outlineAmbientShadowColor="@color/primary_brand"
                             android:scaleType="centerCrop"
                             app:shapeAppearance="@style/ImageStyle2" />
                     </LinearLayout>
@@ -193,7 +193,7 @@
                         android:layout_marginBottom="5dp"
 
 
-                        android:textColor="@color/font"
+                        android:textColor="@color/text_secondary"
                         />
 
                     <LinearLayout
@@ -221,7 +221,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_centerHorizontal="true"
-                            android:outlineAmbientShadowColor="@color/biru"
+                            android:outlineAmbientShadowColor="@color/primary_brand"
                             android:scaleType="centerCrop"
                             android:visibility="gone"
                             app:shapeAppearance="@style/ImageStyle2"/>
@@ -305,21 +305,21 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="-"
-                    android:textColor="@color/biru"
+                    android:textColor="@color/primary_brand"
                     android:textSize="14dp"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="/"
-                    android:textColor="@color/font_highlight" />
+                    android:textColor="@color/text_primary" />
 
                 <TextView
                     android:id="@+id/tvBulanTahunMulai"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="-"
-                    android:textColor="@color/font_highlight"
+                    android:textColor="@color/text_primary"
                     android:textSize="14sp"
                     />
             </LinearLayout>
@@ -329,7 +329,7 @@
 
                 android:text="s.d."
                 android:textStyle="bold"
-                android:textColor="@color/font_highlight" />
+                android:textColor="@color/text_primary" />
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -349,7 +349,7 @@
                     android:textSize="14sp"
                     android:text="-"
 
-                    android:textColor="@color/biru"
+                    android:textColor="@color/primary_brand"
                     android:id="@+id/tvHariSampai"
                     />
 
@@ -358,7 +358,7 @@
                     android:layout_height="wrap_content"
                     android:text="/"
 
-                    android:textColor="@color/font_highlight"/>
+                    android:textColor="@color/text_primary"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -366,7 +366,7 @@
 
                     android:text="-"
                     android:textSize="14sp"
-                    android:textColor="@color/font_highlight"
+                    android:textColor="@color/text_primary"
                     android:id="@+id/tvBulanTahunSampai"/>
             </LinearLayout>
         </LinearLayout>
