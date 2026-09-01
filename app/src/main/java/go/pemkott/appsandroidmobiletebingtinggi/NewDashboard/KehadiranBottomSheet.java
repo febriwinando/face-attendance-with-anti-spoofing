@@ -38,7 +38,7 @@ public class KehadiranBottomSheet extends BottomSheetDialogFragment {
 
         cvAbsenMasuk.setOnClickListener(v -> {
 
-            Intent kehadiranIntent = new Intent(getActivity(), CameraXDetectionActivity.class);
+            Intent kehadiranIntent = new Intent(getActivity(), CameraxActivity.class);
             kehadiranIntent.putExtra("aktivitas", "kehadiran");
             startActivity(kehadiranIntent);
             dismiss();

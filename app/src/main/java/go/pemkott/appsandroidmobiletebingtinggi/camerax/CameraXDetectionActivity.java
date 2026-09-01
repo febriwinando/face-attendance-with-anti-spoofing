@@ -69,6 +69,7 @@ public class CameraXDetectionActivity extends AppCompatActivity {
     private FaceRecognizer faceRecognizer;
     private float[] referenceEmbedding;
     private boolean faceInsideFrame = false;
+    private boolean isCapturing = false;
 
     // ================= CHALLENGE =================
     enum Challenge {
@@ -330,9 +331,15 @@ public class CameraXDetectionActivity extends AppCompatActivity {
         }
 
         if (challengeIndex >= challengeQueue.size()) {
-            capture.setEnabled(true);
-            capture.setAlpha(1f);
-            runOnUiThread(() -> txtChallenge.setText("✔ Verifikasi Berhasil!\nKlik tombol kamera untuk absen"));
+            if (!isCapturing) {
+                isCapturing = true;
+                runOnUiThread(() -> {
+                    txtChallenge.setText("✔ Verifikasi Berhasil!\nMohon tunggu, mengambil foto...");
+                    capture.setEnabled(true);
+                    capture.setAlpha(1f);
+                    takePicture();
+                });
+            }
             return;
         }
 
@@ -388,11 +395,7 @@ public class CameraXDetectionActivity extends AppCompatActivity {
         challengeIndex++;
 
         if (challengeIndex >= challengeQueue.size()) {
-            runOnUiThread(() -> {
-                txtChallenge.setText("✔ Verifikasi berhasil");
-                capture.setEnabled(true);
-                capture.setAlpha(1f);
-            });
+            // Auto-capture handled in handleFaces
             return;
         }
 
