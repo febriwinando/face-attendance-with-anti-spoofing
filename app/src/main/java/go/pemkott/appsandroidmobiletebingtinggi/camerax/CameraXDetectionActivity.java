@@ -5,12 +5,16 @@ import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.media.Image;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -62,6 +66,8 @@ public class CameraXDetectionActivity extends AppCompatActivity {
 
     // ================= FACE =================
     private FaceDetector faceDetector;
+    private FaceRecognizer faceRecognizer;
+    private float[] referenceEmbedding;
     private boolean faceInsideFrame = false;
 
     // ================= CHALLENGE =================
@@ -92,15 +98,18 @@ public class CameraXDetectionActivity extends AppCompatActivity {
 
         previewView = findViewById(R.id.cameraPreview);
         faceOverlay = findViewById(R.id.faceOverlay);
+        faceOverlay.setVisibility(View.VISIBLE);
         capture = findViewById(R.id.capture);
         txtChallenge = findViewById(R.id.txtChallenge);
+        txtChallenge.setVisibility(View.VISIBLE);
 
         aktivitas = getIntent().getStringExtra("aktivitas");
 
-        capture.setEnabled(false);
-        capture.setAlpha(0.5f);
-
+        faceRecognizer = new FaceRecognizer(this);
         initFaceDetector();
+        loadReferenceFace();
+
+        capture.setEnabled(false);
         generateChallengeQueue();
 
         capture.setOnClickListener(v -> {
@@ -136,12 +145,40 @@ public class CameraXDetectionActivity extends AppCompatActivity {
     private void initFaceDetector() {
         FaceDetectorOptions options =
                 new FaceDetectorOptions.Builder()
-                        .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_FAST)
+                        .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_ACCURATE)
                         .setClassificationMode(FaceDetectorOptions.CLASSIFICATION_MODE_ALL)
                         .setMinFaceSize(0.15f)
                         .build();
 
         faceDetector = FaceDetection.getClient(options);
+    }
+
+    private void loadReferenceFace() {
+        if (faceRecognizer == null) return;
+
+        Bitmap refBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.contohfile);
+        if (refBitmap == null) {
+            runOnUiThread(() -> Toast.makeText(this, "FATAL: File drawable/contohfile tidak ditemukan!", Toast.LENGTH_LONG).show());
+            return;
+        }
+
+        InputImage image = InputImage.fromBitmap(refBitmap, 0);
+        faceDetector.process(image)
+                .addOnSuccessListener(faces -> {
+                    if (!faces.isEmpty()) {
+                        referenceEmbedding = faceRecognizer.getEmbedding(refBitmap, faces.get(0).getBoundingBox());
+                        if (referenceEmbedding != null) {
+                            Log.d("CameraXDetection", "Reference face loaded successfully");
+                        } else {
+                            runOnUiThread(() -> Toast.makeText(this, "Gagal mengekstrak ciri wajah referensi. Pastikan model AI ada di assets.", Toast.LENGTH_LONG).show());
+                        }
+                    } else {
+                        runOnUiThread(() -> Toast.makeText(this, "Wajah tidak terdeteksi pada file referensi (contohfile.jpeg)", Toast.LENGTH_LONG).show());
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("CameraXDetection", "Face detection failed on reference", e);
+                });
     }
 
     // ================= CHALLENGE =================
@@ -159,10 +196,9 @@ public class CameraXDetectionActivity extends AppCompatActivity {
 
         challengeQueue.clear();
 
-        // masing-masing 2 kali
+        // masing-masing 1 kali
         for (Challenge c : temp) {
             challengeQueue.add(c);
-//            challengeQueue.add(c);
         }
 
         Collections.shuffle(challengeQueue);
@@ -172,6 +208,10 @@ public class CameraXDetectionActivity extends AppCompatActivity {
     }
 
     private void showCurrentChallenge() {
+        if (challengeQueue.isEmpty()) {
+            txtChallenge.setText("Menyiapkan pemeriksaan...");
+            return;
+        }
         txtChallenge.setText(
                 "Pemeriksaan " + (challengeIndex + 1) + " / " + challengeQueue.size()
                         + "\n" + getChallengeText(challengeQueue.get(challengeIndex))
@@ -234,24 +274,20 @@ public class CameraXDetectionActivity extends AppCompatActivity {
     // ================= ANALYSIS =================
     @OptIn(markerClass = ExperimentalGetImage.class)
     private void analyzeFrame(ImageProxy proxy) {
-
-        Image img = proxy.getImage();
-        if (img == null) {
+        Bitmap frameBitmap = faceRecognizer.toBitmap(proxy);
+        if (frameBitmap == null) {
             proxy.close();
             return;
         }
 
-        InputImage image = InputImage.fromMediaImage(
-                img,
-                proxy.getImageInfo().getRotationDegrees()
-        );
+        InputImage image = InputImage.fromBitmap(frameBitmap, 0);
 
         faceDetector.process(image)
-                .addOnSuccessListener(faces -> handleFaces(faces, image))
+                .addOnSuccessListener(faces -> handleFaces(faces, image, frameBitmap))
                 .addOnCompleteListener(t -> proxy.close());
     }
 
-    private void handleFaces(List<Face> faces, InputImage image) {
+    private void handleFaces(List<Face> faces, InputImage image, Bitmap frameBitmap) {
 
         if (faces.isEmpty()) {
             resetState();
@@ -259,32 +295,52 @@ public class CameraXDetectionActivity extends AppCompatActivity {
         }
 
         Face face = faces.get(0);
+        float[] currentEmbedding = faceRecognizer.getEmbedding(frameBitmap, face.getBoundingBox());
+
+        float score = 0f;
+        boolean isRecognized = false;
+
+        if (referenceEmbedding != null && currentEmbedding != null) {
+            score = faceRecognizer.getSimilarityScore(currentEmbedding, referenceEmbedding);
+            isRecognized = score > 0.7f;
+        } else if (referenceEmbedding == null) {
+            isRecognized = true; // Fallback
+        }
 
         RectF faceNorm = normalize(face.getBoundingBox(), image);
-
-        // mirror kamera depan
-        float left = 1f - faceNorm.right;
-        float right = 1f - faceNorm.left;
-        faceNorm.left = left;
-        faceNorm.right = right;
 
         faceInsideFrame =
                 faceOverlay.getFrameNormalized()
                         .contains(faceNorm.centerX(), faceNorm.centerY());
 
-        runOnUiThread(() -> faceOverlay.setFaceInside(faceInsideFrame));
+        String percentageText = String.format(java.util.Locale.US, "%.0f%%", score * 100);
+        final float finalScore = score;
+        runOnUiThread(() -> faceOverlay.setFaceData(faceInsideFrame, faceNorm, percentageText));
 
-        if (!faceInsideFrame) {
-            resetState();
+        if (!faceInsideFrame || !isRecognized) {
+            runOnUiThread(() -> {
+                if (!faceInsideFrame) {
+                    txtChallenge.setText("⚠️ Posisikan wajah di dalam oval");
+                } else {
+                    txtChallenge.setText("❌ Wajah tidak cocok (" + percentageText + ")");
+                }
+            });
+            resetChallengeOnly();
             return;
         }
 
         if (challengeIndex >= challengeQueue.size()) {
             capture.setEnabled(true);
             capture.setAlpha(1f);
+            runOnUiThread(() -> txtChallenge.setText("✔ Verifikasi Berhasil!\nKlik tombol kamera untuk absen"));
             return;
         }
 
+        runOnUiThread(() -> {
+            String instruction = getChallengeText(challengeQueue.get(challengeIndex));
+            txtChallenge.setText("✅ Wajah Sesuai (" + percentageText + ")\nSekarang: " + instruction);
+        });
+        
         detectChallenge(face);
     }
 
@@ -348,7 +404,16 @@ public class CameraXDetectionActivity extends AppCompatActivity {
         runOnUiThread(() -> {
             capture.setEnabled(false);
             capture.setAlpha(0.5f);
-            showCurrentChallenge();
+            faceOverlay.setFaceData(false, null, "");
+            txtChallenge.setText("Arahkan wajah ke frame");
+        });
+    }
+
+    private void resetChallengeOnly() {
+        challengeIndex = 0;
+        runOnUiThread(() -> {
+            capture.setEnabled(false);
+            capture.setAlpha(0.5f);
         });
     }
 
@@ -443,4 +508,3 @@ public class CameraXDetectionActivity extends AppCompatActivity {
         finish();
     }
 }
-

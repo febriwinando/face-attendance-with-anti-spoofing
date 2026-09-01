@@ -100,9 +100,10 @@ public class CameraxActivity extends AppCompatActivity {
 
         previewView = findViewById(R.id.cameraPreview);
         faceOverlay = findViewById(R.id.faceOverlay);
-        faceOverlay.setVisibility(View.GONE);
+        faceOverlay.setVisibility(View.VISIBLE);
         capture = findViewById(R.id.capture);
         txtChallenge = findViewById(R.id.txtChallenge);
+        txtChallenge.setVisibility(View.VISIBLE);
 
         aktivitas = getIntent().getStringExtra("aktivitas");
 
@@ -116,15 +117,15 @@ public class CameraxActivity extends AppCompatActivity {
         generateChallengeQueue();
 
         capture.setOnClickListener(v -> {
-//            if (!faceInsideFrame) {
-//                Toast.makeText(this, "Posisikan wajah di dalam frame", Toast.LENGTH_SHORT).show();
-//                return;
-//            }
-//
-//            if (challengeIndex < challengeQueue.size()) {
-//                Toast.makeText(this, "Selesaikan challenge terlebih dahulu", Toast.LENGTH_SHORT).show();
-//                return;
-//            }
+            if (!faceInsideFrame) {
+                Toast.makeText(this, "Posisikan wajah di dalam frame", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (challengeIndex < challengeQueue.size()) {
+                Toast.makeText(this, "Selesaikan challenge terlebih dahulu", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
             takePicture();
         });
@@ -157,9 +158,11 @@ public class CameraxActivity extends AppCompatActivity {
     }
 
     private void loadReferenceFace() {
+        if (faceRecognizer == null) return;
+        
         Bitmap refBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.contohfile);
         if (refBitmap == null) {
-            Toast.makeText(this, "File referensi tidak ditemukan", Toast.LENGTH_SHORT).show();
+            runOnUiThread(() -> Toast.makeText(this, "FATAL: File drawable/contohfile tidak ditemukan!", Toast.LENGTH_LONG).show());
             return;
         }
 
@@ -168,10 +171,17 @@ public class CameraxActivity extends AppCompatActivity {
                 .addOnSuccessListener(faces -> {
                     if (!faces.isEmpty()) {
                         referenceEmbedding = faceRecognizer.getEmbedding(refBitmap, faces.get(0).getBoundingBox());
-                        Log.d("CameraxActivity", "Reference face loaded and embedding generated");
+                        if (referenceEmbedding != null) {
+                            Log.d("CameraxActivity", "Reference face loaded successfully");
+                        } else {
+                            runOnUiThread(() -> Toast.makeText(this, "Gagal mengekstrak ciri wajah referensi. Pastikan model AI ada di assets.", Toast.LENGTH_LONG).show());
+                        }
                     } else {
-                        Toast.makeText(this, "Wajah tidak terdeteksi pada file referensi", Toast.LENGTH_SHORT).show();
+                        runOnUiThread(() -> Toast.makeText(this, "Wajah tidak terdeteksi pada file referensi (contohfile.jpeg)", Toast.LENGTH_LONG).show());
                     }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("CameraxActivity", "Face detection failed on reference", e);
                 });
     }
 
@@ -270,23 +280,16 @@ public class CameraxActivity extends AppCompatActivity {
     // ================= ANALYSIS =================
     @OptIn(markerClass = ExperimentalGetImage.class)
     private void analyzeFrame(ImageProxy proxy) {
-
-        Image img = proxy.getImage();
-        if (img == null) {
+        Bitmap frameBitmap = faceRecognizer.toBitmap(proxy);
+        if (frameBitmap == null) {
             proxy.close();
             return;
         }
 
-        InputImage image = InputImage.fromMediaImage(
-                img,
-                proxy.getImageInfo().getRotationDegrees()
-        );
+        InputImage image = InputImage.fromBitmap(frameBitmap, 0);
 
         faceDetector.process(image)
-                .addOnSuccessListener(faces -> {
-                    Bitmap frameBitmap = faceRecognizer.toBitmap(proxy);
-                    handleFaces(faces, image, frameBitmap);
-                })
+                .addOnSuccessListener(faces -> handleFaces(faces, image, frameBitmap))
                 .addOnCompleteListener(t -> proxy.close());
     }
 
@@ -300,47 +303,53 @@ public class CameraxActivity extends AppCompatActivity {
         Face face = faces.get(0);
         float[] currentEmbedding = faceRecognizer.getEmbedding(frameBitmap, face.getBoundingBox());
 
-        boolean isRecognized = false;
         float score = 0f;
-        
+        boolean isRecognized = false;
+
         if (referenceEmbedding != null && currentEmbedding != null) {
             score = faceRecognizer.getSimilarityScore(currentEmbedding, referenceEmbedding);
             isRecognized = score > 0.7f; // Match with threshold
         } else if (referenceEmbedding == null) {
             Log.e("CameraxActivity", "Reference embedding is null!");
-            isRecognized = true; 
-        }
-
-        final float finalScore = score;
-        if (!isRecognized && faceInsideFrame) {
-            runOnUiThread(() -> txtChallenge.setText("Wajah tidak cocok (" + String.format("%.2f", finalScore) + ")"));
+            isRecognized = true;
         }
 
         RectF faceNorm = normalize(face.getBoundingBox(), image);
-
-        // mirror kamera depan
-        float left = 1f - faceNorm.right;
-        float right = 1f - faceNorm.left;
-        faceNorm.left = left;
-        faceNorm.right = right;
 
         faceInsideFrame =
                 faceOverlay.getFrameNormalized()
                         .contains(faceNorm.centerX(), faceNorm.centerY());
 
-        runOnUiThread(() -> faceOverlay.setFaceInside(faceInsideFrame));
+        final float finalScore = score;
+        final boolean finalIsRecognized = isRecognized;
+        
+        String percentageText = String.format(java.util.Locale.US, "%.0f%%", score * 100);
+        runOnUiThread(() -> faceOverlay.setFaceData(faceInsideFrame, faceNorm, percentageText));
 
         if (!faceInsideFrame || !isRecognized) {
-            resetState();
+            runOnUiThread(() -> {
+                if (!faceInsideFrame) {
+                    txtChallenge.setText("⚠️ Posisikan wajah di dalam oval");
+                } else {
+                    txtChallenge.setText("❌ Wajah tidak cocok (" + percentageText + ")");
+                }
+            });
+            resetChallengeOnly();
             return;
         }
 
         if (challengeIndex >= challengeQueue.size()) {
             capture.setEnabled(true);
             capture.setAlpha(1f);
+            runOnUiThread(() -> txtChallenge.setText("✔ Verifikasi Berhasil!\nKlik tombol kamera untuk absen"));
             return;
         }
 
+        runOnUiThread(() -> {
+            String instruction = getChallengeText(challengeQueue.get(challengeIndex));
+            txtChallenge.setText("✅ Wajah Sesuai (" + percentageText + ")\nSekarang: " + instruction);
+        });
+        
         detectChallenge(face);
     }
 
@@ -404,7 +413,16 @@ public class CameraxActivity extends AppCompatActivity {
         runOnUiThread(() -> {
             capture.setEnabled(false);
             capture.setAlpha(0.5f);
-            showCurrentChallenge();
+            faceOverlay.setFaceData(false, null, "");
+            txtChallenge.setText("Arahkan wajah ke frame");
+        });
+    }
+
+    private void resetChallengeOnly() {
+        challengeIndex = 0;
+        runOnUiThread(() -> {
+            capture.setEnabled(false);
+            capture.setAlpha(0.5f);
         });
     }
 

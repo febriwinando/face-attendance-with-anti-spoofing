@@ -39,10 +39,13 @@ public class FaceRecognizer {
             MappedByteBuffer modelBuffer = loadModelFile(context);
             if (modelBuffer != null) {
                 interpreter = new Interpreter(modelBuffer);
-                Log.d(TAG, "Model loaded successfully");
+                int[] shape = interpreter.getOutputTensor(0).shape();
+                Log.d(TAG, "Model loaded. Output shape: " + java.util.Arrays.toString(shape));
+            } else {
+                Log.e(TAG, "FATAL: Model file missing in assets!");
             }
         } catch (Exception e) {
-            Log.e(TAG, "Error loading model: " + e.getMessage());
+            Log.e(TAG, "Error initializing interpreter: " + e.getMessage());
         }
     }
 
@@ -61,33 +64,47 @@ public class FaceRecognizer {
     }
 
     public float[] getEmbedding(Bitmap bitmap, Rect boundingBox) {
-        if (interpreter == null) return null;
+        if (interpreter == null || bitmap == null || boundingBox == null) return null;
 
-        // Crop face from bitmap
-        Bitmap faceBitmap = cropFace(bitmap, boundingBox);
-        
-        // Preprocess image
-        TensorImage tensorImage = new TensorImage(interpreter.getInputTensor(0).dataType());
-        ImageProcessor imageProcessor = new ImageProcessor.Builder()
-                .add(new ResizeOp(INPUT_IMAGE_SIZE, INPUT_IMAGE_SIZE, ResizeOp.ResizeMethod.BILINEAR))
-                .add(new NormalizeOp(127.5f, 127.5f)) // Normalize to [-1, 1]
-                .build();
-        
-        tensorImage.load(faceBitmap);
-        tensorImage = imageProcessor.process(tensorImage);
+        try {
+            // Crop face from bitmap
+            Bitmap faceBitmap = cropFace(bitmap, boundingBox);
+            
+            // Preprocess image
+            TensorImage tensorImage = new TensorImage(interpreter.getInputTensor(0).dataType());
+            ImageProcessor imageProcessor = new ImageProcessor.Builder()
+                    .add(new ResizeOp(INPUT_IMAGE_SIZE, INPUT_IMAGE_SIZE, ResizeOp.ResizeMethod.BILINEAR))
+                    .add(new NormalizeOp(127.5f, 127.5f)) 
+                    .build();
+            
+            tensorImage.load(faceBitmap);
+            tensorImage = imageProcessor.process(tensorImage);
 
-        // Run inference
-        float[][] output = new float[1][192]; // MobileFaceNet output size
-        interpreter.run(tensorImage.getBuffer(), output);
-        
-        return output[0];
+            // Run inference
+            int outputSize = interpreter.getOutputTensor(0).shape()[1];
+            float[][] output = new float[1][outputSize];
+            interpreter.run(tensorImage.getBuffer(), output);
+            
+            return output[0];
+        } catch (Exception e) {
+            Log.e(TAG, "Embedding error: " + e.getMessage());
+            return null;
+        }
     }
 
     private Bitmap cropFace(Bitmap bitmap, Rect boundingBox) {
-        int left = Math.max(boundingBox.left, 0);
-        int top = Math.max(boundingBox.top, 0);
-        int width = Math.min(boundingBox.width(), bitmap.getWidth() - left);
-        int height = Math.min(boundingBox.height(), bitmap.getHeight() - top);
+        // Add 10% padding to face crop for better recognition context
+        int paddingW = (int) (boundingBox.width() * 0.10f);
+        int paddingH = (int) (boundingBox.height() * 0.10f);
+        
+        int left = Math.max(boundingBox.left - paddingW, 0);
+        int top = Math.max(boundingBox.top - paddingH, 0);
+        int right = Math.min(boundingBox.right + paddingW, bitmap.getWidth());
+        int bottom = Math.min(boundingBox.bottom + paddingH, bitmap.getHeight());
+        
+        int width = right - left;
+        int height = bottom - top;
+        
         return Bitmap.createBitmap(bitmap, left, top, width, height);
     }
 
@@ -115,11 +132,15 @@ public class FaceRecognizer {
         return dotProduct / (float) (Math.sqrt(norm1) * Math.sqrt(norm2));
     }
 
+    @androidx.annotation.OptIn(markerClass = androidx.camera.core.ExperimentalGetImage.class)
     public Bitmap toBitmap(ImageProxy image) {
-        ImageProxy.PlaneProxy[] planes = image.getPlanes();
-        ByteBuffer yBuffer = planes[0].getBuffer();
-        ByteBuffer uBuffer = planes[1].getBuffer();
-        ByteBuffer vBuffer = planes[2].getBuffer();
+        Image img = image.getImage();
+        if (img == null) return null;
+
+        // Convert YUV to Bitmap more reliably
+        ByteBuffer yBuffer = image.getPlanes()[0].getBuffer();
+        ByteBuffer uBuffer = image.getPlanes()[1].getBuffer();
+        ByteBuffer vBuffer = image.getPlanes()[2].getBuffer();
 
         int ySize = yBuffer.remaining();
         int uSize = uBuffer.remaining();
@@ -137,14 +158,12 @@ public class FaceRecognizer {
         byte[] imageBytes = out.toByteArray();
         Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
 
-        if (image.getImageInfo().getRotationDegrees() != 0) {
-            Matrix matrix = new Matrix();
-            matrix.postRotate(image.getImageInfo().getRotationDegrees());
-            // Mirror if using front camera
-            matrix.postScale(-1, 1, bitmap.getWidth() / 2f, bitmap.getHeight() / 2f);
-            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-        }
-
-        return bitmap;
+        // Rotate and mirror to match UI preview
+        Matrix matrix = new Matrix();
+        matrix.postRotate(image.getImageInfo().getRotationDegrees());
+        // Front camera mirror effect
+        matrix.postScale(-1, 1, bitmap.getWidth() / 2f, bitmap.getHeight() / 2f);
+        
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
     }
 }
