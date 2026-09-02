@@ -252,10 +252,9 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
         Intent intent = getIntent();
         titleDinasLuar.setText(intent.getStringExtra("title"));
 
-
-        kegiatans.clear();
-        kegiatans = CutiActivity.kegiatanCheckedCuti;
-        kegiatanlainnya = CutiActivity.kegiatansCutiLainnya;
+        kegiatans = intent.getStringArrayListExtra("kegiatan_checked_cuti");
+        if (kegiatans == null) kegiatans = new ArrayList<>();
+        kegiatanlainnya = intent.getStringExtra("kegiatans_cuti_lainnya");
 
 
 
@@ -1274,7 +1273,6 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
             stopLocationUpdates();
 
             dialogSukes.dismiss();
-            CutiActivity.cuti.finish();
             finish();
         });
 

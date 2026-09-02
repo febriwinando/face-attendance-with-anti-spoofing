@@ -22,61 +22,52 @@ import go.pemkott.appsandroidmobiletebingtinggi.model.Kegiatan;
 
 public class TugasLapanganActivity extends AppCompatActivity {
 
-    private final ArrayList<Kegiatan> list = new ArrayList<>();
-    public static ArrayList<String> kegiatanChecked = new ArrayList<String>();
-    private ArrayList<String>  kegiatanAdded = new ArrayList<String>();
-    static ArrayList<String> kegiatansList = new ArrayList<String>();
-    public static String kegiatansLainnya;
-    StringBuffer buffer2;
+    private ArrayList<Kegiatan> list = new ArrayList<>();
+    private ArrayList<String> kegiatanChecked = new ArrayList<String>();
+    private ArrayList<String> kegiatansList = new ArrayList<String>();
+    private String kegiatansLainnya = "kosong";
 
     EditText etkegiatanLainnya;
     RecyclerView rvKegiatanPd;
     KegiatanAdapter kegiatanAdapter;
     DatabaseHelper databaseHelper;
+    DialogView dialogView = new DialogView(TugasLapanganActivity.this);
 
-    public static AppCompatActivity tL;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.background_color));
         getWindow().setNavigationBarColor(getResources().getColor(R.color.background_color));
-
         setContentView(R.layout.activity_tugas_lapangan);
-
-        tL = this;
-
-        list.clear();
-        kegiatansList.clear();
-        kegiatanChecked.clear();
-
 
         databaseHelper = new DatabaseHelper(this);
         kegiatanDatabase();
 
         rvKegiatanPd = findViewById(R.id.rvKegiatanPd);
         etkegiatanLainnya = findViewById(R.id.etKegiatanLainnya);
-        list.addAll(getListData2());
-
+        
+        setupRecyclerData();
         showRecyclerList();
 
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                finish();   // atau aksi lain
+                finish();
             }
         });
-
     }
 
-
-
-    public void backTl(View view){
-        finish();
+    private void setupRecyclerData() {
+        list.clear();
+        for (String s : kegiatansList) {
+            Kegiatan k = new Kegiatan();
+            k.setKegiatan(s);
+            list.add(k);
+        }
     }
-
-
 
     public void kegiatanDatabase(){
+        kegiatansList.clear();
         Cursor res = databaseHelper.getKegiatanIzin();
         while (res.moveToNext()){
             if (res.getString(1).equals("tl")){
@@ -85,38 +76,25 @@ public class TugasLapanganActivity extends AppCompatActivity {
         }
     }
 
-    //    Memberikan nilai pada Model data
-    static ArrayList<Kegiatan> getListData2() {
-        ArrayList<Kegiatan> list = new ArrayList<>();
-        list.clear();
-        for (int position = 0; position < kegiatansList.size(); position++) {
-            Kegiatan kegiatans = new Kegiatan();
-            kegiatans.setKegiatan(kegiatansList.get(position));
-            list.add(kegiatans);
-        }
-        return list;
-    }
-
-    DialogView dialogView = new DialogView(TugasLapanganActivity.this);
     public void nextKegiatanTL(View view){
-        if (!etkegiatanLainnya.getText().toString().isEmpty()){
+        if (etkegiatanLainnya != null && !etkegiatanLainnya.getText().toString().isEmpty()){
             kegiatansLainnya = etkegiatanLainnya.getText().toString();
-
-        }else{
+        } else {
             kegiatansLainnya = "kosong";
         }
 
-        if (kegiatanChecked.isEmpty() && kegiatansLainnya.equals("kosong")){
-            dialogView.viewNotifKosong(TugasLapanganActivity.this, "Anda Harus Mengisi Kegiatan Yang Dilaksanakan.", "");
+        boolean isKegiatanCheckedKosong = kegiatanChecked.isEmpty();
+        boolean isLainnyaKosong = kegiatansLainnya.equals("kosong");
 
-        }else {
-
-            Intent intentTL = new Intent(TugasLapanganActivity.this, CameraxActivity.class);
+        if (isKegiatanCheckedKosong && isLainnyaKosong){
+            dialogView.viewNotifKosong(this, "Anda Harus Mengisi Kegiatan Yang Dilaksanakan.", "");
+        } else {
+            Intent intentTL = new Intent(this, CameraxActivity.class);
             intentTL.putExtra("aktivitas", "tugaslapangan");
             intentTL.putExtra("title", "Isi Data Tugas Lapangan");
+            intentTL.putStringArrayListExtra("kegiatan_checked", kegiatanChecked);
+            intentTL.putExtra("kegiatans_lainnya", kegiatansLainnya);
             startActivity(intentTL);
-            finish();
-
         }
     }
 
@@ -128,42 +106,18 @@ public class TugasLapanganActivity extends AppCompatActivity {
         kegiatanAdapter.setOnItemClickCallback(new KegiatanAdapter.OnItemClickCallback() {
             @Override
             public void onItemClicked(Kegiatan data) {
-                showSelectedKegiatan(data);
+                if (data.isChecked()){
+                    if (!kegiatanChecked.contains(data.getKegiatan())) {
+                        kegiatanChecked.add(data.getKegiatan());
+                    }
+                } else {
+                    kegiatanChecked.remove(data.getKegiatan());
+                }
             }
         });
     }
 
-    private void showSelectedKegiatan(Kegiatan kegiatan) {
-
-        if (kegiatan.isChecked()) {
-
-            if (!kegiatanChecked.contains(kegiatan.getKegiatan())) {
-                kegiatanChecked.add(kegiatan.getKegiatan());
-                buffer2 = new StringBuffer();
-                for (int i = 0; i<kegiatanChecked.size()-1;i++){
-                    buffer2.append(kegiatanChecked.get(i)+", ");
-                }
-                buffer2.append(kegiatanChecked.get(kegiatanChecked.size()-1));
-            }
-
-        }else{
-
-            kegiatanChecked.remove(kegiatan.getKegiatan());
-
-            StringBuffer buffer = new StringBuffer();
-            if (kegiatanChecked.size() == 1){
-                buffer.append(kegiatanChecked.get(kegiatanChecked.size()-1));
-            }else if(kegiatanChecked.isEmpty()){
-            }
-
-            else{
-                for (int i = 0; i<kegiatanChecked.size()-1;i++){
-                    buffer.append(kegiatanChecked.get(i)+", ");
-                }
-                buffer.append(kegiatanChecked.get(kegiatanChecked.size()-1)+", ");
-            }
-        }
-
+    public void backTl(View view){
+        finish();
     }
-
 }

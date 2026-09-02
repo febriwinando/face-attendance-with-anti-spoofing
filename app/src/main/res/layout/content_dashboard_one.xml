@@ -72,7 +72,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:tint="@color/white" />
+                    app:tint="@color/text_putih" />
 
                 <View
                     android:layout_width="10dp"
@@ -90,7 +90,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_toStartOf="@+id/ciUser"
-                android:textColor="@color/white"
+                android:textColor="@color/text_putih"
                 android:textSize="16sp"
                 android:fontFamily="sans-serif-medium" />
 
@@ -237,7 +237,7 @@
                             android:layout_width="50dp"
                             android:layout_height="50dp"
                             android:src="@drawable/one_kehadiran"
-                            app:tint="@color/white"
+                            app:tint="@color/text_putih"
                             android:background="@drawable/backgoundputihtransparan"
                             />
                         <TextView
@@ -284,7 +284,7 @@
                             android:layout_width="50dp"
                             android:layout_height="50dp"
                             android:src="@drawable/one_perjalanan_dinas"
-                            app:tint="@color/white"
+                            app:tint="@color/text_putih"
                             android:background="@drawable/backgoundputihtransparan"
                             android:padding="5dp"
                             />
@@ -330,7 +330,7 @@
                             android:layout_width="50dp"
                             android:layout_height="50dp"
                             android:src="@drawable/one_izin"
-                            app:tint="@color/white"
+                            app:tint="@color/text_putih"
                             android:background="@drawable/backgoundputihtransparan"
                             android:padding="5dp"
                             />
@@ -396,7 +396,7 @@
                             android:layout_alignParentEnd="true"
                             android:background="@drawable/backgoundovalmerah"
                             android:padding="5dp"
-                            app:tint="@color/white"/>
+                            app:tint="@color/text_putih"/>
                     </RelativeLayout>
                 </androidx.cardview.widget.CardView>
 
@@ -429,7 +429,7 @@
                             android:layout_alignParentEnd="true"
                             android:background="@drawable/backgoundovalkuning"
                             android:layout_centerVertical="true"
-                            app:tint="@color/white"
+                            app:tint="@color/text_putih"
                             android:padding="5dp"
                             android:id="@+id/ivSingkronLokasi"
                             />
@@ -476,7 +476,7 @@
                             android:layout_alignParentEnd="true"
                             android:background="@drawable/backgoundovalhijau"
                             android:layout_centerVertical="true"
-                            app:tint="@color/white"
+                            app:tint="@color/text_putih"
                             android:id="@+id/ivSingkronKegiatan"
                             />
 

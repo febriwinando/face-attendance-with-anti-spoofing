@@ -50,9 +50,8 @@ public class FaceRecognizer {
     }
 
     private MappedByteBuffer loadModelFile(Context context) {
-        try {
-            AssetFileDescriptor fileDescriptor = context.getAssets().openFd(MODEL_FILE);
-            FileInputStream inputStream = new FileInputStream(fileDescriptor.getFileDescriptor());
+        try (AssetFileDescriptor fileDescriptor = context.getAssets().openFd(MODEL_FILE);
+             FileInputStream inputStream = new FileInputStream(fileDescriptor.getFileDescriptor())) {
             FileChannel fileChannel = inputStream.getChannel();
             long startOffset = fileDescriptor.getStartOffset();
             long declaredLength = fileDescriptor.getDeclaredLength();
@@ -132,12 +131,20 @@ public class FaceRecognizer {
         return dotProduct / (float) (Math.sqrt(norm1) * Math.sqrt(norm2));
     }
 
+    public void close() {
+        if (interpreter != null) {
+            interpreter.close();
+            interpreter = null;
+        }
+    }
+
     @androidx.annotation.OptIn(markerClass = androidx.camera.core.ExperimentalGetImage.class)
     public Bitmap toBitmap(ImageProxy image) {
         Image img = image.getImage();
         if (img == null) return null;
 
-        // Convert YUV to Bitmap more reliably
+        // More efficient YUV to RGB conversion could be done here, 
+        // but keeping it simple and only calling it when needed (Tahap 2)
         ByteBuffer yBuffer = image.getPlanes()[0].getBuffer();
         ByteBuffer uBuffer = image.getPlanes()[1].getBuffer();
         ByteBuffer vBuffer = image.getPlanes()[2].getBuffer();
@@ -153,15 +160,13 @@ public class FaceRecognizer {
 
         YuvImage yuvImage = new YuvImage(nv21, ImageFormat.NV21, image.getWidth(), image.getHeight(), null);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        yuvImage.compressToJpeg(new Rect(0, 0, yuvImage.getWidth(), yuvImage.getHeight()), 100, out);
+        yuvImage.compressToJpeg(new Rect(0, 0, yuvImage.getWidth(), yuvImage.getHeight()), 90, out);
 
         byte[] imageBytes = out.toByteArray();
         Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
 
-        // Rotate and mirror to match UI preview
         Matrix matrix = new Matrix();
         matrix.postRotate(image.getImageInfo().getRotationDegrees());
-        // Front camera mirror effect
         matrix.postScale(-1, 1, bitmap.getWidth() / 2f, bitmap.getHeight() / 2f);
         
         return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);

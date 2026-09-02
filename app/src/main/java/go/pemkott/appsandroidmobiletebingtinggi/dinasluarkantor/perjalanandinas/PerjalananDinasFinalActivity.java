@@ -369,8 +369,9 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
 
         requestPermission();
 
-        kegiatans = SppdActivity.kegiatanCheckedPd;
-        kegiatanlainnya = SppdActivity.kegiatansPdLainnya;
+        kegiatans = intent.getStringArrayListExtra("kegiatan_checked_pd");
+        if (kegiatans == null) kegiatans = new ArrayList<>();
+        kegiatanlainnya = intent.getStringExtra("kegiatan_pd_lainnya");
 
         setupDataKegiatan();
 
@@ -1307,7 +1308,6 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
             stopLocationUpdates();
 
             dialogSukes.dismiss();
-            SppdActivity.pd.finish();
             finish();
         });
 

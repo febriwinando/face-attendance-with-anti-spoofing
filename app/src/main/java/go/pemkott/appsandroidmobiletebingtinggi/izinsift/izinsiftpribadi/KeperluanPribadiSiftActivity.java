@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -18,28 +17,24 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-import go.pemkott.appsandroidmobiletebingtinggi.NewDashboard.DashboardVersiOne;
 import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraxActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.izin.keperluanpribadi.KpAdapter;
-import go.pemkott.appsandroidmobiletebingtinggi.kehadiransift.JadwalSiftActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.model.Kegiatan;
 
 public class KeperluanPribadiSiftActivity extends AppCompatActivity {
 
-    private static ArrayList<Kegiatan> list = new ArrayList<>();
-    public static ArrayList<String> kegiatanChecked = new ArrayList<String>();
-    public static ArrayList<String> kegiatansList = new ArrayList<String>();
+    private ArrayList<Kegiatan> list = new ArrayList<>();
+    public static ArrayList<String> kegiatanChecked = new ArrayList<>();
+    public static ArrayList<String> kegiatansList = new ArrayList<>();
     public static String kegiatansLainnya;
-    StringBuffer buffer2;
 
     EditText etkegiatanKpLainnya;
     RecyclerView rvKegiatanKp;
     KpAdapter kpAdapter;
     DatabaseHelper databaseHelper;
     TextView tvlistCheckedKp;
-    String jam_masuk, jam_pulang, inisialsift, tipesift, masuksift, pulangsift, idsift, rbTanggal;
 
     public static AppCompatActivity kp ;
 
@@ -47,38 +42,19 @@ public class KeperluanPribadiSiftActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.background_color));
         getWindow().setNavigationBarColor(getResources().getColor(R.color.background_color));
         setContentView(R.layout.activity_keperluan_pribadi_sift);
-
-        jam_masuk = DashboardVersiOne.jam_masuk;
-        jam_pulang = DashboardVersiOne.jam_pulang;
-        rbTanggal = JadwalSiftActivity.tanggalSift;
-        inisialsift = JadwalSiftActivity.inisialsift;
-        idsift = JadwalSiftActivity.idsift;
-        tipesift = JadwalSiftActivity.idsift;
-        masuksift = JadwalSiftActivity.masuksift;
-        pulangsift = JadwalSiftActivity.pulangsift;
-
         kp = this;
-
-        list.clear();
-        kegiatansList.clear();
-
         databaseHelper = new DatabaseHelper(this);
         kegiatanDatabase();
 
         rvKegiatanKp = findViewById(R.id.rvKegiatanKp);
         etkegiatanKpLainnya = findViewById(R.id.etKegiatanKpLainnya);
         tvlistCheckedKp = findViewById(R.id.tvlistCheckedKp);
-        list.addAll(getListData2());
 
+        setupRecyclerData();
         showRecyclerList();
-
-        View decorView = getWindow().getDecorView();
-        int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
-        decorView.setSystemUiVisibility(uiOptions);
 
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
@@ -86,33 +62,29 @@ public class KeperluanPribadiSiftActivity extends AppCompatActivity {
                 finish();
             }
         });
-
     }
 
+    private void setupRecyclerData() {
+        list.clear();
+        for (String s : kegiatansList) {
+            Kegiatan k = new Kegiatan();
+            k.setKegiatan(s);
+            list.add(k);
+        }
+    }
 
     public void backKp(View view){
         finish();
     }
 
     public void kegiatanDatabase(){
+        kegiatansList.clear();
         Cursor res = databaseHelper.getKegiatanIzin();
         while (res.moveToNext()){
             if (res.getString(1).equals("kp")){
                 kegiatansList.add(res.getString(2));
             }
         }
-    }
-
-    //    Memberikan nilai pada Model data
-    static ArrayList<Kegiatan> getListData2() {
-        ArrayList<Kegiatan> list = new ArrayList<>();
-        list.clear();
-        for (int position = 0; position < kegiatansList.size(); position++) {
-            Kegiatan kegiatans = new Kegiatan();
-            kegiatans.setKegiatan(kegiatansList.get(position));
-            list.add(kegiatans);
-        }
-        return list;
     }
 
     public void nextKegiatanKp(View view){
@@ -122,15 +94,22 @@ public class KeperluanPribadiSiftActivity extends AppCompatActivity {
             kegiatansLainnya = "kosong";
         }
 
-        if (kegiatanChecked.isEmpty() && kegiatansLainnya.equals("kosong")){
+        if (kegiatanChecked.isEmpty() && "kosong".equals(kegiatansLainnya)){
             showMessage("Peringatan!", "Anda Harus Mengisi Kegiatan Yang Dilaksanakan.");
         }else {
-
-            Intent intentTL = new Intent(KeperluanPribadiSiftActivity.this, CameraxActivity.class);
+            Intent intentTL = new Intent(this, CameraxActivity.class);
             intentTL.putExtra("title", "Isi Data Keperluan Pribadi");
             intentTL.putExtra("aktivitas", "shiftizinkp");
+            
+            // Forward everything from previous activities if any
+            if (getIntent().getExtras() != null) {
+                intentTL.putExtras(getIntent().getExtras());
+            }
+            
+            intentTL.putStringArrayListExtra("kegiatan_checked_kp", kegiatanChecked);
+            intentTL.putExtra("kegiatans_kp_lainnya", kegiatansLainnya);
+            
             startActivity(intentTL);
-
         }
     }
 
@@ -147,50 +126,29 @@ public class KeperluanPribadiSiftActivity extends AppCompatActivity {
         kpAdapter = new KpAdapter(list);
         rvKegiatanKp.setAdapter(kpAdapter);
 
-        kpAdapter.setOnItemClickCallback(new KpAdapter.OnItemClickCallback() {
-            @Override
-            public void onItemClicked(Kegiatan data) {
-                showSelectedKegiatan(data);
+        kpAdapter.setOnItemClickCallback(data -> {
+            if (data.isChecked()){
+                if (!kegiatanChecked.contains(data.getKegiatan())) {
+                    kegiatanChecked.add(data.getKegiatan());
+                }
+            } else {
+                kegiatanChecked.remove(data.getKegiatan());
             }
+            updateCheckedText();
         });
     }
 
-    private void showSelectedKegiatan(Kegiatan kegiatan) {
-
-        if (kegiatan.isChecked() == true ){
-            kegiatanChecked.add(kegiatan.getKegiatan());
-
-            buffer2 = new StringBuffer();
-            for (int i = 0; i<kegiatanChecked.size()-1;i++){
-                buffer2.append(kegiatanChecked.get(i)+", ");
+    private void updateCheckedText() {
+        if (kegiatanChecked.isEmpty()) {
+            tvlistCheckedKp.setVisibility(View.GONE);
+        } else {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < kegiatanChecked.size(); i++) {
+                sb.append(kegiatanChecked.get(i));
+                if (i < kegiatanChecked.size() - 1) sb.append(", ");
             }
-            buffer2.append(kegiatanChecked.get(kegiatanChecked.size()-1));
-
-            tvlistCheckedKp.setText(buffer2.toString().toUpperCase());
+            tvlistCheckedKp.setText(sb.toString().toUpperCase());
             tvlistCheckedKp.setVisibility(View.VISIBLE);
-
-        }else{
-
-            kegiatanChecked.remove(kegiatan.getKegiatan());
-
-            StringBuffer buffer = new StringBuffer();
-            if (kegiatanChecked.size() == 1){
-                buffer.append(kegiatanChecked.get(kegiatanChecked.size()-1));
-                tvlistCheckedKp.setText(buffer.toString().toUpperCase());
-                tvlistCheckedKp.setVisibility(View.VISIBLE);
-            }else if(kegiatanChecked.isEmpty()){
-                tvlistCheckedKp.setVisibility(View.GONE);
-            }
-
-            else{
-                for (int i = 0; i<kegiatanChecked.size()-1;i++){
-                    buffer.append(kegiatanChecked.get(i)+", ");
-                }
-                buffer.append(kegiatanChecked.get(kegiatanChecked.size()-1)+", ");
-                tvlistCheckedKp.setText(buffer.toString().toUpperCase());
-                tvlistCheckedKp.setVisibility(View.VISIBLE);
-            }
         }
-
     }
 }

@@ -14,7 +14,6 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import go.pemkott.appsandroidmobiletebingtinggi.R;
-import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraXDetectionActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraxActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.dinasluarkantor.tugaslapangan.TugasLapanganActivity;
 
@@ -46,7 +45,7 @@ public class KehadiranBottomSheet extends BottomSheetDialogFragment {
 
         cvAbsenPulang.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), TugasLapanganActivity.class);
-            intent.putExtra("aktivitas", "absen_pulang");
+            intent.putExtra("aktivitas", "tugaslapangan");
             startActivity(intent);
             dismiss();
         });

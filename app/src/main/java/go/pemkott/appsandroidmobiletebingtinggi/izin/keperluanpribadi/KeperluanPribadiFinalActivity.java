@@ -229,10 +229,9 @@ public class KeperluanPribadiFinalActivity extends AppCompatActivity implements 
         jam_pulang = DashboardVersiOne.jam_pulang;
         titleDinasLuar.setText(intent.getStringExtra("title"));
 
-
-        kegiatans.clear();
-        kegiatans = KeperluanPribadiActivity.kegiatanChecked;
-        kegiatanlainnya = KeperluanPribadiActivity.kegiatansLainnya;
+        kegiatans = intent.getStringArrayListExtra("kegiatan_checked_kp");
+        if (kegiatans == null) kegiatans = new ArrayList<>();
+        kegiatanlainnya = intent.getStringExtra("kegiatans_kp_lainnya");
 
 
         String uriString =
@@ -1031,7 +1030,6 @@ public class KeperluanPribadiFinalActivity extends AppCompatActivity implements 
             stopLocationUpdates();
 
             dialogSukes.dismiss();
-            KeperluanPribadiActivity.kp.finish();
             finish();
         });
 

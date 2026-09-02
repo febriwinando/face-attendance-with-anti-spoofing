@@ -257,10 +257,9 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
         jam_pulang = DashboardVersiOne.jam_pulang;
         titleDinasLuar.setText(intent.getStringExtra("title"));
 
-
-        kegiatans.clear();
-        kegiatans = SakitActivity.kegiatanCheckedSakit;
-        kegiatanlainnya = SakitActivity.kegiatansSakitLainnya;
+        kegiatans = intent.getStringArrayListExtra("kegiatan_checked_sakit");
+        if (kegiatans == null) kegiatans = new ArrayList<>();
+        kegiatanlainnya = intent.getStringExtra("kegiatans_sakit_lainnya");
 
 
 
@@ -1334,7 +1333,6 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
             stopLocationUpdates();
 
             dialogSukes.dismiss();
-            SakitActivity.sakit.finish();
             finish();
         });
 

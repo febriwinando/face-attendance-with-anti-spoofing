@@ -25,18 +25,17 @@ import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import go.pemkott.appsandroidmobiletebingtinggi.model.Kegiatan;
 
 public class SakitActivity extends AppCompatActivity {
-    private static final ArrayList<Kegiatan> listSakit = new ArrayList<>();
-    public static ArrayList<String> kegiatanCheckedSakit = new ArrayList<String>();
-    static ArrayList<String> kegiatansListSakit = new ArrayList<String>();
-    public static String kegiatansSakitLainnya;
-    StringBuffer buffer2;
+    private ArrayList<Kegiatan> listSakit = new ArrayList<>();
+    private ArrayList<String> kegiatanCheckedSakit = new ArrayList<String>();
+    private ArrayList<String> kegiatansListSakit = new ArrayList<String>();
+    private String kegiatansSakitLainnya;
 
     EditText etkegiatanSakitLainnya;
     RecyclerView rvKegiatanSakit;
     DatabaseHelper databaseHelper;
     SakitAdapter sakitAdapter;
+    DialogView dialogView = new DialogView(SakitActivity.this);
 
-    public static AppCompatActivity sakit ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,53 +43,21 @@ public class SakitActivity extends AppCompatActivity {
         getWindow().setNavigationBarColor(getResources().getColor(R.color.background_color));
         setContentView(R.layout.activity_sakit);
 
-        sakit = this;
-
-        listSakit.clear();
-        kegiatansListSakit.clear();
-
         databaseHelper = new DatabaseHelper(this);
         kegiatanDatabase();
 
         rvKegiatanSakit = findViewById(R.id.rvKegiatanSakit);
         etkegiatanSakitLainnya = findViewById(R.id.etKegiatanSakitLainmya);
-        listSakit.addAll(getListData2());
+        
+        setupRecyclerData();
+        
         RelativeLayout backSakitIzinActivity = findViewById(R.id.rlBackSakit);
         TextView tvSelanjutnya = findViewById(R.id.tvSelanjutnya);
 
-        tvSelanjutnya.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                nextKegiatanSakitIzin();
-            }
-        });
-
-        backSakitIzinActivity.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        tvSelanjutnya.setOnClickListener(v -> nextKegiatanSakitIzin());
+        backSakitIzinActivity.setOnClickListener(v -> finish());
 
         showRecyclerList();
-
-        etkegiatanSakitLainnya.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-//                if (!s.toString().trim().isEmpty()){
-//                    kegiatanAdded.add(etkegiatanLainnya.getText().toString());
-//                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-            }
-        });
 
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
@@ -100,18 +67,17 @@ public class SakitActivity extends AppCompatActivity {
         });
     }
 
-
-    static ArrayList<Kegiatan> getListData2() {
-        ArrayList<Kegiatan> list = new ArrayList<>();
-        for (int position = 0; position < kegiatansListSakit.size(); position++) {
-            Kegiatan kegiatans = new Kegiatan();
-            kegiatans.setKegiatan(kegiatansListSakit.get(position));
-            list.add(kegiatans);
+    private void setupRecyclerData() {
+        listSakit.clear();
+        for (String s : kegiatansListSakit) {
+            Kegiatan k = new Kegiatan();
+            k.setKegiatan(s);
+            listSakit.add(k);
         }
-        return list;
     }
 
     public void kegiatanDatabase(){
+        kegiatansListSakit.clear();
         Cursor res = databaseHelper.getKegiatanIzin();
         while (res.moveToNext()){
             if (res.getString(1).equals("sk")){
@@ -120,76 +86,39 @@ public class SakitActivity extends AppCompatActivity {
         }
     }
 
-
-    DialogView dialogView = new DialogView(SakitActivity.this);
     public void nextKegiatanSakitIzin(){
-
-        if (!etkegiatanSakitLainnya.getText().toString().isEmpty()){
+        if (etkegiatanSakitLainnya != null && !etkegiatanSakitLainnya.getText().toString().isEmpty()){
             kegiatansSakitLainnya = etkegiatanSakitLainnya.getText().toString();
-        }else{
+        } else {
             kegiatansSakitLainnya = "kosong";
         }
 
         if (kegiatanCheckedSakit.isEmpty() && kegiatansSakitLainnya.equals("kosong")){
-            dialogView.viewNotifKosong(SakitActivity.this, "Anda Harus Mengisi Kegiatan Yang Dilaksanakan.", "");
-
-
-        }else {
-            Intent intentTL = new Intent(SakitActivity.this, CameraxActivity.class);
+            dialogView.viewNotifKosong(this, "Anda Harus Mengisi Kegiatan Yang Dilaksanakan.", "");
+        } else {
+            Intent intentTL = new Intent(this, CameraxActivity.class);
             intentTL.putExtra("lampiran", 23);
             intentTL.putExtra("aktivitas", "izinsakit");
             intentTL.putExtra("title", "Isi Data Kondisi Kesehatan");
+            intentTL.putStringArrayListExtra("kegiatan_checked_sakit", kegiatanCheckedSakit);
+            intentTL.putExtra("kegiatans_sakit_lainnya", kegiatansSakitLainnya);
             startActivity(intentTL);
         }
     }
-
 
     private void showRecyclerList(){
         rvKegiatanSakit.setLayoutManager(new LinearLayoutManager(this));
         sakitAdapter = new SakitAdapter(listSakit);
         rvKegiatanSakit.setAdapter(sakitAdapter);
 
-        sakitAdapter.setOnItemClickCallback(new SakitAdapter.OnItemClickCallback() {
-            @Override
-            public void onItemClicked(Kegiatan data) {
-                showSelectedKegiatan(data);
+        sakitAdapter.setOnItemClickCallback(data -> {
+            if (data.isChecked()){
+                if (!kegiatanCheckedSakit.contains(data.getKegiatan())) {
+                    kegiatanCheckedSakit.add(data.getKegiatan());
+                }
+            } else {
+                kegiatanCheckedSakit.remove(data.getKegiatan());
             }
         });
     }
-
-    private void showSelectedKegiatan(Kegiatan kegiatan) {
-        if (kegiatan.isChecked() == true ){
-
-            kegiatanCheckedSakit.add(kegiatan.getKegiatan());
-
-            buffer2 = new StringBuffer();
-            for (int i = 0; i<kegiatanCheckedSakit.size()-1;i++){
-                buffer2.append(kegiatanCheckedSakit.get(i)+", ");
-            }
-            buffer2.append(kegiatanCheckedSakit.get(kegiatanCheckedSakit.size()-1));
-
-
-        }else{
-
-            kegiatanCheckedSakit.remove(kegiatan.getKegiatan());
-
-            StringBuffer buffer = new StringBuffer();
-            if (kegiatanCheckedSakit.size() == 1){
-                buffer.append(kegiatanCheckedSakit.get(kegiatanCheckedSakit.size()-1));
-            }else if(kegiatanCheckedSakit.isEmpty()){
-            }
-            else{
-                for (int i = 0; i<kegiatanCheckedSakit.size()-1;i++){
-                    buffer.append(kegiatanCheckedSakit.get(i)+", ");
-                }
-                buffer.append(kegiatanCheckedSakit.get(kegiatanCheckedSakit.size()-1)+", ");
-            }
-
-
-
-        }
-
-    }
-
-
 }

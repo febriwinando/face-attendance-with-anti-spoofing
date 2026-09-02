@@ -251,9 +251,9 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
         titleDinasLuar.setText(intent.getStringExtra("title"));
 
 
-        kegiatans.clear();
-        kegiatans = TugasLapanganActivity.kegiatanChecked;
-        kegiatanlainnya = TugasLapanganActivity.kegiatansLainnya;
+        kegiatans = intent.getStringArrayListExtra("kegiatan_checked");
+        if (kegiatans == null) kegiatans = new ArrayList<>();
+        kegiatanlainnya = intent.getStringExtra("kegiatans_lainnya");
 
 
         String uriString =
@@ -1203,7 +1203,6 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
             stopLocationUpdates();
 
             dialogSukes.dismiss();
-            TugasLapanganActivity.tL.finish();
             finish();
         });
 

@@ -24,20 +24,16 @@ import go.pemkott.appsandroidmobiletebingtinggi.model.Kegiatan;
 
 public class CutiActivity extends AppCompatActivity {
 
-    public static AppCompatActivity cuti ;
     DatabaseHelper databaseHelper;
-
-    public static ArrayList<String> kegiatanCheckedCuti = new ArrayList<String>();
-    private static List<Kegiatan> listCuti = new ArrayList<>();
-    static List<String> kegiatansListCuti = new ArrayList<String>();
+    private ArrayList<String> kegiatanCheckedCuti = new ArrayList<>();
+    private List<Kegiatan> listCuti = new ArrayList<>();
+    private List<String> kegiatansListCuti = new ArrayList<>();
+    private String kegiatansCutiLainnya;
 
     CutiAdapter cutiAdapter;
-
     EditText etkegiatanCutiLainnya;
     RecyclerView rvKegiatanCuti;
-
-    StringBuffer buffer;
-
+    DialogView dialogView = new DialogView(CutiActivity.this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,34 +42,35 @@ public class CutiActivity extends AppCompatActivity {
         getWindow().setNavigationBarColor(getResources().getColor(R.color.background_color));
         setContentView(R.layout.activity_cuti);
 
-
-        cuti = this;
-
+        databaseHelper = new DatabaseHelper(this);
+        kegiatanDatabase();
 
         rvKegiatanCuti = findViewById(R.id.rvKegiatanCuti);
         etkegiatanCutiLainnya = findViewById(R.id.etKegiatanCutiLainnya);
         etkegiatanCutiLainnya.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
 
-        listCuti.clear();
-        kegiatansListCuti.clear();
-        databaseHelper = new DatabaseHelper(this);
-        kegiatanDatabase();
-
-        listCuti.addAll(getListData());
+        setupRecyclerData();
         showRecyclerList();
 
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                finish();   // atau aksi lain
+                finish();
             }
         });
-
-
     }
 
+    private void setupRecyclerData() {
+        listCuti.clear();
+        for (String s : kegiatansListCuti) {
+            Kegiatan k = new Kegiatan();
+            k.setKegiatan(s);
+            listCuti.add(k);
+        }
+    }
 
     public void kegiatanDatabase(){
+        kegiatansListCuti.clear();
         Cursor res = databaseHelper.getKegiatanIzin();
         while (res.moveToNext()){
             if (res.getString(1).equals("cuti")){
@@ -82,79 +79,38 @@ public class CutiActivity extends AppCompatActivity {
         }
     }
 
-    static ArrayList<Kegiatan> getListData() {
-        ArrayList<Kegiatan> list = new ArrayList<>();
-        list.clear();
-        for (int position = 0; position < kegiatansListCuti.size(); position++) {
-            Kegiatan kegiatans = new Kegiatan();
-            kegiatans.setKegiatan(kegiatansListCuti.get(position));
-            list.add(kegiatans);
-        }
-        return list;
-    }
-
     private void showRecyclerList(){
         rvKegiatanCuti.setLayoutManager(new LinearLayoutManager(this));
         cutiAdapter = new CutiAdapter(listCuti);
         rvKegiatanCuti.setAdapter(cutiAdapter);
 
-        cutiAdapter.setOnItemClickCallback(new CutiAdapter.OnItemClickCallback() {
-            @Override
-            public void onItemClicked(Kegiatan data) {
-                showSelectedKegiatan(data);
+        cutiAdapter.setOnItemClickCallback(data -> {
+            if (data.isChecked()){
+                if (!kegiatanCheckedCuti.contains(data.getKegiatan())) {
+                    kegiatanCheckedCuti.add(data.getKegiatan());
+                }
+            } else {
+                kegiatanCheckedCuti.remove(data.getKegiatan());
             }
         });
     }
 
-    private void showSelectedKegiatan(Kegiatan kegiatan) {
-        if (kegiatan.isChecked() == true ){
-            kegiatanCheckedCuti.add(kegiatan.getKegiatan());
-
-            buffer = new StringBuffer();
-            for (int i = 0; i<kegiatanCheckedCuti.size()-1;i++){
-                buffer.append(kegiatanCheckedCuti.get(i)+", ");
-            }
-            buffer.append(kegiatanCheckedCuti.get(kegiatanCheckedCuti.size()-1));
-
-
-        }else{
-            kegiatanCheckedCuti.remove(kegiatan.getKegiatan());
-
-            StringBuffer buffer = new StringBuffer();
-            if (kegiatanCheckedCuti.size() == 1){
-                buffer.append(kegiatanCheckedCuti.get(kegiatanCheckedCuti.size()-1));
-            }else if(kegiatanCheckedCuti.isEmpty()){
-            }
-            else{
-                for (int i = 0; i<kegiatanCheckedCuti.size()-1;i++){
-                    buffer.append(kegiatanCheckedCuti.get(i)+", ");
-                }
-                buffer.append(kegiatanCheckedCuti.get(kegiatanCheckedCuti.size()-1)+", ");
-            }
-        }
-
-    }
-
-    public  static  String kegiatansCutiLainnya;
-
-    DialogView dialogView = new DialogView(CutiActivity.this);
     public void nextKegiatanCuti(View view){
-        if (!etkegiatanCutiLainnya.getText().toString().isEmpty()){
+        if (etkegiatanCutiLainnya != null && !etkegiatanCutiLainnya.getText().toString().isEmpty()){
             kegiatansCutiLainnya = etkegiatanCutiLainnya.getText().toString();
-        }else{
+        } else {
             kegiatansCutiLainnya = "kosong";
         }
 
-        if (kegiatanCheckedCuti.isEmpty() && kegiatansCutiLainnya.equals("kosong")){
-            dialogView.viewNotifKosong(CutiActivity.this, "Anda Harus Mengisi Kegiatan Yang Dilaksanakan.", "");
-
-        }else {
-
-            Intent intentTL = new Intent(CutiActivity.this, CameraxActivity.class);
+        if (kegiatanCheckedCuti.isEmpty() && "kosong".equals(kegiatansCutiLainnya)){
+            dialogView.viewNotifKosong(this, "Anda Harus Mengisi Kegiatan Yang Dilaksanakan.", "");
+        } else {
+            Intent intentTL = new Intent(this, CameraxActivity.class);
             intentTL.putExtra("aktivitas", "izincuti");
+            intentTL.putExtra("title", "Isi Data Cuti");
+            intentTL.putStringArrayListExtra("kegiatan_checked_cuti", kegiatanCheckedCuti);
+            intentTL.putExtra("kegiatans_cuti_lainnya", kegiatansCutiLainnya);
             startActivity(intentTL);
-
         }
     }
-
 }

@@ -15,6 +15,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.SimpleDateFormat;
@@ -72,7 +73,7 @@ public class GridJadwalSiftAdapter extends RecyclerView.Adapter<GridJadwalSiftAd
                 for (int j = 0 ; j<waktuSifts.size(); j++){
                     WaktuSift waktuSift = waktuSifts.get(j);
                     if (jadwalSift.getShift_id().equals(waktuSift.getId())){
-                        holder.tanggal.setTextColor(Color.parseColor("#87888c"));
+                        holder.tanggal.setTextColor(ContextCompat.getColor(context, R.color.text_hint));
 
                         holder.txtTanggalJadwalSift.setVisibility(View.VISIBLE);
                         if (waktuSift.getTipe().equals("pagi")){
@@ -88,7 +89,7 @@ public class GridJadwalSiftAdapter extends RecyclerView.Adapter<GridJadwalSiftAd
                             holder.txttanggalJadwal.setText("M");
                         }
 
-                        holder.tanggal.setTextColor(Color.parseColor("#f4f4f4"));
+                        holder.tanggal.setTextColor(ContextCompat.getColor(context, R.color.white));
                         holder.tanggal.setTypeface(null, Typeface.BOLD);
 
                         holder.rlTanggalSift.setOnClickListener(new View.OnClickListener() {

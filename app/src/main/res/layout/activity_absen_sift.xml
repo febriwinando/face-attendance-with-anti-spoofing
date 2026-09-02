@@ -77,6 +77,7 @@
         android:layout_height="35dp"
         android:padding="2dp"
         app:srcCompat="@drawable/ic_search_location"
+        app:tint="@color/text_putih"
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="10dp"
         android:clickable="true"
@@ -85,7 +86,6 @@
         android:focusable="true"
         android:onClick="fokusLokasiSiftActivty"
         android:background="@drawable/backgroundtranshitam"
-
         />
 
     <LinearLayout

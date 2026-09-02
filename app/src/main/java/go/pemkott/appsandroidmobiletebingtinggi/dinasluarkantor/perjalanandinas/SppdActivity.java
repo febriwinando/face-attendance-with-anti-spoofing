@@ -7,7 +7,6 @@ import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,39 +20,27 @@ import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraxActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
-import go.pemkott.appsandroidmobiletebingtinggi.dinasluarkantor.tugaslapangan.TugasLapanganActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.model.Kegiatan;
 
 public class SppdActivity extends AppCompatActivity {
 
-    private static ArrayList<Kegiatan> listPd = new ArrayList<>();
-
-    private ArrayList<String>  kegiatanAddedPd = new ArrayList<String>();
-    public static ArrayList<String> kegiatanCheckedPd = new ArrayList<String>();
-    static ArrayList<String> kegiatansListPd = new ArrayList<String>();
-    public static String kegiatansPdLainnya = "kosong";
-    StringBuffer buffer2;
+    private ArrayList<Kegiatan> listPd = new ArrayList<>();
+    private ArrayList<String> kegiatanCheckedPd = new ArrayList<String>();
+    private ArrayList<String> kegiatansListPd = new ArrayList<String>();
+    private String kegiatansPdLainnya = "kosong";
 
     EditText etkegiatanPdLainnya;
     RecyclerView rvKegiatanPd;
     DatabaseHelper databaseHelper;
     SppdAdapter sppdAdapter;
+    DialogView dialogView = new DialogView(SppdActivity.this);
 
-    public static AppCompatActivity pd ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.background_color));
         getWindow().setNavigationBarColor(getResources().getColor(R.color.background_color));
         setContentView(R.layout.activity_sppd);
-
-        listPd.clear();
-        kegiatansListPd.clear();
-        kegiatanCheckedPd.clear();
-        pd = this;
-
-
-
 
         databaseHelper = new DatabaseHelper(this);
         kegiatanDatabase();
@@ -62,29 +49,28 @@ public class SppdActivity extends AppCompatActivity {
         etkegiatanPdLainnya = findViewById(R.id.etKegiatanPdLainnya);
         etkegiatanPdLainnya.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
 
-
-        listPd.addAll(getListData2());
-
+        setupRecyclerData();
         showRecyclerList();
 
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                finish();
+            }
+        });
     }
 
-
-    static ArrayList<Kegiatan> getListData2() {
-        ArrayList<Kegiatan> list = new ArrayList<>();
-        list.clear();
-
-        for (int position = 0; position < kegiatansListPd.size(); position++) {
-            Kegiatan kegiatans = new Kegiatan();
-            kegiatans.setKegiatan(kegiatansListPd.get(position));
-            list.add(kegiatans);
-
+    private void setupRecyclerData() {
+        listPd.clear();
+        for (String s : kegiatansListPd) {
+            Kegiatan k = new Kegiatan();
+            k.setKegiatan(s);
+            listPd.add(k);
         }
-        Log.d("PerjalananDinasList", list.toString());
-        return list;
     }
 
     public void kegiatanDatabase(){
+        kegiatansListPd.clear();
         Cursor res = databaseHelper.getKegiatanIzin();
         while (res.moveToNext()){
             if (res.getString(1).equals("pd")){
@@ -92,97 +78,50 @@ public class SppdActivity extends AppCompatActivity {
             }
         }
     }
-    DialogView dialogView = new DialogView(SppdActivity.this);
+
     public void nextKegiatanPd(View view) {
-        // Pastikan EditText sudah terhubung
         if (etkegiatanPdLainnya != null && !etkegiatanPdLainnya.getText().toString().isEmpty()) {
             kegiatansPdLainnya = etkegiatanPdLainnya.getText().toString();
         } else {
             kegiatansPdLainnya = "kosong";
         }
 
-        boolean isKegiatanCheckedKosong = kegiatanCheckedPd == null || kegiatanCheckedPd.isEmpty();
-        boolean isLainnyaKosong = etkegiatanPdLainnya.getText().toString().trim().isEmpty();
+        boolean isKegiatanCheckedKosong = kegiatanCheckedPd.isEmpty();
+        boolean isLainnyaKosong = kegiatansPdLainnya.equals("kosong");
 
         if (isKegiatanCheckedKosong && isLainnyaKosong) {
-            dialogView.viewNotifKosong(
-                    SppdActivity.this,
-                    "Anda Harus Mengisi Kegiatan Yang Dilaksanakan.",
-                    ""
-            );
+            dialogView.viewNotifKosong(this, "Anda Harus Mengisi Kegiatan Yang Dilaksanakan.", "");
             return;
         } else {
-            Intent intentTL = new Intent(SppdActivity.this, CameraxActivity.class);
+            Intent intentTL = new Intent(this, CameraxActivity.class);
             intentTL.putExtra("aktivitas", "perjalanandinas");
             intentTL.putExtra("title", "Isi Data Perjalanan Dinas");
-//            intentTL.putStringArrayListExtra(
-//                    "kegiatan_checked_pd",
-//                    kegiatanCheckedPd
-//            );
-//
-//            intentTL.putExtra(
-//                    "kegiatan_pd_lainnya",
-//                    kegiatansPdLainnya
-//            );
+            intentTL.putStringArrayListExtra("kegiatan_checked_pd", kegiatanCheckedPd);
+            intentTL.putExtra("kegiatan_pd_lainnya", kegiatansPdLainnya);
             startActivity(intentTL);
-            finish();
         }
-
-        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                finish();   // atau aksi lain
-            }
-        });
     }
-
 
     private void showRecyclerList(){
         rvKegiatanPd.setLayoutManager(new LinearLayoutManager(this));
-        sppdAdapter = new SppdAdapter(SppdActivity.this, listPd);
+        sppdAdapter = new SppdAdapter(this, listPd);
         rvKegiatanPd.setAdapter(sppdAdapter);
 
         sppdAdapter.setOnItemClickCallback(new SppdAdapter.OnItemClickCallback() {
             @Override
             public void onItemClicked(Kegiatan data) {
-                showSelectedKegiatan(data);
+                if (data.isChecked()){
+                    if (!kegiatanCheckedPd.contains(data.getKegiatan())) {
+                        kegiatanCheckedPd.add(data.getKegiatan());
+                    }
+                } else {
+                    kegiatanCheckedPd.remove(data.getKegiatan());
+                }
             }
         });
-    }
-
-    private void showSelectedKegiatan(Kegiatan kegiatan) {
-        if (kegiatan.isChecked()){
-            kegiatanCheckedPd.add(kegiatan.getKegiatan());
-
-            buffer2 = new StringBuffer();
-            for (int i = 0; i<kegiatanCheckedPd.size()-1;i++){
-                buffer2.append(kegiatanCheckedPd.get(i)+", ");
-            }
-            buffer2.append(kegiatanCheckedPd.get(kegiatanCheckedPd.size()-1));
-
-        }else{
-            kegiatanCheckedPd.remove(kegiatan.getKegiatan());
-            Log.d("PerjalananDinasList", kegiatanCheckedPd.toString());
-            StringBuffer buffer = new StringBuffer();
-            if (kegiatanCheckedPd.size() == 1){
-                buffer.append(kegiatanCheckedPd.get(kegiatanCheckedPd.size()-1));
-            }else if(kegiatanCheckedPd.isEmpty()){
-            }
-            else{
-                for (int i = 0; i<kegiatanCheckedPd.size()-1;i++){
-                    buffer.append(kegiatanCheckedPd.get(i)+", ");
-                }
-                buffer.append(kegiatanCheckedPd.get(kegiatanCheckedPd.size()-1)+", ");
-            }
-
-        }
-//        Log.d("PerjalananDinasList", kegiatanCheckedPd.toString());
-
     }
 
     public void backPd(View view){
         finish();
     }
-
-
 }
