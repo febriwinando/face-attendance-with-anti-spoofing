@@ -7,5 +7,5 @@
     <solid
         android:color="@color/background_layout"/>
     <corners
-        android:radius="40dp"/>
+        android:radius="20dp"/>
 </shape>

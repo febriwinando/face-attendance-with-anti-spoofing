@@ -1,115 +1,152 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/llRekapPresensi"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:card_view="http://schemas.android.com/tools"
-    android:id="@+id/llRekapPresensi">
+    android:layout_marginHorizontal="4dp"
+    android:layout_marginVertical="6dp"
+    app:cardBackgroundColor="@color/white"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="2dp"
+    app:strokeWidth="0dp">
 
-    <androidx.cardview.widget.CardView
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardCornerRadius="25dp"
-        card_view:cardElevation="50dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="10dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginEnd="5dp">
+        android:padding="16dp">
 
-        <RelativeLayout
+        <LinearLayout
+            android:id="@+id/statusVerifikasi"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            app:layout_constraintBottom_toBottomOf="@id/tvTanggalRekap"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tvTanggalRekap">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/civPresensi"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:src="@color/kuning"
+                android:visibility="gone" />
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/civPresensiTolak"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:src="@color/merah"
+                android:visibility="gone" />
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/civPresensiVerifikasi"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:src="@color/hijau"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvTanggalRekap"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="@color/text_hitam"
+            android:textSize="15sp"
+            app:layout_constraintStart_toEndOf="@+id/statusVerifikasi"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Senin, 20 Mei 2024" />
+
+        <LinearLayout
+            android:id="@+id/timeLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:gravity="center_vertical">
+            android:layout_marginTop="12dp"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/tvTanggalRekap">
 
+            <!-- Check In -->
             <LinearLayout
-                android:id="@+id/statusVerifikasi"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:layout_alignParentStart="true"
-                android:layout_centerVertical="true">
-
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/civPresensi"
-                    android:layout_width="12dp"
-                    android:layout_height="12dp"
-                    android:background="@drawable/backgroundkuning"
-                    android:padding="2dp"
-                    android:visibility="gone"/>
-
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/civPresensiTolak"
-                    android:layout_width="12dp"
-                    android:layout_height="12dp"
-                    android:background="@drawable/backgoundovalmerah"
-                    android:padding="2dp"
-                    android:visibility="gone"/>
-
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/civPresensiVerifikasi"
-                    android:layout_width="12dp"
-                    android:layout_height="12dp"
-                    android:background="@drawable/backgoundovalbirusift"
-                    android:padding="2dp"
-                    android:visibility="gone"/>
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/tvTanggalRekap"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginStart="10dp"
-                android:textColor="@color/text_primary"
-                android:layout_toEndOf="@+id/statusVerifikasi"
-                android:textSize="14sp"/>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingStart="5dp"
-                android:paddingEnd="5dp">
-
-                <ImageView
-                    android:layout_width="38dp"
-                    android:layout_height="38dp"
-                    app:srcCompat="@drawable/one_more"
-                    app:tint="@color/primary_brand"
-                    android:contentDescription="@string/todo" />
+                android:layout_weight="1"
+                android:gravity="start"
+                android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/tvRekapJamMasuk"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:text="00:00"
-                    android:textSize="14sp"
-                    android:textColor="@color/text_primary"
-                    />
+                    android:text="Masuk"
+                    android:textColor="@color/abuabu_font"
+                    android:textSize="12sp" />
 
-                <ImageView
-                    app:tint="@color/primary_brand"
-                    android:layout_width="38dp"
-                    android:layout_height="38dp"
-                    android:layout_marginStart="10dp"
-                    app:srcCompat="@drawable/one_less"
-                    android:contentDescription="@string/todo" />
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/one_more"
+                        app:tint="@color/hijau" />
+
+                    <TextView
+                        android:id="@+id/tvRekapJamMasuk"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:textColor="@color/text_hitam"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        tools:text="07:30" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Check Out -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="start"
+                android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/tvRekapJamPulang"
-                    android:textColor="@color/text_primary"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:text="00:00"
-                    android:textSize="14sp" />
-            </LinearLayout>
-        </RelativeLayout>
-    </androidx.cardview.widget.CardView>
+                    android:text="Pulang"
+                    android:textColor="@color/abuabu_font"
+                    android:textSize="12sp" />
 
-</LinearLayout>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/one_less"
+                        app:tint="@color/merah" />
+
+                    <TextView
+                        android:id="@+id/tvRekapJamPulang"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:textColor="@color/text_hitam"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        tools:text="16:00" />
+                </LinearLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

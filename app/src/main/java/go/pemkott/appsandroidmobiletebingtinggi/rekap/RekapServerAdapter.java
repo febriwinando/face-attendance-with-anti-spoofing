@@ -4,7 +4,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -88,7 +87,7 @@ public class RekapServerAdapter extends RecyclerView.Adapter<RekapServerAdapter.
     class ListViewHolder extends RecyclerView.ViewHolder{
 
         TextView tvTanggalRekap, tvRekapJamMasuk, tvRekapJamPulang, tvWaktuPresenceRekapServer;
-        LinearLayout llRekapPresensi;
+        View llRekapPresensi;
         CircleImageView civPresensi, civPresensiVerifikasi, civPresensiTolak;
 
 

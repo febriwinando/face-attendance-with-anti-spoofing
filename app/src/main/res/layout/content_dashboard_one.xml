@@ -64,7 +64,7 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-black"
                         android:textColor="@color/text_putih"
-                        android:textSize="22sp"
+                        android:textSize="18sp"
                         tools:text="Febri Winando" />
                 </LinearLayout>
 
