@@ -1,69 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="220dp"
-    android:background="@drawable/backgoundovalputih"
-    android:backgroundTint="@color/surface_main"
-    android:gravity="center"
-    android:padding="10dp"
-    android:layout_margin="20dp">
+    android:layout_height="wrap_content"
+    android:layout_margin="20dp"
+    app:cardBackgroundColor="@color/surface_main"
+    app:cardCornerRadius="24dp"
+    app:cardElevation="8dp"
+    app:strokeWidth="0dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp">
-
-        <ImageView
-            android:id="@+id/emoticon"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_centerVertical="true"
-            android:layout_marginEnd="20dp"
-            app:srcCompat="@drawable/ic_sukses"
-            app:tint="@color/primary_brand" />
-
-        <LinearLayout
-            android:layout_toEndOf="@+id/emoticon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:orientation="vertical"
-            >
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Berhasil!"
-                android:textSize="30sp"
-                android:textColor="@color/primary_brand"
-                />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp"
-                android:id="@+id/tvInfo1"
-                />
-
-
-        </LinearLayout>
-
+        android:layout_height="wrap_content"
+        android:padding="24dp">
 
         <ImageView
             android:id="@+id/tvTutupDialog"
-            android:layout_width="38dp"
-            android:layout_height="38dp"
-            android:layout_alignParentTop="true"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
+            android:focusable="true"
+            android:padding="4dp"
             android:src="@drawable/one_close"
-            app:tint="@color/text_primary"
-            android:focusable="true"/>
+            app:tint="@color/text_hint" />
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical">
 
+            <ImageView
+                android:id="@+id/emoticon"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/backgoundovalabuabu"
+                android:backgroundTint="#1A4CAF50"
+                android:padding="16dp"
+                app:srcCompat="@drawable/ic_sukses"
+                app:tint="@color/hijau" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-black"
+                android:text="Berhasil!"
+                android:textColor="@color/hijau"
+                android:textSize="24sp" />
+
+            <TextView
+                android:id="@+id/tvInfo1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="sans-serif-medium"
+                android:textAlignment="center"
+                android:textColor="@color/text_secondary"
+                android:textSize="14sp"
+                android:lineSpacingExtra="2dp"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnOk"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Selesai"
+                android:visibility="gone"
+                app:cornerRadius="12dp" />
+
+        </LinearLayout>
     </RelativeLayout>
-
-</LinearLayout>
+</com.google.android.material.card.MaterialCardView>

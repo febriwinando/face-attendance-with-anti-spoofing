@@ -37,8 +37,8 @@ converterGson = "3.0.0"
 firebaseBom = "34.15.0"
 swiperefreshlayout = "1.2.0"
 
-tensorflowLite = "2.16.1"
-tensorflowLiteSupport = "0.4.4"
+litert = "2.2.0"
+litertSupport = "1.4.2"
 cameraCore = "1.6.1"
 cameraCamera2 = "1.6.1"
 cameraLifecycle = "1.6.1"
@@ -97,8 +97,8 @@ firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics
 app-update-ktx = { group = "com.google.android.play", name = "app-update-ktx", version.ref = "appUpdateKtx" }
 okhttp3-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "loggingInterceptorVersion" }
 activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "activityKtx" }
-tensorflow-lite = { group = "org.tensorflow", name = "tensorflow-lite", version.ref = "tensorflowLite" }
-tensorflow-lite-support = { group = "org.tensorflow", name = "tensorflow-lite-support", version.ref = "tensorflowLiteSupport" }
+tensorflow-lite = { group = "com.google.ai.edge.litert", name = "litert", version.ref = "litert" }
+tensorflow-lite-support = { group = "com.google.ai.edge.litert", name = "litert-support", version.ref = "litertSupport" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
