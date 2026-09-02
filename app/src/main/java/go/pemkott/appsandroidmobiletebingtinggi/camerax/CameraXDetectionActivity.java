@@ -70,6 +70,7 @@ public class CameraXDetectionActivity extends AppCompatActivity {
     private float[] referenceEmbedding;
     private boolean faceInsideFrame = false;
     private boolean isCapturing = false;
+    private boolean livenessPassed = false;
 
     // ================= CHALLENGE =================
     enum Challenge {
@@ -296,8 +297,40 @@ public class CameraXDetectionActivity extends AppCompatActivity {
         }
 
         Face face = faces.get(0);
-        float[] currentEmbedding = faceRecognizer.getEmbedding(frameBitmap, face.getBoundingBox());
+        RectF faceNorm = normalize(face.getBoundingBox(), image);
 
+        faceInsideFrame =
+                faceOverlay.getFrameNormalized()
+                        .contains(faceNorm.centerX(), faceNorm.centerY());
+
+        if (!faceInsideFrame) {
+            runOnUiThread(() -> {
+                txtChallenge.setText("⚠️ Posisikan wajah di dalam oval");
+                faceOverlay.setFaceData(false, faceNorm, "");
+            });
+            resetChallengeOnly();
+            return;
+        }
+
+        // TAHAP 1: Validasi Gerakan (Liveness)
+        if (!livenessPassed) {
+            if (challengeIndex >= challengeQueue.size()) {
+                livenessPassed = true;
+            } else {
+                runOnUiThread(() -> {
+                    if (challengeIndex < challengeQueue.size()) {
+                        String instruction = getChallengeText(challengeQueue.get(challengeIndex));
+                        txtChallenge.setText("Tahap 1: Liveness Check\n" + instruction);
+                        faceOverlay.setFaceData(true, faceNorm, "Mendeteksi Gerakan...");
+                    }
+                });
+                detectChallenge(face);
+                return;
+            }
+        }
+
+        // TAHAP 2: Deteksi Kesesuaian Wajah (Recognition)
+        float[] currentEmbedding = faceRecognizer.getEmbedding(frameBitmap, face.getBoundingBox());
         float score = 0f;
         boolean isRecognized = false;
 
@@ -305,50 +338,27 @@ public class CameraXDetectionActivity extends AppCompatActivity {
             score = faceRecognizer.getSimilarityScore(currentEmbedding, referenceEmbedding);
             isRecognized = score > 0.7f;
         } else if (referenceEmbedding == null) {
-            isRecognized = true; // Fallback
+            isRecognized = true; 
         }
 
-        RectF faceNorm = normalize(face.getBoundingBox(), image);
-
-        faceInsideFrame =
-                faceOverlay.getFrameNormalized()
-                        .contains(faceNorm.centerX(), faceNorm.centerY());
-
-        String percentageText = String.format(java.util.Locale.US, "%.0f%%", score * 100);
         final float finalScore = score;
-        runOnUiThread(() -> faceOverlay.setFaceData(faceInsideFrame, faceNorm, percentageText));
+        String percentageText = String.format(java.util.Locale.US, "%.0f%%", score * 100);
 
-        if (!faceInsideFrame || !isRecognized) {
+        runOnUiThread(() -> faceOverlay.setFaceData(true, faceNorm, percentageText));
+
+        if (!isRecognized) {
+            runOnUiThread(() -> txtChallenge.setText("Tahap 2: Verifikasi Wajah\n❌ Wajah tidak cocok (" + percentageText + ")"));
+            return;
+        }
+
+        // TAHAP 3: Capture Otomatis
+        if (!isCapturing) {
+            isCapturing = true;
             runOnUiThread(() -> {
-                if (!faceInsideFrame) {
-                    txtChallenge.setText("⚠️ Posisikan wajah di dalam oval");
-                } else {
-                    txtChallenge.setText("❌ Wajah tidak cocok (" + percentageText + ")");
-                }
+                txtChallenge.setText("✔ Wajah Sesuai! (" + percentageText + ")\nMohon tunggu, mengambil foto...");
+                takePicture();
             });
-            resetChallengeOnly();
-            return;
         }
-
-        if (challengeIndex >= challengeQueue.size()) {
-            if (!isCapturing) {
-                isCapturing = true;
-                runOnUiThread(() -> {
-                    txtChallenge.setText("✔ Verifikasi Berhasil!\nMohon tunggu, mengambil foto...");
-                    capture.setEnabled(true);
-                    capture.setAlpha(1f);
-                    takePicture();
-                });
-            }
-            return;
-        }
-
-        runOnUiThread(() -> {
-            String instruction = getChallengeText(challengeQueue.get(challengeIndex));
-            txtChallenge.setText("✅ Wajah Sesuai (" + percentageText + ")\nSekarang: " + instruction);
-        });
-        
-        detectChallenge(face);
     }
 
     private void detectChallenge(Face face) {
@@ -372,11 +382,11 @@ public class CameraXDetectionActivity extends AppCompatActivity {
                 break;
 
             case TURN_LEFT:
-                passed = eulerY > 15;
+                passed = eulerY < -15;
                 break;
 
             case TURN_RIGHT:
-                passed = eulerY < -15;
+                passed = eulerY > 15;
                 break;
 
             case LOOK_UP:
@@ -404,6 +414,8 @@ public class CameraXDetectionActivity extends AppCompatActivity {
 
     private void resetState() {
         challengeIndex = 0;
+        livenessPassed = false;
+        isCapturing = false;
         runOnUiThread(() -> {
             capture.setEnabled(false);
             capture.setAlpha(0.5f);

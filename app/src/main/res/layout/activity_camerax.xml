@@ -36,6 +36,7 @@
                 android:scaleType="centerCrop"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 app:tint="@color/on_primary_brand"
+                android:visibility="gone"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"/>
