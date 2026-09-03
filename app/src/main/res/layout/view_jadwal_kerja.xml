@@ -1,86 +1,126 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/backgoundovalputih"
-    android:orientation="vertical"
-    android:padding="10dp"
-    android:layout_margin="20dp">
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Daftar Jam Kerja"
-            android:layout_centerInParent="true"
-            android:textAlignment="center"
-            android:textSize="18sp"
-            android:textColor="@color/text_hitam"
-            />
-
-        <ImageView
-            android:id="@+id/ivCloseDaftarJadwalKerja"
-            android:layout_width="38dp"
-            android:layout_height="38dp"
-            android:src="@drawable/one_close"
-            android:layout_centerVertical="true"
-            android:layout_alignParentEnd="true"
-            />
-    </RelativeLayout>
-    <TextView
-        android:layout_gravity="center"
-        android:id="@+id/tvInfoJamKerja"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Anda tidak memiliki Jam Kerja."
-        android:visibility="gone"
-        android:textColor="@color/font"
-        android:textSize="12sp"
-        />
-    <androidx.recyclerview.widget.RecyclerView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/rvJadwalKerja"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        />
-
+    android:layout_margin="24dp"
+    app:cardBackgroundColor="@color/surface_main"
+    app:cardCornerRadius="28dp"
+    app:cardElevation="12dp"
+    app:strokeWidth="0dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/backgoundovalbirusift"
-        android:layout_margin="10dp"
-        android:id="@+id/btnSingkronJadwalKerja"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tvSingkronJadwal"
-            android:textAlignment="center"
-            android:padding="10dp"
+        <!-- Custom Header -->
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="SINGKRONKAN"
-            android:textColor="@color/text_putih"
-            android:textSize="16sp"
-            />
+            android:padding="20dp">
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:fontFamily="sans-serif-black"
+                android:letterSpacing="0.05"
+                android:text="Daftar Jam Kerja"
+                android:textColor="@color/text_primary"
+                android:textSize="18sp"
+                tools:ignore="HardcodedText" />
+
+            <ImageView
+                android:id="@+id/ivCloseDaftarJadwalKerja"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="8dp"
+                android:src="@drawable/one_close"
+                app:tint="@color/text_hint"
+                android:contentDescription="@string/todo" />
+        </RelativeLayout>
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxHeight="400dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="16dp"
+                android:paddingBottom="16dp">
+
+                <TextView
+                    android:id="@+id/tvInfoJamKerja"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="32dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="Anda tidak memiliki Jam Kerja."
+                    android:textAlignment="center"
+                    android:textColor="@color/text_hint"
+                    android:textSize="14sp"
+                    android:visibility="gone"
+                    tools:ignore="HardcodedText" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvJadwalKerja"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false"
+                    tools:listitem="@layout/list_row_kegiatan" />
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
+        <!-- Action Footer -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="20dp">
+
+            <LinearLayout
+                android:id="@+id/btnSingkronJadwalKerja"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:background="@drawable/backgoundovalbirusift"
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:orientation="horizontal"
+                android:elevation="4dp">
+
+                <TextView
+                    android:id="@+id/tvSingkronJadwal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="SINGKRONKAN"
+                    android:textAllCaps="true"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    android:fontFamily="sans-serif-black"
+                    android:letterSpacing="0.1"
+                    tools:ignore="HardcodedText" />
+            </LinearLayout>
+
+            <ProgressBar
+                android:id="@+id/progressBarSingkron"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center"
+                android:indeterminateTint="@color/primary_brand"
+                android:visibility="gone" />
+        </FrameLayout>
 
     </LinearLayout>
-
-    <ProgressBar
-        android:layout_margin="10dp"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:indeterminateTint="@color/biru"
-        android:layout_gravity="center"
-        android:id="@+id/progressBarSingkron"
-        android:visibility="gone"
-        />
-
-</LinearLayout>
+</com.google.android.material.card.MaterialCardView>
