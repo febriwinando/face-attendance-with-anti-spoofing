@@ -1,19 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
         android:id="@+id/masukvalidasi"
-        android:icon="@drawable/one_more"
-        android:title="@string/masuk"
-        app:tint="@color/black"
-        />
+        android:icon="@drawable/ic_masuk_kanan"
+        android:title="Validasi Masuk" />
 
     <item
         android:id="@+id/pulangvalidasi"
-        android:icon="@drawable/one_less"
-        android:title="@string/pulang"
-        app:tint="@color/black"
-        />
+        android:icon="@drawable/ic_pulang_kiri"
+        android:title="Validasi Pulang" />
 
 </menu>

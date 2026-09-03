@@ -1,94 +1,106 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".verifikasi.fragvalidasi.masuk.MasukFragment"
-    android:background="@color/background_main"
-    android:paddingStart="20dp"
-    android:paddingEnd="20dp"
-    android:orientation="vertical">
+    android:background="@android:color/transparent">
 
-    <RelativeLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
-        >
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
-        <ImageView
-            android:layout_alignParentStart="true"
-            android:id="@+id/ivBackValidasi"
-            android:layout_width="38dp"
-            android:layout_height="38dp"
-            app:srcCompat="@drawable/one_left"
-            android:layout_marginEnd="10dp"/>
-
-
-
-    <TextView
-        android:layout_centerVertical="true"
-        android:layout_toEndOf="@+id/ivBackValidasi"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/validasi_masuk"
-        android:textColor="@color/text_primary"
-        android:textSize="18sp"
-
-        android:textStyle="bold"/>
-    </RelativeLayout>
-
-    <TextView
-        android:id="@+id/tvv1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        android:background="@drawable/backgoundovalbirusift"
-        android:text="VERIFIKATOR PERTAMA"
-        android:textSize="16sp"
-        android:padding="5dp"
-        android:layout_marginTop="15dp"
-        android:layout_marginBottom="5dp"
-        android:textColor="@color/background_main"
-        android:visibility="gone"
-        />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvRekapMasukFragment"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:listitem="@layout/item_validasi_new"
-            />
+            android:orientation="vertical"
+            android:paddingHorizontal="24dp">
 
-    </LinearLayout>
+            <!-- Elegant Page Title -->
+            <RelativeLayout
+                android:id="@+id/rlHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp">
 
-    <TextView
-        android:id="@+id/tvv2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        android:background="@drawable/backgoundovalbirusift"
-        android:text="VERIFIKATOR KEDUA"
-        android:textSize="16sp"
-        android:padding="5dp"
-        android:layout_marginTop="15dp"
-        android:layout_marginBottom="5dp"
-        android:textColor="@color/background_main"
-        android:visibility="gone"
-        />
+                <ImageView
+                    android:id="@+id/ivBackValidasi"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_centerVertical="true"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="8dp"
+                    android:src="@drawable/one_left"
+                    app:tint="@color/text_primary" />
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="12dp"
+                    android:layout_toEndOf="@id/ivBackValidasi"
+                    android:fontFamily="sans-serif-black"
+                    android:text="Validasi Masuk"
+                    android:textColor="@color/text_primary"
+                    android:textSize="22sp" />
+            </RelativeLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvVerivikatorKedua"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:listitem="@layout/item_validasi_new"
-            />
+            <!-- Verificator 1 Section -->
+            <TextView
+                android:id="@+id/tvv1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/backgoundovalabuabu"
+                android:backgroundTint="@color/primary_brand"
+                android:fontFamily="sans-serif-black"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="6dp"
+                android:text="VERIFIKATOR PERTAMA"
+                android:textColor="@color/on_primary_brand"
+                android:textSize="12sp"
+                android:letterSpacing="0.05"
+                android:visibility="gone"
+                tools:visibility="visible" />
 
-</LinearLayout>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvRekapMasukFragment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                tools:listitem="@layout/item_validasi_new" />
+
+            <!-- Verificator 2 Section -->
+            <TextView
+                android:id="@+id/tvv2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/backgoundovalabuabu"
+                android:backgroundTint="@color/brand_secondary"
+                android:fontFamily="sans-serif-black"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="6dp"
+                android:text="VERIFIKATOR KEDUA"
+                android:textColor="@color/on_primary_brand"
+                android:textSize="12sp"
+                android:letterSpacing="0.05"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvVerivikatorKedua"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                android:layout_marginBottom="100dp"
+                tools:listitem="@layout/item_validasi_new" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

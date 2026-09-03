@@ -19,8 +19,8 @@
 
     <!-- Overriding existing colors for dark mode -->
     <color name="background_color">#121212</color>
-    <color name="putih">#1E1E1E</color>
-    <color name="white">#1E1E1E</color>
+    <color name="putih">#FFFFFF</color>
+    <color name="white">#FFFFFF</color>
     <color name="hitam">#F5F5F5</color>
     <color name="black">#F5F5F5</color>
     <color name="background_layout">#1E1E1E</color>

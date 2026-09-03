@@ -7,6 +7,7 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.WindowInsetsControllerCompat;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -37,11 +38,22 @@ public class ValidasiNewActivity extends AppCompatActivity {
         Window window = getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        window.setStatusBarColor(getResources().getColor(R.color.putih));
-        window.setNavigationBarColor(getResources().getColor(R.color.biru));
+        window.setStatusBarColor(getResources().getColor(R.color.background_main));
+        window.setNavigationBarColor(getResources().getColor(R.color.background_main));
+
+        WindowInsetsControllerCompat controller = new WindowInsetsControllerCompat(window, window.getDecorView());
+        controller.setAppearanceLightStatusBars(true);
+        controller.setAppearanceLightNavigationBars(true);
 
         contentView = findViewById(R.id.containervalidasi);
         menuvalidasi = findViewById(R.id.menuvalidasi);
+        View cvMenuContainer = findViewById(R.id.cvMenuContainer);
+
+        // Entrance Animation
+        cvMenuContainer.setAlpha(0f);
+        cvMenuContainer.setTranslationY(50f);
+
+        cvMenuContainer.animate().alpha(1f).translationY(0f).setDuration(600).start();
 
         // Ambil durasi animasi bawaan Android
         shortAnimationDuration =

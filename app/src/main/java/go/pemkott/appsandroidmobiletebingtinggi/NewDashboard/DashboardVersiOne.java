@@ -15,6 +15,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.location.LocationManager;
 import android.os.Build;
@@ -43,6 +44,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.google.android.material.card.MaterialCardView;
 import com.bumptech.glide.Glide;
 import com.google.android.play.core.appupdate.AppUpdateManager;
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
@@ -100,7 +102,7 @@ public class DashboardVersiOne extends AppCompatActivity {
     ProgressBar pgSingkronLokasi, pgSingkronKegiatan;
     ImageView ivSingkronLokasi, ivSingkronKegiatan;
     CircleImageView ciUser;
-    ConstraintLayout clVerifikasi;
+    MaterialCardView clVerifikasi;
     public static DashboardVersiOne dashboardVersiOne;
     SwipeRefreshLayout swipeRefreshLayout;
 
@@ -138,7 +140,7 @@ public class DashboardVersiOne extends AppCompatActivity {
         }
         Log.d("IP_PERANGKAT", ipPerangkat);
 
-        boolean isDarkMode = (getResources().getConfiguration().uiMode & android.content.res.Configuration.UI_MODE_NIGHT_MASK) == android.content.res.Configuration.UI_MODE_NIGHT_YES;
+        boolean isDarkMode = (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
         controller.setAppearanceLightStatusBars(!isDarkMode);
         controller.setAppearanceLightNavigationBars(!isDarkMode);
 
