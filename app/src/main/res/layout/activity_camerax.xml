@@ -36,7 +36,7 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:background="@drawable/backgoundputihtransparan"
-            android:contentDescription="@string/todo"
+            android:contentDescription="Toggle Flash"
             android:padding="12dp"
             android:src="@drawable/flash"
             android:visibility="gone"
@@ -48,7 +48,7 @@
             android:layout_height="48dp"
             android:layout_marginTop="12dp"
             android:background="@drawable/backgoundputihtransparan"
-            android:contentDescription="@string/todo"
+            android:contentDescription="Flip Camera"
             android:padding="12dp"
             android:src="@drawable/flip"
             android:visibility="gone"
@@ -60,7 +60,7 @@
         android:id="@+id/txtChallenge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
+        android:layout_marginBottom="40dp"
         android:background="@drawable/backgroundtranshitam"
         android:fontFamily="sans-serif-black"
         android:paddingHorizontal="24dp"
@@ -71,8 +71,7 @@
         android:textSize="16sp"
         app:layout_constraintBottom_toTopOf="@+id/capture"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:ignore="HardcodedText" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <!-- Capture Button -->
     <ImageButton
@@ -81,7 +80,7 @@
         android:layout_height="84dp"
         android:layout_marginBottom="48dp"
         android:background="@drawable/one_take_picture"
-        android:contentDescription="@string/todo"
+        android:contentDescription="Capture"
         android:scaleType="centerInside"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -89,7 +88,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:tint="@color/white" />
 
-    <!-- Back Button Area -->
+    <!-- Back Button (Visual enhancement, even if not explicitly required by functionality) -->
     <ImageButton
         android:id="@+id/ivBackCamera"
         android:layout_width="48dp"
@@ -101,7 +100,6 @@
         android:src="@drawable/one_left"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/white"
-        android:contentDescription="@string/todo" />
+        app:tint="@color/white" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -76,11 +76,6 @@ public class LoginActivity extends AppCompatActivity {
         controller.setAppearanceLightStatusBars(true);
         // icon navigation terang/gelap
         controller.setAppearanceLightNavigationBars(true);
-        // Mengatur aktivitas sebagai layar penuh
-//        requestWindowFeature(Window.FEATURE_NO_TITLE);
-//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-//        getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.background_color));
-//        getWindow().setNavigationBarColor(getResources().getColor(R.color.background_color));
         setContentView(R.layout.activity_login);
 
         appUpdateManager = AppUpdateManagerFactory.create(LoginActivity.this);
@@ -152,85 +147,6 @@ public class LoginActivity extends AppCompatActivity {
 
     DialogView dialogView = new DialogView(LoginActivity.this);
     Dialog dialogproses;
-//    private void login_app(){
-//
-//        dialogproses = new Dialog(LoginActivity.this, R.style.DialogStyle);
-//        dialogproses.setContentView(R.layout.view_proses);
-//        dialogproses.setCancelable(false);
-//
-//
-//        StringRequest stringRequest = new StringRequest( Request.Method.POST,
-//                URL_DATA+"username="+ Objects.requireNonNull(etUsername.getText()).toString().trim()+"&password="+ Objects.requireNonNull(etPassword.getText()).toString().trim(),
-//                response -> {
-//                    if (response.isEmpty()){
-//                        dialogproses.dismiss();
-//                        dialogView.viewNotifKosong(LoginActivity.this, "Tidak dapat terhubung ke server,", "silahkan coba kembali.!");
-//                        return;
-//                    }
-//
-//                    try {
-//
-//                        JSONArray jsonObject = new JSONArray(response);
-//                        JSONObject array = jsonObject.getJSONObject(0);
-//                        JSONObject JO = array.getJSONObject("user");
-//
-//
-//                        sId = JO.getString("id");
-//                        sEmployee_id = JO.getString("employee_id");
-//                        sAkses = JO.getString("akses");
-//                        sActive = JO.getString("active");
-//                        sVerifikator = JO.getString("role");
-//                        sToken = array.getString("token");
-//                        sUsername = array.getString("nama");
-//                        status = array.getString("status");
-//
-//                        session.saveToken("Bearer " + sToken);
-//                        session.savePegawaiId(sId);
-//                        session.saveEmployeeId(sEmployee_id);
-//
-//                    } catch (JSONException e) {
-//                        e.printStackTrace();
-//                    }
-//
-//                    if (Integer.parseInt(status) == 401 ){
-//                        dialogproses.dismiss();
-//                        dialogView.viewNotifKosong(LoginActivity.this, "NIP/NIK atau Password tidak sesuai,", "periksa kembali!");
-//                        return;
-//                    }
-//
-//                    if (sActive.equals("1")){
-//                        if (Integer.parseInt(status) == 201){
-//
-//                            databaseHelper.insertDataUserLogin(sId, sEmployee_id, sUsername, sAkses, sActive, sToken, sVerifikator);
-//
-//
-//                            fetchFcmTokenAndSend();
-//
-//                        }else{
-//                            dialogproses.dismiss();
-//                            dialogView.viewNotifKosong(LoginActivity.this, "NIP/NIK atau Password tidak sesuai,", "periksa kembali!");
-//
-//                        }
-//                    }else{
-//                        dialogproses.dismiss();
-//                        dialogView.viewNotifKosong(LoginActivity.this, "User tidak aktif, ", "silahkan hubungi bagian umum unit kerja anda!");
-//
-//                    }
-//
-//
-//                }, error -> {
-//                dialogproses.dismiss();
-//                    dialogView.pesanError(LoginActivity.this);
-//                    Log.d("Error Logi", ""+error.toString());
-//
-//                }
-//        );
-//
-//        RequestQueue requestQueue = Volley.newRequestQueue(this);
-//        requestQueue.add(stringRequest);
-//        dialogproses.show();
-//
-//    }
 
     private void login_app() {
 

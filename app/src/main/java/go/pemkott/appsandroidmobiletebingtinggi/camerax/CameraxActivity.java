@@ -91,6 +91,7 @@ public class CameraxActivity extends AppCompatActivity {
         previewView = findViewById(R.id.cameraPreview);
         faceOverlay = findViewById(R.id.faceOverlay);
         txtChallenge = findViewById(R.id.txtChallenge);
+        findViewById(R.id.ivBackCamera).setOnClickListener(v -> finish());
         
         aktivitas = getIntent().getStringExtra("aktivitas");
 

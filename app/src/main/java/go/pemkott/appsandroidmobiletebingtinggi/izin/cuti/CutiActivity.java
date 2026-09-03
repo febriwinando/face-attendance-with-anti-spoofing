@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.text.InputType;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
@@ -34,7 +35,7 @@ public class CutiActivity extends AppCompatActivity {
     EditText etkegiatanCutiLainnya;
     RecyclerView rvKegiatanCuti;
     DialogView dialogView = new DialogView(CutiActivity.this);
-
+    RelativeLayout rlBackCuti;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,9 +49,22 @@ public class CutiActivity extends AppCompatActivity {
         rvKegiatanCuti = findViewById(R.id.rvKegiatanCuti);
         etkegiatanCutiLainnya = findViewById(R.id.etKegiatanCutiLainnya);
         etkegiatanCutiLainnya.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
-
+        rlBackCuti = findViewById(R.id.rlBackCuti);
         setupRecyclerData();
         showRecyclerList();
+
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                finish();
+            }
+        });
+        rlBackCuti.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
