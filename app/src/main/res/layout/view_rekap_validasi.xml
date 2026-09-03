@@ -3,23 +3,23 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="700dp"
+    android:layout_height="wrap_content"
     android:layout_margin="12dp"
     app:cardBackgroundColor="@color/surface_main"
-    app:cardCornerRadius="32dp"
+    app:cardCornerRadius="28dp"
     app:cardElevation="12dp"
     app:strokeWidth="0dp">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="20dp">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
+        <!-- Header -->
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp">
+            android:padding="20dp">
 
             <TextView
                 android:id="@+id/tvTitleValidasi"
@@ -27,37 +27,42 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:fontFamily="sans-serif-black"
-                android:text="Detail Validasi"
+                android:text="Validasi Tahap Pertama"
                 android:textColor="@color/primary_brand"
-                android:textSize="20sp" />
+                android:textSize="18sp"
+                android:letterSpacing="0.05"
+                tools:ignore="HardcodedText" />
 
             <ImageView
                 android:id="@+id/ivTutupViewListValidasi"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:clickable="true"
                 android:focusable="true"
                 android:padding="8dp"
                 android:src="@drawable/one_close"
-                app:tint="@color/text_hint" />
+                app:tint="@color/text_hint"
+                android:contentDescription="@string/todo" />
         </RelativeLayout>
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:scrollbars="none">
+            android:layout_height="600dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:paddingBottom="24dp">
 
+                <!-- Info Card -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="16dp"
                     app:cardBackgroundColor="@color/surface_variant"
                     app:cardCornerRadius="20dp"
                     app:cardElevation="0dp"
@@ -69,141 +74,84 @@
                         android:padding="16dp"
                         android:stretchColumns="2">
 
-                        <!-- Row Nama -->
-                        <TableRow
-                            android:id="@+id/trNamaRekapValid"
-                            android:layout_marginBottom="12dp">
-                            <TextView
-                                android:text="Nama"
-                                android:textColor="@color/text_primary"
-                                android:textSize="14sp"
-                                android:fontFamily="sans-serif-medium" />
-                            <TextView
-                                android:text=" :  "
-                                android:textColor="@color/text_hint" />
-                            <TextView
-                                android:id="@+id/tvNamaRekapValid"
-                                android:textColor="@color/text_primary"
-                                android:textSize="14sp"
-                                android:fontFamily="sans-serif-black" />
+                        <TableRow android:id="@+id/trNamaRekapValid" android:layout_marginBottom="10dp">
+                            <TextView android:text="Nama" android:textColor="@color/text_primary" android:textSize="14sp" android:fontFamily="sans-serif-medium" tools:ignore="HardcodedText" />
+                            <TextView android:text=" :  " android:textColor="@color/text_hint" tools:ignore="HardcodedText" />
+                            <TextView android:id="@+id/tvNamaRekapValid" android:textColor="@color/text_primary" android:textSize="14sp" android:fontFamily="sans-serif-black" />
                         </TableRow>
 
-                        <!-- Row Tanggal -->
-                        <TableRow
-                            android:id="@+id/trTanggalRekapValid"
-                            android:layout_marginBottom="12dp">
-                            <TextView
-                                android:text="Tanggal"
-                                android:textColor="@color/text_primary"
-                                android:textSize="14sp" />
-                            <TextView
-                                android:text=" :  "
-                                android:textColor="@color/text_hint" />
-                            <TextView
-                                android:id="@+id/tvTanggalRekapValid"
-                                android:textColor="@color/text_secondary"
-                                android:textSize="14sp" />
+                        <TableRow android:id="@+id/trTanggalRekapValid" android:layout_marginBottom="10dp">
+                            <TextView android:text="Tanggal" android:textColor="@color/text_primary" android:textSize="14sp" tools:ignore="HardcodedText" />
+                            <TextView android:text=" :  " android:textColor="@color/text_hint" tools:ignore="HardcodedText" />
+                            <TextView android:id="@+id/tvTanggalRekapValid" android:textColor="@color/text_secondary" android:textSize="14sp" />
                         </TableRow>
 
-                        <!-- Row Pukul -->
-                        <TableRow
-                            android:id="@+id/trPukulRekapValid"
-                            android:layout_marginBottom="12dp">
-                            <TextView
-                                android:text="Pukul"
-                                android:textColor="@color/text_primary"
-                                android:textSize="14sp" />
-                            <TextView
-                                android:text=" :  "
-                                android:textColor="@color/text_hint" />
-                            <TextView
-                                android:id="@+id/tvJamRekapValid"
-                                android:textColor="@color/text_secondary"
-                                android:textSize="14sp" />
+                        <TableRow android:id="@+id/trPukulRekapValid" android:layout_marginBottom="10dp">
+                            <TextView android:text="Pukul" android:textColor="@color/text_primary" android:textSize="14sp" tools:ignore="HardcodedText" />
+                            <TextView android:text=" :  " android:textColor="@color/text_hint" tools:ignore="HardcodedText" />
+                            <TextView android:id="@+id/tvJamRekapValid" android:textColor="@color/text_secondary" android:textSize="14sp" />
                         </TableRow>
 
-                        <!-- Row Aktivitas -->
-                        <TableRow android:layout_marginBottom="12dp">
-                            <TextView
-                                android:id="@+id/tvFieldRekapValid"
-                                android:text="Aktivitas"
-                                android:textColor="@color/text_primary"
-                                android:textSize="14sp" />
-                            <TextView
-                                android:text=" :  "
-                                android:textColor="@color/text_hint" />
-                            <TextView
-                                android:id="@+id/tvAktivitasRekapValid"
-                                android:textColor="@color/text_secondary"
-                                android:textSize="14sp" />
+                        <TableRow android:layout_marginBottom="10dp">
+                            <TextView android:id="@+id/tvFieldRekapValid" android:text="Aktivitas" android:textColor="@color/text_primary" android:textSize="14sp" tools:ignore="HardcodedText" />
+                            <TextView android:text=" :  " android:textColor="@color/text_hint" tools:ignore="HardcodedText" />
+                            <TextView android:id="@+id/tvAktivitasRekapValid" android:textColor="@color/text_secondary" android:textSize="14sp" />
                         </TableRow>
 
-                        <!-- Row Kegiatan -->
-                        <TableRow
-                            android:id="@+id/trKegiatanRekapValid"
-                            android:layout_marginBottom="12dp">
-                            <TextView
-                                android:id="@+id/tvKegiatanLabelValid"
-                                android:text="Kegiatan"
-                                android:textColor="@color/text_primary"
-                                android:textSize="14sp" />
-                            <TextView
-                                android:text=" :  "
-                                android:textColor="@color/text_hint" />
-                            <TextView
-                                android:id="@+id/tvKegiatanRekapValid"
-                                android:textColor="@color/text_secondary"
-                                android:textSize="14sp" />
+                        <TableRow android:id="@+id/trKegiatanRekapValid" android:layout_marginBottom="10dp">
+                            <TextView android:id="@+id/tvKegiatanLabelValid" android:text="Kegiatan" android:textColor="@color/text_primary" android:textSize="14sp" tools:ignore="HardcodedText" />
+                            <TextView android:text=" :  " android:textColor="@color/text_hint" tools:ignore="HardcodedText" />
+                            <TextView android:id="@+id/tvKegiatanRekapValid" android:textColor="@color/text_secondary" android:textSize="14sp" />
                         </TableRow>
 
-                        <!-- Row Lokasi -->
                         <TableRow android:id="@+id/trAlamatLuarKantor">
-                            <TextView
-                                android:text="Lokasi"
-                                android:textColor="@color/text_primary"
-                                android:textSize="14sp" />
-                            <TextView
-                                android:text=" :  "
-                                android:textColor="@color/text_hint" />
-                            <TextView
-                                android:id="@+id/tvLokasiAlamatLuarKantorValid"
-                                android:textColor="@color/text_secondary"
-                                android:textSize="14sp" />
+                            <TextView android:text="Lokasi" android:textColor="@color/text_primary" android:textSize="14sp" tools:ignore="HardcodedText" />
+                            <TextView android:text=" :  " android:textColor="@color/text_hint" tools:ignore="HardcodedText" />
+                            <TextView android:id="@+id/tvLokasiAlamatLuarKantorValid" android:textColor="@color/text_secondary" android:textSize="14sp" />
                         </TableRow>
                     </TableLayout>
                 </com.google.android.material.card.MaterialCardView>
 
+                <!-- Media Section -->
                 <TextView
                     android:id="@+id/tvTagFotoRekapValid"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginVertical="16dp"
+                    android:layout_marginHorizontal="20dp"
+                    android:layout_marginTop="20dp"
                     android:fontFamily="sans-serif-black"
                     android:text="Foto Aktivitas"
                     android:textColor="@color/text_primary"
-                    android:textSize="16sp" />
+                    android:textSize="15sp"
+                    tools:ignore="HardcodedText" />
 
                 <com.google.android.material.imageview.ShapeableImageView
                     android:id="@+id/ivValidasiRekapValid"
                     android:layout_width="match_parent"
-                    android:layout_height="400dp"
+                    android:layout_height="320dp"
+                    android:layout_marginHorizontal="16dp"
+                    android:layout_marginTop="8dp"
                     android:scaleType="centerCrop"
                     app:shapeAppearanceOverlay="@style/ImageStyle2" />
 
                 <TextView
                     android:id="@+id/tvTagLampiranRekapValid"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginVertical="16dp"
+                    android:layout_marginHorizontal="20dp"
+                    android:layout_marginTop="20dp"
                     android:fontFamily="sans-serif-black"
                     android:text="Dokumen Lampiran"
                     android:textColor="@color/text_primary"
-                    android:textSize="16sp" />
+                    android:textSize="15sp"
+                    tools:ignore="HardcodedText" />
 
                 <com.google.android.material.imageview.ShapeableImageView
                     android:id="@+id/ivLampiranValidasiRekapValid"
                     android:layout_width="match_parent"
-                    android:layout_height="400dp"
+                    android:layout_height="320dp"
+                    android:layout_marginHorizontal="16dp"
+                    android:layout_marginTop="8dp"
                     android:scaleType="centerCrop"
                     android:visibility="gone"
                     app:shapeAppearanceOverlay="@style/ImageStyle2" />
@@ -213,37 +161,45 @@
                     style="@style/Widget.Material3.Button.TonalButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="16dp"
+                    android:layout_marginTop="12dp"
                     android:text="Buka Dokumen PDF"
                     android:visibility="gone"
                     app:cornerRadius="12dp"
-                    app:icon="@drawable/one_tl" />
+                    app:icon="@drawable/one_tl"
+                    tools:ignore="HardcodedText" />
 
+                <!-- Action Buttons -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="16dp"
                     android:layout_marginTop="24dp"
-                    android:layout_marginBottom="16dp"
                     android:orientation="horizontal">
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnTerima"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="56dp"
                         android:layout_marginEnd="8dp"
                         android:layout_weight="1"
                         android:text="Terima"
+                        android:fontFamily="sans-serif-black"
                         app:backgroundTint="@color/hijau"
-                        app:cornerRadius="12dp" />
+                        app:cornerRadius="16dp"
+                        tools:ignore="HardcodedText" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnTolak"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="56dp"
                         android:layout_marginStart="8dp"
                         android:layout_weight="1"
                         android:text="Tolak"
+                        android:fontFamily="sans-serif-black"
                         app:backgroundTint="@color/merah"
-                        app:cornerRadius="12dp" />
+                        app:cornerRadius="16dp"
+                        tools:ignore="HardcodedText" />
                 </LinearLayout>
 
             </LinearLayout>

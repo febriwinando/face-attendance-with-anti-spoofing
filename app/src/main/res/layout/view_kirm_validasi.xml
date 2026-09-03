@@ -1,125 +1,141 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:background="@drawable/backgoundovalputih"
-    android:backgroundTint="@color/surface_main"
-    android:gravity="center"
-    android:padding="10dp"
-    android:layout_margin="20dp"
-    android:layout_gravity="center">
+    android:layout_margin="24dp"
+    app:cardBackgroundColor="@color/surface_main"
+    app:cardCornerRadius="32dp"
+    app:cardElevation="16dp"
+    app:strokeWidth="0dp">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="130dp"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp">
-
-        <ImageView
-            android:id="@+id/emoticon"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_centerVertical="true"
-            android:layout_marginEnd="20dp"
-            app:srcCompat="@drawable/one_warning"
-            app:tint="@color/kuning" />
+        <!-- Decorative Background Glow -->
+        <View
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:background="@drawable/backgoundovalabuabu"
+            android:backgroundTint="@color/primary_brand"
+            android:alpha="0.1"
+            android:translationX="-50dp"
+            android:translationY="-50dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout
-            android:layout_toRightOf="@+id/emoticon"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
             android:orientation="vertical"
-            >
+            android:padding="28dp"
+            app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:layout_width="wrap_content"
+            <!-- Top Close Button Area -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/tvTutupDialog"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_alignParentEnd="true"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="8dp"
+                    android:src="@drawable/one_close"
+                    app:tint="@color/text_hint"
+                    android:contentDescription="@string/todo" />
+            </RelativeLayout>
+
+            <!-- Illustration & Warning Text -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Oops!"
-                android:textSize="20sp"
-                android:textColor="@color/primary_brand"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingBottom="28dp">
 
-                android:id="@+id/tvTitleNotif"
-                />
+                <ImageView
+                    android:id="@+id/emoticon"
+                    android:layout_width="84dp"
+                    android:layout_height="84dp"
+                    android:src="@drawable/one_warning"
+                    app:tint="@color/primary_brand"
+                    android:alpha="0.9" />
 
-            <TextView
-                android:layout_width="wrap_content"
+                <TextView
+                    android:id="@+id/tvTitleNotif"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:fontFamily="sans-serif-black"
+                    android:text="Konfirmasi"
+                    android:textColor="@color/text_primary"
+                    android:textSize="24sp"
+                    android:letterSpacing="0.02"
+                    tools:ignore="HardcodedText" />
+
+                <TextView
+                    android:id="@+id/tvWarning1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:textAlignment="center"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="14sp"
+                    android:lineSpacingExtra="2dp"
+                    tools:text="Apakah Anda yakin ingin mengirim hasil validasi ini kepada pegawai?" />
+            </LinearLayout>
+
+            <!-- Note Input -->
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp"
-                android:id="@+id/tvWarning1"
-                />
+                android:hint="Catatan opsional"
+                app:startIconDrawable="@drawable/ic_artikel"
+                app:startIconTint="@color/text_hint"
+                app:boxCornerRadiusBottomEnd="20dp"
+                app:boxCornerRadiusBottomStart="20dp"
+                app:boxCornerRadiusTopEnd="20dp"
+                app:boxCornerRadiusTopStart="20dp"
+                app:hintTextColor="@color/primary_brand"
+                app:boxStrokeColor="@color/primary_brand"
+                tools:ignore="HardcodedText">
 
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/catatanvalidator"
+                    android:layout_width="match_parent"
+                    android:layout_height="140dp"
+                    android:gravity="top"
+                    android:inputType="textMultiLine"
+                    android:padding="16dp"
+                    android:textSize="14sp"
+                    android:capitalize="sentences"
+                    android:fontFamily="sans-serif-medium" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Action Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnkirimvalidasi"
+                style="@style/Widget.Material3.Button"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginTop="32dp"
+                android:fontFamily="sans-serif-black"
+                android:text="Yakin, kirim!"
+                android:textSize="16sp"
+                android:letterSpacing="0.05"
+                app:backgroundTint="@color/primary_brand"
+                app:cornerRadius="16dp"
+                app:elevation="4dp"
+                tools:ignore="HardcodedText" />
 
         </LinearLayout>
-
-        <ImageView
-            android:id="@+id/tvTutupDialog"
-            android:layout_width="38dp"
-            android:layout_height="38dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:clickable="true"
-            android:src="@drawable/one_close"
-            app:tint="@color/text_primary"
-            android:focusable="true"
-            />
-
-
-
-
-
-    </RelativeLayout>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Catatan: "
-
-            android:layout_marginStart="10dp"
-            android:textColor="@color/text_primary"/>
-
-        <EditText
-            android:id="@+id/catatanvalidator"
-            android:gravity="center_horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:background="@drawable/backgroundwhiteradius"
-            android:layout_marginBottom="10dp"
-            android:textColor="@color/text_primary"
-            android:textColorHint="@color/text_hint"
-            android:inputType="textMultiLine"
-            android:textAlignment="textStart"
-            tools:ignore="RtlCompat"
-            android:capitalize="sentences"
-            android:paddingStart="15dp"
-            android:paddingEnd="15dp"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            android:textSize="14sp"
-
-            />
-
-        <Button
-            android:layout_gravity="center_horizontal"
-            android:id="@+id/btnkirimvalidasi"
-            android:paddingStart="5dp"
-            android:paddingEnd="5dp"
-            android:textSize="12sp"
-            android:textColor="@color/on_primary_brand"
-            android:layout_marginStart="5dp"
-            android:background="@drawable/backgroundnavbar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Yakin, kirim!"
-            android:layout_marginBottom="10dp"
-            />
-    </LinearLayout>
-
-</LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>
