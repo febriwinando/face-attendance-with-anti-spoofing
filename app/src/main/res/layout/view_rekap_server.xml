@@ -1,475 +1,305 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="750dp"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_margin="10dp"
-    android:padding="10dp"
-    android:orientation="vertical"
-    android:background="@drawable/backgoundovalputih"
-    android:backgroundTint="@color/surface_main"
-    >
+    android:layout_height="wrap_content"
+    android:layout_margin="12dp"
+    app:cardBackgroundColor="@color/surface_main"
+    app:cardCornerRadius="28dp"
+    app:cardElevation="8dp"
+    app:strokeWidth="0dp">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        >
+        android:orientation="vertical">
 
-        <TextView
-            android:layout_centerInParent="true"
+        <!-- Custom Header -->
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="DATA REKAP"
-            android:textSize="18sp"
-            android:textAlignment="center"
-            android:textStyle="bold"
-            android:textColor="@color/text_primary"
-            android:layout_marginBottom="10dp"/>
+            android:padding="20dp">
 
-        <ImageView
-            android:layout_centerVertical="true"
-            android:layout_alignParentEnd="true"
-            android:layout_width="38dp"
-            android:layout_height="38dp"
-            android:layout_gravity="center_horizontal"
-            app:srcCompat="@drawable/one_close"
-            app:tint="@color/text_primary"
-            android:id="@+id/ivTutupViewListKehdiran"
-            />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:fontFamily="sans-serif-black"
+                android:text="Detail Rekap"
+                android:textColor="@color/primary_brand"
+                android:textSize="18sp"
+                android:letterSpacing="0.1"
+                tools:ignore="HardcodedText" />
 
-    </RelativeLayout>
+            <ImageView
+                android:id="@+id/ivTutupViewListKehdiran"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentEnd="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="8dp"
+                android:src="@drawable/one_close"
+                app:tint="@color/text_hint"
+                android:contentDescription="@string/todo" />
+        </RelativeLayout>
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="5dp"
-        >
-
-        <LinearLayout
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="600dp"
+            android:scrollbarSize="2dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                >
+                android:paddingBottom="24dp">
 
-
-                <TextView
+                <!-- Section: Absensi Masuk -->
+                <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Absensi Masuk"
-                    android:layout_margin="10dp"
-                    android:textSize="20dp"
-                    android:textStyle="bold"
-                    android:textColor="@color/primary_brand"
+                    android:layout_marginHorizontal="16dp"
+                    android:layout_marginBottom="16dp"
+                    app:cardBackgroundColor="@color/surface_variant"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="0dp">
 
-                    />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
 
-                <TableLayout
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-black"
+                            android:text="Absensi Masuk"
+                            android:textColor="@color/primary_brand"
+                            android:textSize="16sp"
+                            android:layout_marginBottom="12dp"
+                            tools:ignore="HardcodedText" />
+
+                        <TableLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:stretchColumns="2">
+
+                            <!-- Pukul Masuk -->
+                            <TableRow android:id="@+id/trPukulRekapMasuk" android:layout_marginBottom="8dp">
+                                <TextView android:text="Pukul" android:textColor="@color/text_primary" android:textSize="14sp" android:fontFamily="sans-serif-medium" tools:ignore="HardcodedText"/>
+                                <TextView android:text=" :  " android:textColor="@color/text_hint" tools:ignore="HardcodedText"/>
+                                <TextView android:id="@+id/tvJamRekapMasuk" android:textColor="@color/text_primary" android:textSize="14sp" android:fontFamily="sans-serif-black"/>
+                            </TableRow>
+
+                            <!-- Kehadiran -->
+                            <TableRow android:id="@+id/trKegiatanRekapMasuk" android:layout_marginBottom="8dp">
+                                <TextView android:id="@+id/tvKehadiranlabel" android:text="Kehadiran" android:textColor="@color/text_primary" android:textSize="14sp" tools:ignore="HardcodedText"/>
+                                <TextView android:text=" :  " android:textColor="@color/text_hint" tools:ignore="HardcodedText"/>
+                                <TextView android:id="@+id/tvKehadiranRekapMasuk" android:textColor="@color/text_secondary" android:textSize="14sp"/>
+                            </TableRow>
+
+                            <!-- Keterangan -->
+                            <TableRow android:layout_marginBottom="8dp">
+                                <TextView android:id="@+id/tvFieldRekapMasuk" android:text="Keterangan" android:textColor="@color/text_primary" android:textSize="14sp" tools:ignore="HardcodedText"/>
+                                <TextView android:text=" :  " android:textColor="@color/text_hint" tools:ignore="HardcodedText"/>
+                                <TextView android:id="@+id/tvKeteranganRekapMasuk" android:textColor="@color/text_secondary" android:textSize="14sp"/>
+                            </TableRow>
+
+                            <!-- Status -->
+                            <TableRow android:layout_marginBottom="8dp">
+                                <TextView android:id="@+id/tvFieldStatusMasuk" android:text="Status" android:textColor="@color/text_primary" android:textSize="14sp" tools:ignore="HardcodedText"/>
+                                <TextView android:text=" :  " android:textColor="@color/text_hint" tools:ignore="HardcodedText"/>
+                                <TextView android:id="@+id/tvStatusRekapMasuk" android:textColor="@color/text_secondary" android:textSize="14sp" android:fontFamily="sans-serif-medium"/>
+                            </TableRow>
+
+                            <!-- Lokasi -->
+                            <TableRow android:id="@+id/trAlamatLuarKantor">
+                                <TextView android:text="Lokasi" android:textColor="@color/text_primary" android:textSize="14sp" tools:ignore="HardcodedText"/>
+                                <TextView android:text=" :  " android:textColor="@color/text_hint" tools:ignore="HardcodedText"/>
+                                <TextView android:id="@+id/tvLokasiAlamatLuarKantor" android:textColor="@color/text_secondary" android:textSize="14sp"/>
+                            </TableRow>
+                        </TableLayout>
+
+                        <!-- Photos Masuk -->
+                        <TextView
+                            android:id="@+id/tvTagFotoRekapMasuk"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:text="Foto Aktivitas"
+                            android:textColor="@color/text_primary"
+                            android:textSize="13sp"
+                            android:fontFamily="sans-serif-bold"
+                            tools:ignore="HardcodedText" />
+
+                        <com.google.android.material.imageview.ShapeableImageView
+                            android:id="@+id/ivValidasiRekapMasuk"
+                            android:layout_width="match_parent"
+                            android:layout_height="320dp"
+                            android:layout_marginTop="8dp"
+                            android:scaleType="centerCrop"
+                            app:shapeAppearanceOverlay="@style/ImageStyle2"/>
+
+                        <!-- Attachments Masuk -->
+                        <TextView
+                            android:id="@+id/tvTagLampiranRekapMasuk"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:text="Dokumen Lampiran"
+                            android:textColor="@color/text_primary"
+                            android:textSize="13sp"
+                            android:fontFamily="sans-serif-bold"
+                            tools:ignore="HardcodedText" />
+
+                        <com.google.android.material.imageview.ShapeableImageView
+                            android:id="@+id/ivLampiranValidasiRekapMasuk"
+                            android:layout_width="match_parent"
+                            android:layout_height="320dp"
+                            android:layout_marginTop="8dp"
+                            android:scaleType="centerCrop"
+                            app:shapeAppearanceOverlay="@style/ImageStyle2"/>
+
+                        <WebView
+                            android:id="@+id/webview"
+                            android:layout_width="match_parent"
+                            android:layout_height="400dp"
+                            android:layout_marginTop="8dp"
+                            android:visibility="gone" />
+
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Section: Absensi Pulang -->
+                <LinearLayout
+                    android:id="@+id/llPulang"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    >
+                    android:orientation="vertical">
 
-                    <TableRow
-                        android:id="@+id/trPukulRekapMasuk"
-                        android:layout_width="match_parent">
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="16dp"
+                        app:cardBackgroundColor="@color/surface_variant"
+                        app:cardCornerRadius="20dp"
+                        app:cardElevation="0dp"
+                        app:strokeWidth="0dp">
 
-                        <TextView
-                            android:text="Pukul"
-                            android:textStyle="bold"
-                            android:textColor="@color/text_primary"
-                            android:textSize="16sp"
-                            />
-                        <TextView
-                            android:text=" : "
-                            android:textStyle="bold"
-                            android:textColor="@color/text_primary"
-                            android:textSize="16sp"
-                            />
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
 
-                        <TextView
-                            android:id="@+id/tvJamRekapMasuk"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="16sp"
-                            android:layout_weight="1"
-                            />
-                    </TableRow>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="sans-serif-black"
+                                android:text="Absensi Pulang"
+                                android:textColor="@color/brand_secondary"
+                                android:textSize="16sp"
+                                android:layout_marginBottom="12dp"
+                                tools:ignore="HardcodedText" />
 
+                            <TableLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:stretchColumns="2">
 
-                    <TableRow
-                        android:id="@+id/trKegiatanRekapMasuk"
-                        android:layout_width="match_parent">
-                        <TextView
-                            android:id="@+id/tvKehadiranlabel"
-                            android:text="Kehadiran"
-                            android:textStyle="bold"
-                            android:textColor="@color/text_primary"
-                            android:textSize="16sp"
-                            />
-                        <TextView
-                            android:text=" : "
-                            android:textStyle="bold"
-                            android:textColor="@color/text_primary"
-                            android:textSize="16sp"
-                            />
+                                <!-- Pukul Pulang -->
+                                <TableRow android:id="@+id/trPukulRekapPulang" android:layout_marginBottom="8dp">
+                                    <TextView android:text="Pukul" android:textColor="@color/text_primary" android:textSize="14sp" android:fontFamily="sans-serif-medium" tools:ignore="HardcodedText"/>
+                                    <TextView android:text=" :  " android:textColor="@color/text_hint" tools:ignore="HardcodedText"/>
+                                    <TextView android:id="@+id/tvJamRekapPulang" android:textColor="@color/text_primary" android:textSize="14sp" android:fontFamily="sans-serif-black"/>
+                                </TableRow>
 
-                        <TextView
-                            android:id="@+id/tvKehadiranRekapMasuk"
-                            android:layout_weight="1"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="16sp" />
-                    </TableRow>
-                    <TableRow
-                        android:layout_width="match_parent">
+                                <!-- Kehadiran Pulang -->
+                                <TableRow android:id="@+id/trKegiatanRekapPulang" android:layout_marginBottom="8dp">
+                                    <TextView android:id="@+id/tvLabelKehadiran" android:text="Kehadiran" android:textColor="@color/text_primary" android:textSize="14sp" tools:ignore="HardcodedText"/>
+                                    <TextView android:text=" :  " android:textColor="@color/text_hint" tools:ignore="HardcodedText"/>
+                                    <TextView android:id="@+id/tvKehadiranRekapPulang" android:textColor="@color/text_secondary" android:textSize="14sp"/>
+                                </TableRow>
 
-                        <TextView
-                            android:id="@+id/tvFieldRekapMasuk"
-                            android:text="Keterangan"
-                            android:textColor="@color/text_primary"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
-                            />
+                                <!-- Keterangan Pulang -->
+                                <TableRow android:id="@+id/trAktivitasPulang" android:layout_marginBottom="8dp">
+                                    <TextView android:id="@+id/tvFieldRekapPulang" android:text="Keterangan" android:textColor="@color/text_primary" android:textSize="14sp" tools:ignore="HardcodedText"/>
+                                    <TextView android:text=" :  " android:textColor="@color/text_hint" tools:ignore="HardcodedText"/>
+                                    <TextView android:id="@+id/tvKeteranganRekapPulang" android:textColor="@color/text_secondary" android:textSize="14sp"/>
+                                </TableRow>
 
-                        <TextView
-                            android:text=" : "
-                            android:textStyle="bold"
-                            android:textColor="@color/text_primary"
-                            android:textSize="16sp"
-                            />
-                        <TextView
-                            android:id="@+id/tvKeteranganRekapMasuk"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="16sp"
-                            android:layout_weight="1"
-                            />
-                    </TableRow>
-                    <TableRow
-                        android:layout_width="match_parent">
+                                <!-- Status Pulang -->
+                                <TableRow android:layout_marginBottom="8dp">
+                                    <TextView android:id="@+id/tvFieldStatusPulang" android:text="Status" android:textColor="@color/text_primary" android:textSize="14sp" tools:ignore="HardcodedText"/>
+                                    <TextView android:text=" :  " android:textColor="@color/text_hint" tools:ignore="HardcodedText"/>
+                                    <TextView android:id="@+id/tvStatusRekapPulang" android:textColor="@color/text_secondary" android:textSize="14sp" android:fontFamily="sans-serif-medium"/>
+                                </TableRow>
 
-                        <TextView
-                            android:id="@+id/tvFieldStatusMasuk"
-                            android:text="Status"
-                            android:textColor="@color/text_primary"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
-                            />
+                                <!-- Lokasi Pulang -->
+                                <TableRow android:id="@+id/trAlamatLuarKantorPulang">
+                                    <TextView android:text="Lokasi" android:textColor="@color/text_primary" android:textSize="14sp" tools:ignore="HardcodedText"/>
+                                    <TextView android:text=" :  " android:textColor="@color/text_hint" tools:ignore="HardcodedText"/>
+                                    <TextView android:id="@+id/tvLokasiAlamatLuarKantorPulang" android:textColor="@color/text_secondary" android:textSize="14sp"/>
+                                </TableRow>
+                            </TableLayout>
 
-                        <TextView
-                            android:text=" : "
-                            android:textStyle="bold"
-                            android:textColor="@color/text_primary"
-                            android:textSize="16sp"
-                            />
+                            <!-- Photos Pulang -->
+                            <TextView
+                                android:id="@+id/tvTagFotoRekapPulang"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="Foto Aktivitas"
+                                android:textColor="@color/text_primary"
+                                android:textSize="13sp"
+                                android:fontFamily="sans-serif-bold"
+                                tools:ignore="HardcodedText" />
 
-                        <TextView
-                            android:id="@+id/tvStatusRekapMasuk"
-                            android:text="melaksanakan tugas"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="16sp"
-                            android:layout_weight="1"
-                            />
-                    </TableRow>
+                            <com.google.android.material.imageview.ShapeableImageView
+                                android:id="@+id/ivAktivitasRekapPulang"
+                                android:layout_width="match_parent"
+                                android:layout_height="320dp"
+                                android:layout_marginTop="8dp"
+                                android:scaleType="centerCrop"
+                                app:shapeAppearanceOverlay="@style/ImageStyle2"/>
 
-                    <TableRow
-                        android:id="@+id/trAlamatLuarKantor"
-                        android:layout_width="match_parent">
-                        <TextView
-                            android:text="Lokasi"
-                            android:textStyle="bold"
-                            android:textColor="@color/text_primary"
-                            android:textSize="16sp"
-                            />
+                            <!-- Attachments Pulang -->
+                            <TextView
+                                android:id="@+id/tvTagLampiranRekapPulang"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="Dokumen Lampiran"
+                                android:textColor="@color/text_primary"
+                                android:textSize="13sp"
+                                android:fontFamily="sans-serif-bold"
+                                tools:ignore="HardcodedText" />
 
-                        <TextView
-                            android:text=" : "
-                            android:textStyle="bold"
-                            android:textColor="@color/text_primary"
-                            android:textSize="16sp"
-                            />
+                            <com.google.android.material.imageview.ShapeableImageView
+                                android:id="@+id/ivLampiranRekapPulang"
+                                android:layout_width="match_parent"
+                                android:layout_height="320dp"
+                                android:layout_marginTop="8dp"
+                                android:scaleType="centerCrop"
+                                app:shapeAppearanceOverlay="@style/ImageStyle2"/>
 
-                        <TextView
-                            android:id="@+id/tvLokasiAlamatLuarKantor"
-                            android:layout_weight="1"
-                            android:text="melaksanakan tugas"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="16sp" />
-                    </TableRow>
+                            <WebView
+                                android:id="@+id/webviewpulang"
+                                android:layout_width="match_parent"
+                                android:layout_height="400dp"
+                                android:layout_marginTop="8dp"
+                                android:visibility="gone" />
 
-            </TableLayout>
-
-
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Aktivitas Absensi Masuk"
-                android:layout_margin="10dp"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="@color/text_secondary"
-                android:id="@+id/tvTagFotoRekapMasuk"
-
-                />
-
-            <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/ivValidasiRekapMasuk"
-                android:layout_width="match_parent"
-                android:layout_height="500dp"
-                android:maxWidth="375dp"
-                android:maxHeight="500dp"
-                android:outlineAmbientShadowColor="@color/primary_brand"
-                android:scaleType="centerCrop"
-                app:shapeAppearance="@style/ImageStyle2"/>
-
-            <TextView
-                android:layout_marginTop="10dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:text="Lampiran Absensi Masuk"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="@color/text_secondary"
-                android:id="@+id/tvTagLampiranRekapMasuk"
-
-                />
-
-            <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/ivLampiranValidasiRekapMasuk"
-                android:layout_width="match_parent"
-                android:layout_height="500dp"
-                android:maxWidth="375dp"
-                android:maxHeight="500dp"
-                android:outlineAmbientShadowColor="@color/primary_brand"
-                android:scaleType="centerCrop"
-                app:shapeAppearance="@style/ImageStyle2"
-                />
-
-            <WebView
-                android:layout_width="match_parent"
-                android:layout_height="500dp"
-                android:id="@+id/webview"
-                android:visibility="gone"
-                tools:ignore="WebViewLayout" />
-
-        </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:id="@+id/llPulang"
-            >
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Absensi Pulang"
-                    android:layout_margin="10dp"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/primary_brand"
-
-                    />
-
-                <TableLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    >
-
-                    <TableRow
-                        android:id="@+id/trPukulRekapPulang"
-                        android:layout_width="match_parent">
-                        <TextView
-                            android:text="Pukul"
-                            android:textStyle="bold"
-                            android:textColor="@color/text_primary"
-                            android:textSize="16sp"
-                            />
-                        <TextView
-                            android:text=" : "
-                            android:textStyle="bold"
-                            android:textColor="@color/text_primary"
-                            android:textSize="16sp"
-                            />
-                        <TextView
-                            android:id="@+id/tvJamRekapPulang"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="16sp"
-                            android:layout_weight="1"
-                            />
-                    </TableRow>
-                    <TableRow
-                        android:id="@+id/trKegiatanRekapPulang"
-                        android:layout_width="match_parent">
-                        <TextView
-                            android:text="Kehadiran"
-                            android:textStyle="bold"
-                            android:textColor="@color/text_primary"
-                            android:textSize="16sp"
-                            android:id="@+id/tvLabelKehadiran"
-                            />
-                        <TextView
-                            android:text=" : "
-                            android:textStyle="bold"
-                            android:textColor="@color/text_primary"
-                            android:textSize="16sp"
-                            />
-                        <TextView
-                            android:id="@+id/tvKehadiranRekapPulang"
-                            android:text="melaksanakan tugas"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="16sp"
-                            android:layout_weight="1"
-                            />
-                    </TableRow>
-
-                    <TableRow
-                        android:id="@+id/trAktivitasPulang"
-                        android:layout_width="match_parent">
-                        <TextView
-
-                            android:text="Keterangan"
-                            android:textStyle="bold"
-                            android:textColor="@color/text_primary"
-                            android:textSize="16sp"
-                            android:id="@+id/tvFieldRekapPulang"
-
-                            />
-                        <TextView
-                            android:text=" : "
-                            android:textStyle="bold"
-                            android:textColor="@color/text_primary"
-                            android:textSize="16sp"
-                            />
-                        <TextView
-                            android:id="@+id/tvKeteranganRekapPulang"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="16sp"
-                            android:layout_weight="1"
-                            />
-                    </TableRow>
-                    <TableRow
-                        android:layout_width="match_parent">
-
-                        <TextView
-
-                            android:id="@+id/tvFieldStatusPulang"
-                            android:text="Status"
-                            android:textColor="@color/text_primary"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
-
-                            />
-
-                        <TextView
-                            android:text=" : "
-                            android:textStyle="bold"
-                            android:textColor="@color/text_primary"
-                            android:textSize="16sp"
-                            />
-                        <TextView
-                            android:id="@+id/tvStatusRekapPulang"
-                            android:text="melaksanakan tugas"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="16sp"
-                            android:layout_weight="1"
-                            />
-                    </TableRow>
-
-
-                    <TableRow
-                        android:id="@+id/trAlamatLuarKantorPulang"
-                        android:layout_width="match_parent">
-                        <TextView
-                            android:text="Lokasi"
-                            android:textStyle="bold"
-                            android:textColor="@color/text_primary"
-                            android:textSize="16sp"
-                            />
-                        <TextView
-                            android:text=" : "
-                            android:textStyle="bold"
-                            android:textColor="@color/text_primary"
-                            android:textSize="16sp"
-                            />
-
-                        <TextView
-                            android:id="@+id/tvLokasiAlamatLuarKantorPulang"
-                            android:layout_weight="1"
-                            android:text="melaksanakan tugas"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="16sp" />
-                    </TableRow>
-                </TableLayout>
-
-
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Aktivitas Absensi Pulang"
-                    android:layout_margin="10dp"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/text_secondary"
-                    android:id="@+id/tvTagFotoRekapPulang"
-
-                    />
-
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:id="@+id/ivAktivitasRekapPulang"
-                    android:layout_width="match_parent"
-                    android:layout_height="500dp"
-                    android:maxWidth="375dp"
-                    android:maxHeight="500dp"
-                    android:outlineAmbientShadowColor="@color/primary_brand"
-                    android:scaleType="centerCrop"
-                    app:shapeAppearance="@style/ImageStyle2"/>
-
-                <TextView
-                    android:layout_marginTop="10dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:text="Lampiran Absensi Pulang"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/text_secondary"
-                    android:id="@+id/tvTagLampiranRekapPulang"
-
-                    />
-
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:id="@+id/ivLampiranRekapPulang"
-                    android:layout_width="match_parent"
-                    android:layout_height="500dp"
-                    android:maxWidth="375dp"
-                    android:maxHeight="500dp"
-                    android:outlineAmbientShadowColor="@color/primary_brand"
-                    android:scaleType="centerCrop"
-                    app:shapeAppearance="@style/ImageStyle2"
-                    />
-
-
-                <WebView
-                    android:layout_width="match_parent"
-                    android:layout_height="500dp"
-                    android:id="@+id/webviewpulang"
-                    android:visibility="gone"
-                    tools:ignore="WebViewLayout" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
 
             </LinearLayout>
-        </LinearLayout>
-
-    </ScrollView>
-
-
-
-</LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

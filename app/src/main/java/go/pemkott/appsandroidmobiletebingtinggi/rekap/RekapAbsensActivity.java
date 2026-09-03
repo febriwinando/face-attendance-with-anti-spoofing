@@ -334,9 +334,9 @@ public class RekapAbsensActivity extends AppCompatActivity {
         } else if (data.getValidasi_masuk() == 1) {
             tvStatusRekapMasuk.setText("Belum Verifikasi Tahap 2");
         } else if (data.getValidasi_masuk() == 3) {
-            tvStatusRekapMasuk.setText("Kegiatan ditolak verifikator 1");
+            tvStatusRekapMasuk.setText("Kegiatan Ditolak Verifikator 1");
         } else if (data.getValidasi_masuk() == 4 ) {
-            tvStatusRekapMasuk.setText("Kegiatan ditolak verifikator 2");
+            tvStatusRekapMasuk.setText("Kegiatan Ditolak Verifikator 2");
         }else if (data.getValidasi_masuk() == 2){
             tvStatusRekapMasuk.setText("Terverifikasi");
         }else{
@@ -348,9 +348,9 @@ public class RekapAbsensActivity extends AppCompatActivity {
         } else if (data.getValidasi_pulang() == 1) {
             tvStatusRekapPulang.setText("Belum Verifikasi Tahap 2");
         } else if (data.getValidasi_pulang() == 3) {
-            tvStatusRekapPulang.setText("Kegiatan ditolak verifikator 1");
+            tvStatusRekapPulang.setText("Kegiatan Ditolak Verifikator 1");
         } else if (data.getValidasi_pulang() == 4 ) {
-            tvStatusRekapPulang.setText("Kegiatan ditolak verifikator 2");
+            tvStatusRekapPulang.setText("Kegiatan Ditolak Verifikator 2");
         }else if (data.getValidasi_pulang() == 2){
             tvStatusRekapPulang.setText("Terverifikasi");
         } else{
@@ -359,7 +359,7 @@ public class RekapAbsensActivity extends AppCompatActivity {
 
         if (data.getStatus_masuk().equals("hadir")){
             if (data.getPosisi_masuk().equals("tl-masuk")){
-                tvKehadiranRekapMasuk.setText("Tugas lapangan");
+                tvKehadiranRekapMasuk.setText("Tugas Lapangan");
             }else{
                 tvKehadiranRekapMasuk.setText("Masuk Kantor");
             }
@@ -369,9 +369,9 @@ public class RekapAbsensActivity extends AppCompatActivity {
             if (data.getPosisi_masuk().equals("ct") || data.getPosisi_masuk().equals("cuti")){
                 tvKehadiranRekapMasuk.setText("Cuti");
             } else if (data.getPosisi_masuk().equals("sk") || data.getPosisi_masuk().equals("sakit")) {
-                tvKehadiranRekapMasuk.setText("Izin dengan kondisi sakit");
+                tvKehadiranRekapMasuk.setText("Izin Dengan Kondisi Sakit");
             } else if (data.getPosisi_masuk().equals("kp")) {
-                tvKehadiranRekapMasuk.setText("Izin dengan keperluan pribadi");
+                tvKehadiranRekapMasuk.setText("Izin Dengan Keperluan Pribadi");
             }
         }else{
             tvKehadiranRekapMasuk.setText("-");
@@ -379,7 +379,7 @@ public class RekapAbsensActivity extends AppCompatActivity {
 
         if (data.getStatus_pulang().equals("hadir")){
             if (data.getPosisi_pulang().equals("tl-pulang")){
-                tvKehadiranRekapPulang.setText("Tugas lapangan");
+                tvKehadiranRekapPulang.setText("Tugas Lapangan");
             }else{
                 tvKehadiranRekapPulang.setText("Pulang Kantor");
             }
@@ -389,9 +389,9 @@ public class RekapAbsensActivity extends AppCompatActivity {
             if (data.getPosisi_pulang().equals("ct") || data.getPosisi_pulang().equals("cuti")){
                 tvKehadiranRekapPulang.setText("Cuti");
             } else if (data.getPosisi_pulang().equals("sk") || data.getPosisi_pulang().equals("sakit")) {
-                tvKehadiranRekapPulang.setText("Izin dengan kondisi sakit");
+                tvKehadiranRekapPulang.setText("Izin Dengan Kondisi Sakit");
             } else if (data.getPosisi_pulang().equals("kp")) {
-                tvKehadiranRekapPulang.setText("Izin dengan keperluan pribadi");
+                tvKehadiranRekapPulang.setText("Izin Dengan Keperluan Pribadi");
             }
         }else{
             tvKehadiranRekapPulang.setText("-");

@@ -86,7 +86,7 @@ public class RekapServerAdapter extends RecyclerView.Adapter<RekapServerAdapter.
 
     class ListViewHolder extends RecyclerView.ViewHolder{
 
-        TextView tvTanggalRekap, tvRekapJamMasuk, tvRekapJamPulang, tvWaktuPresenceRekapServer;
+        TextView tvTanggalRekap, tvRekapJamMasuk, tvRekapJamPulang;
         View llRekapPresensi;
         CircleImageView civPresensi, civPresensiVerifikasi, civPresensiTolak;
 

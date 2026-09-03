@@ -35,9 +35,9 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.button.MaterialButton;
 import com.google.gson.Gson;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -51,7 +51,6 @@ import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
 import go.pemkott.appsandroidmobiletebingtinggi.api.RetrofitBuilder;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
-import go.pemkott.appsandroidmobiletebingtinggi.dinasluarkantor.tugaslapangan.TugasLapanganFinalActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFoto;
 import go.pemkott.appsandroidmobiletebingtinggi.login.LoginActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
@@ -76,14 +75,14 @@ public class ProfileActivity extends AppCompatActivity {
     String fotoProfileUpdate;
 
     String sEmployee_id, sAkses, sActive, sToken, fotoProfile;
-    TableRow trGantiPassword, trPanduanAplikasi;
-    LinearLayout llKeluarProfil;
+    LinearLayout trGantiPassword, trPanduanAplikasi;
+    MaterialButton llKeluarProfil;
     CircleImageView civProfilPegawai;
     ImageView ivBack;
     SessionManager session;
     String userId;
     ApiAddProduk api;
-    LinearLayout llBukaDaftarPegawai;
+    MaterialButton llBukaDaftarPegawai;
     ImageView ivGantiProfil;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -239,7 +238,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     private RequestBody textPart(String value) {
         return RequestBody.create(
-                okhttp3.MediaType.parse("text/plain"),
+                MediaType.parse("text/plain"),
                 value
         );
     }
@@ -493,7 +492,7 @@ public class ProfileActivity extends AppCompatActivity {
 
                     update.enqueue(new Callback<List<Updatep>>() {
                         @Override
-                        public void onResponse(@NonNull Call<List<Updatep>> call, @NonNull retrofit2.Response<List<Updatep>> response) {
+                        public void onResponse(@NonNull Call<List<Updatep>> call, @NonNull Response<List<Updatep>> response) {
 
                             List<Updatep> updateps = response.body();
                             if (!response.isSuccessful()){
