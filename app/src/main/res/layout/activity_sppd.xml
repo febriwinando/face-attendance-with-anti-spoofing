@@ -7,6 +7,39 @@
     android:background="@color/background_main"
     tools:context=".dinasluarkantor.perjalanandinas.SppdActivity">
 
+    <!-- Background Decorative Glows -->
+    <View
+        android:layout_width="350dp"
+        android:layout_height="350dp"
+        android:background="@drawable/backgoundovalabuabu"
+        android:backgroundTint="@color/primary_brand"
+        android:alpha="0.06"
+        android:translationX="-120dp"
+        android:translationY="50dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <View
+        android:layout_width="280dp"
+        android:layout_height="280dp"
+        android:background="@drawable/backgoundovalabuabu"
+        android:backgroundTint="@color/brand_secondary"
+        android:alpha="0.08"
+        android:translationX="100dp"
+        android:translationY="-50dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:background="@drawable/backgoundovalabuabu"
+        android:backgroundTint="@color/hijau"
+        android:alpha="0.06"
+        android:translationX="-50dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <!-- Header Section -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/titleHeader"
@@ -34,7 +67,8 @@
                 android:layout_height="24dp"
                 android:layout_centerInParent="true"
                 android:src="@drawable/one_left"
-                app:tint="@color/text_primary" />
+                app:tint="@color/text_primary"
+                android:contentDescription="@string/todo" />
         </RelativeLayout>
 
         <TextView
@@ -89,9 +123,8 @@
                 android:layout_marginBottom="24dp"
                 app:cardBackgroundColor="@color/surface_main"
                 app:cardCornerRadius="16dp"
-                app:cardElevation="0dp"
-                app:strokeColor="@color/divider_color"
-                app:strokeWidth="1dp">
+                app:cardElevation="2dp"
+                app:strokeWidth="0dp">
 
                 <EditText
                     android:id="@+id/etKegiatanPdLainnya"
@@ -113,7 +146,6 @@
         android:id="@+id/btnContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/background_main"
         android:padding="20dp"
         app:layout_constraintBottom_toBottomOf="parent">
 
