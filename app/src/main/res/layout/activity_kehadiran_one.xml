@@ -1,229 +1,241 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@color/background_main">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_main"
+    tools:context=".kehadiran.AbsensiKehadiranActivity">
 
-
-
+    <!-- 1. Full Screen Background Map -->
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/mapKehadiranOne"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/llDataKehadiran"
         class="com.google.android.gms.maps.SupportMapFragment"
-        />
-
-
-    <RelativeLayout
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Navbar Overlay (Solid White) -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/rlHeaderKehadiranOne"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/rlHeaderKehadiranOne">
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="50dp"
+        app:cardBackgroundColor="@color/surface_main"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="6dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <RelativeLayout
-            android:layout_marginTop="40dp"
-            android:id="@+id/titleHeaderFinalTl"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            >
+        <LinearLayout
+            android:id="@+id/backTl"
+            android:layout_width="wrap_content"
+            android:layout_height="42dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"
+            android:gravity="center_vertical"
+            android:onClick="backFinalDinasLuar"
+            android:paddingHorizontal="14dp"
+            tools:ignore="UsingOnClickInXml">
 
-            <RelativeLayout
-                android:id="@+id/backTl"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="10dp"
-                android:clickable="true"
-                android:layout_centerVertical="true"
-                android:foreground="?attr/selectableItemBackground"
-                android:onClick="backFinalDinasLuar"
-                android:focusable="true"
-                tools:ignore="UsingOnClickInXml">
-
-
-                <ImageView
-                    android:id="@+id/ivBack"
-                    android:layout_width="38dp"
-                    android:layout_height="38dp"
-                    android:layout_centerVertical="true"
-                    app:srcCompat="@drawable/one_left"
-                    />
-
-            </RelativeLayout>
+            <ImageView
+                android:id="@+id/ivBack"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/one_left"
+                app:tint="@color/text_primary"
+                android:contentDescription="@string/todo" />
 
             <TextView
-                android:layout_toEndOf="@+id/backTl"
                 android:id="@+id/title_content"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:textSize="18sp"
-                android:textColor="@color/primary_brand"
-                android:textStyle="bold"
-                android:text="@string/kembali"/>
+                android:layout_marginStart="6dp"
+                android:fontFamily="sans-serif-black"
+                android:text="KEHADIRAN"
+                android:textColor="@color/text_primary"
+                android:textSize="11sp"
+                android:letterSpacing="0.05" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
 
-
-        </RelativeLayout>
-
-    </RelativeLayout>
-
-    <ImageView
-        android:visibility="visible"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
-        android:padding="2dp"
-        app:srcCompat="@drawable/ic_search_location"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="10dp"
+    <!-- My Location Button (Modern Circle Overlay) -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="20dp"
         android:clickable="true"
-        android:layout_centerVertical="true"
-        android:foreground="?attr/selectableItemBackground"
         android:focusable="true"
         android:onClick="fokusLokasiKehadiran"
-        android:background="@drawable/backgroundtranshitam"
-        app:layout_constraintBottom_toBottomOf="@+id/mapKehadiranOne"
-        app:layout_constraintEnd_toEndOf="@+id/mapKehadiranOne"
-        />
+        app:cardBackgroundColor="@color/surface_main"
+        app:cardCornerRadius="22dp"
+        app:cardElevation="6dp"
+        app:layout_constraintBottom_toTopOf="@+id/cvDataContainer"
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <LinearLayout
-        android:id="@+id/llDataKehadiran"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="12dp"
+            android:src="@drawable/ic_search_location"
+            app:tint="@color/primary_brand"
+            android:contentDescription="@string/todo" />
+    </androidx.cardview.widget.CardView>
+
+    <!-- 2. Floating Data Container (Solid White, No Tonal Elevation) -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cvDataContainer"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:orientation="vertical"
-        >
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="32dp"
+        app:cardBackgroundColor="@color/surface_main"
+        app:cardCornerRadius="32dp"
+        app:cardElevation="12dp"
+        app:layout_constraintBottom_toBottomOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <View
+                android:layout_width="32dp"
+                android:layout_height="3dp"
+                android:layout_gravity="center"
+                android:background="@drawable/backgoundovalabuabu"
+                android:alpha="0.2" />
 
             <TextView
-                android:layout_width="match_parent"
+                android:id="@+id/titleDinasLuar"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"
-                android:layout_weight="2"
-                android:textAlignment="center"
-                android:text="Data Masuk/Pulang Kantor"
-                android:textColor="@color/text_secondary"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:id="@+id/titleDinasLuar"/>
-
-        </LinearLayout>
-
-
-        <HorizontalScrollView
-            android:layout_marginTop="10dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            >
+                android:layout_gravity="center"
+                android:layout_marginTop="12dp"
+                android:fontFamily="sans-serif-black"
+                android:text="Konfirmasi Kehadiran"
+                android:textColor="@color/text_primary"
+                android:textSize="15sp"
+                android:letterSpacing="0.02"
+                tools:ignore="HardcodedText" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_gravity="center"
-                >
+                android:layout_marginTop="20dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:gravity="center_horizontal"
-                    android:id="@+id/ivTagingAbsen"
-                    android:layout_width="150dp"
-                    android:layout_height="200dp"
-                    android:scaleType="centerCrop"
-                    app:shapeAppearance="@style/ImageStyle2"
-                    />
+                <!-- Photo Preview (Elegant & Minimal) -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cvPhoto"
+                    android:layout_width="85dp"
+                    android:layout_height="115dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="0dp">
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/ivTagingAbsen"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        app:shapeAppearanceOverlay="@style/ImageStyle2" />
+                </androidx.cardview.widget.CardView>
+
+                <!-- Selection & Button Area -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <!-- Compact SEGMENTED SELECTION -->
+                    <RadioGroup
+                        android:id="@+id/rgKehadiran"
+                        android:layout_width="match_parent"
+                        android:layout_height="44dp"
+                        android:background="@drawable/backgroundwhiteradius"
+                        android:backgroundTint="@color/surface_variant"
+                        android:orientation="horizontal"
+                        android:padding="3dp">
+
+                        <RadioButton
+                            android:id="@+id/rbtnMasuk"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@drawable/bg_radio_masuk_pulang"
+                            android:button="@null"
+                            android:checked="true"
+                            android:fontFamily="sans-serif-black"
+                            android:gravity="center"
+                            android:text="MASUK"
+                            android:textColor="@color/color_radio_masuk_pulang"
+                            android:textSize="11sp"
+                            android:letterSpacing="0.05" />
+
+                        <RadioButton
+                            android:id="@+id/rbtnPulang"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@drawable/bg_radio_masuk_pulang"
+                            android:button="@null"
+                            android:fontFamily="sans-serif-black"
+                            android:gravity="center"
+                            android:text="PULANG"
+                            android:textColor="@color/color_radio_masuk_pulang"
+                            android:textSize="11sp"
+                            android:letterSpacing="0.05" />
+
+                    </RadioGroup>
+
+                    <!-- Send Button (Premium Style) -->
+                    <LinearLayout
+                        android:id="@+id/llUploadkehadiran"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:layout_marginTop="16dp"
+                        android:background="@drawable/backgroundnavbar"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground"
+                        android:gravity="center"
+                        android:orientation="horizontal"
+                        android:elevation="4dp">
+
+                        <ImageView
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:src="@drawable/ic_check"
+                            app:tint="@color/white"
+                            android:contentDescription="@string/todo" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:fontFamily="sans-serif-black"
+                            android:text="KIRIM"
+                            android:textColor="@color/text_putih"
+                            android:textSize="14sp"
+                            android:letterSpacing="0.1" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
             </LinearLayout>
 
-
-
-
-        </HorizontalScrollView>
-
-        <LinearLayout
-            android:layout_marginTop="10dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            >
-            <RadioGroup
-                android:id="@+id/rgKehadiran"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                >
-
-                <RadioButton
-                    android:id="@+id/rbtnMasuk"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="MASUK"
-                    android:textColor="@color/text_primary"
-                    android:theme="@style/TextLabel"
-                    android:textSize="18sp"
-                    android:layout_margin="5dp"
-                    android:checked="true"
-                    />
-
-                <RadioButton
-                    android:id="@+id/rbtnPulang"
-                    android:layout_margin="5dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="PULANG"
-                    android:textColor="@color/text_primary"
-                    android:textSize="18sp"
-                    android:theme="@style/TextLabel"
-
-                    />
-
-            </RadioGroup>
-
         </LinearLayout>
 
-
-
-        <LinearLayout
-            android:layout_gravity="center"
-            android:id="@+id/llUploadkehadiran"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/backgroundnavbar"
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
-            android:clickable="true"
-            android:foreground="?attr/selectableItemBackground"
-            android:onClick="kirimDataDinasLuar"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="50dp"
-            android:focusable="true">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="KIRIM"
-                android:textSize="18sp"
-                android:padding="5dp"
-                android:textStyle="bold"
-                android:textColor="@color/text_putih"/>
-            />
-        </LinearLayout>
-
-    </LinearLayout>
+    </androidx.cardview.widget.CardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
