@@ -44,6 +44,14 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
 
@@ -114,6 +122,9 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
     private String rbLat;
     private String rbLng;
     private String rbKet;
+    private TextView tvJamRealtime, tvTanggalRealtime, tvAkurasi, tvJarak, tvTemperature, tvCondition;
+    private View cardSafeZone;
+    private ImageView ivWeatherIcon;
     private String batasWaktu, statushift;
     private String rbFakeGPS ="0";
     DatabaseHelper databaseHelper;
@@ -206,7 +217,14 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
         ivTaging = findViewById(R.id.ivTagingAbsen);
         llUpload = findViewById(R.id.llUploadkehadiran);
         rgKehadiran = findViewById(R.id.rgKehadiran);
-        TextView title_content = findViewById(R.id.title_content);
+        tvJamRealtime = findViewById(R.id.tvJamRealtime);
+        tvTanggalRealtime = findViewById(R.id.tvTanggalRealtime);
+        tvAkurasi = findViewById(R.id.tvAkurasi);
+        tvJarak = findViewById(R.id.tvJarak);
+        tvTemperature = findViewById(R.id.tvTemperature);
+        tvCondition = findViewById(R.id.tvCondition);
+        ivWeatherIcon = findViewById(R.id.ivWeatherIcon);
+        cardSafeZone = findViewById(R.id.cardSafeZone);
         fragmentContainerView = findViewById(R.id.mapKehadiranOne);
         setRoundedBackground(fragmentContainerView);
 
@@ -277,8 +295,6 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
             return;
         }
 
-        // upload pakai imageBytes
-        title_content.setText("KEHADIRAN");
         llUpload.setEnabled(false);
         llUpload.setClickable(false);
         llUpload.setAlpha(0.5f);
@@ -318,6 +334,22 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
         });
 
         handlerTutupActivity();
+        startRealtimeClock();
+    }
+
+    private void startRealtimeClock() {
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (!isFinishing() && !isDestroyed()) {
+                    Date now = new Date();
+                    tvJamRealtime.setText(new SimpleDateFormat("HH:mm:ss", localeID).format(now));
+                    tvTanggalRealtime.setText(new SimpleDateFormat("EEEE, d MMMM yyyy", localeID).format(now));
+                    handler.postDelayed(this, 1000);
+                }
+            }
+        });
     }
 
     private File createTempFileFromUri(Uri uri)
@@ -336,10 +368,10 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
                 new FileOutputStream(tempFile);
 
         byte[] buffer = new byte[8192];
-        int len;
+        int bytesRead;
 
-        while ((len = is.read(buffer)) > 0) {
-            fos.write(buffer, 0, len);
+        while ((bytesRead = is.read(buffer)) > 0) {
+            fos.write(buffer, 0, bytesRead);
         }
 
         fos.close();
@@ -364,7 +396,7 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
 
     private RequestBody textPart(String value) {
         return RequestBody.create(
-                okhttp3.MediaType.parse("text/plain"),
+                MediaType.parse("text/plain"),
                 value
         );
     }
@@ -416,8 +448,106 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
             if (map != null) {
                 plotMarkers(locationResult.getLastLocation());
             }
+
+            if (tvAkurasi != null) {
+                tvAkurasi.setText(String.format(localeID, "± %.0f m", locationResult.getLastLocation().getAccuracy()));
+            }
+
+            updateRealtimeInfo(locationResult.getLastLocation());
         }
     };
+
+    private long lastWeatherUpdate = 0;
+    private void updateRealtimeInfo(Location location) {
+        if (location == null) return;
+
+        // 1. Update Jarak & Zona Aman
+        double latUser = location.getLatitude();
+        double lngUser = location.getLongitude();
+
+        double radius = getRadiusAbsensi(eKelompok);
+        double jarakUtama = cariJarakTerdekat(latList, lngList, latUser, lngUser);
+        double jarakExc = cariJarakTerdekat(latListExc, lngListExc, latUser, lngUser);
+
+        double jarakTerdekat = JARAK_TIDAK_VALID;
+        if (jarakUtama != JARAK_TIDAK_VALID) jarakTerdekat = jarakUtama;
+        if (jarakExc != JARAK_TIDAK_VALID && (jarakTerdekat == JARAK_TIDAK_VALID || jarakExc < jarakTerdekat)) {
+            jarakTerdekat = jarakExc;
+        }
+
+        totalJarak = jarakTerdekat;
+
+        if (tvJarak != null) {
+            if (jarakTerdekat != JARAK_TIDAK_VALID) {
+                tvJarak.setText(String.format(localeID, "Jarak: %.0f m", jarakTerdekat));
+            } else {
+                tvJarak.setText("Jarak: -");
+            }
+        }
+
+        if (cardSafeZone != null) {
+            if (jarakTerdekat != JARAK_TIDAK_VALID && jarakTerdekat <= radius) {
+                cardSafeZone.setVisibility(View.VISIBLE);
+            } else {
+                cardSafeZone.setVisibility(View.GONE);
+            }
+        }
+
+        // 2. Update Cuaca (setiap 10 menit)
+        long now = System.currentTimeMillis();
+        if (now - lastWeatherUpdate > 10 * 60 * 1000) {
+            fetchWeather(latUser, lngUser);
+            lastWeatherUpdate = now;
+        }
+    }
+
+    private void fetchWeather(double lat, double lng) {
+        String url = "https://api.open-meteo.com/v1/forecast?latitude=" + lat + "&longitude=" + lng + "&current_weather=true";
+
+        RequestQueue queue = Volley.newRequestQueue(this);
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
+                response -> {
+                    try {
+                        JSONObject current = response.getJSONObject("current_weather");
+                        double temp = current.getDouble("temperature");
+                        int code = current.getInt("weathercode");
+
+                        if (tvTemperature != null) tvTemperature.setText(String.format(localeID, "%.0f°C", temp));
+                        if (tvCondition != null) tvCondition.setText(getWeatherDesc(code));
+                        if (ivWeatherIcon != null) updateWeatherIcon(code);
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }, Throwable::printStackTrace);
+        queue.add(request);
+    }
+
+    private String getWeatherDesc(int code) {
+        if (code == 0) return "Cerah";
+        if (code <= 3) return "Berawan";
+        if (code <= 48) return "Kabut";
+        if (code <= 55) return "Gerimis";
+        if (code <= 65) return "Hujan";
+        if (code <= 77) return "Salju";
+        if (code <= 82) return "Hujan Deras";
+        if (code <= 86) return "Salju Lebat";
+        if (code <= 99) return "Badai Petir";
+        return "Cerah Berawan";
+    }
+
+    private void updateWeatherIcon(int code) {
+        int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+        boolean isNight = hour < 6 || hour > 18;
+
+        if (code == 0) {
+            ivWeatherIcon.setImageResource(isNight ? R.drawable.ic_night_w : R.drawable.ic_sun_w);
+        } else if (code <= 3) {
+            ivWeatherIcon.setImageResource(isNight ? R.drawable.ic_night_w : R.drawable.ic_sun_w);
+        } else {
+            ivWeatherIcon.setImageResource(R.drawable.ic_morning_w);
+        }
+    }
 
 
     public void databases(){
@@ -1106,6 +1236,12 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
         finish();
     }
 
+    public void kirimDataDinasLuar(View view) {
+        if (llUpload != null && llUpload.isEnabled()) {
+            llUpload.performClick();
+        }
+    }
+
 
 
 
@@ -1134,7 +1270,11 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
 
         if(map != null){
             map.clear();
-            map.addMarker(new MarkerOptions().position(new LatLng(locationObj.getLatitude(), locationObj.getLongitude())).icon(bitmapDescriptorFromVector(this, R.drawable.asn_lk)).title(lokasi.getAddress(AbsensiKehadiranActivity.this, locationObj.getLatitude(), locationObj.getLongitude())));
+            map.addMarker(new MarkerOptions()
+                    .position(new LatLng(locationObj.getLatitude(), locationObj.getLongitude()))
+                    .icon(bitmapDescriptorFromVector(this, R.drawable.asn_lk))
+                    .anchor(0.5f, 0.5f) // Membuat posisi avatar lebih naik (center)
+                    .title(lokasi.getAddress(AbsensiKehadiranActivity.this, locationObj.getLatitude(), locationObj.getLongitude())));
             map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(locationObj.getLatitude(), locationObj.getLongitude()), 18f));
             latGMap = locationObj.getLatitude();
             lngGMap = locationObj.getLongitude();
@@ -1282,6 +1422,7 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
     protected void onResume() {
         super.onResume();
         handlerTutupActivity();
+        startRealtimeClock();
     }
 
     //endregion

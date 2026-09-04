@@ -118,7 +118,8 @@
                 android:layout_marginBottom="24dp"
                 app:cardBackgroundColor="@color/surface_main"
                 app:cardCornerRadius="16dp"
-                app:cardElevation="2dp"
+                android:layout_margin="2dp"
+                app:cardElevation="1dp"
                 app:strokeWidth="0dp">
 
                 <EditText

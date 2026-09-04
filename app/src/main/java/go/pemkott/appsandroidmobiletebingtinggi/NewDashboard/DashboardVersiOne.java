@@ -100,7 +100,6 @@ public class DashboardVersiOne extends AppCompatActivity {
     DialogView dialogView = new DialogView(DashboardVersiOne.this);
 
     ProgressBar pgSingkronLokasi, pgSingkronKegiatan;
-    ImageView ivSingkronLokasi, ivSingkronKegiatan;
     CircleImageView ciUser;
     MaterialCardView clVerifikasi;
     public static DashboardVersiOne dashboardVersiOne;
@@ -182,10 +181,8 @@ public class DashboardVersiOne extends AppCompatActivity {
         ciUser = findViewById(R.id.ciUser);
         cvJadwal = findViewById(R.id.cvJadwal);
         cvLokasi = findViewById(R.id.cvLokasi);
-        ivSingkronLokasi = findViewById(R.id.ivSingkronLokasi);
         pgSingkronKegiatan = findViewById(R.id.pgSingkronKegiatan);
         cvKegiatan = findViewById(R.id.cvKegiatan);
-        ivSingkronKegiatan = findViewById(R.id.ivSingkronKegiatan);
         cvMenuIzin = findViewById(R.id.cvMenuIzin);
         cvMenuPerjalananDinas = findViewById(R.id.cvMenuPerjalananDinas);
         clVerifikasi = findViewById(R.id.clVerifikasi);
@@ -299,7 +296,7 @@ public class DashboardVersiOne extends AppCompatActivity {
         cvLokasi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ivSingkronLokasi.setVisibility(View.GONE);
+
                 pgSingkronLokasi.setVisibility(View.VISIBLE);
                 koordinatOPD();
 //                koordintaEmployee();
@@ -310,7 +307,7 @@ public class DashboardVersiOne extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 pgSingkronKegiatan.setVisibility(View.VISIBLE);
-                ivSingkronKegiatan.setVisibility(View.GONE);
+
                 singkronKegiatan();
             }
         });
@@ -934,9 +931,6 @@ public class DashboardVersiOne extends AppCompatActivity {
                 if (koordinats == null || koordinats.isEmpty()) {
 
                     pgSingkronLokasi.setVisibility(View.GONE);
-
-                    ivSingkronLokasi.setVisibility(View.VISIBLE);
-
                     return;
 
                 }
@@ -963,8 +957,6 @@ public class DashboardVersiOne extends AppCompatActivity {
                 }
 
                 pgSingkronLokasi.setVisibility(View.GONE);
-                ivSingkronLokasi.setVisibility(View.VISIBLE);
-
             }
 
             @Override
@@ -999,7 +991,6 @@ public class DashboardVersiOne extends AppCompatActivity {
                 }
 
                 pgSingkronKegiatan.setVisibility(View.GONE);
-                ivSingkronKegiatan.setVisibility(View.VISIBLE);
             }
 
             @Override
