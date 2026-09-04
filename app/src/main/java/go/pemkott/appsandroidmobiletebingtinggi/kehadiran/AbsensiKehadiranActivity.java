@@ -32,6 +32,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.view.HapticFeedbackConstants;
 import android.view.View;
 import android.view.ViewOutlineProvider;
 import android.view.Window;
@@ -1422,8 +1423,13 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
         ImageView ivCloseBerakhlak =
                 berakhlakDialog.findViewById(R.id.ivCloseBerakhlak);
 
-        TextView tvKirimSurveiBerakhlak =
+        View tvKirimSurveiBerakhlak =
                 berakhlakDialog.findViewById(R.id.tvKirimSurveiBerakhlak);
+
+        // Tambahkan animasi pembukaan dialog agar lebih keren
+        if (berakhlakDialog.getWindow() != null) {
+            berakhlakDialog.getWindow().setWindowAnimations(R.style.Animation_App_Activity);
+        }
 
         // =========================
         // VALIDASI VIEW
@@ -1473,6 +1479,7 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
             if (berakhlakDialog.isShowing()) {
                 berakhlakDialog.dismiss();
             }
+            llUpload.setEnabled(true);
         });
 
         // =========================
@@ -1627,6 +1634,9 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
         if (uncheckedView == null || checkedView == null) {
             return state;
         }
+
+        // Memberikan feedback getar halus agar terasa premium
+        uncheckedView.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
 
         if (state == 0) {
 

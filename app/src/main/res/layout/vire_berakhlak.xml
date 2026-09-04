@@ -1,389 +1,504 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:gravity="center"
-    android:orientation="vertical"
-    android:background="@drawable/backgoundovalputih"
-    android:layout_margin="10dp">
+    android:layout_margin="16dp"
+    app:cardBackgroundColor="@color/surface_main"
+    app:cardCornerRadius="32dp"
+    app:cardElevation="16dp"
+    app:strokeWidth="0dp">
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- 1. Decorative Glows (Matching Premium Login style) -->
+        <View
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:background="@drawable/backgoundovalabuabu"
+            android:backgroundTint="@color/primary_brand"
+            android:alpha="0.06"
+            android:translationX="-80dp"
+            android:translationY="-50dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <View
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:background="@drawable/backgoundovalabuabu"
+            android:backgroundTint="@color/brand_secondary"
+            android:alpha="0.06"
+            android:translationX="50dp"
+            android:translationY="50dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
         <LinearLayout
-            android:paddingTop="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            app:layout_constraintTop_toTopOf="parent">
 
-
+            <!-- 2. Premium Header with Logo -->
             <RelativeLayout
-            android:id="@+id/titleKehadiran"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingEnd="20dp"
-            android:paddingStart="20dp"
-            >
-
-            <TextView
-                android:layout_centerInParent="true"
+                android:id="@+id/titleKehadiran"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/survei_core_value"
-                android:textAlignment="center"
-                android:textSize="18sp"
-                android:textColor="@color/text_hitam"
-                android:textStyle="bold"
-                android:layout_marginBottom="10dp"
-                android:id="@+id/titleBerakhlak"
-                />
-
-            <ImageView
-                android:layout_width="38dp"
-                android:layout_height="38dp"
-                android:layout_centerVertical="true"
-                android:layout_alignParentEnd="true"
-                app:srcCompat="@drawable/one_close"
-                android:id="@+id/ivCloseBerakhlak"
-                />
-        </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingStart="20dp"
-                android:paddingEnd="20dp"
-                android:paddingBottom="20dp"
-                android:orientation="vertical"
-                android:paddingTop="10dp"
-                >
-
-                <TextView
-                    android:textAlignment="inherit"
-                    android:id="@+id/tvPeritahPilih"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/silahkan_pilih_core_values_asn_berakhlak_yang_anda_kerjakan_hari_ini"
-                    android:textColor="@color/text_hitam"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="10dp"/>
-
-
+                android:paddingTop="28dp"
+                android:paddingHorizontal="24dp"
+                android:paddingBottom="16dp">
 
                 <LinearLayout
-                    android:layout_below="@+id/tvPeritahPilih"
-                    android:id="@+id/listBerakhlak"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/titleBerakhlak"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-black"
+                        android:letterSpacing="0.02"
+                        android:text="Core Values ASN"
+                        android:textColor="@color/primary_brand"
+                        android:textSize="22sp"
+                        tools:ignore="HardcodedText" />
+
+                    <ImageView
+                        android:layout_width="120dp"
+                        android:layout_height="24dp"
+                        android:layout_marginTop="4dp"
+                        android:scaleType="fitStart"
+                        android:src="@drawable/berakhlak"
+                        android:contentDescription="@string/todo" />
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/ivCloseBerakhlak"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="10dp"
+                    android:src="@drawable/one_close"
+                    app:tint="@color/text_hint"
+                    android:contentDescription="@string/todo" />
+            </RelativeLayout>
+
+            <androidx.core.widget.NestedScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxHeight="480dp"
+                android:scrollbarSize="2dp">
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    >
+                    android:paddingHorizontal="24dp"
+                    android:paddingBottom="28dp">
+
+                    <TextView
+                        android:id="@+id/tvPeritahPilih"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="24dp"
+                        android:fontFamily="sans-serif-medium"
+                        android:text="@string/silahkan_pilih_core_values_asn_berakhlak_yang_anda_kerjakan_hari_ini"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="14sp"
+                        android:lineSpacingExtra="4dp" />
 
                     <LinearLayout
-                    android:id="@+id/llListBerakhlak1"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:layout_marginBottom="10dp">
-
-                    <ImageView
-                        android:id="@+id/ivListBerakhlak1"
-                        android:layout_width="38dp"
-                        android:layout_height="38dp"
-                        android:src="@drawable/one_rectangle_non"
-                        android:layout_marginEnd="10dp"/>
-
-                    <ImageView
-                        android:id="@+id/ivCheckBer1"
-                        android:layout_width="38dp"
-                        android:layout_height="38dp"
-                        android:src="@drawable/one_rectangle"
-                        android:layout_marginEnd="10dp"
-                        android:visibility="gone"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
+                        android:id="@+id/listBerakhlak"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textSize="18sp"
-                        android:text="Ber"
-                        android:textStyle="bold"
-                        android:textColor="@color/merah"
-                        />
+                        android:orientation="vertical">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="18sp"
-                        android:text="orientasi Pelayanan"
-                        android:textStyle="bold"
-                        android:textColor="@color/text_hitam"
-                        />
+                        <!-- Item Style: Modern Floating Tile -->
+                        <!-- Berorientasi Pelayanan -->
+                        <LinearLayout
+                            android:id="@+id/llListBerakhlak1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="12dp"
+                            android:background="@drawable/backgroundwhiteradius"
+                            android:backgroundTint="@color/surface_variant"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:foreground="?attr/selectableItemBackground"
+                            android:gravity="center_vertical"
+                            android:padding="16dp"
+                            android:elevation="1dp">
+
+                            <FrameLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content">
+                                <ImageView
+                                    android:id="@+id/ivListBerakhlak1"
+                                    android:layout_width="24dp"
+                                    android:layout_height="24dp"
+                                    android:src="@drawable/one_rectangle_non"
+                                    app:tint="@color/text_hint" />
+                                <ImageView
+                                    android:id="@+id/ivCheckBer1"
+                                    android:layout_width="24dp"
+                                    android:layout_height="24dp"
+                                    android:src="@drawable/one_rectangle"
+                                    app:tint="@color/primary_brand"
+                                    android:visibility="gone" />
+                            </FrameLayout>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="16dp"
+                                android:fontFamily="sans-serif-black"
+                                android:text="Ber"
+                                android:textColor="@color/merah"
+                                android:textSize="15sp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="sans-serif-black"
+                                android:text="orientasi Pelayanan"
+                                android:textColor="@color/text_primary"
+                                android:textSize="15sp" />
+                        </LinearLayout>
+
+                        <!-- Akuntabel -->
+                        <LinearLayout
+                            android:id="@+id/llListBerakhlak2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="12dp"
+                            android:background="@drawable/backgroundwhiteradius"
+                            android:backgroundTint="@color/surface_variant"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:foreground="?attr/selectableItemBackground"
+                            android:gravity="center_vertical"
+                            android:padding="16dp"
+                            android:elevation="1dp">
+
+                            <FrameLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content">
+                                <ImageView
+                                    android:id="@+id/ivListBerakhlak2"
+                                    android:layout_width="24dp"
+                                    android:layout_height="24dp"
+                                    android:src="@drawable/one_rectangle_non"
+                                    app:tint="@color/text_hint" />
+                                <ImageView
+                                    android:id="@+id/ivCheckBer2"
+                                    android:layout_width="24dp"
+                                    android:layout_height="24dp"
+                                    android:src="@drawable/one_rectangle"
+                                    app:tint="@color/primary_brand"
+                                    android:visibility="gone" />
+                            </FrameLayout>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="16dp"
+                                android:fontFamily="sans-serif-black"
+                                android:text="A"
+                                android:textColor="@color/merah"
+                                android:textSize="15sp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="sans-serif-black"
+                                android:text="kuntabel"
+                                android:textColor="@color/text_primary"
+                                android:textSize="15sp" />
+                        </LinearLayout>
+
+                        <!-- Kompeten -->
+                        <LinearLayout
+                            android:id="@+id/llListBerakhlak3"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="12dp"
+                            android:background="@drawable/backgroundwhiteradius"
+                            android:backgroundTint="@color/surface_variant"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:foreground="?attr/selectableItemBackground"
+                            android:gravity="center_vertical"
+                            android:padding="16dp"
+                            android:elevation="1dp">
+
+                            <FrameLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content">
+                                <ImageView
+                                    android:id="@+id/ivListBerakhlak3"
+                                    android:layout_width="24dp"
+                                    android:layout_height="24dp"
+                                    android:src="@drawable/one_rectangle_non"
+                                    app:tint="@color/text_hint" />
+                                <ImageView
+                                    android:id="@+id/ivCheckBer3"
+                                    android:layout_width="24dp"
+                                    android:layout_height="24dp"
+                                    android:src="@drawable/one_rectangle"
+                                    app:tint="@color/primary_brand"
+                                    android:visibility="gone" />
+                            </FrameLayout>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="16dp"
+                                android:fontFamily="sans-serif-black"
+                                android:text="K"
+                                android:textColor="@color/merah"
+                                android:textSize="15sp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="sans-serif-black"
+                                android:text="ompeten"
+                                android:textColor="@color/text_primary"
+                                android:textSize="15sp" />
+                        </LinearLayout>
+
+                        <!-- Harmonis -->
+                        <LinearLayout
+                            android:id="@+id/llListBerakhlak4"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="12dp"
+                            android:background="@drawable/backgroundwhiteradius"
+                            android:backgroundTint="@color/surface_variant"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:foreground="?attr/selectableItemBackground"
+                            android:gravity="center_vertical"
+                            android:padding="16dp"
+                            android:elevation="1dp">
+
+                            <FrameLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content">
+                                <ImageView
+                                    android:id="@+id/ivListBerakhlak4"
+                                    android:layout_width="24dp"
+                                    android:layout_height="24dp"
+                                    android:src="@drawable/one_rectangle_non"
+                                    app:tint="@color/text_hint" />
+                                <ImageView
+                                    android:id="@+id/ivCheckBer4"
+                                    android:layout_width="24dp"
+                                    android:layout_height="24dp"
+                                    android:src="@drawable/one_rectangle"
+                                    app:tint="@color/primary_brand"
+                                    android:visibility="gone" />
+                            </FrameLayout>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="16dp"
+                                android:fontFamily="sans-serif-black"
+                                android:text="H"
+                                android:textColor="@color/merah"
+                                android:textSize="15sp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="sans-serif-black"
+                                android:text="armonis"
+                                android:textColor="@color/text_primary"
+                                android:textSize="15sp" />
+                        </LinearLayout>
+
+                        <!-- Loyal -->
+                        <LinearLayout
+                            android:id="@+id/llListBerakhlak5"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="12dp"
+                            android:background="@drawable/backgroundwhiteradius"
+                            android:backgroundTint="@color/surface_variant"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:foreground="?attr/selectableItemBackground"
+                            android:gravity="center_vertical"
+                            android:padding="16dp"
+                            android:elevation="1dp">
+
+                            <FrameLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content">
+                                <ImageView
+                                    android:id="@+id/ivListBerakhlak5"
+                                    android:layout_width="24dp"
+                                    android:layout_height="24dp"
+                                    android:src="@drawable/one_rectangle_non"
+                                    app:tint="@color/text_hint" />
+                                <ImageView
+                                    android:id="@+id/ivCheckBer5"
+                                    android:layout_width="24dp"
+                                    android:layout_height="24dp"
+                                    android:src="@drawable/one_rectangle"
+                                    app:tint="@color/primary_brand"
+                                    android:visibility="gone" />
+                            </FrameLayout>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="16dp"
+                                android:fontFamily="sans-serif-black"
+                                android:text="L"
+                                android:textColor="@color/merah"
+                                android:textSize="15sp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="sans-serif-black"
+                                android:text="oyal"
+                                android:textColor="@color/text_primary"
+                                android:textSize="15sp" />
+                        </LinearLayout>
+
+                        <!-- Adaptif -->
+                        <LinearLayout
+                            android:id="@+id/llListBerakhlak6"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="12dp"
+                            android:background="@drawable/backgroundwhiteradius"
+                            android:backgroundTint="@color/surface_variant"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:foreground="?attr/selectableItemBackground"
+                            android:gravity="center_vertical"
+                            android:padding="16dp"
+                            android:elevation="1dp">
+
+                            <FrameLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content">
+                                <ImageView
+                                    android:id="@+id/ivListBerakhlak6"
+                                    android:layout_width="24dp"
+                                    android:layout_height="24dp"
+                                    android:src="@drawable/one_rectangle_non"
+                                    app:tint="@color/text_hint" />
+                                <ImageView
+                                    android:id="@+id/ivCheckBer6"
+                                    android:layout_width="24dp"
+                                    android:layout_height="24dp"
+                                    android:src="@drawable/one_rectangle"
+                                    app:tint="@color/primary_brand"
+                                    android:visibility="gone" />
+                            </FrameLayout>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="16dp"
+                                android:fontFamily="sans-serif-black"
+                                android:text="A"
+                                android:textColor="@color/merah"
+                                android:textSize="15sp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="sans-serif-black"
+                                android:text="daptif"
+                                android:textColor="@color/text_primary"
+                                android:textSize="15sp" />
+                        </LinearLayout>
+
+                        <!-- Kolaboratif -->
+                        <LinearLayout
+                            android:id="@+id/llListBerakhlak7"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="12dp"
+                            android:background="@drawable/backgroundwhiteradius"
+                            android:backgroundTint="@color/surface_variant"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:foreground="?attr/selectableItemBackground"
+                            android:gravity="center_vertical"
+                            android:padding="16dp"
+                            android:elevation="1dp">
+
+                            <FrameLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content">
+                                <ImageView
+                                    android:id="@+id/ivListBerakhlak7"
+                                    android:layout_width="24dp"
+                                    android:layout_height="24dp"
+                                    android:src="@drawable/one_rectangle_non"
+                                    app:tint="@color/text_hint" />
+                                <ImageView
+                                    android:id="@+id/ivCheckBer7"
+                                    android:layout_width="24dp"
+                                    android:layout_height="24dp"
+                                    android:src="@drawable/one_rectangle"
+                                    app:tint="@color/primary_brand"
+                                    android:visibility="gone" />
+                            </FrameLayout>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="16dp"
+                                android:fontFamily="sans-serif-black"
+                                android:text="K"
+                                android:textColor="@color/merah"
+                                android:textSize="15sp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="sans-serif-black"
+                                android:text="olaboratif"
+                                android:textColor="@color/text_primary"
+                                android:textSize="15sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/tvKirimSurveiBerakhlak"
+                        style="@style/Widget.Material3.Button"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:layout_marginTop="24dp"
+                        android:fontFamily="sans-serif-black"
+                        android:text="@string/kirim"
+                        android:textSize="16sp"
+                        android:textAllCaps="true"
+                        android:letterSpacing="0.05"
+                        app:backgroundTint="@color/primary_brand"
+                        app:cornerRadius="16dp"
+                        app:elevation="4dp" />
+
                 </LinearLayout>
-
-                    <LinearLayout
-                    android:id="@+id/llListBerakhlak2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:layout_marginBottom="10dp">
-
-
-                    <ImageView
-                        android:id="@+id/ivListBerakhlak2"
-                        android:layout_width="38dp"
-                        android:layout_height="38dp"
-                        android:src="@drawable/one_rectangle_non"
-                        android:layout_marginEnd="10dp"/>
-
-                    <ImageView
-                        android:id="@+id/ivCheckBer2"
-                        android:layout_width="38dp"
-                        android:layout_height="38dp"
-                        android:src="@drawable/one_rectangle"
-                        android:layout_marginEnd="10dp"
-                        android:visibility="gone"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="18sp"
-                        android:text="A"
-                        android:textStyle="bold"
-                        android:textColor="@color/merah"
-                        />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="18sp"
-                        android:text="kuntabel"
-                        android:textStyle="bold"
-                        android:textColor="@color/text_hitam"
-                        />
-                </LinearLayout>
-
-                    <LinearLayout
-                    android:id="@+id/llListBerakhlak3"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:layout_marginBottom="10dp">
-
-
-                    <ImageView
-                        android:id="@+id/ivListBerakhlak3"
-                        android:layout_width="38dp"
-                        android:layout_height="38dp"
-                        android:src="@drawable/one_rectangle_non"
-                        android:layout_marginEnd="10dp"/>
-
-                    <ImageView
-                        android:id="@+id/ivCheckBer3"
-                        android:layout_width="38dp"
-                        android:layout_height="38dp"
-                        android:src="@drawable/one_rectangle"
-                        android:layout_marginEnd="10dp"
-                        android:visibility="gone"/>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="18sp"
-                        android:text="K"
-                        android:textStyle="bold"
-                        android:textColor="@color/merah"
-                        />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="18sp"
-                        android:text="ompeten"
-                        android:textStyle="bold"
-                        android:textColor="@color/text_hitam"
-                        />
-                </LinearLayout>
-
-                    <LinearLayout
-                    android:id="@+id/llListBerakhlak4"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:layout_marginBottom="10dp">
-
-
-                    <ImageView
-                        android:id="@+id/ivListBerakhlak4"
-                        android:layout_width="38dp"
-                        android:layout_height="38dp"
-                        android:src="@drawable/one_rectangle_non"
-                        android:layout_marginEnd="10dp"/>
-                    <ImageView
-                        android:id="@+id/ivCheckBer4"
-                        android:layout_width="38dp"
-                        android:layout_height="38dp"
-                        android:src="@drawable/one_rectangle"
-                        android:layout_marginEnd="10dp"
-                        android:visibility="gone"/>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="18sp"
-                        android:text="H"
-                        android:textStyle="bold"
-                        android:textColor="@color/merah"
-                        />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="18sp"
-                        android:text="armonis"
-                        android:textStyle="bold"
-                        android:textColor="@color/text_hitam"
-                        />
-                </LinearLayout>
-
-                    <LinearLayout
-                    android:id="@+id/llListBerakhlak5"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:layout_marginBottom="10dp">
-
-
-                    <ImageView
-                        android:id="@+id/ivListBerakhlak5"
-                        android:layout_width="38dp"
-                        android:layout_height="38dp"
-                        android:src="@drawable/one_rectangle_non"
-                        android:layout_marginEnd="10dp"/>
-
-                    <ImageView
-                        android:id="@+id/ivCheckBer5"
-                        android:layout_width="38dp"
-                        android:layout_height="38dp"
-                        android:src="@drawable/one_rectangle"
-                        android:layout_marginEnd="10dp"
-                        android:visibility="gone"/>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="18sp"
-                        android:text="L"
-                        android:textStyle="bold"
-                        android:textColor="@color/merah"
-                        />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="18sp"
-                        android:text="oyal"
-                        android:textStyle="bold"
-                        android:textColor="@color/text_hitam"
-                        />
-                </LinearLayout>
-
-                  <LinearLayout
-                    android:id="@+id/llListBerakhlak6"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:layout_marginBottom="10dp">
-
-
-                    <ImageView
-                        android:id="@+id/ivListBerakhlak6"
-                        android:layout_width="38dp"
-                        android:layout_height="38dp"
-                        android:src="@drawable/one_rectangle_non"
-                        android:layout_marginEnd="10dp"/>
-                    <ImageView
-                        android:id="@+id/ivCheckBer6"
-                        android:layout_width="38dp"
-                        android:layout_height="38dp"
-                        android:src="@drawable/one_rectangle"
-                        android:layout_marginEnd="10dp"
-                        android:visibility="gone"/>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="18sp"
-                        android:text="A"
-                        android:textStyle="bold"
-                        android:textColor="@color/merah"
-                        />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="18sp"
-                        android:text="daptif"
-                        android:textStyle="bold"
-                        android:textColor="@color/text_hitam"
-                        />
-                </LinearLayout>
-
-
-                    <LinearLayout
-                    android:id="@+id/llListBerakhlak7"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:layout_marginBottom="10dp">
-
-
-                    <ImageView
-                        android:id="@+id/ivListBerakhlak7"
-                        android:layout_width="38dp"
-                        android:layout_height="38dp"
-                        android:src="@drawable/one_rectangle_non"
-                        android:layout_marginEnd="10dp"/>
-
-                    <ImageView
-                        android:id="@+id/ivCheckBer7"
-                        android:layout_width="38dp"
-                        android:layout_height="38dp"
-                        android:src="@drawable/one_rectangle"
-                        android:layout_marginEnd="10dp"
-                        android:visibility="gone"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="18sp"
-                        android:text="K"
-                        android:textStyle="bold"
-                        android:textColor="@color/merah"
-                        />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="18sp"
-                        android:text="olaboratif"
-                        android:textStyle="bold"
-                        android:textColor="@color/text_hitam"
-                        />
-                </LinearLayout>
-            </LinearLayout>
-
-                <TextView
-                    android:layout_centerHorizontal="true"
-                    android:layout_below="@+id/listBerakhlak"
-                    android:id="@+id/tvKirimSurveiBerakhlak"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/backgroundnavbar"
-                    android:padding="10dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/kirim"
-                    android:textSize="18sp"
-                    android:layout_marginEnd="5dp"
-                    android:textStyle="bold"
-                    android:textColor="@color/text_putih"/>
-
-        </RelativeLayout>
+            </androidx.core.widget.NestedScrollView>
 
         </LinearLayout>
-</LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

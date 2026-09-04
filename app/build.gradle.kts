@@ -50,6 +50,9 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+    buildFeatures {
+        viewBinding = true
+    }
 }
 
 dependencies {
@@ -61,6 +64,8 @@ dependencies {
     implementation(libs.app.update)
     implementation(libs.face.detection)
     implementation(libs.glide)
+    implementation(libs.navigation.fragment)
+    implementation(libs.navigation.ui)
 //    implementation(libs.logging.interceptor)
     implementation(libs.okhttp3.logging.interceptor)
     implementation(libs.places)

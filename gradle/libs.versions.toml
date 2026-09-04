@@ -49,6 +49,8 @@ firebaseAnalytics = "23.2.0"
 appUpdateKtx = "2.1.0"
 loggingInterceptorVersion = "5.4.0"
 activityKtx = "1.8.0"
+navigationFragment = "2.6.0"
+navigationUi = "2.6.0"
 #loggingInterceptorVersion = "4.12.0"
 
 
@@ -99,6 +101,8 @@ okhttp3-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-
 activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "activityKtx" }
 tensorflow-lite = { group = "com.google.ai.edge.litert", name = "litert", version.ref = "litert" }
 tensorflow-lite-support = { group = "com.google.ai.edge.litert", name = "litert-support", version.ref = "litertSupport" }
+navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment", version.ref = "navigationFragment" }
+navigation-ui = { group = "androidx.navigation", name = "navigation-ui", version.ref = "navigationUi" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
