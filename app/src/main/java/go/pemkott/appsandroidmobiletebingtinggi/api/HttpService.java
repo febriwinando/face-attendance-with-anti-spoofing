@@ -44,6 +44,20 @@ import retrofit2.http.Part;
 import retrofit2.http.Url;
 
 public interface HttpService {
+    @Multipart
+    @POST("helpdesk/aduan")
+    Call<FileModel> kirimAduan(
+            @Part("nama") RequestBody nama,
+            @Part("nip") RequestBody nip,
+            @Part("opdid") RequestBody opdid,
+            @Part("kategori") RequestBody kategori,
+            @Part("prioritas") RequestBody prioritas,
+            @Part("lokasi_aduan") RequestBody lokasi_aduan,
+            @Part("judul") RequestBody judul,
+            @Part("deskripsi") RequestBody deskripsi,
+            @Part List<MultipartBody.Part> images
+    );
+
     @GET("employees")
     Call<EmployeeResponse> getEmployees();
     @FormUrlEncoded

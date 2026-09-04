@@ -13,4 +13,17 @@
 
     <include layout="@layout/content_dashboard_one"/>
 
+    <ImageView
+        android:id="@+id/fabHelpdesk"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="16dp"
+        android:src="@drawable/helpdesk"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/todo" />
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

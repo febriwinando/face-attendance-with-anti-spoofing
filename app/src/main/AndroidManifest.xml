@@ -48,6 +48,16 @@
         android:networkSecurityConfig="@xml/network_security_config">
 
         <activity
+            android:name=".helpdesk.ajukan.AjukanAduanActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".helpdesk.panduan.PanduanHelpdeskActivity"
+            android:exported="false" />
+        <activity
+            android:name=".helpdesk.HelpdeskActivity"
+            android:exported="false" />
+        <activity
             android:name=".resetpassword.ResetPasswprdActivity"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
             android:exported="false"

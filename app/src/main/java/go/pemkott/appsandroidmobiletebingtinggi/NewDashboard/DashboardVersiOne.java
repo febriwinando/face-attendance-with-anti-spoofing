@@ -8,7 +8,10 @@ import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.bula
 import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.hariText;
 
 import android.Manifest;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.app.Dialog;
+import android.view.animation.OvershootInterpolator;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -58,6 +61,7 @@ import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import go.pemkott.appsandroidmobiletebingtinggi.ProfileActivity;
+import go.pemkott.appsandroidmobiletebingtinggi.helpdesk.HelpdeskActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.api.HttpService;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
@@ -391,6 +395,40 @@ public class DashboardVersiOne extends AppCompatActivity {
                 startActivity(new Intent(DashboardVersiOne.this, ValidasiNewActivity.class));
             }
         });
+
+        ImageView fabHelpdesk = findViewById(R.id.fabHelpdesk);
+        fabHelpdesk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(DashboardVersiOne.this, HelpdeskActivity.class));
+            }
+        });
+
+        // Animasi muncul (Pop-in dengan Overshoot)
+        fabHelpdesk.setAlpha(0f);
+        fabHelpdesk.setScaleX(0.2f);
+        fabHelpdesk.setScaleY(0.2f);
+        fabHelpdesk.animate()
+                .alpha(1f)
+                .scaleX(1f)
+                .scaleY(1f)
+                .setDuration(1000)
+                .setStartDelay(500)
+                .setInterpolator(new OvershootInterpolator())
+                .start();
+
+        // Animasi bernapas (Floating subtle) agar terlihat hidup
+        ObjectAnimator scaleX = ObjectAnimator.ofFloat(fabHelpdesk, "scaleX", 1f, 1.08f);
+        ObjectAnimator scaleY = ObjectAnimator.ofFloat(fabHelpdesk, "scaleY", 1f, 1.08f);
+        scaleX.setRepeatCount(ObjectAnimator.INFINITE);
+        scaleX.setRepeatMode(ObjectAnimator.REVERSE);
+        scaleY.setRepeatCount(ObjectAnimator.INFINITE);
+        scaleY.setRepeatMode(ObjectAnimator.REVERSE);
+
+        AnimatorSet breathingAnim = new AnimatorSet();
+        breathingAnim.playTogether(scaleX, scaleY);
+        breathingAnim.setDuration(1200);
+        breathingAnim.start();
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
