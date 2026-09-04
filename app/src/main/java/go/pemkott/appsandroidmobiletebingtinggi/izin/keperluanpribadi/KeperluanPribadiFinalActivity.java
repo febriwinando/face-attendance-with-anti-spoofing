@@ -200,8 +200,8 @@ public class KeperluanPribadiFinalActivity extends AppCompatActivity implements 
         setRoundedBackground(fragmentContainerView);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         locationRequest = LocationRequest.create();
-        locationRequest.setInterval(3000);
-        locationRequest.setFastestInterval(3000);
+        locationRequest.setInterval(5000);
+        locationRequest.setFastestInterval(5000);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
 
@@ -306,8 +306,6 @@ public class KeperluanPribadiFinalActivity extends AppCompatActivity implements 
 
         selected = rgKehadiran.getCheckedRadioButtonId();
         radioSelectedKehadiran = findViewById(selected);
-
-        startLocationUpdates();
 
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
@@ -444,7 +442,7 @@ public class KeperluanPribadiFinalActivity extends AppCompatActivity implements 
 
     private RequestBody textPart(String value) {
         return RequestBody.create(
-                okhttp3.MediaType.parse("text/plain"),
+                MediaType.parse("text/plain"),
                 value
         );
     }
@@ -996,11 +994,12 @@ public class KeperluanPribadiFinalActivity extends AppCompatActivity implements 
         finish();
     }
 
+    @Override
     protected void onResume() {
         super.onResume();
         rbTanggal = SIMPLE_FORMAT_TANGGAL.format(new Date());
+        startLocationUpdates();
     }
-
 
     public void handlerProgressDialog(){
         Handler handler = new Handler();
@@ -1039,6 +1038,11 @@ public class KeperluanPribadiFinalActivity extends AppCompatActivity implements 
 
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        stopLocationUpdates();
+    }
 
     @Override
     protected void onStop() {

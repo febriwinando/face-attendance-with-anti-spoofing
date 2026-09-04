@@ -24,8 +24,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="50dp"
-        app:cardBackgroundColor="@color/surface_main"
+        android:layout_marginTop="35dp"
+        android:background="@drawable/backgoundputihtransparan"
         app:cardCornerRadius="20dp"
         app:cardElevation="6dp"
         app:layout_constraintStart_toStartOf="parent"
@@ -48,7 +48,7 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:src="@drawable/one_left"
-                app:tint="@color/primary_brand"
+                app:tint="@color/text_primary"
                 android:contentDescription="@string/todo" />
 
             <TextView
@@ -58,10 +58,12 @@
                 android:layout_marginStart="8dp"
                 android:fontFamily="sans-serif-black"
                 android:text="Kembali"
-                android:textColor="@color/primary_brand"
-                android:textSize="12sp"
-                android:letterSpacing="0.05"
-                tools:ignore="HardcodedText" />
+                android:textColor="@color/text_primary"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/rlBack"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="HardcodedText"  />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
@@ -70,7 +72,7 @@
         android:id="@+id/cardAccuracy"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="35dp"
         android:layout_marginEnd="16dp"
         app:cardBackgroundColor="@color/surface_main"
         app:cardCornerRadius="20dp"
@@ -335,7 +337,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         app:cardCornerRadius="20dp"
-                        app:cardElevation="2dp">
+                        app:cardElevation="1dp">
 
                         <com.google.android.material.imageview.ShapeableImageView
                             android:id="@+id/ivTagingAbsen"
@@ -395,7 +397,7 @@
                             android:gravity="center"
                             android:drawableStart="@drawable/ic_masuk_kanan"
                             android:paddingStart="8dp"
-                            android:text="MASUK"
+                            android:text="@string/masuk"
                             android:textColor="@color/color_radio_masuk_pulang"
                             android:textSize="12sp"
                             android:letterSpacing="0.05"
@@ -412,7 +414,7 @@
                             android:gravity="center"
                             android:drawableStart="@drawable/ic_pulang_kiri"
                             android:paddingStart="8dp"
-                            android:text="PULANG"
+                            android:text="@string/pulang"
                             android:textColor="@color/color_radio_masuk_pulang"
                             android:textSize="12sp"
                             android:letterSpacing="0.05"
@@ -489,11 +491,6 @@
                 android:orientation="horizontal"
                 android:elevation="8dp">
 
-                <ImageView
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
-                    android:src="@drawable/ic_send_line"
-                    android:contentDescription="@string/todo" />
 
                 <TextView
                     android:layout_width="wrap_content"

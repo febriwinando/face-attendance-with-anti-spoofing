@@ -55,7 +55,7 @@ public interface HttpService {
             @Part("lokasi_aduan") RequestBody lokasi_aduan,
             @Part("judul") RequestBody judul,
             @Part("deskripsi") RequestBody deskripsi,
-            @Part List<MultipartBody.Part> images
+            @Part List<MultipartBody.Part> gambar
     );
 
     @GET("employees")

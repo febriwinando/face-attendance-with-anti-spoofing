@@ -76,7 +76,7 @@ public class CalendarJadwalSiftActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.background_color));
         getWindow().setNavigationBarColor(getResources().getColor(R.color.background_color));
-        setContentView(R.layout.activity_calendar_jadwal_sift);
+        setContentView(R.layout.activity_calendar_jadwal_shift);
 
         session = new SessionManager(this);
         userId = session.getPegawaiId();

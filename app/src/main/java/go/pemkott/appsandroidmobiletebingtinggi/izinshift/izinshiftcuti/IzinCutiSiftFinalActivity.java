@@ -1,4 +1,4 @@
-package go.pemkott.appsandroidmobiletebingtinggi.izinsift.izinsiftcuti;
+package go.pemkott.appsandroidmobiletebingtinggi.izinshift.izinshiftcuti;
 
 import static go.pemkott.appsandroidmobiletebingtinggi.geolocation.model.LocationHelper.defaultLocation;
 import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.SIMPLE_DATE_FORMAT_TAGING_PHOTO_REPORT;
@@ -16,7 +16,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -38,7 +37,6 @@ import android.os.Looper;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.provider.Settings;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewOutlineProvider;
@@ -50,14 +48,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
-import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -100,14 +96,11 @@ import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.api.ResponsePOJO;
 import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
 import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraXLActivity;
-import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraxActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
-import go.pemkott.appsandroidmobiletebingtinggi.izin.cuti.IzinCutiFinalActivity;
-import go.pemkott.appsandroidmobiletebingtinggi.izinsift.JadwalIzinSiftActivity;
-import go.pemkott.appsandroidmobiletebingtinggi.izinsift.izinsiftsakit.IzinSakitSiftFinalActivity;
+import go.pemkott.appsandroidmobiletebingtinggi.izinshift.JadwalIzinSiftActivity;
+import go.pemkott.appsandroidmobiletebingtinggi.izinshift.izinshiftsakit.IzinSakitShiftFinalActivity;
 
-import go.pemkott.appsandroidmobiletebingtinggi.kehadiran.AbsensiKehadiranActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFoto;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFotoLampiran;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.Lokasi;
@@ -132,7 +125,7 @@ public class IzinCutiSiftFinalActivity extends AppCompatActivity implements OnMa
 
     DatabaseHelper databaseHelper;
     ActivityResultLauncher<Intent> resultLauncher;
-    private static final String TAG = IzinSakitSiftFinalActivity.class.getSimpleName();
+    private static final String TAG = IzinSakitShiftFinalActivity.class.getSimpleName();
     File imageFile;
     private String  currentPhotoPath;
     private String rbLat;
@@ -254,8 +247,8 @@ public class IzinCutiSiftFinalActivity extends AppCompatActivity implements OnMa
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         locationRequest = LocationRequest.create();
-        locationRequest.setInterval(3000);
-        locationRequest.setFastestInterval(3000);
+        locationRequest.setInterval(5000);
+        locationRequest.setFastestInterval(5000);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         resultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
             @SuppressLint("Range")
@@ -374,7 +367,6 @@ public class IzinCutiSiftFinalActivity extends AppCompatActivity implements OnMa
             return;
         }
 
-        startLocationUpdates();
     }
 
 
@@ -508,7 +500,7 @@ public class IzinCutiSiftFinalActivity extends AppCompatActivity implements OnMa
 
     private RequestBody textPart(String value) {
         return RequestBody.create(
-                okhttp3.MediaType.parse("text/plain"),
+                MediaType.parse("text/plain"),
                 value
         );
     }
@@ -1297,6 +1289,18 @@ public class IzinCutiSiftFinalActivity extends AppCompatActivity implements OnMa
 
     }
 
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        startLocationUpdates();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        stopLocationUpdates();
+    }
 
     @Override
     protected void onStop() {

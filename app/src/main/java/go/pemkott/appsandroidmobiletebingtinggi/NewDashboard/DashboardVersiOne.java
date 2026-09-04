@@ -67,7 +67,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.api.HttpService;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import go.pemkott.appsandroidmobiletebingtinggi.dinasluarkantor.perjalanandinas.SppdActivity;
-import go.pemkott.appsandroidmobiletebingtinggi.izinsift.JadwalIzinSiftActivity;
+import go.pemkott.appsandroidmobiletebingtinggi.izinshift.JadwalIzinSiftActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.kehadiransift.JadwalSiftActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
 

@@ -11,7 +11,9 @@
     android:fitsSystemWindows="true">
 
 
-    <include layout="@layout/content_dashboard_one"/>
+    <include
+        layout="@layout/content_dashboard_one"
+        />
 
     <ImageView
         android:id="@+id/fabHelpdesk"

@@ -78,7 +78,7 @@ String userId;
         getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.background_color));
         getWindow().setNavigationBarColor(getResources().getColor(R.color.background_color));
 
-        setContentView(R.layout.activity_jadwal_sift);
+        setContentView(R.layout.activity_jadwal_shift);
         session = new SessionManager(this);
         userId = session.getPegawaiId();
 

@@ -1,4 +1,4 @@
-package go.pemkott.appsandroidmobiletebingtinggi.izinsift;
+package go.pemkott.appsandroidmobiletebingtinggi.izinshift;
 
 import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.BULAN;
 import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.TAHUN;

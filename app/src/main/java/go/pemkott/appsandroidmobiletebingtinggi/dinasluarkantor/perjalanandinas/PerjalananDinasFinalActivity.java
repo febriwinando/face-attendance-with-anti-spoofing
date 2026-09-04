@@ -230,8 +230,8 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
         setRoundedBackground(fragmentContainerView);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         locationRequest = LocationRequest.create();
-        locationRequest.setInterval(3000);
-        locationRequest.setFastestInterval(3000);
+        locationRequest.setInterval(5000);
+        locationRequest.setFastestInterval(5000);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         //Google Maps
@@ -377,9 +377,6 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
 
         datePickerMulai();
         datePickerSampai();
-
-        startLocationUpdates();
-
 
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
@@ -917,7 +914,7 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
 
     private RequestBody textPart(String value) {
         return RequestBody.create(
-                okhttp3.MediaType.parse("text/plain"),
+                MediaType.parse("text/plain"),
                 value
         );
     }
@@ -1296,6 +1293,13 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
     protected void onResume() {
         super.onResume();
         rbTanggal = SIMPLE_FORMAT_TANGGAL.format(new Date());
+        startLocationUpdates();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        stopLocationUpdates();
     }
 
     public void viewSukses(Context context){

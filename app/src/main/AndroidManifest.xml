@@ -52,6 +52,9 @@
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity
+            android:name=".helpdesk.ajukan.MediaViewerActivity"
+            android:exported="false" />
+        <activity
             android:name=".helpdesk.panduan.PanduanHelpdeskActivity"
             android:exported="false" />
         <activity
@@ -66,28 +69,28 @@
             android:name=".pdf.ReadPdfActivity"
             android:exported="false" />
         <activity
-            android:name=".izinsift.izinsiftsakit.IzinSakitSiftFinalActivity"
+            android:name=".izinshift.izinshiftsakit.IzinSakitShiftFinalActivity"
             android:exported="false" />
         <activity
-            android:name=".izinsift.izinsiftcuti.IzinCutiSiftFinalActivity"
+            android:name=".izinshift.izinshiftcuti.IzinCutiSiftFinalActivity"
             android:exported="false" />
         <activity
-            android:name=".izinsift.izinsiftpribadi.KeperluanPribadiSiftFinalActivity"
+            android:name=".izinshift.izinshiftpribadi.KeperluanPribadiSiftFinalActivity"
             android:exported="false" />
         <activity
             android:name=".rekap.RekapAbsensActivity"
             android:exported="false" />
         <activity
-            android:name=".izinsift.izinsiftsakit.SakitSiftActivity"
+            android:name=".izinshift.izinshiftsakit.SakitShiftActivity"
             android:exported="false" />
         <activity
-            android:name=".izinsift.izinsiftcuti.CutiSiftActivity"
+            android:name=".izinshift.izinshiftcuti.CutiSiftActivity"
             android:exported="false" />
         <activity
-            android:name=".izinsift.izinsiftpribadi.KeperluanPribadiSiftActivity"
+            android:name=".izinshift.izinshiftpribadi.KeperluanPribadiSiftActivity"
             android:exported="false" />
         <activity
-            android:name=".izinsift.JadwalIzinSiftActivity"
+            android:name=".izinshift.JadwalIzinSiftActivity"
             android:exported="false" />
         <activity
             android:name=".singkronjadwalsift.CalendarJadwalSiftActivity"

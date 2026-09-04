@@ -203,8 +203,8 @@ public class AbsenSiftActivity extends AppCompatActivity implements OnMapReadyCa
         fragmentContainerView = findViewById(R.id.map);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         locationRequest = LocationRequest.create();
-        locationRequest.setInterval(3000);
-        locationRequest.setFastestInterval(3000);
+        locationRequest.setInterval(5000);
+        locationRequest.setFastestInterval(5000);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         setRoundedBackground(fragmentContainerView);
 
@@ -305,9 +305,6 @@ public class AbsenSiftActivity extends AppCompatActivity implements OnMapReadyCa
 
 
         mockLocationsEnabled = false;
-
-        startLocationUpdates();
-
 
     }
 
@@ -687,7 +684,7 @@ public class AbsenSiftActivity extends AppCompatActivity implements OnMapReadyCa
 
                             Date hariini = null;
                             try {
-                                hariini = TimeFormat.SIMPLE_FORMAT_TANGGAL.parse(rbTanggal);
+                                hariini = SIMPLE_FORMAT_TANGGAL.parse(rbTanggal);
                             } catch (ParseException e) {
                                 throw new RuntimeException(e);
                             }
@@ -897,7 +894,7 @@ private boolean isHariSenin() {
 
     private RequestBody textPart(String value) {
         return RequestBody.create(
-                okhttp3.MediaType.parse("text/plain"),
+                MediaType.parse("text/plain"),
                 value
         );
     }
@@ -1379,6 +1376,13 @@ statusAbsen = true;
     protected void onResume() {
         super.onResume();
         handlerTutupActivity();
+        startLocationUpdates();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        stopLocationUpdates();
     }
 
 

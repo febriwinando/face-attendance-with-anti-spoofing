@@ -1,4 +1,4 @@
-package go.pemkott.appsandroidmobiletebingtinggi.izinsift.izinsiftpribadi;
+package go.pemkott.appsandroidmobiletebingtinggi.izinshift.izinshiftpribadi;
 
 import static go.pemkott.appsandroidmobiletebingtinggi.geolocation.model.LocationHelper.defaultLocation;
 import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.SIMPLE_DATE_FORMAT_TAGING;
@@ -90,7 +90,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import go.pemkott.appsandroidmobiletebingtinggi.geolocation.GetLocation;
 import go.pemkott.appsandroidmobiletebingtinggi.izin.keperluanpribadi.KeperluanPribadiFinalActivity;
-import go.pemkott.appsandroidmobiletebingtinggi.izinsift.JadwalIzinSiftActivity;
+import go.pemkott.appsandroidmobiletebingtinggi.izinshift.JadwalIzinSiftActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFoto;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.Lokasi;
 import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
@@ -176,12 +176,12 @@ public class KeperluanPribadiSiftFinalActivity extends AppCompatActivity  implem
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_keperluan_pribadi_sift_final);
+        setContentView(R.layout.activity_keperluan_pribadi_shift_final);
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         locationRequest = LocationRequest.create();
-        locationRequest.setInterval(3000);
-        locationRequest.setFastestInterval(3000);
+        locationRequest.setInterval(5000);
+        locationRequest.setFastestInterval(5000);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         session = new SessionManager(this);
@@ -588,7 +588,7 @@ public class KeperluanPribadiSiftFinalActivity extends AppCompatActivity  implem
 
     private RequestBody textPart(String value) {
         return RequestBody.create(
-                okhttp3.MediaType.parse("text/plain"),
+                MediaType.parse("text/plain"),
                 value
         );
     }
@@ -1203,8 +1203,16 @@ public class KeperluanPribadiSiftFinalActivity extends AppCompatActivity  implem
         finish();
     }
 
+    @Override
     protected void onResume() {
         super.onResume();
+        startLocationUpdates();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        stopLocationUpdates();
     }
 
 

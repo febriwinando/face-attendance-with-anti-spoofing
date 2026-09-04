@@ -193,8 +193,8 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         locationRequest = LocationRequest.create();
 
-        locationRequest.setInterval(3000);
-        locationRequest.setFastestInterval(3000);
+        locationRequest.setInterval(5000);
+        locationRequest.setFastestInterval(5000);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         //Google Maps
@@ -318,7 +318,6 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
                 uploadImages();
 //            }
         });
-        startLocationUpdates();
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
@@ -1423,6 +1422,13 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
         super.onResume();
         handlerTutupActivity();
         startRealtimeClock();
+        startLocationUpdates();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        stopLocationUpdates();
     }
 
     //endregion

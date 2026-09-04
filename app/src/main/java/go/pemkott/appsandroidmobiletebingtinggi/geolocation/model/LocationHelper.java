@@ -40,8 +40,6 @@ public class LocationHelper extends LiveData<Location> {
     private LocationSettingsRequest mLocationSettingsRequest;
     private LocationCallback mLocationCallback;
     private Location mCurrentLocation;
-    private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 12000;
-    private static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS = 12000;
     public static LatLng defaultLocation = new LatLng(3.3280269543577745, 99.16650143213461);
 
 
@@ -67,16 +65,26 @@ public class LocationHelper extends LiveData<Location> {
 
 
         mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS);
-        mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS);
+        mLocationRequest.setInterval(5000);
+        mLocationRequest.setFastestInterval(5000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
         builder.addLocationRequest(mLocationRequest);
         mLocationSettingsRequest = builder.build();
 
-        startLocationUpdates();
+    }
 
+    @Override
+    protected void onActive() {
+        super.onActive();
+        startLocationUpdates();
+    }
+
+    @Override
+    protected void onInactive() {
+        super.onInactive();
+        stopLocationUpdates();
     }
 
     public static LocationHelper getInstance(Context appContext) {

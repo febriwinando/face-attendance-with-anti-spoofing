@@ -1,4 +1,4 @@
-package go.pemkott.appsandroidmobiletebingtinggi.izinsift.izinsiftcuti;
+package go.pemkott.appsandroidmobiletebingtinggi.izinshift.izinshiftcuti;
 
 import android.content.Intent;
 import android.database.Cursor;
@@ -9,7 +9,6 @@ import android.widget.EditText;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -21,7 +20,6 @@ import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraxActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
-import go.pemkott.appsandroidmobiletebingtinggi.dinasluarkantor.perjalanandinas.PerjalananDinasFinalActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.izin.cuti.CutiAdapter;
 import go.pemkott.appsandroidmobiletebingtinggi.model.Kegiatan;
 

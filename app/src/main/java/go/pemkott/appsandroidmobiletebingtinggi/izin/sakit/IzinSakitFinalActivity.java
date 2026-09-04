@@ -221,8 +221,8 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         locationRequest = LocationRequest.create();
-        locationRequest.setInterval(3000);
-        locationRequest.setFastestInterval(3000);
+        locationRequest.setInterval(5000);
+        locationRequest.setFastestInterval(5000);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 //        Image View
         ivFinalKegiatan = findViewById(R.id.ivFinalKegiatanSakit);
@@ -377,8 +377,6 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
         } else{
             mockLocationsEnabled = false;
         }
-
-        startLocationUpdates();
 
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
@@ -550,7 +548,7 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
 
     private RequestBody textPart(String value) {
         return RequestBody.create(
-                okhttp3.MediaType.parse("text/plain"),
+                MediaType.parse("text/plain"),
                 value
         );
     }
@@ -1318,29 +1316,18 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
         finish();
     }
 
+    @Override
     protected void onResume() {
         super.onResume();
         rbTanggal = SIMPLE_FORMAT_TANGGAL.format(new Date());
+        startLocationUpdates();
     }
 
-    public void viewSukses(Context context){
-        Dialog dialogSukes = new Dialog(context, R.style.DialogStyle);
-        dialogSukes.setContentView(R.layout.view_sukses);
-        dialogSukes.setCancelable(false);
-        ImageView tvTutupDialog = dialogSukes.findViewById(R.id.tvTutupDialog);
-
-        tvTutupDialog.setOnClickListener(v -> {
-            stopLocationUpdates();
-
-            dialogSukes.dismiss();
-            finish();
-        });
-
-
-        dialogSukes.show();
-
+    @Override
+    protected void onPause() {
+        super.onPause();
+        stopLocationUpdates();
     }
-
 
     @Override
     protected void onStop() {

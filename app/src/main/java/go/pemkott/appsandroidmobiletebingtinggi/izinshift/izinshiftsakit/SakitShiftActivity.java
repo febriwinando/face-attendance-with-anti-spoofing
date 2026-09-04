@@ -1,4 +1,4 @@
-package go.pemkott.appsandroidmobiletebingtinggi.izinsift.izinsiftsakit;
+package go.pemkott.appsandroidmobiletebingtinggi.izinshift.izinshiftsakit;
 
 import android.content.Intent;
 import android.database.Cursor;
@@ -10,7 +10,6 @@ import android.widget.EditText;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,7 +23,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import go.pemkott.appsandroidmobiletebingtinggi.izin.sakit.SakitAdapter;
 import go.pemkott.appsandroidmobiletebingtinggi.model.Kegiatan;
 
-public class SakitSiftActivity extends AppCompatActivity {
+public class SakitShiftActivity extends AppCompatActivity {
 
     private static ArrayList<Kegiatan> listSakit = new ArrayList<>();
     public static ArrayList<String> kegiatanCheckedSakit = new ArrayList<String>();
@@ -45,7 +44,7 @@ public class SakitSiftActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_sakit_sift);
+        setContentView(R.layout.activity_sakit_shift);
 
 
         sakit = this;
@@ -121,11 +120,11 @@ public class SakitSiftActivity extends AppCompatActivity {
         }
 
         if (!kegiatanCheckedSakit.isEmpty() || !etkegiatanSakitLainnya.getText().toString().isEmpty()){
-            Intent intentTL = new Intent(SakitSiftActivity.this, CameraxActivity.class);
+            Intent intentTL = new Intent(SakitShiftActivity.this, CameraxActivity.class);
             intentTL.putExtra("aktivitas", "shiftizinsakit");
             startActivity(intentTL);
         }else {
-            dialogView.viewNotifKosong(SakitSiftActivity.this, "Anda Harus Mengisi Kegiatan Yang Dilaksanakan.", "");
+            dialogView.viewNotifKosong(SakitShiftActivity.this, "Anda Harus Mengisi Kegiatan Yang Dilaksanakan.", "");
         }
     }
 

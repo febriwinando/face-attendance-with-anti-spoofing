@@ -1,4 +1,4 @@
-package go.pemkott.appsandroidmobiletebingtinggi.izinsift.izinsiftpribadi;
+package go.pemkott.appsandroidmobiletebingtinggi.izinshift.izinshiftpribadi;
 
 import android.content.Intent;
 import android.database.Cursor;
@@ -44,7 +44,7 @@ public class KeperluanPribadiSiftActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.background_color));
         getWindow().setNavigationBarColor(getResources().getColor(R.color.background_color));
-        setContentView(R.layout.activity_keperluan_pribadi_sift);
+        setContentView(R.layout.activity_keperluan_pribadi_shift);
         kp = this;
         databaseHelper = new DatabaseHelper(this);
         kegiatanDatabase();

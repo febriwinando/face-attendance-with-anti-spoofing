@@ -1,20 +1,17 @@
-package go.pemkott.appsandroidmobiletebingtinggi.izinsift;
+package go.pemkott.appsandroidmobiletebingtinggi.izinshift;
 
 import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.BULAN;
-import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.SIMPLE_FORMAT_JAM;
 import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.SIMPLE_FORMAT_TANGGAL;
 import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.TAHUN;
 import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.bulan;
 
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -37,11 +34,9 @@ import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.api.HttpService;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
-import go.pemkott.appsandroidmobiletebingtinggi.izinsift.izinsiftcuti.CutiSiftActivity;
-import go.pemkott.appsandroidmobiletebingtinggi.izinsift.izinsiftpribadi.KeperluanPribadiSiftActivity;
-import go.pemkott.appsandroidmobiletebingtinggi.izinsift.izinsiftsakit.SakitSiftActivity;
-import go.pemkott.appsandroidmobiletebingtinggi.kehadiran.AbsensiKehadiranActivity;
-import go.pemkott.appsandroidmobiletebingtinggi.kehadiransift.JadwalSiftActivity;
+import go.pemkott.appsandroidmobiletebingtinggi.izinshift.izinshiftcuti.CutiSiftActivity;
+import go.pemkott.appsandroidmobiletebingtinggi.izinshift.izinshiftpribadi.KeperluanPribadiSiftActivity;
+import go.pemkott.appsandroidmobiletebingtinggi.izinshift.izinshiftsakit.SakitShiftActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat;
 import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
 import go.pemkott.appsandroidmobiletebingtinggi.model.JadwalSift;
@@ -85,7 +80,7 @@ public class JadwalIzinSiftActivity extends AppCompatActivity {
 
         getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.background_color));
         getWindow().setNavigationBarColor(getResources().getColor(R.color.background_color));;
-        setContentView(R.layout.activity_jadwal_izin_sift);
+        setContentView(R.layout.activity_jadwal_izin_shift);
         session = new SessionManager(this);
         userId = session.getPegawaiId();
 
@@ -460,7 +455,7 @@ public class JadwalIzinSiftActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 jenisabsensi = 11;
-                Intent absensift = new Intent(JadwalIzinSiftActivity.this, SakitSiftActivity.class);
+                Intent absensift = new Intent(JadwalIzinSiftActivity.this, SakitShiftActivity.class);
                 startActivity(absensift);
             }
         });

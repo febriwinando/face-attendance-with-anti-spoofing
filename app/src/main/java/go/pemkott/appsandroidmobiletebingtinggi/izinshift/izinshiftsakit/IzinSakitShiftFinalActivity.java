@@ -1,4 +1,4 @@
-package go.pemkott.appsandroidmobiletebingtinggi.izinsift.izinsiftsakit;
+package go.pemkott.appsandroidmobiletebingtinggi.izinshift.izinshiftsakit;
 
 import static go.pemkott.appsandroidmobiletebingtinggi.geolocation.model.LocationHelper.defaultLocation;
 import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.SIMPLE_DATE_FORMAT_TAGING_PHOTO_REPORT;
@@ -51,7 +51,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -98,7 +97,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
 import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraXLActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
-import go.pemkott.appsandroidmobiletebingtinggi.izinsift.JadwalIzinSiftActivity;
+import go.pemkott.appsandroidmobiletebingtinggi.izinshift.JadwalIzinSiftActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFoto;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFotoLampiran;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.Lokasi;
@@ -112,7 +111,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class IzinSakitShiftFinalActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     //Gmaps
     private static final int REQUEST_CHECK_SETTINGS = 100;
@@ -129,7 +128,7 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
 
     DatabaseHelper databaseHelper;
     ActivityResultLauncher<Intent> resultLauncher;
-    private static final String TAG = IzinSakitSiftFinalActivity.class.getSimpleName();
+    private static final String TAG = IzinSakitShiftFinalActivity.class.getSimpleName();
     File imageFile;
     private String  currentPhotoPath;
     private String rbLat;
@@ -153,8 +152,8 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
     TextView tvHariMulai, tvBulanTahunMulai, tvHariSampai, tvBulanTahunSampai, tvKegiatanFinal, tvSuratPerintah, titleDinasLuar, title_content;
     LinearLayout llPdfDinasLuar, llLampiranDinasLuar, llLampiranDinasLuarHead;
     ArrayList<String> kegiatans = new ArrayList<>();
-    AmbilFoto ambilFoto = new AmbilFoto(IzinSakitSiftFinalActivity.this);
-    AmbilFotoLampiran ambilFotoLampiran = new AmbilFotoLampiran(IzinSakitSiftFinalActivity.this);
+    AmbilFoto ambilFoto = new AmbilFoto(IzinSakitShiftFinalActivity.this);
+    AmbilFotoLampiran ambilFotoLampiran = new AmbilFotoLampiran(IzinSakitShiftFinalActivity.this);
 
     Bitmap rotationBitmapTag;
     Bitmap rotationBitmapSurat;
@@ -202,8 +201,8 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         locationRequest = LocationRequest.create();
-        locationRequest.setInterval(3000);
-        locationRequest.setFastestInterval(3000);
+        locationRequest.setInterval(5000);
+        locationRequest.setFastestInterval(5000);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
 //        Image View
@@ -246,8 +245,8 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
 
 
         kegiatans.clear();
-        kegiatans = SakitSiftActivity.kegiatanCheckedSakit;
-        kegiatanlainnya = SakitSiftActivity.kegiatansSakitLainnya;
+        kegiatans = SakitShiftActivity.kegiatanCheckedSakit;
+        kegiatanlainnya = SakitShiftActivity.kegiatansSakitLainnya;
 
         Intent intent = getIntent();
 
@@ -339,7 +338,7 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
                     }
 
                     if (sUri.toString().startsWith("content://")) {
-                        try (Cursor cursor = IzinSakitSiftFinalActivity.this.getContentResolver().query(sUri, null, null, null, null)) {
+                        try (Cursor cursor = IzinSakitShiftFinalActivity.this.getContentResolver().query(sUri, null, null, null, null)) {
                             if (cursor != null && cursor.moveToFirst()) {
                                 displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
                                 tvSuratPerintah.setText(displayName);
@@ -368,8 +367,6 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
         } else{
             mockLocationsEnabled = false;
         }
-
-        startLocationUpdates();
 
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
@@ -445,11 +442,11 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
 
         if (mock_location == 1){
 
-            dialogView.viewNotifKosong(IzinSakitSiftFinalActivity.this, "Anda terdeteksi menggunakan Fake GPS.", "Jika ditemukan berulang kali, akun anda akan terblokir otomatis dan tercatat Alpa.");
+            dialogView.viewNotifKosong(IzinSakitShiftFinalActivity.this, "Anda terdeteksi menggunakan Fake GPS.", "Jika ditemukan berulang kali, akun anda akan terblokir otomatis dan tercatat Alpa.");
 
         }else {
             if (file == null || !file.exists() || file.length() == 0) {
-                dialogView.viewNotifKosong(IzinSakitSiftFinalActivity.this, "Anda harus melampirkan Foto Kondisi Kesehatan dan Surat Dokter.", "");
+                dialogView.viewNotifKosong(IzinSakitShiftFinalActivity.this, "Anda harus melampirkan Foto Kondisi Kesehatan dan Surat Dokter.", "");
             } else {
                 uploadImages();
             }
@@ -518,7 +515,7 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
 
                 if (tanggal.equals(rbTanggal)){
                     if (jam_masuk == null){
-                        dialogView.viewNotifKosong(IzinSakitSiftFinalActivity.this, "Harap mengisi absensi masuk, untuk izin sakit.", "");
+                        dialogView.viewNotifKosong(IzinSakitShiftFinalActivity.this, "Harap mengisi absensi masuk, untuk izin sakit.", "");
                     }else{
                         String jamSekarangString = SIMPLE_FORMAT_JAM_TAGING.format(new Date());
 
@@ -537,7 +534,7 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
                                 kirimdataPulang(rbValid, rbStatus, "pulang", pulangsift);
                             }
                         }else{
-                            dialogView.viewNotifKosong(IzinSakitSiftFinalActivity.this, "Batas melakukan absen telah lewat.", "Batas melakukan absen adalah pukul 12:00.");
+                            dialogView.viewNotifKosong(IzinSakitShiftFinalActivity.this, "Batas melakukan absen telah lewat.", "Batas melakukan absen adalah pukul 12:00.");
                         }
                     }
                 }
@@ -566,14 +563,14 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
                     assert tagingTimePeriksa != null;
                     assert pulangPeriksa != null;
                     if (tagingTimePeriksa.getTime() >= pulangPeriksa.getTime()){
-                        dialogView.viewNotifKosong(IzinSakitSiftFinalActivity.this, "Anda tidak dapat melakukan absensi masuk pada jam pulang kerja.", "");
+                        dialogView.viewNotifKosong(IzinSakitShiftFinalActivity.this, "Anda tidak dapat melakukan absensi masuk pada jam pulang kerja.", "");
                     }else{
                         kirimdataMasuk(rbValid,  rbStatus, "masuk", masuksift);
                     }
 
                 }else{
 
-                    dialogView.viewNotifKosong(IzinSakitSiftFinalActivity.this, "Anda sudah mengisi absensi masuk.", "");
+                    dialogView.viewNotifKosong(IzinSakitShiftFinalActivity.this, "Anda sudah mengisi absensi masuk.", "");
 
 
                 }
@@ -588,7 +585,7 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
                     }
 
                 }else{
-                    dialogView.viewNotifKosong(IzinSakitSiftFinalActivity.this, "Anda sudah mengisi absensi pulang.", "");
+                    dialogView.viewNotifKosong(IzinSakitShiftFinalActivity.this, "Anda sudah mengisi absensi pulang.", "");
                 }
             }
         }
@@ -612,13 +609,13 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
 
     private RequestBody textPart(String value) {
         return RequestBody.create(
-                okhttp3.MediaType.parse("text/plain"),
+                MediaType.parse("text/plain"),
                 value
         );
     }
 
     public void kirimdataMasuk(String valid, String status, String ketKehadiran, String jampegawai){
-        Dialog dialogproses = new Dialog(IzinSakitSiftFinalActivity.this, R.style.DialogStyle);
+        Dialog dialogproses = new Dialog(IzinSakitShiftFinalActivity.this, R.style.DialogStyle);
         dialogproses.setContentView(R.layout.view_proses);
         dialogproses.setCancelable(false);
 
@@ -668,7 +665,7 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
                 if (!response.isSuccessful()) {
 
                     dialogView.viewNotifKosong(
-                            IzinSakitSiftFinalActivity.this,
+                            IzinSakitShiftFinalActivity.this,
                             "Gagal mengisi absensi",
                             "Silahkan coba kembali yaaa."
                     );
@@ -681,9 +678,9 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
 
                 if (Objects.requireNonNull(response.body()).isStatus()){
                     Log.d("Log Izin Sakit", "berhasil.");
-                    dialogView.viewSukses(IzinSakitSiftFinalActivity.this, data.getRemarks());
+                    dialogView.viewSukses(IzinSakitShiftFinalActivity.this, data.getRemarks());
                 }else {
-                    dialogView.viewNotifKosong(IzinSakitSiftFinalActivity.this, data.getRemarks(),"");
+                    dialogView.viewNotifKosong(IzinSakitShiftFinalActivity.this, data.getRemarks(),"");
                 }
 
             }
@@ -693,7 +690,7 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
                 dialogproses.dismiss();
                 Log.d("Log Izin Sakit", "error: "+t.getMessage());
 
-                dialogView.viewNotifKosong(IzinSakitSiftFinalActivity.this, "Gagal mengisi absensi,", "silahkan coba kembali.");
+                dialogView.viewNotifKosong(IzinSakitShiftFinalActivity.this, "Gagal mengisi absensi,", "silahkan coba kembali.");
             }
         });
 
@@ -704,7 +701,7 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
     public void kirimdataPulang(String valid, String status, String ketKehadiran, String jampegawai){
         Log.d("Log Izin Sakit", "mulai");
 
-        Dialog dialogproses = new Dialog(IzinSakitSiftFinalActivity.this, R.style.DialogStyle);
+        Dialog dialogproses = new Dialog(IzinSakitShiftFinalActivity.this, R.style.DialogStyle);
         dialogproses.setContentView(R.layout.view_proses);
         dialogproses.setCancelable(false);
 
@@ -763,7 +760,7 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
                 if (!response.isSuccessful()) {
 
                     dialogView.viewNotifKosong(
-                            IzinSakitSiftFinalActivity.this,
+                            IzinSakitShiftFinalActivity.this,
                             "Gagal mengisi absensi",
                             "Silahkan coba kembali."
                     );
@@ -774,9 +771,9 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
 
                 if (Objects.requireNonNull(response.body()).isStatus()){
                     Log.d("Log Izin Sakit", "berhasil.");
-                    dialogView.viewSukses(IzinSakitSiftFinalActivity.this, data.getRemarks());
+                    dialogView.viewSukses(IzinSakitShiftFinalActivity.this, data.getRemarks());
                 }else {
-                    dialogView.viewNotifKosong(IzinSakitSiftFinalActivity.this, data.getRemarks(),"");
+                    dialogView.viewNotifKosong(IzinSakitShiftFinalActivity.this, data.getRemarks(),"");
                 }
 
 
@@ -786,7 +783,7 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
             public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
                 dialogproses.dismiss();
                 Log.d("Log Izin Sakit", "error: "+t.getMessage());
-                dialogView.viewNotifKosong(IzinSakitSiftFinalActivity.this, "Gagal mengisi absensi,", "silahkan coba kembali.");
+                dialogView.viewNotifKosong(IzinSakitShiftFinalActivity.this, "Gagal mengisi absensi,", "silahkan coba kembali.");
             }
         });
 
@@ -803,7 +800,7 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
             rbLng = String.valueOf(longitudeSaya);
         }else{
 
-            dialogView.viewNotifKosong(IzinSakitSiftFinalActivity.this, "Pastikan anda telah terhubung internet.", "");
+            dialogView.viewNotifKosong(IzinSakitShiftFinalActivity.this, "Pastikan anda telah terhubung internet.", "");
 
         }
 
@@ -812,7 +809,7 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
     private void datauser(){
         Cursor res = databaseHelper.getAllData22(userId);
         if (res.getCount()==0){
-            dialogView.viewNotifKosong(IzinSakitSiftFinalActivity.this, "Error: data pegawai tidak ditemukan.","Silahkan hubungi admin anda!");
+            dialogView.viewNotifKosong(IzinSakitShiftFinalActivity.this, "Error: data pegawai tidak ditemukan.","Silahkan hubungi admin anda!");
             return;
         }
 
@@ -878,7 +875,7 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
     }
 
     public void viewLampiran(){
-        Dialog dialogLampiran = new Dialog(IzinSakitSiftFinalActivity.this, R.style.DialogStyle);
+        Dialog dialogLampiran = new Dialog(IzinSakitShiftFinalActivity.this, R.style.DialogStyle);
         dialogLampiran.setContentView(R.layout.view_add_lampiran);
         LinearLayout llFileManager = dialogLampiran.findViewById(R.id.llFileManager);
         LinearLayout llKamera = dialogLampiran.findViewById(R.id.llKamera);
@@ -906,7 +903,7 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
         llKamera.setOnClickListener(v -> {
 
 
-            Intent intent = new Intent(IzinSakitSiftFinalActivity.this, CameraXLActivity.class);
+            Intent intent = new Intent(IzinSakitShiftFinalActivity.this, CameraXLActivity.class);
             intent.putExtra("aktivitas", "lampiranizinsakitshift");
             cameraLauncher.launch(intent);
             dialogLampiran.dismiss();
@@ -955,7 +952,7 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
             imageFile = File.createTempFile(filename, ".png", storageDirectory);
             currentPhotoPath = null;
             currentPhotoPath = imageFile.getAbsolutePath();
-            Uri imageUri = FileProvider.getUriForFile(IzinSakitSiftFinalActivity.this, "go.pemkott.appsandroidmobiletebingtinggi.fileprovider", imageFile);
+            Uri imageUri = FileProvider.getUriForFile(IzinSakitShiftFinalActivity.this, "go.pemkott.appsandroidmobiletebingtinggi.fileprovider", imageFile);
             if (addFoto.equals("kegiatan")){
 //                hitungjarak();
 
@@ -1035,7 +1032,7 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
                 iconLampiran.setVisibility(View.GONE);
 
                 Uri selectedImageUri = data.getData();
-                String FilePath2  = getDriveFilePath(selectedImageUri, IzinSakitSiftFinalActivity.this);
+                String FilePath2  = getDriveFilePath(selectedImageUri, IzinSakitShiftFinalActivity.this);
 
                 filelampiran = new File(FilePath2);
                 byte[] imageBytes = ambilFoto.compressToMax80KB(filelampiran);
@@ -1112,7 +1109,7 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
     public String getPDFPath(Uri uri){
         String absolutePath = "";
         try{
-            InputStream inputStream = IzinSakitSiftFinalActivity.this.getContentResolver().openInputStream(uri);
+            InputStream inputStream = IzinSakitShiftFinalActivity.this.getContentResolver().openInputStream(uri);
             byte[] pdfInBytes = new byte[inputStream.available()];
             inputStream.read(pdfInBytes);
 
@@ -1124,7 +1121,7 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
 
             String mPath = "";
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD_MR1) {
-                mPath= IzinSakitSiftFinalActivity.this.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)+"absensi-"+sEmployeID+"-"+currentDateandTimes + ".pdf";
+                mPath= IzinSakitShiftFinalActivity.this.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)+"absensi-"+sEmployeID+"-"+currentDateandTimes + ".pdf";
             }
             else
             {
@@ -1227,7 +1224,7 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
         if(map != null){
 
             map.clear();
-            map.addMarker(new MarkerOptions().position(new LatLng(locationObj.getLatitude(), locationObj.getLongitude())).icon(bitmapDescriptorFromVector(this, R.drawable.asn_lk)).title(lokasi.getAddress(IzinSakitSiftFinalActivity.this, locationObj.getLatitude(), locationObj.getLongitude())));
+            map.addMarker(new MarkerOptions().position(new LatLng(locationObj.getLatitude(), locationObj.getLongitude())).icon(bitmapDescriptorFromVector(this, R.drawable.asn_lk)).title(lokasi.getAddress(IzinSakitShiftFinalActivity.this, locationObj.getLatitude(), locationObj.getLongitude())));
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(
                     new LatLng(locationObj.getLatitude(), locationObj.getLongitude()), 19f));
             map.getUiSettings().setMyLocationButtonEnabled(true);
@@ -1381,7 +1378,7 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
 
             dialogSukes.dismiss();
             JadwalIzinSiftActivity.jadwalIzinSiftActivity.finish();
-            SakitSiftActivity.sakit.finish();
+            SakitShiftActivity.sakit.finish();
             finish();
         });
 
@@ -1390,6 +1387,18 @@ public class IzinSakitSiftFinalActivity extends AppCompatActivity implements OnM
 
     }
 
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        startLocationUpdates();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        stopLocationUpdates();
+    }
 
     @Override
     protected void onStop() {
