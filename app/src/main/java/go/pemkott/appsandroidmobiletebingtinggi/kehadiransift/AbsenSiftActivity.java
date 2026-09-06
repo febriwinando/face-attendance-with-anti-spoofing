@@ -86,6 +86,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat;
 import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
 import go.pemkott.appsandroidmobiletebingtinggi.utils.NetworkUtils;
 import go.pemkott.appsandroidmobiletebingtinggi.model.LocationViewModel;
+import go.pemkott.appsandroidmobiletebingtinggi.utils.WeatherUtil;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -116,6 +117,10 @@ public class AbsenSiftActivity extends AppCompatActivity implements OnMapReadyCa
     private String rbKet;
     private String batasWaktu;
     private String rbFakeGPS ="0";
+    private TextView tvAkurasi, tvJarak, tvTemperature, tvCondition;
+    private ImageView ivWeatherIcon;
+    private View cardSafeZone;
+    private long lastWeatherUpdate = 0;
     DatabaseHelper databaseHelper;
     ShapeableImageView ivTaging;
     LinearLayout llUpload;
@@ -200,6 +205,14 @@ public class AbsenSiftActivity extends AppCompatActivity implements OnMapReadyCa
         llUpload = findViewById(R.id.llUploadkehadiran);
         rgKehadiran = findViewById(R.id.rgKehadiran);
         TextView title_content = findViewById(R.id.title_content);
+
+        tvAkurasi = findViewById(R.id.tvAkurasi);
+        tvJarak = findViewById(R.id.tvJarak);
+        tvTemperature = findViewById(R.id.tvTemperature);
+        tvCondition = findViewById(R.id.tvCondition);
+        ivWeatherIcon = findViewById(R.id.ivWeatherIcon);
+        cardSafeZone = findViewById(R.id.cardSafeZone);
+
         fragmentContainerView = findViewById(R.id.map);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         locationRequest = LocationRequest.create();
@@ -1369,8 +1382,59 @@ statusAbsen = true;
             if (map != null) {
                 plotMarkers(locationResult.getLastLocation());
             }
+
+            if (locationResult.getLastLocation() != null) {
+                if (tvAkurasi != null) {
+                    tvAkurasi.setText(String.format(localeID, "± %.0f m", locationResult.getLastLocation().getAccuracy()));
+                }
+
+                updateRealtimeInfo(locationResult.getLastLocation());
+            }
         }
     };
+
+    private void updateRealtimeInfo(Location location) {
+        if (location == null) return;
+
+        // 1. Update Jarak & Zona Aman
+        double latUser = location.getLatitude();
+        double lngUser = location.getLongitude();
+
+        double radius = getRadiusAbsensi(eKelompok);
+        double jarakUtama = cariJarakTerdekat(latList, lngList, latUser, lngUser);
+        double jarakExc = cariJarakTerdekat(latListExc, lngListExc, latUser, lngUser);
+
+        double jarakTerdekat = JARAK_TIDAK_VALID;
+        if (jarakUtama != JARAK_TIDAK_VALID) jarakTerdekat = jarakUtama;
+        if (jarakExc != JARAK_TIDAK_VALID && (jarakTerdekat == JARAK_TIDAK_VALID || jarakExc < jarakTerdekat)) {
+            jarakTerdekat = jarakExc;
+        }
+
+        totalJarak = jarakTerdekat;
+
+        if (tvJarak != null) {
+            if (jarakTerdekat != JARAK_TIDAK_VALID) {
+                tvJarak.setText(String.format(localeID, "Jarak: %.0f m", jarakTerdekat));
+            } else {
+                tvJarak.setText("Jarak: -");
+            }
+        }
+
+        if (cardSafeZone != null) {
+            if (jarakTerdekat != JARAK_TIDAK_VALID && jarakTerdekat <= radius) {
+                cardSafeZone.setVisibility(View.VISIBLE);
+            } else {
+                cardSafeZone.setVisibility(View.GONE);
+            }
+        }
+
+        // 2. Update Cuaca (setiap 10 menit)
+        long now = System.currentTimeMillis();
+        if (now - lastWeatherUpdate > 10 * 60 * 1000) {
+            WeatherUtil.fetchWeather(this, latUser, lngUser, tvTemperature, tvCondition, ivWeatherIcon);
+            lastWeatherUpdate = now;
+        }
+    }
 
     @Override
     protected void onResume() {

@@ -100,6 +100,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFoto;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.Lokasi;
 import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
 import go.pemkott.appsandroidmobiletebingtinggi.utils.NetworkUtils;
+import go.pemkott.appsandroidmobiletebingtinggi.utils.WeatherUtil;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -495,59 +496,10 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
         // 2. Update Cuaca (setiap 10 menit)
         long now = System.currentTimeMillis();
         if (now - lastWeatherUpdate > 10 * 60 * 1000) {
-            fetchWeather(latUser, lngUser);
+            WeatherUtil.fetchWeather(this, latUser, lngUser, tvTemperature, tvCondition, ivWeatherIcon);
             lastWeatherUpdate = now;
         }
     }
-
-    private void fetchWeather(double lat, double lng) {
-        String url = "https://api.open-meteo.com/v1/forecast?latitude=" + lat + "&longitude=" + lng + "&current_weather=true";
-
-        RequestQueue queue = Volley.newRequestQueue(this);
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
-                response -> {
-                    try {
-                        JSONObject current = response.getJSONObject("current_weather");
-                        double temp = current.getDouble("temperature");
-                        int code = current.getInt("weathercode");
-
-                        if (tvTemperature != null) tvTemperature.setText(String.format(localeID, "%.0f°C", temp));
-                        if (tvCondition != null) tvCondition.setText(getWeatherDesc(code));
-                        if (ivWeatherIcon != null) updateWeatherIcon(code);
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }, Throwable::printStackTrace);
-        queue.add(request);
-    }
-
-    private String getWeatherDesc(int code) {
-        if (code == 0) return "Cerah";
-        if (code <= 3) return "Berawan";
-        if (code <= 48) return "Kabut";
-        if (code <= 55) return "Gerimis";
-        if (code <= 65) return "Hujan";
-        if (code <= 77) return "Salju";
-        if (code <= 82) return "Hujan Deras";
-        if (code <= 86) return "Salju Lebat";
-        if (code <= 99) return "Badai Petir";
-        return "Cerah Berawan";
-    }
-
-    private void updateWeatherIcon(int code) {
-        int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-        boolean isNight = hour < 6 || hour > 18;
-
-        if (code == 0) {
-            ivWeatherIcon.setImageResource(isNight ? R.drawable.ic_night_w : R.drawable.ic_sun_w);
-        } else if (code <= 3) {
-            ivWeatherIcon.setImageResource(isNight ? R.drawable.ic_night_w : R.drawable.ic_sun_w);
-        } else {
-            ivWeatherIcon.setImageResource(R.drawable.ic_morning_w);
-        }
-    }
-
 
     public void databases(){
         Cursor tUser = databaseHelper.getAllData22(userId);

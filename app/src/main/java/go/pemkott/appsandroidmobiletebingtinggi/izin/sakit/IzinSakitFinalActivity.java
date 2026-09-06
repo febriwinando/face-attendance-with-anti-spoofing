@@ -108,6 +108,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.konstanta.Lokasi;
 import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
 import go.pemkott.appsandroidmobiletebingtinggi.utils.NetworkUtils;
 import go.pemkott.appsandroidmobiletebingtinggi.model.LocationViewModel;
+import go.pemkott.appsandroidmobiletebingtinggi.utils.WeatherUtil;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -141,6 +142,10 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
     private String rbJam;
     private String rbKet;
     private String rbFakeGPS = "0" ;
+    private TextView tvAkurasi, tvJarak, tvTemperature, tvCondition;
+    private ImageView ivWeatherIcon;
+    private View cardSafeZone;
+    private long lastWeatherUpdate = 0;
     String pathDokument;
     String currentDateandTimes = SIMPLE_DATE_FORMAT_TAGING_PHOTO_REPORT.format(new Date());
     String eOPD, eKelompok, eJabatan, latOffice, lngOffice;
@@ -154,7 +159,8 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
     String ekslampiran;
 
     TextView tvKegiatanFinal, tvSuratPerintah, titleDinasLuar, title_content;
-    LinearLayout llPdfDinasLuar, llLampiranDinasLuar, llLampiranDinasLuarHead;
+    LinearLayout llLampiranDinasLuarHead;
+    View llPdfDinasLuar, llLampiranDinasLuar;
     ArrayList<String> kegiatans = new ArrayList<>();
     AmbilFoto ambilFoto = new AmbilFoto(IzinSakitFinalActivity.this);
     AmbilFotoLampiran ambilFotoLampiran = new AmbilFotoLampiran(IzinSakitFinalActivity.this);
@@ -162,7 +168,8 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
     Bitmap rotationBitmapTag;
     Bitmap rotationBitmapSurat;
 
-    ShapeableImageView ivFinalKegiatan, ivSuratPerintahFinal, iconLampiran;
+    ShapeableImageView ivFinalKegiatan, ivSuratPerintahFinal;
+    ImageView iconLampiran;
     int mins, minspulang;
     DialogView dialogView = new DialogView(this);
 
@@ -233,6 +240,13 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
         llPdfDinasLuar = findViewById(R.id.llPdfDinasLuarSakit);
         llLampiranDinasLuar = findViewById(R.id.llLampiranDinasLuarSakit);
         llLampiranDinasLuarHead = findViewById(R.id.llLampiranDinasLuarHead);
+
+        tvAkurasi = findViewById(R.id.tvAkurasi);
+        tvJarak = findViewById(R.id.tvJarak);
+        tvTemperature = findViewById(R.id.tvTemperature);
+        tvCondition = findViewById(R.id.tvCondition);
+        ivWeatherIcon = findViewById(R.id.ivWeatherIcon);
+        cardSafeZone = findViewById(R.id.cardSafeZone);
 
         //Google Maps
         Window window = this.getWindow();
@@ -455,6 +469,18 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
             }
             if (map != null) {
                 plotMarkers(locationResult.getLastLocation());
+            }
+
+            if (locationResult.getLastLocation() != null) {
+                if (tvAkurasi != null) {
+                    tvAkurasi.setText(String.format(localeID, "± %.0f m", locationResult.getLastLocation().getAccuracy()));
+                }
+
+                long now = System.currentTimeMillis();
+                if (now - lastWeatherUpdate > 10 * 60 * 1000) {
+                    WeatherUtil.fetchWeather(IzinSakitFinalActivity.this, locationResult.getLastLocation().getLatitude(), locationResult.getLastLocation().getLongitude(), tvTemperature, tvCondition, ivWeatherIcon);
+                    lastWeatherUpdate = now;
+                }
             }
         }
     };
@@ -1188,9 +1214,9 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
         if(map != null){
 
             map.clear();
-            map.addMarker(new MarkerOptions().position(new LatLng(locationObj.getLatitude(), locationObj.getLongitude())).icon(bitmapDescriptorFromVector(this, R.drawable.asn_lk)).title(lokasi.getAddress(IzinSakitFinalActivity.this, locationObj.getLatitude(), locationObj.getLongitude())));
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                    new LatLng(locationObj.getLatitude(), locationObj.getLongitude()), 19f));
+            LatLng position = new LatLng(locationObj.getLatitude(), locationObj.getLongitude());
+            map.addMarker(new MarkerOptions().position(position).icon(bitmapDescriptorFromVector(this, R.drawable.asn_lk)).title(lokasi.getAddress(IzinSakitFinalActivity.this, locationObj.getLatitude(), locationObj.getLongitude())));
+            map.animateCamera(CameraUpdateFactory.newLatLngZoom(position, 19f));
             map.getUiSettings().setMyLocationButtonEnabled(true);
             latGMap = locationObj.getLatitude();
             lngGMap = locationObj.getLongitude();
@@ -1235,6 +1261,7 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         this.map = googleMap;
+        this.map.setPadding(0, 0, 0, 950);
         try {
             boolean success = false;
             int nightModeFlags = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;

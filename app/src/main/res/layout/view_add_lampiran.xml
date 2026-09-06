@@ -1,141 +1,267 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="center"
-    android:layout_margin="40dp"
-    android:orientation="vertical">
+    android:layout_margin="24dp"
+    app:cardCornerRadius="28dp"
+    app:cardElevation="8dp"
+    app:cardBackgroundColor="@color/surface_main">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
         android:orientation="vertical"
-        android:background="@drawable/backgoundovalputih"
-        android:backgroundTint="@color/surface_main"
-        android:padding="10dp">
+        android:padding="24dp">
 
+        <!-- Drag Handle (Visual only) -->
+        <View
+            android:layout_width="40dp"
+            android:layout_height="4dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/backgoundovalbirusift"
+            android:alpha="0.3"
+            tools:ignore="ContentDescription" />
+
+        <!-- Header -->
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp">
+            android:layout_marginBottom="24dp">
+
             <TextView
-                android:layout_centerInParent="true"
+                android:id="@+id/titleHeaderViewIzin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Lampiran"
-                android:textStyle="bold"
-                android:textAlignment="center"
-                android:textSize="20sp"
+                android:layout_centerVertical="true"
+                android:fontFamily="sans-serif-black"
+                android:text="Pilih Lampiran"
                 android:textColor="@color/text_primary"
-                android:layout_marginBottom="10dp"
-                android:id="@+id/titleHeaderViewIzin"
-                />
+                android:textSize="20sp" />
 
-            <ImageView
-                android:layout_width="38dp"
-                android:layout_height="38dp"
-                android:layout_marginEnd="10dp"
-                app:srcCompat="@drawable/one_close"
-                app:tint="@color/text_primary"
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/ivTutupViewLampiran"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:id="@+id/ivTutupViewLampiran"
-                />
+                android:clickable="true"
+                android:focusable="true"
+                app:cardBackgroundColor="@color/surface_variant"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp">
 
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="10dp"
+                    android:src="@drawable/one_close"
+                    app:tint="@color/text_primary"
+                    tools:ignore="ContentDescription" />
+            </com.google.android.material.card.MaterialCardView>
         </RelativeLayout>
 
-            <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="horizontal"
-                android:layout_marginBottom="5dp">
+        <!-- Options Container -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-                    <LinearLayout
-                        android:clickable="true"
-                        android:foreground="?attr/selectableItemBackground"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:gravity="center_horizontal"
-                        android:layout_marginEnd="20dp"
-                        android:id="@+id/llFileManager"
-                        android:focusable="true">
-
-                        <ImageView
-                            android:layout_width="50dp"
-                            android:layout_height="50dp"
-                            app:srcCompat="@drawable/ic_image"
-                            android:background="@drawable/backgoundovalputih"
-                            android:backgroundTint="@color/surface_main"
-                            app:tint="@color/primary_brand"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="@color/text_secondary"
-                            android:text="Gambar"
-
-                            />
-                    </LinearLayout>
+            <!-- Kamera -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/llKamera"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:clickable="true"
+                android:focusable="true"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/surface_variant"
+                app:strokeWidth="1dp"
+                android:foreground="?attr/selectableItemBackground">
 
                 <LinearLayout
-                    android:clickable="true"
-                    android:foreground="?attr/selectableItemBackground"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:gravity="center_horizontal"
-                        android:id="@+id/llDokumen"
-                    android:focusable="true">
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        app:cardBackgroundColor="#1A008DDA"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="0dp">
 
                         <ImageView
-                            android:layout_width="50dp"
-                            android:layout_height="50dp"
-                            app:srcCompat="@drawable/ic_artikel"
-                            android:background="@drawable/backgoundovalputih"
-                            android:backgroundTint="@color/surface_main"
-                            app:tint="@color/primary_brand"/>
-
-                        <TextView
-
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="@color/text_secondary"
-                            android:text="Dokumen"/>
-                    </LinearLayout>
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:padding="12dp"
+                            android:src="@drawable/ic_camera_lampiran"
+                            app:tint="@color/primary_brand"
+                            tools:ignore="ContentDescription" />
+                    </com.google.android.material.card.MaterialCardView>
 
                     <LinearLayout
-                        android:clickable="true"
-                        android:foreground="?attr/selectableItemBackground"
-                        android:layout_marginLeft="20dp"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:gravity="center_horizontal"
-                        android:id="@+id/llKamera"
-                        android:focusable="true">
-
-                        <ImageView
-                            android:layout_width="50dp"
-                            android:layout_height="50dp"
-                            app:srcCompat="@drawable/ic_camera_lampiran"
-                            android:background="@drawable/backgoundovalputih"
-                            android:backgroundTint="@color/surface_main"
-                            app:tint="@color/primary_brand"/>
+                        android:layout_marginStart="16dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/text_secondary"
+                            android:fontFamily="sans-serif-black"
                             android:text="Kamera"
+                            android:textColor="@color/text_primary"
+                            android:textSize="16sp" />
 
-                            />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="Ambil foto bukti kegiatan"
+                            android:textColor="@color/text_hint"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
                 </LinearLayout>
-            </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
+            <!-- Galeri / Gambar picking -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/llFileManager"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:clickable="true"
+                android:focusable="true"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/surface_variant"
+                app:strokeWidth="1dp"
+                android:foreground="?attr/selectableItemBackground">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        app:cardBackgroundColor="#1AF7B620"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="0dp">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:padding="12dp"
+                            android:src="@drawable/ic_image"
+                            app:tint="@color/kuning"
+                            tools:ignore="ContentDescription" />
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-black"
+                            android:text="Galeri"
+                            android:textColor="@color/text_primary"
+                            android:textSize="16sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="Pilih gambar dari galeri"
+                            android:textColor="@color/text_hint"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Dokumen -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/llDokumen"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/surface_variant"
+                app:strokeWidth="1dp"
+                android:foreground="?attr/selectableItemBackground">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        app:cardBackgroundColor="#1A4CAF50"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="0dp">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:padding="12dp"
+                            android:src="@drawable/ic_artikel"
+                            app:tint="@color/hijau"
+                            tools:ignore="ContentDescription" />
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-black"
+                            android:text="Dokumen"
+                            android:textColor="@color/text_primary"
+                            android:textSize="16sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="Pilih file lampiran PDF"
+                            android:textColor="@color/text_hint"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
     </LinearLayout>
 
-</LinearLayout>
+</com.google.android.material.card.MaterialCardView>

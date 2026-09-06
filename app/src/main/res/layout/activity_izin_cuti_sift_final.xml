@@ -2,401 +2,680 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_main"
     tools:context=".izinshift.izinshiftcuti.IzinCutiSiftFinalActivity">
 
-
+    <!-- 1. Full Screen Background Map -->
     <androidx.fragment.app.FragmentContainerView
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/llKeteranganIzinCuti"
         android:id="@+id/map"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
         class="com.google.android.gms.maps.SupportMapFragment"
-        />
-
-    <RelativeLayout
-        android:layout_marginTop="40dp"
-        android:id="@+id/titleHeaderFinalTl"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        >
-
-            <ImageView
-                android:onClick="backFinalDinasLuar"
-                android:id="@+id/ivBack"
-                android:layout_width="38dp"
-                android:layout_height="38dp"
-                android:layout_centerVertical="true"
-                android:contentDescription="@string/todo"
-                android:elevation="10dp"
-                android:outlineAmbientShadowColor="@color/text_primary"
-                android:outlineSpotShadowColor="@color/text_primary"
-                app:srcCompat="@drawable/one_left"/>
-
-        <TextView
-            android:id="@+id/title_contentCuti"
-            android:layout_toEndOf="@+id/ivBack"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:textSize="18sp"
-            android:elevation="10dp"
-            android:textStyle="bold"
-            android:textColor="@color/text_primary"
-            android:outlineAmbientShadowColor="@color/text_primary"
-            android:outlineSpotShadowColor="@color/text_primary"/>
-
-    </RelativeLayout>
-
-
-    <ImageView
-        app:layout_constraintEnd_toEndOf="@+id/map"
-        app:layout_constraintBottom_toBottomOf="@+id/map"
-        android:visibility="visible"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
-        android:padding="2dp"
-        app:srcCompat="@drawable/ic_search_location"
-        android:layout_alignParentEnd="true"
-        android:clickable="true"
-        android:layout_centerVertical="true"
-        android:foreground="?attr/selectableItemBackground"
-        android:focusable="true"
-        android:onClick="fokusLokasiSiftIzinCuti"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="10dp"
-        android:background="@drawable/backgroundtranshitam"
-        />
-
-    <LinearLayout
-        android:id="@+id/llKeteranganIzinCuti"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:orientation="vertical">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <View
-            android:layout_width="25dp"
-            android:layout_height="5dp"
-            android:layout_gravity="center_horizontal"
-            android:background="@drawable/backgroundnavbar"/>
+    <!-- Navbar Overlay (Top Left) -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/rlHeaderKehadiranOne"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="35dp"
+        android:background="@drawable/backgoundputihtransparan"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="6dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                android:layout_weight="2"
-                android:textAlignment="center"
-                android:text="@string/data_perjalanan_dinas"
-                android:textColor="@color/text_primary"
-                android:textSize="18sp"
-
-                android:id="@+id/titleDinasLuarCuti"/>
-
-        </LinearLayout>
-
-        <TextView
-            android:layout_gravity="center_horizontal"
-            android:id="@+id/tvKegiatanFinalCuti"
+            android:id="@+id/backTl"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/backgoundovalkuning"
-            android:text="@string/kegiatan"
-            android:textColor="@color/putih"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
-            android:textSize="14sp"
-
-            android:layout_marginBottom="5dp"/>
-
-        <HorizontalScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            >
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_gravity="center">
-
-                <LinearLayout
-                    android:layout_marginEnd="2dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_horizontal"
-                    android:orientation="vertical"
-                    >
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Foto Absen"
-                        android:layout_marginBottom="5dp"
-
-                        android:textColor="@color/text_secondary"
-                        />
-
-                    <LinearLayout
-                        android:layout_width="150dp"
-                        android:layout_height="200dp"
-                        android:background="@drawable/backgroundnavbarputih"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:gravity="center_horizontal"
-                        android:foreground="?attr/selectableItemBackground"
-                        android:orientation="vertical"
-                        android:onClick="addFotoKegiatan"
-                        tools:ignore="SpeakableTextPresentCheck,SpeakableTextPresentCheck">
-
-                        <com.google.android.material.imageview.ShapeableImageView
-                            android:id="@+id/ivFinalKegiatanCuti"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:scaleType="centerCrop"
-                            android:visibility="visible"
-                            app:shapeAppearance="@style/ImageStyle2" />
-                    </LinearLayout>
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_marginStart="2dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_horizontal"
-                    android:orientation="vertical"
-                    android:id="@+id/llLampiranDinasLuarCutiHead"
-                    >
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Surat Cuti"
-                        android:layout_marginBottom="5dp"
-
-
-                        android:textColor="@color/text_secondary"
-                        />
-
-                    <LinearLayout
-                        android:layout_width="150dp"
-                        android:layout_height="200dp"
-                        android:orientation="vertical"
-                        android:gravity="center_horizontal"
-                        android:background="@drawable/backgroundnavbarputih"
-                        android:id="@+id/llLampiranDinasLuarCuti"
-                        android:clickable="true"
-                        android:foreground="?attr/selectableItemBackground"
-                        android:onClick="addFotoSuratPerintah"
-                        android:focusable="true">
-
-
-                        <com.google.android.material.imageview.ShapeableImageView
-                            android:layout_width="50dp"
-                            android:layout_height="match_parent"
-                            android:id="@+id/iconLampiranCuti"
-                            android:src="@drawable/ic_document_scanner"/>
-
-                        <com.google.android.material.imageview.ShapeableImageView
-                            android:id="@+id/ivSuratPerintahFinalCuti"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:scaleType="centerCrop"
-                            android:visibility="gone"
-                            app:shapeAppearance="@style/ImageStyle2"/>
-
-
-
-                    </LinearLayout>
-
-                </LinearLayout>
-            </LinearLayout>
-
-
-        </HorizontalScrollView>
-
-        <LinearLayout
+            android:layout_height="44dp"
             android:clickable="true"
+            android:focusable="true"
             android:foreground="?attr/selectableItemBackground"
-            android:onClick="addFotoSuratPerintah"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/backgoundovalkuning"
             android:gravity="center_vertical"
-            android:layout_marginTop="10dp"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
-            android:layout_gravity="center"
-            android:id="@+id/llPdfDinasLuarCuti"
-            android:visibility="gone"
-
-            android:focusable="true">
+            android:onClick="backFinalDinasLuar"
+            android:paddingHorizontal="16dp"
+            tools:ignore="UsingOnClickInXml">
 
             <ImageView
-                android:layout_gravity="center_vertical"
+                android:id="@+id/ivBack"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                app:srcCompat="@drawable/ic_document_scanner"/>
+                android:src="@drawable/one_left"
+                app:tint="@color/text_primary"
+                android:contentDescription="@string/todo" />
 
             <TextView
-                android:layout_gravity="center_vertical"
+                android:id="@+id/title_contentCuti"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingStart="10dp"
-                android:textAlignment="inherit"
-                android:text="@string/dokumen_surat_perintah"
-                android:textColor="@color/putih"
-
-                android:textSize="12sp"
-                android:textStyle="bold"
-                android:id="@+id/tvSuratPerintahCuti"
-                />
+                android:layout_marginStart="8dp"
+                android:fontFamily="sans-serif-black"
+                android:text="Kembali"
+                android:textColor="@color/text_primary"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/rlBack"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="HardcodedText"  />
         </LinearLayout>
+    </androidx.cardview.widget.CardView>
 
+    <!-- Accuracy & Distance Card (Top Right) -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardAccuracy"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="35dp"
+        android:layout_marginEnd="16dp"
+        app:cardBackgroundColor="@color/surface_main"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="6dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
-            android:layout_marginTop="10dp"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center">
-
-            <LinearLayout
-                style="@style/Widget.AppCompat.Spinner"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:onClick="llMulaiDinasLuar"
-                tools:ignore="TouchTargetSizeCheck">
-
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:contentDescription="@string/todo"
-                    app:srcCompat="@drawable/ic_calendar" />
-
-                <TextView
-                    android:id="@+id/tvHariMulai"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="-"
-                    android:textColor="@color/biru"
-                    android:textSize="14dp"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="/"
-                    android:textColor="@color/text_primary" />
-
-                <TextView
-                    android:id="@+id/tvBulanTahunMulai"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="-"
-                    android:textColor="@color/text_primary"
-                    android:textSize="14sp"
-                    />
-            </LinearLayout>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-
-                android:text="s.d."
-                android:textStyle="bold"
-                android:textColor="@color/text_primary" />
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                style="@style/Widget.AppCompat.Spinner"
-                android:onClick="llSampaiDinasLuar"
-                android:layout_weight="1"
-                android:gravity="center"
-                >
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    app:srcCompat="@drawable/ic_calendar"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="14sp"
-                    android:text="-"
-
-                    android:textColor="@color/biru"
-                    android:id="@+id/tvHariSampai"
-                    />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="/"
-
-                    android:textColor="@color/text_primary"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-
-                    android:text="-"
-                    android:textSize="14sp"
-                    android:textColor="@color/text_primary"
-                    android:id="@+id/tvBulanTahunSampai"/>
-            </LinearLayout>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_marginTop="10dp"
-            android:layout_gravity="center"
-            android:id="@+id/llUpload"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/backgroundnavbar"
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
-            android:clickable="true"
-            android:foreground="?attr/selectableItemBackground"
-            android:onClick="kirimdatacutishift"
-            android:layout_marginBottom="50dp"
             android:gravity="center_vertical"
-            android:focusable="true">
+            android:orientation="horizontal"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp">
 
-            <TextView
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_search_location"
+                app:tint="@color/primary_brand"
+                android:contentDescription="@string/todo" />
+
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/kirim"
+                android:layout_marginStart="8dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Akurasi"
+                    android:textColor="@color/text_hint"
+                    android:textSize="9sp"
+                    tools:ignore="SmallSp,HardcodedText" />
+
+                <TextView
+                    android:id="@+id/tvAkurasi"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-black"
+                    android:text="± 5 m"
+                    android:textColor="@color/text_primary"
+                    android:textSize="11sp"
+                    tools:ignore="HardcodedText" />
+
+                <TextView
+                    android:id="@+id/tvJarak"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Jarak: - m"
+                    android:textColor="@color/primary_brand"
+                    android:textSize="9sp"
+                    tools:ignore="SmallSp,HardcodedText" />
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Safe Zone Card (Middle Left) -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardSafeZone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        app:cardBackgroundColor="@color/surface_main"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="6dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.35"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="12dp">
+
+            <ImageView
+                android:id="@+id/ivSafeZone"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_check"
+                app:tint="@color/hijau"
+                android:contentDescription="@string/todo" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvSafeZoneTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-black"
+                    android:text="Zona Aman"
+                    android:textColor="@color/hijau"
+                    android:textSize="11sp"
+                    tools:ignore="HardcodedText" />
+
+                <TextView
+                    android:id="@+id/tvSafeZoneDesc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Anda berada dalam\narea absensi"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="9sp"
+                    tools:ignore="SmallSp,HardcodedText" />
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Weather Card (Bottom Left on Map) -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardWeather"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="16dp"
+        app:cardBackgroundColor="@color/primary_brand"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="6dp"
+        app:layout_constraintBottom_toTopOf="@+id/cvDataContainer"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="10dp">
+
+            <ImageView
+                android:id="@+id/ivWeatherIcon"
+                android:layout_width="27dp"
+                android:layout_height="24dp"
+                android:contentDescription="@string/todo"
+                android:src="@drawable/ic_morning_w"
+                app:tint="@color/white" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvTemperature"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-black"
+                    android:text="--°C"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    tools:ignore="HardcodedText" />
+
+                <TextView
+                    android:id="@+id/tvCondition"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Memuat..."
+                    android:textColor="#CCFFFFFF"
+                    android:textSize="9sp"
+                    tools:ignore="SmallSp,HardcodedText" />
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- My Location Button (Bottom Right on Map) -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/btnFokusLokasi"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:onClick="fokusLokasiSiftIzinCuti"
+        app:cardBackgroundColor="@color/surface_main"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/cvDataContainer"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="12dp"
+            android:src="@drawable/ic_search_location"
+            app:tint="@color/primary_brand"
+            android:contentDescription="@string/todo" />
+    </androidx.cardview.widget.CardView>
+
+    <!-- 2. Main Data Card -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cvDataContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="20dp"
+        app:cardBackgroundColor="@color/surface_main"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="16dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <LinearLayout
+            android:id="@+id/llKeteranganIzinCuti"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <!-- Drag Indicator -->
+            <View
+                android:layout_width="40dp"
+                android:layout_height="4dp"
+                android:layout_gravity="center"
+                android:background="@drawable/backgoundovalbirusift"
+                android:alpha="0.5" />
+
+            <TextView
+                android:id="@+id/titleDinasLuarCuti"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:fontFamily="sans-serif-black"
+                android:text="Pengajuan Izin Cuti (Shift)"
+                android:textColor="@color/text_primary"
                 android:textSize="18sp"
-                android:layout_marginEnd="5dp"
-                android:textStyle="bold"
-                android:padding="5dp"
-                android:textColor="@color/putih"/>
+                tools:ignore="HardcodedText" />
+
+            <TextView
+                android:id="@+id/tvKegiatanFinalCuti"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/backgoundovalkuning"
+                android:text="@string/kegiatan"
+                android:textColor="@color/putih"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="4dp"
+                android:textSize="12sp"
+                android:fontFamily="sans-serif-medium" />
+
+            <!-- Media Section -->
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <!-- Photo Absen -->
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:gravity="center_horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Foto Absen"
+                            android:textColor="@color/text_hint"
+                            android:textSize="10sp"
+                            android:layout_marginBottom="8dp"
+                            android:fontFamily="sans-serif-medium"
+                            tools:ignore="SmallSp,HardcodedText" />
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="100dp"
+                            android:layout_height="130dp"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:foreground="?attr/selectableItemBackground"
+                            android:onClick="addFotoKegiatan"
+                            app:cardCornerRadius="16dp"
+                            app:cardElevation="0dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="@color/surface_variant">
+
+                            <com.google.android.material.imageview.ShapeableImageView
+                                android:id="@+id/ivFinalKegiatanCuti"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:scaleType="centerCrop"
+                                app:shapeAppearanceOverlay="@style/ImageStyle2" />
+                        </com.google.android.material.card.MaterialCardView>
+                    </LinearLayout>
+
+                    <!-- Surat Cuti -->
+                    <LinearLayout
+                        android:id="@+id/llLampiranDinasLuarCutiHead"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:orientation="vertical"
+                        android:gravity="center_horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Surat Cuti"
+                            android:textColor="@color/text_hint"
+                            android:textSize="10sp"
+                            android:layout_marginBottom="8dp"
+                            android:fontFamily="sans-serif-medium"
+                            tools:ignore="SmallSp,HardcodedText" />
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/llLampiranDinasLuarCuti"
+                            android:layout_width="100dp"
+                            android:layout_height="130dp"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:foreground="?attr/selectableItemBackground"
+                            android:onClick="addFotoSuratPerintah"
+                            app:cardCornerRadius="16dp"
+                            app:cardElevation="0dp"
+                            app:cardBackgroundColor="@color/surface_variant"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="@color/surface_variant">
+
+                            <FrameLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent">
+
+                                <ImageView
+                                    android:id="@+id/iconLampiranCuti"
+                                    android:layout_width="32dp"
+                                    android:layout_height="32dp"
+                                    android:layout_gravity="center"
+                                    android:src="@drawable/ic_document_scanner"
+                                    app:tint="@color/text_hint" />
+
+                                <com.google.android.material.imageview.ShapeableImageView
+                                    android:id="@+id/ivSuratPerintahFinalCuti"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:scaleType="centerCrop"
+                                    android:visibility="gone"
+                                    app:shapeAppearanceOverlay="@style/ImageStyle2" />
+                            </FrameLayout>
+                        </com.google.android.material.card.MaterialCardView>
+                    </LinearLayout>
+                </LinearLayout>
+            </HorizontalScrollView>
+
+            <!-- Document Info Redesign -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/llPdfDinasLuarCuti"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:visibility="gone"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="@color/surface_main"
+                app:strokeWidth="1dp"
+                app:strokeColor="@color/surface_variant">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <!-- Header inside Card -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/surface_variant"
+                        android:paddingHorizontal="16dp"
+                        android:paddingVertical="8dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="DOKUMEN LAMPIRAN"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="10sp"
+                            android:fontFamily="sans-serif-black"
+                            android:letterSpacing="0.1"
+                            tools:ignore="SmallSp,HardcodedText" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:onClick="addFotoSuratPerintah"
+                        android:padding="16dp">
+
+                        <FrameLayout
+                            android:layout_width="48dp"
+                            android:layout_height="48dp">
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@drawable/backgroundwhiteradius"
+                                android:backgroundTint="#1AEE3B3B" />
+
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_document_scanner"
+                                app:tint="#EE3B3B" />
+                        </FrameLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/tvSuratPerintahCuti"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:ellipsize="middle"
+                                android:fontFamily="sans-serif-black"
+                                android:singleLine="true"
+                                android:text="Dokumen Surat Perintah"
+                                android:textColor="@color/text_primary"
+                                android:textSize="14sp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:text="File PDF telah terlampir"
+                                android:textColor="@color/hijau"
+                                android:textSize="12sp"
+                                android:fontFamily="sans-serif-medium" />
+                        </LinearLayout>
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_check"
+                            app:tint="@color/hijau" />
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Date Range Selector -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/bg_time_info_card"
+                android:orientation="horizontal"
+                android:padding="12dp"
+                android:gravity="center_vertical">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:onClick="llMulaiDinasLuar"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Mulai"
+                        android:textColor="@color/text_hint"
+                        android:textSize="9sp"
+                        tools:ignore="SmallSp,HardcodedText" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/tvHariMulai"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-black"
+                            android:text="-"
+                            android:textColor="@color/text_primary"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="/"
+                            android:layout_marginHorizontal="2dp"
+                            android:textColor="@color/text_hint" />
+
+                        <TextView
+                            android:id="@+id/tvBulanTahunMulai"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-medium"
+                            android:text="-"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="30dp"
+                    android:background="@color/surface_variant"
+                    android:layout_marginHorizontal="10dp" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:onClick="llSampaiDinasLuar"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Sampai"
+                        android:textColor="@color/text_hint"
+                        android:textSize="9sp"
+                        tools:ignore="SmallSp,HardcodedText" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/tvHariSampai"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-black"
+                            android:text="-"
+                            android:textColor="@color/text_primary"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="/"
+                            android:layout_marginHorizontal="2dp"
+                            android:textColor="@color/text_hint" />
+
+                        <TextView
+                            android:id="@+id/tvBulanTahunSampai"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-medium"
+                            android:text="-"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Send Button -->
+            <LinearLayout
+                android:id="@+id/llUpload"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="24dp"
+                android:background="@drawable/bg_gradient_button"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:gravity="center"
+                android:onClick="kirimdatacutishift"
+                android:orientation="horizontal"
+                android:elevation="8dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-black"
+                    android:text="KIRIM PERMOHONAN"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    android:letterSpacing="0.05"
+                    tools:ignore="HardcodedText" />
+
+            </LinearLayout>
 
         </LinearLayout>
-    </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

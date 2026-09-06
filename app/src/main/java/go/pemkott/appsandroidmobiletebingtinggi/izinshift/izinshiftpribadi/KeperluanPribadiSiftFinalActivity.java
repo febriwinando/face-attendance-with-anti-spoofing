@@ -97,6 +97,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
 import go.pemkott.appsandroidmobiletebingtinggi.utils.ClsGlobal;
 import go.pemkott.appsandroidmobiletebingtinggi.utils.NetworkUtils;
 import go.pemkott.appsandroidmobiletebingtinggi.model.LocationViewModel;
+import go.pemkott.appsandroidmobiletebingtinggi.utils.WeatherUtil;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -129,6 +130,10 @@ public class KeperluanPribadiSiftFinalActivity extends AppCompatActivity  implem
     private String rbJam;
     private String rbKet;
     private String rbFakeGPS ="0" ;
+    private TextView tvAkurasi, tvJarak, tvTemperature, tvCondition;
+    private ImageView ivWeatherIcon;
+    private View cardSafeZone;
+    private long lastWeatherUpdate = 0;
     String pathDokument;
     String currentDateandTime = SIMPLE_DATE_FORMAT_TAGING.format(new Date());
     String currentDateandTimes = SIMPLE_DATE_FORMAT_TAGING_PHOTO_REPORT.format(new Date());
@@ -195,6 +200,13 @@ public class KeperluanPribadiSiftFinalActivity extends AppCompatActivity  implem
         title_content.setText("KEPERLUAN PRIBADI");
 //        Image View
         ivFinalKegiatan = findViewById(R.id.ivFinalKegiatanKp);
+
+        tvAkurasi = findViewById(R.id.tvAkurasi);
+        tvJarak = findViewById(R.id.tvJarak);
+        tvTemperature = findViewById(R.id.tvTemperature);
+        tvCondition = findViewById(R.id.tvCondition);
+        ivWeatherIcon = findViewById(R.id.ivWeatherIcon);
+        cardSafeZone = findViewById(R.id.cardSafeZone);
 
         //Google Maps
         Window window = this.getWindow();
@@ -348,6 +360,18 @@ public class KeperluanPribadiSiftFinalActivity extends AppCompatActivity  implem
             }
             if (map != null) {
                 plotMarkers(locationResult.getLastLocation());
+            }
+
+            if (locationResult.getLastLocation() != null) {
+                if (tvAkurasi != null) {
+                    tvAkurasi.setText(String.format(localeID, "± %.0f m", locationResult.getLastLocation().getAccuracy()));
+                }
+
+                long now = System.currentTimeMillis();
+                if (now - lastWeatherUpdate > 10 * 60 * 1000) {
+                    WeatherUtil.fetchWeather(KeperluanPribadiSiftFinalActivity.this, locationResult.getLastLocation().getLatitude(), locationResult.getLastLocation().getLongitude(), tvTemperature, tvCondition, ivWeatherIcon);
+                    lastWeatherUpdate = now;
+                }
             }
         }
     };
