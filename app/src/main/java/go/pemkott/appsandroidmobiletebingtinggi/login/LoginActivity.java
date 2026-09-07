@@ -224,7 +224,7 @@ public class LoginActivity extends AppCompatActivity {
                         session.saveEmployeeId(sEmployee_id);
 
                         if ("1".equals(sActive)) {
-                            databaseHelper.insertLog(SIMPLE_FORMAT_TANGGAL.format(new Date()), "Melakukan Login Aplikasi", "Login");
+                            databaseHelper.insertLog(sEmployee_id, "-", SIMPLE_FORMAT_TANGGAL.format(new Date()), "Melakukan Login Aplikasi", "Login");
 
                             databaseHelper.insertDataUserLogin(
                                     sId,

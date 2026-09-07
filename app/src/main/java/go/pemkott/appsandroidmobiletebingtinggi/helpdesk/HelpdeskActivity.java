@@ -14,6 +14,7 @@ import androidx.core.view.WindowInsetsCompat;
 import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.helpdesk.ajukan.AjukanAduanActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.helpdesk.ajukan.StatusAduanActivity;
+import go.pemkott.appsandroidmobiletebingtinggi.helpdesk.log.LogAktivitasActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.helpdesk.panduan.PanduanHelpdeskActivity;
 
 public class HelpdeskActivity extends AppCompatActivity {
@@ -47,6 +48,11 @@ public class HelpdeskActivity extends AppCompatActivity {
         // Menu 3: Cek aduan/permohonan bantuan
         findViewById(R.id.llCekAduan).setOnClickListener(v -> {
             startActivity(new Intent(this, StatusAduanActivity.class));
+        });
+
+        // Menu 4: Log Aktivitas
+        findViewById(R.id.llLogAktivitas).setOnClickListener(v -> {
+            startActivity(new Intent(this, LogAktivitasActivity.class));
         });
     }
 }

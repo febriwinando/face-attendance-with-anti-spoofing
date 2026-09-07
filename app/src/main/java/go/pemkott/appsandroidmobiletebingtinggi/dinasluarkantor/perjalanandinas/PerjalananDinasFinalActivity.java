@@ -970,40 +970,13 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
         if ("pdf".equals(ekslampiran)) {
             lampiranPart =
                     prepareFilePart("lampiran", imageBytesDokumenPdf);
-            Log.d("TugasLapanganFinalActivity", "PDF");
+
         } else {
             byte[] imageBytesLampiran =
                     ambilFoto.compressToMax80KB(filelampiran);
             lampiranPart =
                     prepareFilePart("lampiran", imageBytesLampiran);
-            Log.d("TugasLapanganFinalActivity", "JPG");
         }
-
-
-        Log.d("UPLOAD_PD", "===== DATA UPLOAD PERJALANAN DINAS =====");
-        Log.d("UPLOAD_PD", "eJabatan      = " + eJabatan);
-        Log.d("UPLOAD_PD", "sEmployeID    = " + sEmployeID);
-        Log.d("UPLOAD_PD", "timetableid   = " + timetableid);
-        Log.d("UPLOAD_PD", "rbJam         = " + rbJam);
-        Log.d("UPLOAD_PD", "posisi        = " + posisi);
-        Log.d("UPLOAD_PD", "status        = " + status);
-        Log.d("UPLOAD_PD", "rbLat         = " + rbLat);
-        Log.d("UPLOAD_PD", "rbLng         = " + rbLng);
-        Log.d("UPLOAD_PD", "rbKet         = " + rbKet);
-        Log.d("UPLOAD_PD", "eOPD          = " + eOPD);
-        Log.d("UPLOAD_PD", "valid         = " + valid);
-        Log.d("UPLOAD_PD", "ekslampiran   = " + ekslampiran);
-        Log.d("UPLOAD_PD", "dariTanggal   = " + dariTanggal);
-        Log.d("UPLOAD_PD", "sampaiTanggal = " + sampaiTanggal);
-        Log.d("UPLOAD_PD", "rbFakeGPS     = " + rbFakeGPS);
-
-        Log.d("UPLOAD_PD", "fotoPart      = " +
-                (fotoPart != null ? fotoPart : "NULL"));
-
-        Log.d("UPLOAD_PD", "lampiranPart  = " +
-                (lampiranPart != null ? lampiranPart : "NULL"));
-
-        Log.d("UPLOAD_PD", "====================================");
 
         Call<ResponsePOJO> call =
                 RetroClient.getInstance().getApi().uploadAbsenPerjalananDinas(
@@ -1051,7 +1024,7 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
                 ResponsePOJO data = response.body();
 
                 if (Objects.requireNonNull(response.body()).isStatus()){
-                    databaseHelper.insertLog(tanggal, "Melakukan Absen Perjalanan Dinas", "Perjalanan Dinas");
+                    databaseHelper.insertLog(sEmployeID, eOPD, tanggal, "Melakukan Absen Perjalanan Dinas", "Perjalanan Dinas");
                     dialogView.viewSukses(PerjalananDinasFinalActivity.this, data.getRemarks());
 
                     // mulai hitung 10 detik

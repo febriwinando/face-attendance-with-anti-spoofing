@@ -577,7 +577,7 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 session.clearSession();
-                databaseHelper.insertLog(SIMPLE_FORMAT_TANGGAL.format(new Date()), "Melakukan Logout Aplikasi", "Logout");
+                databaseHelper.insertLog(sEmployee_id, sOPD, SIMPLE_FORMAT_TANGGAL.format(new Date()), "Melakukan Logout Aplikasi", "Logout");
 
                 databaseHelper.deleteDataUseAll();
                 databaseHelper.deleteDataEmployeeAll();

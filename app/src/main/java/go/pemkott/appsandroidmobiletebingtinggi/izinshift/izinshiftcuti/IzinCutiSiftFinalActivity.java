@@ -629,7 +629,7 @@ public class IzinCutiSiftFinalActivity extends AppCompatActivity implements OnMa
                 ResponsePOJO data = response.body();
 
                 if (Objects.requireNonNull(response.body()).isStatus()){
-                    databaseHelper.insertLog(rbTanggal, "Melakukan Pengajuan Izin Cuti (Shift)", "Cuti");
+                    databaseHelper.insertLog(sEmployeID, eOPD, rbTanggal, "Melakukan Pengajuan Izin Cuti (Shift)", "Cuti");
                     dialogView.viewSukses(IzinCutiSiftFinalActivity.this, data.getRemarks());
                 }else {
                     dialogView.viewNotifKosong(IzinCutiSiftFinalActivity.this, data.getRemarks(),"");

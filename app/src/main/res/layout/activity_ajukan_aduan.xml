@@ -9,11 +9,10 @@
 
     <include layout="@layout/layout_background_palette" />
 
-
-
     <!-- Header Section -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/clHeader"
+        android:layout_marginTop="25dp"
         android:layout_width="match_parent"
         android:layout_height="64dp"
         android:paddingHorizontal="12dp"

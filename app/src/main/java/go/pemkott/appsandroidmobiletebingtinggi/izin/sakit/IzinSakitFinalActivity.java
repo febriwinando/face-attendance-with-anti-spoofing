@@ -655,11 +655,10 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
                 ResponsePOJO data = response.body();
 
                 if (Objects.requireNonNull(response.body()).isStatus()){
-                    databaseHelper.insertLog(rbTanggal, "Melakukan Pengajuan Izin Sakit (Masuk)", "Masuk");
+                    databaseHelper.insertLog(sEmployeID, eOPD, rbTanggal, "Melakukan Pengajuan Izin Sakit (Masuk)", "Masuk");
                     dialogView.viewSukses(IzinSakitFinalActivity.this, data.getRemarks());
 
                     // mulai hitung 10 detik
-
                     autoCloseHandler.postDelayed(
 
                             autoCloseRunnable,
@@ -753,7 +752,7 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
                 ResponsePOJO data = response.body();
 
                 if (Objects.requireNonNull(response.body()).isStatus()){
-                    databaseHelper.insertLog(rbTanggal, "Melakukan Pengajuan Izin Sakit (Pulang)", "Pulang");
+                    databaseHelper.insertLog(sEmployeID, eOPD, rbTanggal, "Melakukan Pengajuan Izin Sakit (Pulang)", "Pulang");
                     dialogView.viewSukses(IzinSakitFinalActivity.this, data.getRemarks());
 
                     // mulai hitung 10 detik

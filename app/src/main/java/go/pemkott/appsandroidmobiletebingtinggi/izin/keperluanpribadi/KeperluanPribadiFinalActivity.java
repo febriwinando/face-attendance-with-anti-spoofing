@@ -516,7 +516,7 @@ public class KeperluanPribadiFinalActivity extends AppCompatActivity implements 
                 ResponsePOJO data = response.body();
 
                 if (Objects.requireNonNull(response.body()).isStatus()){
-                    databaseHelper.insertLog(rbTanggal, "Melakukan Pengajuan Keperluan Pribadi (Masuk)", "Masuk");
+                    databaseHelper.insertLog(sEmployeID, eOPD, rbTanggal, "Melakukan Pengajuan Keperluan Pribadi (Masuk)", "Masuk");
                     dialogView.viewSukses(KeperluanPribadiFinalActivity.this, data.getRemarks());
 
                     autoCloseHandler.postDelayed(
@@ -592,7 +592,7 @@ public class KeperluanPribadiFinalActivity extends AppCompatActivity implements 
                 ResponsePOJO data = response.body();
 
                 if (Objects.requireNonNull(response.body()).isStatus()){
-                    databaseHelper.insertLog(rbTanggal, "Melakukan Pengajuan Keperluan Pribadi (Pulang)", "Pulang");
+                    databaseHelper.insertLog(sEmployeID, eOPD, rbTanggal, "Melakukan Pengajuan Keperluan Pribadi (Pulang)", "Pulang");
                     dialogView.viewSukses(KeperluanPribadiFinalActivity.this, data.getRemarks());
                     autoCloseHandler.postDelayed(
 

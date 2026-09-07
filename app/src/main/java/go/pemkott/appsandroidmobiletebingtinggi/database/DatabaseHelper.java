@@ -27,6 +27,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.provider.Settings;
 
 import java.util.Date;
 
@@ -40,10 +41,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // DATABASE CONFIGURATION
     // =========================
     public static final String NAMA_DATABASE = "absensitt.db";
-    private static final int DATABASE_VERSION = 103;
+    private static final int DATABASE_VERSION = 104;
 
     public DatabaseHelper(Context context) {
         super(context, NAMA_DATABASE, null, DATABASE_VERSION);
+        this.mContext = context;
     }
 
     // =========================
@@ -155,10 +157,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // =========================
     public static final String TABLE_LOG = "log_aktivitas";
     public static final String LOG_ID = "ID";
+    public static final String LOG_EMPLOYEE_ID = "EMPLOYEE_ID";
+    public static final String LOG_OPD_ID = "OPD_ID";
     public static final String LOG_TANGGAL = "TANGGAL";
     public static final String LOG_KEGIATAN = "KEGIATAN";
     public static final String LOG_JENIS = "JENIS_ABSEN";
+    public static final String LOG_DEVICE_ID = "DEVICE_ID";
     public static final String LOG_TIMESTAMP = "TIMESTAMP";
+
+    private final Context mContext;
 
     @Override
     public void onCreate(SQLiteDatabase db) {
@@ -310,11 +317,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                             "opd_shift INTEGER)"
             );
 
-            db.execSQL("CREATE TABLE " + TABLE_LOG + " (" +
+            db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_LOG + " (" +
                     LOG_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    LOG_EMPLOYEE_ID + " TEXT, " +
+                    LOG_OPD_ID + " TEXT, " +
                     LOG_TANGGAL + " TEXT, " +
                     LOG_KEGIATAN + " TEXT, " +
                     LOG_JENIS + " TEXT, " +
+                    LOG_DEVICE_ID + " TEXT, " +
                     LOG_TIMESTAMP + " TEXT)");
 
         } catch (Exception e) {
@@ -425,8 +435,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 absensi.execSQL("DROP TABLE IF EXISTS " + HAPUS_DATA_PENGGUNA);
                 absensi.execSQL("DROP TABLE IF EXISTS " + JAMSIFT);
                 absensi.execSQL("DROP TABLE IF EXISTS " + JADWALSIFT);
-                absensi.execSQL("DROP TABLE IF EXISTS " + TABLE_LOG);
-
+                // log_aktivitas tidak didrop agar data tetap ada saat upgrade
             }
 
             onCreate(absensi);
@@ -755,12 +764,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // =========================
     // LOG AKTIVITAS METHODS
     // =========================
-    public void insertLog(String tanggal, String kegiatan, String jenisAbsen) {
+    public void insertLog(String employeeId, String opdId, String tanggal, String kegiatan, String jenisAbsen) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
+        
+        String androidId = Settings.Secure.getString(
+                mContext.getContentResolver(), 
+                Settings.Secure.ANDROID_ID
+        );
+
+        cv.put(LOG_EMPLOYEE_ID, employeeId);
+        cv.put(LOG_OPD_ID, opdId);
         cv.put(LOG_TANGGAL, tanggal);
         cv.put(LOG_KEGIATAN, kegiatan);
         cv.put(LOG_JENIS, jenisAbsen);
+        cv.put(LOG_DEVICE_ID, androidId);
         cv.put(LOG_TIMESTAMP, String.valueOf(System.currentTimeMillis()));
 
         db.insert(TABLE_LOG, null, cv);
@@ -768,7 +786,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public Cursor getLogs() {
         SQLiteDatabase db = this.getReadableDatabase();
-        return db.rawQuery("SELECT * FROM " + TABLE_LOG + " ORDER BY ID DESC", null);
+        String query = "SELECT l.*, e.NAMA, e.NAMA_OPD " +
+                "FROM " + TABLE_LOG + " l " +
+                "LEFT JOIN " + EMPLOYEE + " e ON l." + LOG_EMPLOYEE_ID + " = e.ID " +
+                "ORDER BY l." + LOG_ID + " DESC";
+        return db.rawQuery(query, null);
     }
 
 }

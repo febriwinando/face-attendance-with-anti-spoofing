@@ -48,6 +48,9 @@
         android:networkSecurityConfig="@xml/network_security_config">
 
         <activity
+            android:name=".helpdesk.log.LogAktivitasActivity"
+            android:exported="false" />
+        <activity
             android:name=".helpdesk.ajukan.AjukanAduanActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />

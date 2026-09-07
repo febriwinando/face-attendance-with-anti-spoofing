@@ -604,7 +604,7 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
                 ResponsePOJO data = response.body();
 
                 if (Objects.requireNonNull(response.body()).isStatus()){
-                    databaseHelper.insertLog(tanggal, "Melakukan Pengajuan Izin Cuti", "Cuti");
+                    databaseHelper.insertLog(sEmployeID, eOPD, tanggal, "Melakukan Pengajuan Izin Cuti", "Cuti");
                     dialogView.viewSukses(IzinCutiFinalActivity.this, data.getRemarks());
 
                     autoCloseHandler.postDelayed(
