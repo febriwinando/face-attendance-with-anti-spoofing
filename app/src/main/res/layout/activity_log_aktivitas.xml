@@ -52,6 +52,76 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <!-- Filter Section -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cvFilterLog"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="8dp"
+        app:cardBackgroundColor="@color/surface_main"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="2dp"
+        app:layout_constraintTop_toBottomOf="@id/clHeaderLog">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilSearchKegiatan"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Cari Nama Kegiatan"
+                app:startIconDrawable="@drawable/one_search">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etSearchKegiatan"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textCapSentences"
+                    android:textSize="14sp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnFilterTanggalLog"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:text="Pilih Tanggal"
+                    android:textAllCaps="false"
+                    android:textSize="12sp"
+                    app:cornerRadius="12dp"
+                    app:icon="@drawable/ic_calendar" />
+
+                <ImageButton
+                    android:id="@+id/btnClearFilterLog"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/backgroundwhiteradius"
+                    android:backgroundTint="@color/surface_variant"
+                    android:padding="12dp"
+                    android:src="@drawable/ic_baseline_remove"
+                    app:tint="@color/merah"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvLogAktivitas"
         android:layout_width="match_parent"
@@ -59,7 +129,7 @@
         android:paddingTop="8dp"
         android:clipToPadding="false"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/clHeaderLog" />
+        app:layout_constraintTop_toBottomOf="@id/cvFilterLog" />
 
     <LinearLayout
         android:id="@+id/llEmptyLog"
@@ -81,6 +151,7 @@
             app:tint="@color/text_hint" />
 
         <TextView
+            android:id="@+id/tvEmptyLogTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -90,6 +161,7 @@
             android:textSize="18sp" />
 
         <TextView
+            android:id="@+id/tvEmptyLogDesc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"

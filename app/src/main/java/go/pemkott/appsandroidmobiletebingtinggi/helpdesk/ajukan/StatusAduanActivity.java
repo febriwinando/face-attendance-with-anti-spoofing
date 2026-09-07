@@ -1,12 +1,17 @@
 package go.pemkott.appsandroidmobiletebingtinggi.helpdesk.ajukan;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -18,6 +23,12 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textfield.TextInputEditText;
+
+import java.util.Calendar;
+import java.util.Locale;
 
 import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.api.HttpService;
@@ -35,7 +46,14 @@ public class StatusAduanActivity extends AppCompatActivity {
     private SwipeRefreshLayout swipeRefresh;
     private ProgressBar progressBar;
     private LinearLayout llEmpty;
+    private TextView tvEmptyTitle, tvEmptyDesc;
     private AduanAdapter adapter;
+    
+    private TextInputEditText etSearchNomor;
+    private MaterialButton btnFilterTanggal;
+    private ImageButton btnClearFilter;
+    private String selectedDate = "";
+    private String searchQuery = "";
     
     private HttpService httpService;
     private SessionManager session;
@@ -63,6 +81,11 @@ public class StatusAduanActivity extends AppCompatActivity {
         swipeRefresh = findViewById(R.id.swipeRefresh);
         progressBar = findViewById(R.id.progressBar);
         llEmpty = findViewById(R.id.llEmpty);
+        tvEmptyTitle = findViewById(R.id.tvEmptyTitle);
+        tvEmptyDesc = findViewById(R.id.tvEmptyDesc);
+        etSearchNomor = findViewById(R.id.etSearchNomor);
+        btnFilterTanggal = findViewById(R.id.btnFilterTanggal);
+        btnClearFilter = findViewById(R.id.btnClearFilter);
 
         findViewById(R.id.ivBack).setOnClickListener(v -> finish());
 
@@ -76,6 +99,67 @@ public class StatusAduanActivity extends AppCompatActivity {
         rvAduan.setAdapter(adapter);
 
         swipeRefresh.setOnRefreshListener(this::fetchAduans);
+
+        setupFilters();
+    }
+
+    private void setupFilters() {
+        etSearchNomor.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                searchQuery = s.toString();
+                applyLocalFilter();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
+        btnFilterTanggal.setOnClickListener(v -> {
+            Calendar calendar = Calendar.getInstance();
+            DatePickerDialog datePickerDialog = new DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
+                selectedDate = String.format(Locale.getDefault(), "%04d-%02d-%02d", year, month + 1, dayOfMonth);
+                btnFilterTanggal.setText(selectedDate);
+                btnClearFilter.setVisibility(View.VISIBLE);
+                applyLocalFilter();
+            }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+            datePickerDialog.show();
+        });
+
+        btnClearFilter.setOnClickListener(v -> {
+            selectedDate = "";
+            btnFilterTanggal.setText("Pilih Tanggal");
+            btnClearFilter.setVisibility(View.GONE);
+            applyLocalFilter();
+        });
+    }
+
+    private void applyLocalFilter() {
+        if (adapter != null) {
+            adapter.filter(searchQuery, selectedDate);
+            updateEmptyState();
+        }
+    }
+
+    private void updateEmptyState() {
+        if (adapter.getItemCount() == 0) {
+            rvAduan.setVisibility(View.GONE);
+            llEmpty.setVisibility(View.VISIBLE);
+            
+            if (searchQuery.isEmpty() && selectedDate.isEmpty()) {
+                tvEmptyTitle.setText("Belum Ada Laporan");
+                tvEmptyDesc.setText("Anda Belum Pernah Mengirimkan Laporan Ke Layanan Helpdesk");
+            } else {
+                tvEmptyTitle.setText("Laporan Tidak Ditemukan");
+                tvEmptyDesc.setText("Tidak ada data yang sesuai dengan pencarian atau filter Anda");
+            }
+        } else {
+            rvAduan.setVisibility(View.VISIBLE);
+            llEmpty.setVisibility(View.GONE);
+        }
     }
 
     private void setupData() {
@@ -108,8 +192,7 @@ public class StatusAduanActivity extends AppCompatActivity {
                     AduanResponse aduanResponse = response.body();
                     if (aduanResponse.getData() != null && !aduanResponse.getData().isEmpty()) {
                         adapter.setAduans(aduanResponse.getData());
-                        rvAduan.setVisibility(View.VISIBLE);
-                        llEmpty.setVisibility(View.GONE);
+                        applyLocalFilter();
                     } else {
                         rvAduan.setVisibility(View.GONE);
                         llEmpty.setVisibility(View.VISIBLE);

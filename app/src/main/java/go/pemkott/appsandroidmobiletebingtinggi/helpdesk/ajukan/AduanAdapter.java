@@ -23,6 +23,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.utils.ClsGlobal;
 public class AduanAdapter extends RecyclerView.Adapter<AduanAdapter.ViewHolder> {
 
     private final List<AduanHelpdesk> aduans = new ArrayList<>();
+    private final List<AduanHelpdesk> aduansFull = new ArrayList<>();
     private final OnItemClickListener listener;
 
     public interface OnItemClickListener {
@@ -35,8 +36,43 @@ public class AduanAdapter extends RecyclerView.Adapter<AduanAdapter.ViewHolder> 
 
     public void setAduans(List<AduanHelpdesk> newAduans) {
         aduans.clear();
+        aduansFull.clear();
         if (newAduans != null) {
             aduans.addAll(newAduans);
+            aduansFull.addAll(newAduans);
+        }
+        notifyDataSetChanged();
+    }
+
+    public void filter(String query, String date) {
+        aduans.clear();
+        if (query.isEmpty() && date.isEmpty()) {
+            aduans.addAll(aduansFull);
+        } else {
+            String lowerCaseQuery = query.toLowerCase().trim();
+            for (AduanHelpdesk aduan : aduansFull) {
+                boolean matchQuery = true;
+                boolean matchDate = true;
+
+                if (!lowerCaseQuery.isEmpty()) {
+                    String nomor = aduan.getNomor() != null ? aduan.getNomor().toLowerCase() : "";
+                    String judul = aduan.getJudul() != null ? aduan.getJudul().toLowerCase() : "";
+                    matchQuery = nomor.contains(lowerCaseQuery) || judul.contains(lowerCaseQuery);
+                }
+
+                if (!date.isEmpty()) {
+                    // Format created_at from API is usually YYYY-MM-DD HH:mm:ss
+                    if (aduan.getCreatedAt() != null) {
+                        matchDate = aduan.getCreatedAt().startsWith(date);
+                    } else {
+                        matchDate = false;
+                    }
+                }
+
+                if (matchQuery && matchDate) {
+                    aduans.add(aduan);
+                }
+            }
         }
         notifyDataSetChanged();
     }
