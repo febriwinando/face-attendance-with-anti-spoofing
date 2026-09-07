@@ -31,7 +31,6 @@ import java.util.Locale;
 
 import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.api.HttpService;
-import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraxActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat;
@@ -384,7 +383,7 @@ String userId;
         }
 
         txtAbsen.setOnClickListener(view -> {
-            Intent absensift = new Intent(JadwalSiftActivity.this, CameraxActivity.class);
+            Intent absensift = new Intent(JadwalSiftActivity.this, databaseHelper.getCameraActivityClass());
             absensift.putExtra("aktivitas", "kehadiransift");
             startActivity(absensift);
         });

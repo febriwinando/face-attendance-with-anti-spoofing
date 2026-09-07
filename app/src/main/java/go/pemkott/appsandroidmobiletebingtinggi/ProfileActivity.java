@@ -575,7 +575,6 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 session.clearSession();
-                DatabaseHelper db = new DatabaseHelper(ProfileActivity.this);
 
                 databaseHelper.deleteDataUseAll();
                 databaseHelper.deleteDataEmployeeAll();
@@ -586,7 +585,7 @@ public class ProfileActivity extends AppCompatActivity {
                 databaseHelper.deleteJamSift();
                 databaseHelper.deleteJadwalSift2();
                 databaseHelper.deleteAllEmployees();
-                databaseHelper.deleteDataFacedetection();
+                databaseHelper.deleteDataCameradetection();
 
                 session.clearSession();
 

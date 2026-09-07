@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import go.pemkott.appsandroidmobiletebingtinggi.R;
-import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraxActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import go.pemkott.appsandroidmobiletebingtinggi.izin.cuti.CutiAdapter;
@@ -156,7 +155,7 @@ public class CutiSiftActivity extends AppCompatActivity {
 
         }else {
 
-            Intent intentTL = new Intent(CutiSiftActivity.this, CameraxActivity.class);
+            Intent intentTL = new Intent(CutiSiftActivity.this, databaseHelper.getCameraActivityClass());
             intentTL.putExtra("aktivitas", "shiftizincuti");
             startActivity(intentTL);
 

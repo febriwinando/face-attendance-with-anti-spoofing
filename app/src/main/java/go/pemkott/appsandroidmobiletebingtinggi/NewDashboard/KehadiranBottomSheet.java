@@ -14,10 +14,14 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import go.pemkott.appsandroidmobiletebingtinggi.R;
+import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraXTAcitivty;
 import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraxActivity;
+import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dinasluarkantor.tugaslapangan.TugasLapanganActivity;
 
 public class KehadiranBottomSheet extends BottomSheetDialogFragment {
+
+    private DatabaseHelper databaseHelper;
 
     @Nullable
     @Override
@@ -32,12 +36,14 @@ public class KehadiranBottomSheet extends BottomSheetDialogFragment {
                 false
         );
 
+        databaseHelper = new DatabaseHelper(getActivity());
+
         CardView cvAbsenMasuk = view.findViewById(R.id.cvKehadiranKantor);
         CardView cvAbsenPulang = view.findViewById(R.id.cvTugasLapangan);
 
         cvAbsenMasuk.setOnClickListener(v -> {
 
-            Intent kehadiranIntent = new Intent(getActivity(), CameraxActivity.class);
+            Intent kehadiranIntent = new Intent(getActivity(), databaseHelper.getCameraActivityClass());
             kehadiranIntent.putExtra("aktivitas", "kehadiran");
             startActivity(kehadiranIntent);
             dismiss();

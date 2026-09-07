@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 import go.pemkott.appsandroidmobiletebingtinggi.R;
-import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraxActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import go.pemkott.appsandroidmobiletebingtinggi.model.Kegiatan;
@@ -89,7 +88,7 @@ public class KeperluanPribadiActivity extends AppCompatActivity {
         if (kegiatanChecked.isEmpty() && "kosong".equals(kegiatansLainnya)){
             dialogView.viewNotifKosong(this, "Anda Harus Mengisi Kegiatan Yang Dilaksanakan.", "");
         } else {
-            Intent intentTL = new Intent(this, CameraxActivity.class);
+            Intent intentTL = new Intent(this, databaseHelper.getCameraActivityClass());
             intentTL.putExtra("aktivitas", "izinkp");
             intentTL.putExtra("title", "Isi Informasi Keperluan Pribadi");
             intentTL.putStringArrayListExtra("kegiatan_checked_kp", kegiatanChecked);

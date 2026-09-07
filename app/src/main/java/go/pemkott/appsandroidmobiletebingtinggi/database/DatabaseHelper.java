@@ -30,6 +30,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.Date;
 
+import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraXTanpaDetectionAcitvity;
+import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraxActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.model.EmployeesData;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
@@ -38,7 +40,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // DATABASE CONFIGURATION
     // =========================
     public static final String NAMA_DATABASE = "absensitt.db";
-    private static final int DATABASE_VERSION = 101;
+    private static final int DATABASE_VERSION = 102;
 
     public DatabaseHelper(Context context) {
         super(context, NAMA_DATABASE, null, DATABASE_VERSION);
@@ -262,7 +264,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     "BATAS_WAKTU TEXT, PEGAWAI_SIFT TEXT)");
 
             db.execSQL(
-                    "CREATE TABLE face_detection (" +
+                    "CREATE TABLE camera_detection (" +
                             "id INTEGER PRIMARY KEY," +
                             "status INTEGER NOT NULL DEFAULT 0" +
                             ")"
@@ -270,7 +272,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             // Insert data awal
             db.execSQL(
-                    "INSERT INTO face_detection(id, status) VALUES(1, 0)"
+                    "INSERT INTO camera_detection(id, status) VALUES(1, 0)"
             );
 
             db.execSQL(
@@ -302,9 +304,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.beginTransaction();
         }
     }
-    public void deleteDataFacedetection(){
+    public void deleteDataCameradetection(){
         SQLiteDatabase db = getWritableDatabase();
-        db.delete("face_detection",null,null);
+        db.delete("camera_detection",null,null);
     }
 
     public void deleteAllEmployees(){
@@ -351,24 +353,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-    public void updateFaceDetectionStatus(int status) {
+    public void updateCameraDetectionStatus(int status) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("status", status);
         db.update(
-                "face_detection",
+                "camera_detection",
                 values,
                 "id=?",
                 new String[]{"1"}
         );
     }
 
-    public int getFaceDetectionStatus() {
+    public int getCameraDetectionStatus() {
 
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.rawQuery(
-                "SELECT status FROM face_detection WHERE id=1",
+                "SELECT status FROM camera_detection WHERE id=1",
                 null
         );
 
@@ -381,6 +383,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
 
         return status;
+    }
+
+    public Class<?> getCameraActivityClass() {
+        if (getCameraDetectionStatus() == 1) {
+            return CameraxActivity.class;
+        } else {
+            return CameraXTanpaDetectionAcitvity.class;
+        }
     }
     @Override
     public void onUpgrade(SQLiteDatabase absensi, int oldVersion, int newVersion) {

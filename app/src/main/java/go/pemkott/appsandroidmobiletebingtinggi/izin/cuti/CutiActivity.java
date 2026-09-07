@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import go.pemkott.appsandroidmobiletebingtinggi.R;
-import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraxActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import go.pemkott.appsandroidmobiletebingtinggi.model.Kegiatan;
@@ -119,7 +118,7 @@ public class CutiActivity extends AppCompatActivity {
         if (kegiatanCheckedCuti.isEmpty() && "kosong".equals(kegiatansCutiLainnya)){
             dialogView.viewNotifKosong(this, "Anda Harus Mengisi Kegiatan Yang Dilaksanakan.", "");
         } else {
-            Intent intentTL = new Intent(this, CameraxActivity.class);
+            Intent intentTL = new Intent(this, databaseHelper.getCameraActivityClass());
             intentTL.putExtra("aktivitas", "izincuti");
             intentTL.putExtra("title", "Isi Data Cuti");
             intentTL.putStringArrayListExtra("kegiatan_checked_cuti", kegiatanCheckedCuti);

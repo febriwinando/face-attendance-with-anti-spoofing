@@ -174,9 +174,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }else if (title.equals("Data Pegawai")){
             stepPegawai();
         } else if ("deteksiwajahenable".equalsIgnoreCase(title.trim())) {
-            databaseHelper.updateFaceDetectionStatus(1);
+            databaseHelper.updateCameraDetectionStatus(1);
         } else if ("deteksiwajahdisable".equalsIgnoreCase(title.trim())) {
-            databaseHelper.updateFaceDetectionStatus(0);
+            databaseHelper.updateCameraDetectionStatus(0);
         }
 
         NotificationManager manager =

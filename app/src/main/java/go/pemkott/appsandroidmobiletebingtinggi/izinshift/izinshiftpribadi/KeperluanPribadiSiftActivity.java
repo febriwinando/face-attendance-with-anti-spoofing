@@ -18,7 +18,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 import go.pemkott.appsandroidmobiletebingtinggi.R;
-import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraxActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.izin.keperluanpribadi.KpAdapter;
 import go.pemkott.appsandroidmobiletebingtinggi.model.Kegiatan;
@@ -99,7 +98,7 @@ public class KeperluanPribadiSiftActivity extends AppCompatActivity {
         if (kegiatanChecked.isEmpty() && "kosong".equals(kegiatansLainnya)){
             showMessage("Peringatan!", "Anda Harus Mengisi Kegiatan Yang Dilaksanakan.");
         }else {
-            Intent intentTL = new Intent(this, CameraxActivity.class);
+            Intent intentTL = new Intent(this, databaseHelper.getCameraActivityClass());
             intentTL.putExtra("title", "Isi Data Keperluan Pribadi");
             intentTL.putExtra("aktivitas", "shiftizinkp");
             

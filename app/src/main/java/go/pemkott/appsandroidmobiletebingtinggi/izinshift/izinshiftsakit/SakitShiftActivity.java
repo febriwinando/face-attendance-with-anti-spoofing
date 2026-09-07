@@ -17,7 +17,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 import go.pemkott.appsandroidmobiletebingtinggi.R;
-import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraxActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import go.pemkott.appsandroidmobiletebingtinggi.izin.sakit.SakitAdapter;
@@ -120,7 +119,7 @@ public class SakitShiftActivity extends AppCompatActivity {
         }
 
         if (!kegiatanCheckedSakit.isEmpty() || !etkegiatanSakitLainnya.getText().toString().isEmpty()){
-            Intent intentTL = new Intent(SakitShiftActivity.this, CameraxActivity.class);
+            Intent intentTL = new Intent(SakitShiftActivity.this, databaseHelper.getCameraActivityClass());
             intentTL.putExtra("aktivitas", "shiftizinsakit");
             startActivity(intentTL);
         }else {
