@@ -3,7 +3,6 @@ package go.pemkott.appsandroidmobiletebingtinggi.kehadiran;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -13,6 +12,7 @@ import java.util.ArrayList;
 
 import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.model.Jadwal;
+import go.pemkott.appsandroidmobiletebingtinggi.utils.ClsGlobal;
 
 
 public class AdapterListSift extends  RecyclerView.Adapter<AdapterListSift.ListViewHolder>{
@@ -38,7 +38,7 @@ public class AdapterListSift extends  RecyclerView.Adapter<AdapterListSift.ListV
     @Override
     public void onBindViewHolder(@NonNull ListViewHolder holder, int position) {
         Jadwal jadwal = jadwals.get(position);
-        holder.tvJadwalSift.setText(jadwal.getInisial()+" | "+jadwal.getMasuk()+" - "+jadwal.getPulang());
+        holder.tvJadwalSift.setText(ClsGlobal.capitalizeEveryWord(jadwal.getInisial()) + " | " + jadwal.getMasuk() + " - " + jadwal.getPulang());
         holder.imgCheckedJadwal.setVisibility(jadwal.isChecked()? View.VISIBLE : View.GONE);
 
         holder.rlJadwalSift.setOnClickListener(new View.OnClickListener() {
@@ -60,8 +60,8 @@ public class AdapterListSift extends  RecyclerView.Adapter<AdapterListSift.ListV
     class ListViewHolder extends RecyclerView.ViewHolder{
 
         TextView tvJadwalSift;
-        LinearLayout imgCheckedJadwal;
-        LinearLayout rlJadwalSift;
+        View imgCheckedJadwal;
+        View rlJadwalSift;
 
         public ListViewHolder(@NonNull View itemView) {
             super(itemView);

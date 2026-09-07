@@ -23,6 +23,8 @@ import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.izin.keperluanpribadi.KpAdapter;
 import go.pemkott.appsandroidmobiletebingtinggi.model.Kegiatan;
 
+import go.pemkott.appsandroidmobiletebingtinggi.utils.ClsGlobal;
+
 public class KeperluanPribadiSiftActivity extends AppCompatActivity {
 
     private ArrayList<Kegiatan> list = new ArrayList<>();
@@ -147,7 +149,7 @@ public class KeperluanPribadiSiftActivity extends AppCompatActivity {
                 sb.append(kegiatanChecked.get(i));
                 if (i < kegiatanChecked.size() - 1) sb.append(", ");
             }
-            tvlistCheckedKp.setText(sb.toString().toUpperCase());
+            tvlistCheckedKp.setText(ClsGlobal.capitalizeEveryWord(sb.toString()));
             tvlistCheckedKp.setVisibility(View.VISIBLE);
         }
     }

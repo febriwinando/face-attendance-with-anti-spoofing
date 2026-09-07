@@ -3,7 +3,6 @@ package go.pemkott.appsandroidmobiletebingtinggi.dinasluarkantor.tugaslapangan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -13,6 +12,7 @@ import java.util.ArrayList;
 
 import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.model.Kegiatan;
+import go.pemkott.appsandroidmobiletebingtinggi.utils.ClsGlobal;
 
 
 public class KegiatanAdapter extends  RecyclerView.Adapter<KegiatanAdapter.ListViewHolder>{
@@ -37,7 +37,7 @@ public class KegiatanAdapter extends  RecyclerView.Adapter<KegiatanAdapter.ListV
     @Override
     public void onBindViewHolder(@NonNull ListViewHolder holder, int position) {
         Kegiatan kegiatan = kegiatans.get(position);
-        holder.tvKegiatan.setText(kegiatan.getKegiatan());
+        holder.tvKegiatan.setText(ClsGlobal.capitalizeEveryWord(kegiatan.getKegiatan()));
         holder.ivChecked.setVisibility(kegiatan.isChecked()? View.VISIBLE : View.GONE);
 
         holder.rlKegiatanPd.setOnClickListener(new View.OnClickListener() {
@@ -60,8 +60,8 @@ public class KegiatanAdapter extends  RecyclerView.Adapter<KegiatanAdapter.ListV
 
 
         TextView tvKegiatan;
-        LinearLayout ivChecked;
-       LinearLayout rlKegiatanPd;
+        View ivChecked;
+       View rlKegiatanPd;
 
         public ListViewHolder(@NonNull View itemView) {
             super(itemView);

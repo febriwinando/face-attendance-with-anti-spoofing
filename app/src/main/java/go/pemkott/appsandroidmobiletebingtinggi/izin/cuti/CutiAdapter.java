@@ -3,7 +3,6 @@ package go.pemkott.appsandroidmobiletebingtinggi.izin.cuti;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -13,6 +12,7 @@ import java.util.List;
 
 import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.model.Kegiatan;
+import go.pemkott.appsandroidmobiletebingtinggi.utils.ClsGlobal;
 
 
 public class CutiAdapter extends  RecyclerView.Adapter<CutiAdapter.ListViewHolder>{
@@ -37,7 +37,7 @@ public class CutiAdapter extends  RecyclerView.Adapter<CutiAdapter.ListViewHolde
     @Override
     public void onBindViewHolder(@NonNull ListViewHolder holder, int position) {
         Kegiatan kegiatan =kegiatans.get(position);
-        holder.tvKegiatan.setText(kegiatan.getKegiatan());
+        holder.tvKegiatan.setText(ClsGlobal.capitalizeEveryWord(kegiatan.getKegiatan()));
         holder.ivChecked.setVisibility(kegiatan.isChecked()? View.VISIBLE : View.GONE);
 
         holder.rlKegiatanCuti.setOnClickListener(new View.OnClickListener() {
@@ -60,8 +60,8 @@ public class CutiAdapter extends  RecyclerView.Adapter<CutiAdapter.ListViewHolde
 
 
         TextView tvKegiatan;
-        LinearLayout ivChecked;
-        LinearLayout rlKegiatanCuti;
+        View ivChecked;
+        View rlKegiatanCuti;
 
         public ListViewHolder(@NonNull View itemView) {
             super(itemView);

@@ -183,6 +183,22 @@ public class ClsGlobal {
 //
 //    }
 
+    public static String capitalizeEveryWord(String str) {
+        if (str == null || str.isEmpty()) {
+            return str;
+        }
+        String[] words = str.toLowerCase().split("\\s+");
+        StringBuilder sb = new StringBuilder();
+        for (String word : words) {
+            if (word.length() > 0) {
+                sb.append(Character.toUpperCase(word.charAt(0)))
+                        .append(word.substring(1))
+                        .append(" ");
+            }
+        }
+        return sb.toString().trim();
+    }
+
     public static String readableFileSize(long size) {
         if(size <= 0) return "0";
         final String[] units = new String[] { "B", "kB", "MB", "GB", "TB" };

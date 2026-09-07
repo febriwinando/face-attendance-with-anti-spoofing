@@ -58,10 +58,10 @@
     <string name="kegiatan">Kegiatan</string>
     <string name="data_perjalanan_dinas">Data Perjalanan Dinas</string>
     <string name="kegiatan_lainnya_opsional">Kegiatan Lainnya: (Opsional)</string>
-    <string name="cuti">CUTI</string>
+    <string name="cuti">Cuti</string>
     <string name="_10">10</string>
     <string name="keperluan_pribadi">Keperluan Pribadi</string>
-    <string name="sakit">SAKIT</string>
+    <string name="sakit">Sakit</string>
     <string name="penyakit_opsional">Penyakit: (Opsional)</string>
     <string name="jadwal_shift">Jadwal Shift</string>
     <string name="singkronkan_kegiatan">Singkronkan Kegiatan</string>
@@ -70,7 +70,7 @@
     <string name="berhasil">Berhasil!</string>
     <string name="x">x</string>
     <string name="kembali">Kembali</string>
-    <string name="tugas_lapangan">TUGAS LAPANGAN</string>
+    <string name="tugas_lapangan">Tugas Lapangan</string>
     <string name="download_info">download info</string>
     <string name="unduh_data">Unduh Data</string>
     <string name="m_malam">M: Malam</string>

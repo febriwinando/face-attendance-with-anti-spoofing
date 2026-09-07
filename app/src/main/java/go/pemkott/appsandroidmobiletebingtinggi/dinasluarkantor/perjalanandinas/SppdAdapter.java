@@ -4,7 +4,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -14,6 +13,7 @@ import java.util.ArrayList;
 
 import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.model.Kegiatan;
+import go.pemkott.appsandroidmobiletebingtinggi.utils.ClsGlobal;
 
 
 public class SppdAdapter extends  RecyclerView.Adapter<SppdAdapter.ListViewHolder>{
@@ -38,7 +38,7 @@ public class SppdAdapter extends  RecyclerView.Adapter<SppdAdapter.ListViewHolde
     @Override
     public void onBindViewHolder(@NonNull ListViewHolder holder, int position) {
         Kegiatan kegiatan = kegiatans.get(position);
-        holder.tvKegiatan.setText(kegiatan.getKegiatan());
+        holder.tvKegiatan.setText(ClsGlobal.capitalizeEveryWord(kegiatan.getKegiatan()));
         holder.ivChecked.setVisibility(kegiatan.isChecked()? View.VISIBLE : View.GONE);
 
         holder.rlKegiatanPd.setOnClickListener(new View.OnClickListener() {
@@ -61,8 +61,8 @@ public class SppdAdapter extends  RecyclerView.Adapter<SppdAdapter.ListViewHolde
 
 
         TextView tvKegiatan;
-        LinearLayout ivChecked;
-        LinearLayout rlKegiatanPd;
+        View ivChecked;
+        View rlKegiatanPd;
 
         public ListViewHolder(@NonNull View itemView) {
             super(itemView);
