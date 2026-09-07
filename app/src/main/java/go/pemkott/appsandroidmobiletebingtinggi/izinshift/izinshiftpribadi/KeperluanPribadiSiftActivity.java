@@ -43,8 +43,7 @@ public class KeperluanPribadiSiftActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.background_color));
-        getWindow().setNavigationBarColor(getResources().getColor(R.color.background_color));
+
         setContentView(R.layout.activity_keperluan_pribadi_shift);
         kp = this;
         databaseHelper = new DatabaseHelper(this);

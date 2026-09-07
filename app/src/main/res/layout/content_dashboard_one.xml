@@ -5,12 +5,12 @@
     android:id="@+id/swipeRefreshLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="20dp"
     android:background="@color/background_main"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:showIn="@layout/activity_dashboard_versi_one">
 
     <androidx.core.widget.NestedScrollView
+        android:paddingTop="25dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true">
@@ -19,9 +19,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingBottom="40dp">
-
-            <!-- 1. Decorative Background Palette -->
-            <include layout="@layout/layout_background_palette" />
 
             <!-- 2. Top Profile Bar -->
             <RelativeLayout
@@ -392,6 +389,29 @@
                             android:text="Sinkron Jadwal"
                             android:textColor="@color/text_primary"
                             android:textSize="15sp" />
+
+                        <FrameLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true">
+
+                            <ProgressBar
+                                android:id="@+id/pgSingkronJadwal"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:indeterminateTint="@color/brand_secondary"
+                                android:visibility="gone" />
+
+                            <ImageView
+                                android:id="@+id/ivStatusJadwal"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_check"
+                                app:tint="@color/hijau"
+                                android:visibility="gone" />
+                        </FrameLayout>
+
                     </RelativeLayout>
                 </androidx.cardview.widget.CardView>
 
@@ -443,6 +463,14 @@
                                 android:layout_width="24dp"
                                 android:layout_height="24dp"
                                 android:indeterminateTint="@color/kuning"
+                                android:visibility="gone" />
+
+                            <ImageView
+                                android:id="@+id/ivStatusLokasi"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_check"
+                                app:tint="@color/hijau"
                                 android:visibility="gone" />
                         </FrameLayout>
                     </RelativeLayout>
@@ -496,6 +524,14 @@
                                 android:layout_width="24dp"
                                 android:layout_height="24dp"
                                 android:indeterminateTint="@color/hijau"
+                                android:visibility="gone" />
+
+                            <ImageView
+                                android:id="@+id/ivStatusKegiatan"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_check"
+                                app:tint="@color/hijau"
                                 android:visibility="gone" />
                         </FrameLayout>
                     </RelativeLayout>

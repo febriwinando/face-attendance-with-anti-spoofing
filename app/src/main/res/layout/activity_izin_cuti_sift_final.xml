@@ -595,7 +595,7 @@
                 <View
                     android:layout_width="1dp"
                     android:layout_height="30dp"
-                    android:background="@color/surface_variant"
+                    android:background="@color/divider_color"
                     android:layout_marginHorizontal="10dp" />
 
                 <LinearLayout

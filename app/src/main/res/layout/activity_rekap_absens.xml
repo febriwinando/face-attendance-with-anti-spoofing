@@ -107,7 +107,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Mulai"
-                                android:textColor="@color/abuabu_font"
+                                android:textColor="@color/text_hint"
                                 android:textSize="12sp" />
 
                             <LinearLayout
@@ -120,16 +120,16 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="--"
-                                    android:textColor="@color/biru"
+                                    android:textColor="@color/primary_brand"
                                     android:textSize="18sp"
-                                    android:textStyle="bold" />
+                                    android:fontFamily="sans-serif-black" />
 
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginHorizontal="4dp"
                                     android:text="/"
-                                    android:textColor="@color/abuabu_font"
+                                    android:textColor="@color/text_hint"
                                     android:textSize="16sp" />
 
                                 <TextView
@@ -137,8 +137,9 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="--"
-                                    android:textColor="@color/text_hitam"
-                                    android:textSize="14sp" />
+                                    android:textColor="@color/text_primary"
+                                    android:textSize="14sp"
+                                    android:fontFamily="sans-serif-medium" />
                             </LinearLayout>
 
                         </LinearLayout>
@@ -164,7 +165,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Sampai"
-                                android:textColor="@color/abuabu_font"
+                                android:textColor="@color/text_hint"
                                 android:textSize="12sp" />
 
                             <LinearLayout
@@ -177,16 +178,16 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="--"
-                                    android:textColor="@color/biru"
+                                    android:textColor="@color/primary_brand"
                                     android:textSize="18sp"
-                                    android:textStyle="bold" />
+                                    android:fontFamily="sans-serif-black" />
 
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginHorizontal="4dp"
                                     android:text="/"
-                                    android:textColor="@color/abuabu_font"
+                                    android:textColor="@color/text_hint"
                                     android:textSize="16sp" />
 
                                 <TextView
@@ -194,8 +195,9 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="--"
-                                    android:textColor="@color/text_hitam"
-                                    android:textSize="14sp" />
+                                    android:textColor="@color/text_primary"
+                                    android:textSize="14sp"
+                                    android:fontFamily="sans-serif-medium" />
                             </LinearLayout>
 
                         </LinearLayout>

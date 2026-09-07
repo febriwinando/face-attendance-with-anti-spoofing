@@ -103,8 +103,13 @@ public class DashboardVersiOne extends AppCompatActivity {
     public static int jenisabsensi;
     DialogView dialogView = new DialogView(DashboardVersiOne.this);
 
-    ProgressBar pgSingkronLokasi, pgSingkronKegiatan;
+    ProgressBar pgSingkronLokasi, pgSingkronKegiatan, pgSingkronJadwal;
+    ImageView ivStatusJadwal, ivStatusLokasi, ivStatusKegiatan;
     CircleImageView ciUser;
+
+    CardView cvSyncStatusToast;
+    ImageView ivSyncStatusIcon;
+    TextView tvSyncStatusMessage;
     MaterialCardView clVerifikasi;
     public static DashboardVersiOne dashboardVersiOne;
     SwipeRefreshLayout swipeRefreshLayout;
@@ -192,18 +197,16 @@ public class DashboardVersiOne extends AppCompatActivity {
         clVerifikasi = findViewById(R.id.clVerifikasi);
         clCariRekap = findViewById(R.id.clCariRekap);
         tvTanggalHariIni = findViewById(R.id.tvTanggalHariIni);
-
-
-
-        String tanggal = TANGGAL.format(new Date());
-        String bulan = BULAN.format(new Date());
-        String tahun = TAHUN.format(new Date());
-        String hari = HARI_TEXT.format(new Date());
-        String infotanggal = hariText(hari)+", "+tanggal+" "+bulan(bulan)+" "+tahun;
-
-        tvTanggalHariIni.setText(infotanggal);
-
         pgSingkronLokasi = findViewById(R.id.pgSingkronLokasi);
+        pgSingkronKegiatan = findViewById(R.id.pgSingkronKegiatan);
+        pgSingkronJadwal = findViewById(R.id.pgSingkronJadwal);
+        ivStatusJadwal = findViewById(R.id.ivStatusJadwal);
+        ivStatusLokasi = findViewById(R.id.ivStatusLokasi);
+        ivStatusKegiatan = findViewById(R.id.ivStatusKegiatan);
+
+        cvSyncStatusToast = findViewById(R.id.cvSyncStatusToast);
+        ivSyncStatusIcon = findViewById(R.id.ivSyncStatusIcon);
+        tvSyncStatusMessage = findViewById(R.id.tvSyncStatusMessage);
 
         clCariRekap.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -863,12 +866,17 @@ public class DashboardVersiOne extends AppCompatActivity {
                 btnSingkronJadwalKerja.setVisibility(View.GONE);
 
                 Call<List<TimeTebleSetting>> callKegiatan = httpService.getUrlTimeTableSetting("https://absensi.tebingtinggikota.go.id/api/timetable?employee_id="+sEmployee_id, "Bearer "+sToken);
+                ivStatusJadwal.setVisibility(View.GONE);
+                pgSingkronJadwal.setVisibility(View.VISIBLE);
+
                 callKegiatan.enqueue(new Callback<List<TimeTebleSetting>>() {
                     @Override
                     public void onResponse(@NonNull Call<List<TimeTebleSetting>> call, @NonNull Response<List<TimeTebleSetting>> response) {
                         List<TimeTebleSetting> timeTables = response.body();
                         if (!response.isSuccessful()){
                             dialogView.viewNotifKosong(DashboardVersiOne.this, "Gagal melakukan singkronisasi jadwal.","Silahkan coba kembali.");
+                            pgSingkronJadwal.setVisibility(View.GONE);
+                            showSyncStatus(ivStatusJadwal, false, "Sinkron Jadwal Gagal");
                             return;
                         }
 
@@ -893,12 +901,17 @@ public class DashboardVersiOne extends AppCompatActivity {
                         btnSingkronJadwalKerja.setVisibility(View.VISIBLE);
                         progressBarSingkron.setVisibility(View.GONE);
 
+                        pgSingkronJadwal.setVisibility(View.GONE);
+                        showSyncStatus(ivStatusJadwal, true, "Sinkron Jadwal Berhasil");
+
                     }
 
                     @Override
                     public void onFailure(@NonNull Call<List<TimeTebleSetting>> call, @NonNull Throwable t) {
 
                         dialogView.viewNotifKosong(DashboardVersiOne.this, "Gagal mengakses server.", "Silahkan coba kembali.");
+                        pgSingkronJadwal.setVisibility(View.GONE);
+                        showSyncStatus(ivStatusJadwal, false, "Sinkron Jadwal Gagal");
                     }
                 });
 
@@ -910,6 +923,8 @@ public class DashboardVersiOne extends AppCompatActivity {
 
 
     public void koordinatOPD(){
+        ivStatusLokasi.setVisibility(View.GONE);
+        pgSingkronLokasi.setVisibility(View.VISIBLE);
 
         Call<List<Koordinat>> calllokasi = httpService.getUrlKoordinat("https://absensi.tebingtinggikota.go.id/api/koordinat?opdid="+sOPD);
         calllokasi.enqueue(new Callback<List<Koordinat>>() {
@@ -918,6 +933,8 @@ public class DashboardVersiOne extends AppCompatActivity {
                 List<Koordinat> koordinats = response.body();
                 if (!response.isSuccessful()){
                     dialogView.viewNotifKosong(DashboardVersiOne.this, "Gagal melakukan singkronisasi lokasi.","Silahkan coba kembali.");
+                    pgSingkronLokasi.setVisibility(View.GONE);
+                    showSyncStatus(ivStatusLokasi, false, "Sinkron Lokasi Gagal");
                     return;
                 }
 
@@ -929,17 +946,17 @@ public class DashboardVersiOne extends AppCompatActivity {
                     }
                 }
 
+                koordintaEmployee();
 
             }
 
             @Override
             public void onFailure(@NonNull Call<List<Koordinat>> call, @NonNull Throwable t) {
                 dialogView.viewNotifKosong(DashboardVersiOne.this, "Gagal mengakses server.", "Silahkan coba kembali.");
+                pgSingkronLokasi.setVisibility(View.GONE);
+                showSyncStatus(ivStatusLokasi, false, "Sinkron Lokasi Gagal");
             }
         });
-
-
-        koordintaEmployee();
 
     }
 
@@ -952,6 +969,8 @@ public class DashboardVersiOne extends AppCompatActivity {
                 List<Koordinat> koordinats = response.body();
                 if (!response.isSuccessful()){
                     dialogView.viewNotifKosong(DashboardVersiOne.this, "Gagal melakukan singkronisasi lokasi.","Silahkan coba kembali.");
+                    pgSingkronLokasi.setVisibility(View.GONE);
+                    showSyncStatus(ivStatusLokasi, false, "Sinkron Lokasi Gagal");
                     return;
                 }
 
@@ -960,6 +979,7 @@ public class DashboardVersiOne extends AppCompatActivity {
                 if (koordinats == null || koordinats.isEmpty()) {
 
                     pgSingkronLokasi.setVisibility(View.GONE);
+                    showSyncStatus(ivStatusLokasi, true, "Sinkron Lokasi Berhasil");
                     return;
 
                 }
@@ -986,12 +1006,15 @@ public class DashboardVersiOne extends AppCompatActivity {
                 }
 
                 pgSingkronLokasi.setVisibility(View.GONE);
+                showSyncStatus(ivStatusLokasi, true, "Sinkron Lokasi Berhasil");
             }
 
             @Override
             public void onFailure(@NonNull Call<List<Koordinat>> call, @NonNull Throwable t) {
 
                 dialogView.viewNotifKosong(DashboardVersiOne.this, "Gagal mengakses server.", "Silahkan coba kembali.");
+                pgSingkronLokasi.setVisibility(View.GONE);
+                showSyncStatus(ivStatusLokasi, false, "Sinkron Lokasi Gagal");
 
             }
         });
@@ -999,6 +1022,8 @@ public class DashboardVersiOne extends AppCompatActivity {
 
 
     public void singkronKegiatan(){
+        ivStatusKegiatan.setVisibility(View.GONE);
+        pgSingkronKegiatan.setVisibility(View.VISIBLE);
 
         Call<List<KegiatanIzin>> callKegiatan = httpService.getUrlKegiatanNew("https://absensi.tebingtinggikota.go.id/api/kegiatannew?opd="+sOPD);
         callKegiatan.enqueue(new Callback<List<KegiatanIzin>>() {
@@ -1008,6 +1033,8 @@ public class DashboardVersiOne extends AppCompatActivity {
                 List<KegiatanIzin> kegiatanIzins = response.body();
                 if (!response.isSuccessful()){
                     dialogView.viewNotifKosong(DashboardVersiOne.this, "Gagal melakukan singkronisasi kegiatan.","Silahkan coba kembali.");
+                    pgSingkronKegiatan.setVisibility(View.GONE);
+                    showSyncStatus(ivStatusKegiatan, false, "Sinkron Kegiatan Gagal");
                     return;
                 }
 
@@ -1020,13 +1047,42 @@ public class DashboardVersiOne extends AppCompatActivity {
                 }
 
                 pgSingkronKegiatan.setVisibility(View.GONE);
+                showSyncStatus(ivStatusKegiatan, true, "Sinkron Kegiatan Berhasil");
             }
 
             @Override
             public void onFailure(@NonNull Call<List<KegiatanIzin>> call, @NonNull Throwable t) {
                 dialogView.viewNotifKosong(DashboardVersiOne.this, "Gagal mengakses server.", "Silahkan coba kembali.");
+                pgSingkronKegiatan.setVisibility(View.GONE);
+                showSyncStatus(ivStatusKegiatan, false, "Sinkron Kegiatan Gagal");
             }
         });
+    }
+
+    private void showSyncStatus(ImageView statusIcon, boolean isSuccess, String message) {
+        statusIcon.setVisibility(View.VISIBLE);
+        cvSyncStatusToast.setVisibility(View.VISIBLE);
+        tvSyncStatusMessage.setText(message);
+
+        if (isSuccess) {
+            statusIcon.setImageResource(R.drawable.ic_check);
+            statusIcon.setColorFilter(ContextCompat.getColor(this, R.color.hijau));
+
+            ivSyncStatusIcon.setImageResource(R.drawable.ic_check);
+            ivSyncStatusIcon.setColorFilter(ContextCompat.getColor(this, R.color.hijau));
+        } else {
+            statusIcon.setImageResource(R.drawable.one_warning);
+            statusIcon.setColorFilter(ContextCompat.getColor(this, R.color.merah));
+
+            ivSyncStatusIcon.setImageResource(R.drawable.one_warning);
+            ivSyncStatusIcon.setColorFilter(ContextCompat.getColor(this, R.color.merah));
+        }
+
+        // Sembunyikan ikon dan toast setelah 5 detik agar UI tetap bersih
+        statusIcon.postDelayed(() -> {
+            statusIcon.setVisibility(View.GONE);
+            cvSyncStatusToast.setVisibility(View.GONE);
+        }, 5000);
     }
 
 }
