@@ -1051,6 +1051,7 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
                 ResponsePOJO data = response.body();
 
                 if (Objects.requireNonNull(response.body()).isStatus()){
+                    databaseHelper.insertLog(tanggal, "Melakukan Absen Perjalanan Dinas", "Perjalanan Dinas");
                     dialogView.viewSukses(PerjalananDinasFinalActivity.this, data.getRemarks());
 
                     // mulai hitung 10 detik

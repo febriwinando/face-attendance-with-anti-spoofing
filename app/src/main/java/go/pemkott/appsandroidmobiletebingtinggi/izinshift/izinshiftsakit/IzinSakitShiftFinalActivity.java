@@ -705,6 +705,7 @@ public class IzinSakitShiftFinalActivity extends AppCompatActivity implements On
 
                 if (Objects.requireNonNull(response.body()).isStatus()){
                     Log.d("Log Izin Sakit", "berhasil.");
+                    databaseHelper.insertLog(rbTanggal, "Melakukan Pengajuan Izin Sakit (Masuk - Shift)", "Masuk");
                     dialogView.viewSukses(IzinSakitShiftFinalActivity.this, data.getRemarks());
                 }else {
                     dialogView.viewNotifKosong(IzinSakitShiftFinalActivity.this, data.getRemarks(),"");
@@ -798,6 +799,7 @@ public class IzinSakitShiftFinalActivity extends AppCompatActivity implements On
 
                 if (Objects.requireNonNull(response.body()).isStatus()){
                     Log.d("Log Izin Sakit", "berhasil.");
+                    databaseHelper.insertLog(rbTanggal, "Melakukan Pengajuan Izin Sakit (Pulang - Shift)", "Pulang");
                     dialogView.viewSukses(IzinSakitShiftFinalActivity.this, data.getRemarks());
                 }else {
                     dialogView.viewNotifKosong(IzinSakitShiftFinalActivity.this, data.getRemarks(),"");

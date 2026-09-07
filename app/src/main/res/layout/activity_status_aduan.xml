@@ -109,7 +109,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:gravity="center"
-            android:text="Anda belum pernah mengirimkan laporan ke layanan Helpdesk."
+            android:text="Anda Belum Pernah Mengirimkan Laporan Ke Layanan Helpdesk"
             android:textColor="@color/text_hint" />
 
     </LinearLayout>

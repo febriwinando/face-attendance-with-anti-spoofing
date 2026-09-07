@@ -498,27 +498,6 @@ public class KeperluanPribadiFinalActivity extends AppCompatActivity implements 
                         textPart(batasWaktu)
                 );
 
-//        Call<ResponsePOJO> call = RetroClient.getInstance().getApi().uploadIzinKpMasuk(
-//                fotoTaging,
-//                ketKehadiran,
-//                eJabatan,
-//                sEmployeID,
-//                timetableid,
-//                rbTanggal,
-//                rbJam,
-//                posisi,
-//                status,
-//                rbLat,
-//                rbLng,
-//                rbKet,
-//                mins,
-//                eOPD,
-//                jampegawai,
-//                valid,
-//                rbFakeGPS,
-//                batasWaktu
-//        );
-
         call.enqueue(new Callback<ResponsePOJO>() {
             @Override
             public void onResponse(@NonNull Call<ResponsePOJO> call, @NonNull Response<ResponsePOJO> response) {
@@ -537,6 +516,7 @@ public class KeperluanPribadiFinalActivity extends AppCompatActivity implements 
                 ResponsePOJO data = response.body();
 
                 if (Objects.requireNonNull(response.body()).isStatus()){
+                    databaseHelper.insertLog(rbTanggal, "Melakukan Pengajuan Keperluan Pribadi (Masuk)", "Masuk");
                     dialogView.viewSukses(KeperluanPribadiFinalActivity.this, data.getRemarks());
 
                     autoCloseHandler.postDelayed(
@@ -612,6 +592,7 @@ public class KeperluanPribadiFinalActivity extends AppCompatActivity implements 
                 ResponsePOJO data = response.body();
 
                 if (Objects.requireNonNull(response.body()).isStatus()){
+                    databaseHelper.insertLog(rbTanggal, "Melakukan Pengajuan Keperluan Pribadi (Pulang)", "Pulang");
                     dialogView.viewSukses(KeperluanPribadiFinalActivity.this, data.getRemarks());
                     autoCloseHandler.postDelayed(
 

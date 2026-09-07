@@ -617,6 +617,7 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
                 ResponsePOJO data = response.body();
 
                 if (Objects.requireNonNull(response.body()).isStatus()){
+                    databaseHelper.insertLog(tanggal, "Melakukan Absen Tugas Lapangan (Masuk)", "Masuk");
                     hapusFileSementara();
                     dialogView.viewSukses(TugasLapanganFinalActivity.this, data.getRemarks());
 
@@ -744,6 +745,7 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
                 ResponsePOJO data = response.body();
 
                 if (Objects.requireNonNull(response.body()).isStatus()){
+                    databaseHelper.insertLog(tanggal, "Melakukan Absen Tugas Lapangan (Pulang)", "Pulang");
                     hapusFileSementara();
                     dialogView.viewSukses(TugasLapanganFinalActivity.this, data.getRemarks());
                     // mulai hitung 10 detik

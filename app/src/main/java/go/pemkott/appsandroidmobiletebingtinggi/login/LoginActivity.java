@@ -21,6 +21,7 @@ import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -31,6 +32,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.api.ResponsePOJO;
 import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
+import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.SIMPLE_FORMAT_TANGGAL;
 import go.pemkott.appsandroidmobiletebingtinggi.model.LoginResponse;
 import go.pemkott.appsandroidmobiletebingtinggi.model.User;
 import go.pemkott.appsandroidmobiletebingtinggi.resetpassword.ResetPasswprdActivity;
@@ -222,6 +224,7 @@ public class LoginActivity extends AppCompatActivity {
                         session.saveEmployeeId(sEmployee_id);
 
                         if ("1".equals(sActive)) {
+                            databaseHelper.insertLog(SIMPLE_FORMAT_TANGGAL.format(new Date()), "Melakukan Login Aplikasi", "Login");
 
                             databaseHelper.insertDataUserLogin(
                                     sId,

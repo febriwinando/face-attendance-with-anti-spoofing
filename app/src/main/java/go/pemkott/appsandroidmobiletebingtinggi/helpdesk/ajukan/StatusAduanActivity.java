@@ -115,7 +115,7 @@ public class StatusAduanActivity extends AppCompatActivity {
                         llEmpty.setVisibility(View.VISIBLE);
                     }
                 } else {
-                    Toast.makeText(StatusAduanActivity.this, "Gagal memuat daftar laporan.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(StatusAduanActivity.this, "Gagal Memuat Daftar Laporan", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -124,7 +124,7 @@ public class StatusAduanActivity extends AppCompatActivity {
                 swipeRefresh.setRefreshing(false);
                 progressBar.setVisibility(View.GONE);
                 Log.e("API_ERROR", "Error: " + t.getMessage());
-                Toast.makeText(StatusAduanActivity.this, "Terjadi kesalahan pada koneksi jaringan.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(StatusAduanActivity.this, "Terjadi Kesalahan Pada Koneksi Jaringan", Toast.LENGTH_SHORT).show();
             }
         });
     }

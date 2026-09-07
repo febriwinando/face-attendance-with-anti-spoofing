@@ -668,6 +668,7 @@ public class KeperluanPribadiSiftFinalActivity extends AppCompatActivity  implem
                 ResponsePOJO data = response.body();
 
                 if (Objects.requireNonNull(response.body()).isStatus()){
+                    databaseHelper.insertLog(rbTanggal, "Melakukan Pengajuan Keperluan Pribadi (Masuk - Shift)", "Masuk");
                     dialogView.viewSukses(KeperluanPribadiSiftFinalActivity.this, data.getRemarks());
                     autoCloseHandler.postDelayed(
                             autoCloseRunnable,
@@ -746,6 +747,7 @@ public class KeperluanPribadiSiftFinalActivity extends AppCompatActivity  implem
                 ResponsePOJO data = response.body();
 
                 if (Objects.requireNonNull(response.body()).isStatus()){
+                    databaseHelper.insertLog(rbTanggal, "Melakukan Pengajuan Keperluan Pribadi (Pulang - Shift)", "Pulang");
                     dialogView.viewSukses(KeperluanPribadiSiftFinalActivity.this, data.getRemarks());
                     autoCloseHandler.postDelayed(
 

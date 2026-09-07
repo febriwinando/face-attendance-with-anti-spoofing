@@ -120,13 +120,13 @@ public class AduanDetailActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     displayData(response.body().getData());
                 } else {
-                    Toast.makeText(AduanDetailActivity.this, "Gagal memuat detail laporan.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AduanDetailActivity.this, "Gagal Memuat Detail Laporan", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<AduanDetailResponse> call, @NonNull Throwable t) {
-                Toast.makeText(AduanDetailActivity.this, "Terjadi kesalahan pada koneksi jaringan.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(AduanDetailActivity.this, "Terjadi Kesalahan Pada Koneksi Jaringan", Toast.LENGTH_SHORT).show();
             }
         });
     }

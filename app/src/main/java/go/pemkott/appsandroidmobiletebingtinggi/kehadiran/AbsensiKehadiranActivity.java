@@ -941,6 +941,7 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
                 ResponsePOJO data = response.body();
 
                 if (Objects.requireNonNull(response.body()).isStatus()){
+                    databaseHelper.insertLog(rbTanggal, "Melakukan Absen Pulang", "Pulang");
                     hapusFileSementara();
                     dialogView.viewSukses(AbsensiKehadiranActivity.this, data.getRemarks());
                     autoCloseHandler.postDelayed(
@@ -1051,6 +1052,7 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
                 ResponsePOJO data = response.body();
 
                 if (Objects.requireNonNull(response.body()).isStatus()){
+                    databaseHelper.insertLog(rbTanggal, "Melakukan Absen Pulang", "Pulang");
                     hapusFileSementara();
                     dialogView.viewSukses(AbsensiKehadiranActivity.this, data.getRemarks());
                     // mulai hitung 10 detik

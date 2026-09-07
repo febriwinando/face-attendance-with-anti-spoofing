@@ -1040,6 +1040,7 @@ private boolean isHariSenin() {
                 }
 
                 if (response.body().isStatus()) {
+                    databaseHelper.insertLog(rbTanggal, "Melakukan Absen Masuk Pagi (Shift)", "Masuk");
                     ResponsePOJO data = response.body();
                     dialogproses.dismiss();
                     dialogView.viewSukses(AbsenSiftActivity.this, data.getRemarks());
@@ -1118,6 +1119,7 @@ private boolean isHariSenin() {
                 }
 
                 if (response.body().isStatus()) {
+                    databaseHelper.insertLog(rbTanggal, "Melakukan Absen Pulang Pagi (Shift)", "Pulang");
                     ResponsePOJO data = response.body();
                     dialogproses.dismiss();
                     dialogView.viewSukses(AbsenSiftActivity.this, data.getRemarks());
@@ -1221,6 +1223,7 @@ private boolean isHariSenin() {
                 }
 
                 if (response.body().isStatus()) {
+                    databaseHelper.insertLog(rbTanggal, "Melakukan Absen Masuk Malam (Shift)", "Masuk");
                     ResponsePOJO data = response.body();
                     dialogproses.dismiss();
                     dialogView.viewSukses(AbsenSiftActivity.this, data.getRemarks());
@@ -1328,6 +1331,7 @@ private boolean isHariSenin() {
                 }
 
                 if (response.body().isStatus()) {
+                    databaseHelper.insertLog(rbTanggal, "Melakukan Absen Pulang Malam (Shift)", "Pulang");
                     ResponsePOJO data = response.body();
                     dialogproses.dismiss();
                     dialogView.viewSukses(AbsenSiftActivity.this, data.getRemarks());
