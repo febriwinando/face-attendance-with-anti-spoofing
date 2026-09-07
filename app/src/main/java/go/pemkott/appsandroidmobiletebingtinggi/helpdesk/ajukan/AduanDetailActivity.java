@@ -120,13 +120,13 @@ public class AduanDetailActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     displayData(response.body().getData());
                 } else {
-                    Toast.makeText(AduanDetailActivity.this, "Gagal mengambil detail.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AduanDetailActivity.this, "Gagal memuat detail laporan.", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<AduanDetailResponse> call, @NonNull Throwable t) {
-                Toast.makeText(AduanDetailActivity.this, "Terjadi kesalahan jaringan.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(AduanDetailActivity.this, "Terjadi kesalahan pada koneksi jaringan.", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -134,10 +134,10 @@ public class AduanDetailActivity extends AppCompatActivity {
     private void displayData(AduanHelpdesk aduan) {
         tvNomor.setText(aduan.getNomor());
         tvJudul.setText(aduan.getJudul());
-        tvTanggal.setText("Dibuat pada: " + TimeFormat.formatTimestampAduan(aduan.getCreatedAt()));
+        tvTanggal.setText("Waktu Pelaporan: " + TimeFormat.formatTimestampAduan(aduan.getCreatedAt()));
         tvDeskripsi.setText(aduan.getDeskripsi());
         tvKategori.setText(ClsGlobal.capitalizeEveryWord(aduan.getKategori().replace("_", " ")));
-        tvPrioritas.setText("Prioritas: " + ClsGlobal.capitalizeEveryWord(aduan.getPrioritas()));
+        tvPrioritas.setText("Tingkat Prioritas: " + ClsGlobal.capitalizeEveryWord(aduan.getPrioritas()));
         tvLokasi.setText(aduan.getLokasiAduan() != null && !aduan.getLokasiAduan().isEmpty() ? aduan.getLokasiAduan() : "-");
 
         // Status

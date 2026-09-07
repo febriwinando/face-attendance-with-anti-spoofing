@@ -76,8 +76,8 @@ public class AduanAdapter extends RecyclerView.Adapter<AduanAdapter.ViewHolder> 
             tvNomor.setText(aduan.getNomor());
             tvJudul.setText(aduan.getJudul());
             tvKategori.setText(ClsGlobal.capitalizeEveryWord(aduan.getKategori().replace("_", " ")));
-            tvTanggal.setText("Dibuat pada: " + TimeFormat.formatTimestampAduan(aduan.getCreatedAt()));
-            tvPrioritas.setText("Prioritas: " + ClsGlobal.capitalizeEveryWord(aduan.getPrioritas()));
+            tvTanggal.setText("Waktu Pelaporan: " + TimeFormat.formatTimestampAduan(aduan.getCreatedAt()));
+            tvPrioritas.setText("Tingkat Prioritas: " + ClsGlobal.capitalizeEveryWord(aduan.getPrioritas()));
             
             // Status Styling
             String status = aduan.getStatus();

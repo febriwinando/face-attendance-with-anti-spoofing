@@ -38,7 +38,7 @@
             android:layout_marginStart="5dp"
             android:layout_toEndOf="@id/ivBack"
             android:fontFamily="sans-serif-black"
-            android:text="Status Aduan Saya"
+            android:text="Status Laporan Saya"
             android:textColor="@color/text_primary"
             android:textSize="18sp"
             tools:ignore="HardcodedText" />
@@ -100,7 +100,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:fontFamily="sans-serif-black"
-            android:text="Belum Ada Aduan"
+            android:text="Belum Ada Laporan"
             android:textColor="@color/text_primary"
             android:textSize="18sp" />
 
@@ -109,7 +109,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:gravity="center"
-            android:text="Anda belum pernah mengirimkan aduan ke Helpdesk."
+            android:text="Anda belum pernah mengirimkan laporan ke layanan Helpdesk."
             android:textColor="@color/text_hint" />
 
     </LinearLayout>

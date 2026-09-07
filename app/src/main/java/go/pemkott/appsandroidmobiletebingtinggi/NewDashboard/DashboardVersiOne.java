@@ -146,7 +146,7 @@ public class DashboardVersiOne extends AppCompatActivity {
         if ("-".equals(ipPerangkat)) {
             ipPerangkat = NetworkUtil.getDeviceIpFallback();
         }
-        Log.d("IP_PERANGKAT", ipPerangkat);
+//        Log.d("IP_PERANGKAT", ipPerangkat);
 
         boolean isDarkMode = (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
         controller.setAppearanceLightStatusBars(!isDarkMode);

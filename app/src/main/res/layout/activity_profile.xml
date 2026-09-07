@@ -62,7 +62,7 @@
                 android:id="@+id/llHeaderProfil"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardBackgroundColor="@color/surface_main"
+                app:cardBackgroundColor="@color/background_main"
                 app:cardCornerRadius="24dp"
                 app:cardElevation="1dp"
                 app:strokeWidth="0dp">

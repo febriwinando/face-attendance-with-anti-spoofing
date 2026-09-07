@@ -157,7 +157,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-black"
-                    android:text="Deskripsi Aduan"
+                    android:text="Deskripsi Laporan"
                     android:textColor="@color/text_primary"
                     android:textSize="15sp" />
 
@@ -176,11 +176,13 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="24dp"
                     android:fontFamily="sans-serif-black"
-                    android:text="Lokasi Terkait"
+                    android:text="Lokasi Kejadian"
                     android:textColor="@color/text_primary"
-                    android:textSize="15sp" />
+                    android:textSize="15sp"
+                    android:visibility="gone"/>
 
                 <TextView
+                    android:visibility="gone"
                     android:id="@+id/tvLokasiDetail"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -196,7 +198,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="24dp"
                     android:fontFamily="sans-serif-black"
-                    android:text="Lampiran Media"
+                    android:text="Dokumen Lampiran"
                     android:textColor="@color/text_primary"
                     android:textSize="15sp" />
 
@@ -237,7 +239,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-black"
-                    android:text="Tanggapan Admin"
+                    android:text="Tanggapan Administrator"
                     android:textColor="@color/text_primary"
                     android:textSize="15sp" />
 
@@ -264,7 +266,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="sans-serif-black"
-                            android:text="Catatan Admin OPD"
+                            android:text="Catatan Administrator OPD"
                             android:textColor="#026AA2"
                             android:textSize="12sp" />
 
@@ -302,7 +304,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="sans-serif-black"
-                            android:text="Catatan Admin Kota"
+                            android:text="Catatan Administrator Kota"
                             android:textColor="#6941C6"
                             android:textSize="12sp" />
 
@@ -340,7 +342,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="sans-serif-black"
-                            android:text="Alasan Ditolak"
+                            android:text="Alasan Penolakan"
                             android:textColor="@color/merah"
                             android:textSize="12sp" />
 
@@ -369,7 +371,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:fontFamily="sans-serif-black"
-                    android:text="Riwayat Aktivitas"
+                    android:text="Riwayat Aktivitas Laporan"
                     android:textColor="@color/text_primary"
                     android:textSize="15sp" />
 
