@@ -437,7 +437,7 @@ public class ProfileActivity extends AppCompatActivity {
         EditText etEntryNewPassword = dialogpassword.findViewById(R.id.etEntryNewPassword);
         TextView btnGantiPass = dialogpassword.findViewById(R.id.btnGantiPass);
         TextView statuspass = dialogpassword.findViewById(R.id.statuspass);
-        ImageView ivCloseGantiPass = dialogpassword.findViewById(R.id.ivCloseGantiPass);
+        View ivCloseGantiPass = dialogpassword.findViewById(R.id.ivCloseGantiPass);
         ProgressBar pbGantiPass = dialogpassword.findViewById(R.id.pbGantiPass);
         etEntryNewPassword.addTextChangedListener(new TextWatcher() {
             @Override

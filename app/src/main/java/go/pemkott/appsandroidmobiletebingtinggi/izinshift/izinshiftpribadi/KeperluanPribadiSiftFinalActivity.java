@@ -9,6 +9,7 @@ import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.SIMP
 import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.localeID;
 
 import android.Manifest;
+import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
@@ -86,6 +87,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.NewDashboard.DashboardVersiOne;
 import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.api.ResponsePOJO;
 import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
+import go.pemkott.appsandroidmobiletebingtinggi.utils.MapUtils;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import go.pemkott.appsandroidmobiletebingtinggi.geolocation.GetLocation;
@@ -113,6 +115,7 @@ public class KeperluanPribadiSiftFinalActivity extends AppCompatActivity  implem
     private LocationViewModel locationViewModel;
     private Location locationObj;
     private GoogleMap map;
+    private ValueAnimator rippleAnimator;
     private static final String KEY_LOCATION = "location";
     double latGMap = 0, lngGMap = 0;
     double latitudeSaya = 3.327972364475644;
@@ -1095,8 +1098,11 @@ public class KeperluanPribadiSiftFinalActivity extends AppCompatActivity  implem
 
         if(map != null){
 
+            if (rippleAnimator != null) rippleAnimator.cancel();
             map.clear();
-            map.addMarker(new MarkerOptions().position(new LatLng(locationObj.getLatitude(), locationObj.getLongitude())).icon(bitmapDescriptorFromVector(this, R.drawable.asn_lk)).title(lokasi.getAddress(KeperluanPribadiSiftFinalActivity.this, locationObj.getLatitude(), locationObj.getLongitude())));
+            LatLng position = new LatLng(locationObj.getLatitude(), locationObj.getLongitude());
+            map.addMarker(new MarkerOptions().position(position).icon(bitmapDescriptorFromVector(this, R.drawable.asn_lk)).title(lokasi.getAddress(KeperluanPribadiSiftFinalActivity.this, locationObj.getLatitude(), locationObj.getLongitude())));
+            rippleAnimator = MapUtils.showRippleEffect(map, position);
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(
                     new LatLng(locationObj.getLatitude(), locationObj.getLongitude()), 19f));
             map.getUiSettings().setMyLocationButtonEnabled(true);
@@ -1142,6 +1148,7 @@ public class KeperluanPribadiSiftFinalActivity extends AppCompatActivity  implem
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         this.map = googleMap;
+        this.map.setPadding(0, 0, 0, 1050);
         try {
             boolean success = false;
             int nightModeFlags = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;

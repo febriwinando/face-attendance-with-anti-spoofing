@@ -10,6 +10,7 @@ import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.hari
 import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.localeID;
 
 import android.Manifest;
+import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -94,6 +95,7 @@ import java.util.Objects;
 import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.api.ResponsePOJO;
 import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
+import go.pemkott.appsandroidmobiletebingtinggi.utils.MapUtils;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFoto;
@@ -113,6 +115,7 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
     private static final int REQUEST_CHECK_SETTINGS = 100;
     private Context mContext;
     private GoogleMap map;
+    private ValueAnimator rippleAnimator;
 
     double latGMap = 0, lngGMap = 0;
     Lokasi lokasi = new Lokasi();
@@ -1220,12 +1223,15 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
     private void plotMarkers(Location locationObj) {
 
         if(map != null){
+            if (rippleAnimator != null) rippleAnimator.cancel();
             map.clear();
+            LatLng position = new LatLng(locationObj.getLatitude(), locationObj.getLongitude());
             map.addMarker(new MarkerOptions()
-                    .position(new LatLng(locationObj.getLatitude(), locationObj.getLongitude()))
+                    .position(position)
                     .icon(bitmapDescriptorFromVector(this, R.drawable.asn_lk))
                     .anchor(0.5f, 0.5f) // Membuat posisi avatar lebih naik (center)
                     .title(lokasi.getAddress(AbsensiKehadiranActivity.this, locationObj.getLatitude(), locationObj.getLongitude())));
+            rippleAnimator = MapUtils.showRippleEffect(map, position);
             map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(locationObj.getLatitude(), locationObj.getLongitude()), 18f));
             latGMap = locationObj.getLatitude();
             lngGMap = locationObj.getLongitude();
@@ -1301,6 +1307,7 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         this.map = googleMap;
+        this.map.setPadding(0, 0, 0, 1050);
 
         try {
             boolean success = false;

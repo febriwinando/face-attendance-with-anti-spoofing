@@ -13,6 +13,7 @@ import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.make
 import static go.pemkott.appsandroidmobiletebingtinggi.utils.FileUtil.getDriveFilePath;
 
 import android.Manifest;
+import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DatePickerDialog;
@@ -98,6 +99,7 @@ import java.util.Objects;
 import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.api.ResponsePOJO;
 import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
+import go.pemkott.appsandroidmobiletebingtinggi.utils.MapUtils;
 import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraXLActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
@@ -122,6 +124,7 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
     private LocationViewModel locationViewModel;
     private Location locationObj;
     private GoogleMap map;
+    private ValueAnimator rippleAnimator;
     private static final String KEY_LOCATION = "location";
     double latGMap = 0, lngGMap = 0;
     double latitudeSaya = 3.327972364475644;
@@ -573,10 +576,10 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
     public void viewLampiran(){
         Dialog dialogLampiran = new Dialog(PerjalananDinasFinalActivity.this, R.style.DialogStyle);
         dialogLampiran.setContentView(R.layout.view_add_lampiran);
-        LinearLayout llFileManager = dialogLampiran.findViewById(R.id.llFileManager);
-        LinearLayout llKamera = dialogLampiran.findViewById(R.id.llKamera);
-        LinearLayout llDokumen = dialogLampiran.findViewById(R.id.llDokumen);
-        ImageView ivTutupViewLampiran = dialogLampiran.findViewById(R.id.ivTutupViewLampiran);
+        View llFileManager = dialogLampiran.findViewById(R.id.llFileManager);
+        View llKamera = dialogLampiran.findViewById(R.id.llKamera);
+        View llDokumen = dialogLampiran.findViewById(R.id.llDokumen);
+        View ivTutupViewLampiran = dialogLampiran.findViewById(R.id.ivTutupViewLampiran);
 
         llFileManager.setOnClickListener(v -> {
 
@@ -1171,9 +1174,11 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
 
         if(map != null){
 
+            if (rippleAnimator != null) rippleAnimator.cancel();
             map.clear();
             LatLng position = new LatLng(locationObj.getLatitude(), locationObj.getLongitude());
             map.addMarker(new MarkerOptions().position(position).icon(bitmapDescriptorFromVector(this, R.drawable.asn_lk)).title(lokasi.getAddress(PerjalananDinasFinalActivity.this, locationObj.getLatitude(), locationObj.getLongitude())));
+            rippleAnimator = MapUtils.showRippleEffect(map, position);
 //            map.moveCamera(CameraUpdateFactory.newLatLngZoom(
 //                    new LatLng(locationObj.getLatitude(), locationObj.getLongitude()), 19));
             map.animateCamera(CameraUpdateFactory.newLatLngZoom(position, 19f));
@@ -1235,7 +1240,7 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         this.map = googleMap;
-        this.map.setPadding(0, 0, 0, 950);
+        this.map.setPadding(0, 0, 0, 1050);
 
         try {
             boolean success = false;

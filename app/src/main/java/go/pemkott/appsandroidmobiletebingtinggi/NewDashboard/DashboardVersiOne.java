@@ -218,20 +218,6 @@ public class DashboardVersiOne extends AppCompatActivity {
                 startActivity(new Intent(DashboardVersiOne.this, ProfileActivity.class));
             }
         });
-//        cvKehadiran.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if ("0".equals(statusSift)){
-//                    bukaKehadiran();
-//                }else{
-//                    jenisabsensi = 7;
-//                    Intent intentJadwalSifting = new Intent(DashboardVersiOne.this, JadwalSiftActivity.class);
-//                    intentJadwalSifting.putExtra("jam_masuk", jam_masuk);
-//                    intentJadwalSifting.putExtra("jam_pulang", jam_pulang);
-//                    startActivity(intentJadwalSifting);
-//                }
-//            }
-//        });
 
         cvKehadiran.setOnClickListener(new View.OnClickListener() {
             @Override
