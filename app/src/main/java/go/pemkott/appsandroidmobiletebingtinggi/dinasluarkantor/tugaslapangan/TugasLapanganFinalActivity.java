@@ -1320,7 +1320,6 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
             map.getUiSettings().setMyLocationButtonEnabled(true);
         }
 
-        stopLocationUpdates();
     }
 
 

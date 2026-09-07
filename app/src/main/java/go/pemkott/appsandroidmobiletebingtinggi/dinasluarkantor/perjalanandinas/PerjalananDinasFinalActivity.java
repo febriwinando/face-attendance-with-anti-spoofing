@@ -1210,7 +1210,6 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
             map.getUiSettings().setMyLocationButtonEnabled(true);
         }
 
-        stopLocationUpdates();
     }
 
 

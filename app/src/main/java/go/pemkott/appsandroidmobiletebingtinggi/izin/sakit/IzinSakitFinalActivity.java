@@ -1237,7 +1237,6 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
             map.getUiSettings().setMyLocationButtonEnabled(true);
         }
 
-        stopLocationUpdates();
     }
 
 

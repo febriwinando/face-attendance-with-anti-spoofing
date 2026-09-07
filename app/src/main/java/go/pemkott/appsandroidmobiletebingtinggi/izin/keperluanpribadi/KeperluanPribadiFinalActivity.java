@@ -914,7 +914,6 @@ public class KeperluanPribadiFinalActivity extends AppCompatActivity implements 
             map.getUiSettings().setMyLocationButtonEnabled(true);
         }
 
-        stopLocationUpdates();
     }
 
 

@@ -97,6 +97,8 @@
                             android:fontFamily="sans-serif-black"
                             android:textColor="@color/text_primary"
                             android:textSize="18sp"
+                            android:maxLines="1"
+                            android:ellipsize="end"
                             tools:text="Febri Winando" />
 
                         <TextView

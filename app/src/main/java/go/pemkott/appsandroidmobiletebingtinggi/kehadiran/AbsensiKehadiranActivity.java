@@ -514,61 +514,78 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
         tanggal = hari.format(new Date());
 
         Cursor tTimeTable = databaseHelper.getKegiatanTimeTable(sEmployId, String.valueOf(hari(tanggal)));
-        if(tTimeTable.getCount() == 0){
+        if(tTimeTable.getCount() > 0){
+            while (tTimeTable.moveToNext()){
+                timetableid = tTimeTable.getString(2);
+                hariIni = tTimeTable.getString(3);
+                jamMasuk = tTimeTable.getString(5);
+                jamPulang = tTimeTable.getString(6);
+            }
+            tTimeTable.close();
+        } else {
             jamMasuk = null;
             jamPulang = null;
-            return;
-        }
-
-        while (tTimeTable.moveToNext()){
-            timetableid = tTimeTable.getString(2);
-            hariIni = tTimeTable.getString(3);
-            jamMasuk = tTimeTable.getString(5);
-            jamPulang = tTimeTable.getString(6);
         }
 
         Cursor employe = databaseHelper.getDataEmployee(sEmployId);
-        while (employe.moveToNext()){
-            eOPD = employe.getString(4);
-            eKelompok = employe.getString(9);
-            eJabatan = employe.getString(11);
-            latOffice = employe.getString(15);
-            lngOffice = employe.getString(16);
-            batasWaktu = employe.getString(18);
-            statushift = employe.getString(19);
+        if (employe != null) {
+            while (employe.moveToNext()){
+                eOPD = employe.getString(4);
+                eKelompok = employe.getString(9);
+                eJabatan = employe.getString(11);
+                latOffice = employe.getString(15);
+                lngOffice = employe.getString(16);
+                batasWaktu = employe.getString(18);
+                statushift = employe.getString(19);
+            }
+            employe.close();
         }
 
         latList.clear();
         lngList.clear();
 
         Cursor koordinat = databaseHelper.getDataKoordinat(eOPD);
-        if(koordinat.getCount() == 0){
-            return;
-        }
-
-        while (koordinat.moveToNext()){
-            latList.add(koordinat.getString(3));
-            lngList.add(koordinat.getString(4));
+        if(koordinat != null) {
+            while (koordinat.moveToNext()) {
+                String latStr = koordinat.getString(3);
+                String lngStr = koordinat.getString(4);
+                if (latStr != null && lngStr != null) {
+                    latList.add(latStr);
+                    lngList.add(lngStr);
+                }
+            }
+            koordinat.close();
         }
 
         latListExc.clear();
         lngListExc.clear();
 
         Cursor koordinatExc = databaseHelper.getDataKoordinatEmp(sEmployId);
-        if(koordinatExc.getCount() == 0){
-            return;
-        }
-
-        while (koordinatExc.moveToNext()){
-            latListExc.add(koordinatExc.getString(3));
-            lngListExc.add(koordinatExc.getString(4));
+        if(koordinatExc != null) {
+            while (koordinatExc.moveToNext()) {
+                String latStr = koordinatExc.getString(3);
+                String lngStr = koordinatExc.getString(4);
+                if (latStr != null && lngStr != null) {
+                    latListExc.add(latStr);
+                    lngListExc.add(lngStr);
+                }
+            }
+            koordinatExc.close();
         }
 
         if (!latList.isEmpty() && !lngList.isEmpty()) {
-            defaultLocation = new LatLng(
-                    Double.parseDouble(latList.get(0)),
-                    Double.parseDouble(lngList.get(0))
-            );
+            try {
+                String latStr = latList.get(0);
+                String lngStr = lngList.get(0);
+                if (latStr != null && lngStr != null) {
+                    defaultLocation = new LatLng(
+                            Double.parseDouble(latStr),
+                            Double.parseDouble(lngStr)
+                    );
+                }
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
         }
 //        defaultLocation = new LatLng(Double.parseDouble( latList.get(0)), Double.parseDouble(lngList.get(0)));
     }
@@ -614,12 +631,20 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
         double minJarak = Double.MAX_VALUE;
 
         for (int i = 0; i < latList.size(); i++) {
-            double lat = Double.parseDouble(latList.get(i));
-            double lng = Double.parseDouble(lngList.get(i));
+            String latStr = latList.get(i);
+            String lngStr = lngList.get(i);
+            if (latStr == null || lngStr == null) continue;
 
-            double jarak = getDistance(lat, lng, latUser, lngUser);
-            if (jarak < minJarak) {
-                minJarak = jarak;
+            try {
+                double lat = Double.parseDouble(latStr);
+                double lng = Double.parseDouble(lngStr);
+
+                double jarak = getDistance(lat, lng, latUser, lngUser);
+                if (jarak < minJarak) {
+                    minJarak = jarak;
+                }
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
             }
         }
 
@@ -1129,6 +1154,11 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
 
 
     public void periksaWaktu() {
+        if (jamMasuk == null || jamPulang == null) {
+            Log.e("periksaWaktu", "jamMasuk or jamPulang is null");
+            return;
+        }
+
         jamMasuk = jamMasuk.trim();
         jamPulang = jamPulang.trim();
         try {
@@ -1146,7 +1176,16 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
 
             Calendar batasCalendar = Calendar.getInstance();
             batasCalendar.setTime(jamMasukDate);
-            batasCalendar.add(Calendar.MINUTE, -Integer.parseInt(batasWaktu));
+
+            int minutesToAdd = 0;
+            if (batasWaktu != null && !batasWaktu.isEmpty()) {
+                try {
+                    minutesToAdd = Integer.parseInt(batasWaktu);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+            batasCalendar.add(Calendar.MINUTE, -minutesToAdd);
 
             dateBatasWaktu = batasCalendar.getTime();
 
@@ -1253,7 +1292,7 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
                 }
             }
 
-        }else{
+        } else {
 
             map.moveCamera(CameraUpdateFactory
                     .newLatLngZoom(defaultLocation, 19f));
@@ -1267,7 +1306,6 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
             llUpload.setClickable(true);
             llUpload.setAlpha(1f);
         }
-        stopLocationUpdates();
 
     }
 

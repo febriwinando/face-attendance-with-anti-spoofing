@@ -1173,8 +1173,6 @@ public class IzinCutiSiftFinalActivity extends AppCompatActivity implements OnMa
             map.getUiSettings().setMyLocationButtonEnabled(true);
         }
 
-        stopLocationUpdates();
-
     }
 
 

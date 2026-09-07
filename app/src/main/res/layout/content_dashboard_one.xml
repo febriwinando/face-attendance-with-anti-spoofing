@@ -53,6 +53,8 @@
                         android:textColor="@color/text_primary"
                         android:textSize="18sp"
                         android:letterSpacing="0.02"
+                        android:maxLines="1"
+                        android:ellipsize="end"
                         tools:text="Febri Winando" />
                 </LinearLayout>
 

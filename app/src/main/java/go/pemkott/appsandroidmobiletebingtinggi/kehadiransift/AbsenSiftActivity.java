@@ -394,52 +394,75 @@ public class AbsenSiftActivity extends AppCompatActivity implements OnMapReadyCa
     public void databases(){
 
         Cursor tUser = databaseHelper.getAllData22(userId);
-        while (tUser.moveToNext()){
-            sEmployId = tUser.getString(1);
+        if (tUser != null) {
+            while (tUser.moveToNext()){
+                sEmployId = tUser.getString(1);
+            }
+            tUser.close();
         }
 
         hari = new SimpleDateFormat("EEE", localeID);
         tanggal = hari.format(new Date());
 
         Cursor employe = databaseHelper.getDataEmployee(sEmployId);
-
-        while (employe.moveToNext()){
-            eOPD = employe.getString(4);
-            eKelompok = employe.getString(9);
-            eJabatan = employe.getString(11);
-            latOffice = employe.getString(15);
-            lngOffice = employe.getString(16);
-            batasWaktu = employe.getString(18);
-
+        if (employe != null) {
+            while (employe.moveToNext()){
+                eOPD = employe.getString(4);
+                eKelompok = employe.getString(9);
+                eJabatan = employe.getString(11);
+                latOffice = employe.getString(15);
+                lngOffice = employe.getString(16);
+                batasWaktu = employe.getString(18);
+            }
+            employe.close();
         }
 
         latList.clear();
         lngList.clear();
 
         Cursor koordinat = databaseHelper.getDataKoordinat(eOPD);
-        if(koordinat.getCount() == 0){
-            return;
-        }
-
-        while (koordinat.moveToNext()){
-            latList.add(koordinat.getString(3));
-            lngList.add(koordinat.getString(4));
+        if(koordinat != null) {
+            while (koordinat.moveToNext()) {
+                String latStr = koordinat.getString(3);
+                String lngStr = koordinat.getString(4);
+                if (latStr != null && lngStr != null) {
+                    latList.add(latStr);
+                    lngList.add(lngStr);
+                }
+            }
+            koordinat.close();
         }
 
         latListExc.clear();
         lngListExc.clear();
 
         Cursor koordinatExc = databaseHelper.getDataKoordinatEmp(sEmployId);
-        if(koordinatExc.getCount() == 0){
-            return;
+        if(koordinatExc != null) {
+            while (koordinatExc.moveToNext()) {
+                String latStr = koordinatExc.getString(3);
+                String lngStr = koordinatExc.getString(4);
+                if (latStr != null && lngStr != null) {
+                    latListExc.add(latStr);
+                    lngListExc.add(lngStr);
+                }
+            }
+            koordinatExc.close();
         }
 
-        while (koordinatExc.moveToNext()){
-            latListExc.add(koordinatExc.getString(3));
-            lngListExc.add(koordinatExc.getString(4));
+        if (!latList.isEmpty() && !lngList.isEmpty()) {
+            try {
+                String latStr = latList.get(0);
+                String lngStr = lngList.get(0);
+                if (latStr != null && lngStr != null) {
+                    defaultLocation = new LatLng(
+                            Double.parseDouble(latStr),
+                            Double.parseDouble(lngStr)
+                    );
+                }
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
         }
-
-        defaultLocation = new LatLng(Double.parseDouble( latList.get(0)), Double.parseDouble(lngList.get(0)));
     }
 
     // this is all you need to grant your application external storage permision
@@ -486,14 +509,13 @@ public class AbsenSiftActivity extends AppCompatActivity implements OnMapReadyCa
                 }
             }
 
-        }else{
+        } else {
 
             map.moveCamera(CameraUpdateFactory
                     .newLatLngZoom(defaultLocation, 19f));
             map.getUiSettings().setMyLocationButtonEnabled(true);
         }
 
-        stopLocationUpdates();
     }
 
 
@@ -586,6 +608,11 @@ public class AbsenSiftActivity extends AppCompatActivity implements OnMapReadyCa
     @SuppressLint("ResourceAsColor")
     public void periksaWaktu(){
 
+        if (masuksift == null || pulangsift == null) {
+            Log.e("periksaWaktu", "masuksift or pulangsift is null");
+            return;
+        }
+
         try {
             jamMasukDate = SIMPLE_FORMAT_JAM.parse(masuksift);
             jamPulangDate = SIMPLE_FORMAT_JAM.parse(pulangsift);
@@ -595,7 +622,16 @@ public class AbsenSiftActivity extends AppCompatActivity implements OnMapReadyCa
             SimpleDateFormat df = new SimpleDateFormat("HH:mm", localeID);
             Date d = df.parse(masuksift);
             cal.setTime(d);
-            cal.add(Calendar.MINUTE, -(Integer.parseInt(batasWaktu)));
+
+            int minutesToSubtract = 0;
+            if (batasWaktu != null && !batasWaktu.isEmpty()) {
+                try {
+                    minutesToSubtract = Integer.parseInt(batasWaktu);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+            cal.add(Calendar.MINUTE, -minutesToSubtract);
             String newTime = df.format(cal.getTime());
 
             tagingTime = SIMPLE_FORMAT_JAM_TAGING.parse(jamTaging);
@@ -806,12 +842,20 @@ private boolean isHariSenin() {
         double minJarak = Double.MAX_VALUE;
 
         for (int i = 0; i < latList.size(); i++) {
-            double lat = Double.parseDouble(latList.get(i));
-            double lng = Double.parseDouble(lngList.get(i));
+            String latStr = latList.get(i);
+            String lngStr = lngList.get(i);
+            if (latStr == null || lngStr == null) continue;
 
-            double jarak = getDistance(lat, lng, latUser, lngUser);
-            if (jarak < minJarak) {
-                minJarak = jarak;
+            try {
+                double lat = Double.parseDouble(latStr);
+                double lng = Double.parseDouble(lngStr);
+
+                double jarak = getDistance(lat, lng, latUser, lngUser);
+                if (jarak < minJarak) {
+                    minJarak = jarak;
+                }
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
             }
         }
 

@@ -141,9 +141,9 @@ public class ProfileActivity extends AppCompatActivity {
         }
 
         // Nama aman
-        if (sNama != null && sNama.length() > 14) {
+        if (sNama != null && sNama.length() > 13) {
             tvNamaPegawai.setText(
-                    sNama.substring(0,14)+" ..."
+                    sNama.substring(0, 13) + "..."
             );
         } else {
             tvNamaPegawai.setText(

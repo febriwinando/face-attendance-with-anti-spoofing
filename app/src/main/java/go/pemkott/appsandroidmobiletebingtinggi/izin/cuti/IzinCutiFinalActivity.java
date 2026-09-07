@@ -1183,7 +1183,6 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
             map.getUiSettings().setMyLocationButtonEnabled(true);
         }
 
-        stopLocationUpdates();
     }
 
 

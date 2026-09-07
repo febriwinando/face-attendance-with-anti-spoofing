@@ -260,7 +260,12 @@ public class DashboardVersiOne extends AppCompatActivity {
         });
 
 
-        tvNamaUser.setText(sUsername);
+        if (sUsername != null && sUsername.length() > 13) {
+            String truncatedName = sUsername.substring(0, 13) + "...";
+            tvNamaUser.setText(truncatedName);
+        } else {
+            tvNamaUser.setText(sUsername);
+        }
 
         Glide.with(this)
                 .load("https://absensi.tebingtinggikota.go.id/storage/foto-pegawai/" + fotoProfile)
