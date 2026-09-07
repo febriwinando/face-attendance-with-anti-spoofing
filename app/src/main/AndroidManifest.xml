@@ -81,10 +81,10 @@
             android:name=".izinshift.izinshiftsakit.IzinSakitShiftFinalActivity"
             android:exported="false" />
         <activity
-            android:name=".izinshift.izinshiftcuti.IzinCutiSiftFinalActivity"
+            android:name=".izinshift.izinshiftcuti.IzinCutiShiftFinalActivity"
             android:exported="false" />
         <activity
-            android:name=".izinshift.izinshiftpribadi.KeperluanPribadiSiftFinalActivity"
+            android:name=".izinshift.izinshiftpribadi.KeperluanPribadiShiftFinalActivity"
             android:exported="false" />
         <activity
             android:name=".rekap.RekapAbsensActivity"
@@ -93,22 +93,22 @@
             android:name=".izinshift.izinshiftsakit.SakitShiftActivity"
             android:exported="false" />
         <activity
-            android:name=".izinshift.izinshiftcuti.CutiSiftActivity"
+            android:name=".izinshift.izinshiftcuti.CutiShiftActivity"
             android:exported="false" />
         <activity
-            android:name=".izinshift.izinshiftpribadi.KeperluanPribadiSiftActivity"
+            android:name=".izinshift.izinshiftpribadi.KeperluanPribadiShiftActivity"
             android:exported="false" />
         <activity
-            android:name=".izinshift.JadwalIzinSiftActivity"
+            android:name=".izinshift.JadwalIzinShiftActivity"
             android:exported="false" />
         <activity
-            android:name=".singkronjadwalsift.CalendarJadwalSiftActivity"
+            android:name=".singkronjadwalsift.CalendarJadwalShiftActivity"
             android:exported="false" />
         <activity
-            android:name=".kehadiransift.AbsenSiftActivity"
+            android:name=".kehadiransift.AbsenShiftActivity"
             android:exported="false" />
         <activity
-            android:name=".kehadiransift.JadwalSiftActivity"
+            android:name=".kehadiransift.JadwalShiftActivity"
             android:exported="false" />
         <activity
             android:name=".verifikasi.ValidasiNewActivity"

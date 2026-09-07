@@ -6,7 +6,6 @@ import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.SIMP
 import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.TAHUN;
 import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.makeDateString;
 
-import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.database.Cursor;
@@ -15,11 +14,15 @@ import android.os.Handler;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.NumberPicker;
 import android.widget.TextView;
 
+import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -43,7 +46,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class CalendarJadwalSiftActivity extends AppCompatActivity {
+public class CalendarJadwalShiftActivity extends AppCompatActivity {
     private RecyclerView rvJadwalSifting;
     private final ArrayList<JadwalSift> listJadwalSift = new ArrayList<>();
     DatabaseHelper databaseHelper;
@@ -61,7 +64,7 @@ public class CalendarJadwalSiftActivity extends AppCompatActivity {
     static ArrayList<String> pulangSift = new ArrayList<String>();
     String jam_masuk, jam_pulang;
     public static AppCompatActivity jadwalSiftActivity ;
-    DatePickerDialog datePickerDialogMulai;
+    Dialog monthYearPickerDialog;
     TextView titleCalendarSift;
     LinearLayout llPilihBulan;
     ImageView ivUnduhJadwalSift, ivSyncJadwalSift;
@@ -74,9 +77,14 @@ public class CalendarJadwalSiftActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.background_color));
-        getWindow().setNavigationBarColor(getResources().getColor(R.color.background_color));
+        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_calendar_jadwal_shift);
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, 0, systemBars.right, systemBars.bottom);
+            return insets;
+        });
 
         session = new SessionManager(this);
         userId = session.getPegawaiId();
@@ -100,10 +108,10 @@ public class CalendarJadwalSiftActivity extends AppCompatActivity {
         ivSyncJadwalSift = findViewById(R.id.ivSyncJadwalSift);
 
         databaseHelper = new DatabaseHelper(this);
-        String date = "JADWAL "+makeDateString(Integer.parseInt(tahun), Integer.parseInt(bulan));
+        String date = "Jadwal " + makeDateString(Integer.parseInt(tahun), Integer.parseInt(bulan));
         titleCalendarSift.setText(date);
 
-        llPilihBulan.setOnClickListener(v -> datePickerDialogMulai.show());
+        llPilihBulan.setOnClickListener(v -> showMonthYearPicker());
 
         ivUnduhJadwalSift.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -131,57 +139,53 @@ public class CalendarJadwalSiftActivity extends AppCompatActivity {
             }
         });
         getData(bulan, tahun);
-        datePickerMulai();
+    }
+
+    private void showMonthYearPicker() {
+        monthYearPickerDialog = new Dialog(this, R.style.DialogStyle);
+        monthYearPickerDialog.setContentView(R.layout.dialog_month_year_picker);
+        monthYearPickerDialog.setCancelable(true);
+
+        NumberPicker pickerMonth = monthYearPickerDialog.findViewById(R.id.picker_month);
+        NumberPicker pickerYear = monthYearPickerDialog.findViewById(R.id.picker_year);
+        TextView btnCancel = monthYearPickerDialog.findViewById(R.id.btn_cancel);
+        TextView btnConfirm = monthYearPickerDialog.findViewById(R.id.btn_confirm);
+
+        String[] monthNames = new String[]{"JAN", "FEB", "MAR", "APR", "MEI", "JUN", "JUL", "AGU", "SEP", "OKT", "NOV", "DES"};
+        pickerMonth.setMinValue(1);
+        pickerMonth.setMaxValue(12);
+        pickerMonth.setDisplayedValues(monthNames);
+        pickerMonth.setValue(Integer.parseInt(bulan));
+
+        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+        pickerYear.setMinValue(currentYear - 1);
+        pickerYear.setMaxValue(currentYear + 5);
+        pickerYear.setValue(Integer.parseInt(tahun));
+
+        btnCancel.setOnClickListener(v -> monthYearPickerDialog.dismiss());
+
+        btnConfirm.setOnClickListener(v -> {
+            int selectedMonth = pickerMonth.getValue();
+            int selectedYear = pickerYear.getValue();
+
+            if (selectedMonth >= 10) {
+                this.bulan = String.valueOf(selectedMonth);
+            } else {
+                this.bulan = "0" + selectedMonth;
+            }
+            this.tahun = String.valueOf(selectedYear);
+
+            String dateText = "Jadwal " + makeDateString(selectedYear, selectedMonth);
+            titleCalendarSift.setText(dateText);
+
+            getData(this.bulan, this.tahun);
+            monthYearPickerDialog.dismiss();
+        });
+
+        monthYearPickerDialog.show();
     }
 
     String dariTanggal;
-
-    private void datePickerMulai(){
-        DatePickerDialog.OnDateSetListener dateSetListener = (datePicker, tahun, bulan, hari) -> {
-            bulan = bulan + 1;
-            String date = "Jadwal "+makeDateString(tahun, bulan);
-
-            if (bulan == 11 || bulan == 12){
-                this.bulan = String.valueOf(bulan);
-            }else {
-                this.bulan = "0"+bulan;
-            }
-            this.tahun = String.valueOf(tahun);
-            getData(this.bulan, this.tahun);
-
-            Date drTgl = null;
-            try {
-                drTgl = SIMPLE_FORMAT_TANGGAL.parse(tahun+"-"+bulan+"-"+hari);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            dariTanggal = SIMPLE_FORMAT_TANGGAL.format(drTgl);
-            titleCalendarSift.setText(date);
-
-        };
-
-        Calendar calendar = Calendar.getInstance();
-        int tahun = calendar.get(Calendar.YEAR);
-        int bulan = calendar.get(Calendar.MONTH);
-        int hari = calendar.get(Calendar.DAY_OF_MONTH);
-
-        int style = android.R.style.Theme_DeviceDefault_Light_Dialog;
-        Date today = new Date();
-        Calendar c = Calendar.getInstance();
-        c.setTime(today);
-        c.add( Calendar.MONTH, 5);
-        long maxDate = c.getTime().getTime();
-
-        Calendar d = Calendar.getInstance();
-        d.setTime(today);
-        d.add( Calendar.MONTH, -1);
-        long minDate = d.getTime().getTime();
-
-        datePickerDialogMulai = new DatePickerDialog(this, style, dateSetListener, tahun, bulan, hari);
-        datePickerDialogMulai.getDatePicker().setMaxDate(maxDate);
-        datePickerDialogMulai.getDatePicker().setMinDate(minDate);
-
-    }
 
     String sEmployeID, sUsername, sAkses, sActive, eOPD, eKelompok, eJabatan, latOffice, lngOffice;
 
@@ -307,7 +311,7 @@ public class CalendarJadwalSiftActivity extends AppCompatActivity {
     DialogView dialogView = new DialogView(this);
     private void showRecyclerGrid(){
         rvJadwalSifting.setLayoutManager(new GridLayoutManager(this, 4));
-        GridCalendarJadwalSiftAdapter gridJadwal = new GridCalendarJadwalSiftAdapter(CalendarJadwalSiftActivity.this, listJadwalSift, getJamSift(), bulan, tahun);
+        GridCalendarJadwalShiftAdapter gridJadwal = new GridCalendarJadwalShiftAdapter(CalendarJadwalShiftActivity.this, listJadwalSift, getJamSift(), bulan, tahun);
         rvJadwalSifting.setAdapter(gridJadwal);
 
         gridJadwal.setOnItemClickCallback(s -> {
@@ -353,45 +357,7 @@ public class CalendarJadwalSiftActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-            viewinfo(CalendarJadwalSiftActivity.this, s, inisialsift, tipesift, masuksift, pulangsift, idsift);
-
-//                if (infoJadwalhariini.equals(s)){
-//
-//                    if (tipesift.equals("malam")){
-//
-//                        if (jamSekarang.getTime()> batasJamAbsenMalam.getTime()){
-//                            Toast.makeText(CalendarJadwalSiftActivity.this, "Batas waktu melakukan absen sift malam telah lewat", Toast.LENGTH_SHORT).show();
-//                        }else{
-//                            if (jam_masuk != null && jam_pulang != null){
-//                                dialogView.viewNotifKosong(CalendarJadwalSiftActivity.this, "Anda Sudah mengisi absen masuk dan absen pulang untuk jadwal tanggal "+s,"");
-//                            }else{
-//                                viewinfo(CalendarJadwalSiftActivity.this, s, inisialsift, tipesift, masuksift, pulangsift, idsift);
-//                            }
-//                        }
-//                    }
-//
-//                }else if(jadwalAbsensetelah.getTime() > hariini.getTime()){
-//                    Toast.makeText(CalendarJadwalSiftActivity.this, "Belum dapat melakukan absen", Toast.LENGTH_SHORT).show();
-//                }
-//                else if(tanggal.equals(s)){
-//                    if (tipesift.equals("malam")) {
-//                        if (jamSekarang.getTime() >= batasJamAbsenMalam.getTime()) {
-//                            if (jam_masuk != null && jam_pulang != null){
-//                                dialogView.viewNotifKosong(CalendarJadwalSiftActivity.this, "Anda Sudah mengisi absen masuk dan absen pulang untuk jadwal tanggal "+s,"");
-//                            }else{
-//                                viewinfo(CalendarJadwalSiftActivity.this, s, inisialsift, tipesift, masuksift, pulangsift, idsift);
-//                            }
-//                        } else {
-//                            dialogView.viewNotifKosong(CalendarJadwalSiftActivity.this, "Sesi jadwal malam tanggal " + infoJadwalhariini + " masih berlangsung sampai pukul 12:00.", "");
-//                        }
-//                    } else {
-//                        if (jam_masuk != null && jam_pulang != null){
-//                            dialogView.viewNotifKosong(CalendarJadwalSiftActivity.this, "Anda Sudah mengisi absen masuk dan absen pulang untuk jadwal tanggal "+s,"");
-//                        }else{
-//
-//                        }
-//                    }
-//                }
+            viewinfo(CalendarJadwalShiftActivity.this, s, inisialsift, tipesift, masuksift, pulangsift, idsift);
         });
 
 
@@ -407,21 +373,23 @@ public class CalendarJadwalSiftActivity extends AppCompatActivity {
         TextView jamSiftMasuk = dialoginfo.findViewById(R.id.jamSiftMasuk);
         TextView jamSiftPulang = dialoginfo.findViewById(R.id.jamSiftPulang);
         ImageView ivTutupViewInfoSift = dialoginfo.findViewById(R.id.ivTutupViewInfoSift);
+        View btnTutupInfo = dialoginfo.findViewById(R.id.btnTutupInfo);
 
         jamSiftMasuk.setText(masuk);
-        if (tipeSift.equals("malam")){
-            jamSiftPulang.setText(pulang+"\n"+tanggal);
+        if (sift != null && sift.equals("malam")){
+            jamSiftPulang.setText(String.format("%s\n%s", pulang, tanggal));
         }else{
             jamSiftPulang.setText(pulang);
         }
 
         ivTutupViewInfoSift.setOnClickListener(view -> dialoginfo.dismiss());
+        btnTutupInfo.setOnClickListener(view -> dialoginfo.dismiss());
         dialoginfo.show();
 
     }
 
     public void unduhJadwalSift(int status){
-        Dialog dialogproses = new Dialog(CalendarJadwalSiftActivity.this, R.style.DialogStyle);
+        Dialog dialogproses = new Dialog(CalendarJadwalShiftActivity.this, R.style.DialogStyle);
         dialogproses.setContentView(R.layout.view_proses);
         dialogproses.setCancelable(false);
 
@@ -435,13 +403,13 @@ public class CalendarJadwalSiftActivity extends AppCompatActivity {
             @Override
             public void onResponse(@NonNull Call<ArrayList<JadwalSift>> call, @NonNull Response<ArrayList<JadwalSift>> response) {
                 if (!response.isSuccessful()){
-                    dialogView.viewNotifKosong(CalendarJadwalSiftActivity.this, "Gagal mengunduh Jadwal Sift.","Silahkan coba kembali.");
+                    dialogView.viewNotifKosong(CalendarJadwalShiftActivity.this, "Gagal mengunduh Jadwal Sift.","Silahkan coba kembali.");
                     dialogproses.dismiss();
                 }
 
                 ArrayList<JadwalSift> jadwalSifts = response.body();
                 if (jadwalSifts.size() == 0){
-                    dialogView.viewNotifKosong(CalendarJadwalSiftActivity.this, "Jadwal belum tersedia, harap hubungi admin OPD anda.", "");
+                    dialogView.viewNotifKosong(CalendarJadwalShiftActivity.this, "Jadwal belum tersedia, harap hubungi admin OPD anda.", "");
                     dialogproses.dismiss();
 
                 }else{
@@ -452,9 +420,8 @@ public class CalendarJadwalSiftActivity extends AppCompatActivity {
                     }
 
                     if (jlhJadwalSift ==  jadwalSifts.size()){
+                        databaseHelper.insertLog(sEmployeID, eOPD, SIMPLE_FORMAT_TANGGAL.format(new Date()), "Sinkronisasi Jadwal Shift (Kalender)", "Sync");
                         getData(bulan, tahun);
-
-
                     }
 
                     dialogproses.dismiss();
@@ -467,7 +434,7 @@ public class CalendarJadwalSiftActivity extends AppCompatActivity {
             public void onFailure(@NonNull Call<ArrayList<JadwalSift>> call, @NonNull Throwable t) {
                 dialogproses.dismiss();
 
-                dialogView.viewNotifKosong(CalendarJadwalSiftActivity.this, "Gagal mengakses server.", "Silahkan coba kembali.");
+                dialogView.viewNotifKosong(CalendarJadwalShiftActivity.this, "Gagal mengakses server.", "Silahkan coba kembali.");
 
             }
 

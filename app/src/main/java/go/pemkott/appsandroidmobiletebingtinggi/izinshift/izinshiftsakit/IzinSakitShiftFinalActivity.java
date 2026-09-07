@@ -99,7 +99,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.utils.MapUtils;
 import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraXLActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
-import go.pemkott.appsandroidmobiletebingtinggi.izinshift.JadwalIzinSiftActivity;
+import go.pemkott.appsandroidmobiletebingtinggi.izinshift.JadwalIzinShiftActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFoto;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFotoLampiran;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.Lokasi;
@@ -251,12 +251,12 @@ public class IzinSakitShiftFinalActivity extends AppCompatActivity implements On
         jam_masuk = DashboardVersiOne.jam_masuk;
         jam_pulang = DashboardVersiOne.jam_pulang;
 //        titleDinasLuar.setText(intent.getString("SAKIT"));
-        rbTanggal = JadwalIzinSiftActivity.tanggalSift;
-        inisialsift = JadwalIzinSiftActivity.inisialsift;
-        idsift = JadwalIzinSiftActivity.idsift;
-        tipesift = JadwalIzinSiftActivity.tipesift;
-        masuksift = JadwalIzinSiftActivity.masuksift;
-        pulangsift = JadwalIzinSiftActivity.pulangsift;
+        rbTanggal = JadwalIzinShiftActivity.tanggalSift;
+        inisialsift = JadwalIzinShiftActivity.inisialsift;
+        idsift = JadwalIzinShiftActivity.idsift;
+        tipesift = JadwalIzinShiftActivity.tipesift;
+        masuksift = JadwalIzinShiftActivity.masuksift;
+        pulangsift = JadwalIzinShiftActivity.pulangsift;
 
 
         kegiatans.clear();
@@ -1409,7 +1409,7 @@ public class IzinSakitShiftFinalActivity extends AppCompatActivity implements On
             stopLocationUpdates();
 
             dialogSukes.dismiss();
-            JadwalIzinSiftActivity.jadwalIzinSiftActivity.finish();
+            JadwalIzinShiftActivity.jadwalIzinSiftActivity.finish();
             SakitShiftActivity.sakit.finish();
             finish();
         });

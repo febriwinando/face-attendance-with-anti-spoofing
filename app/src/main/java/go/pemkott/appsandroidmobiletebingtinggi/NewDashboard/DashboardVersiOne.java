@@ -1,12 +1,5 @@
 package go.pemkott.appsandroidmobiletebingtinggi.NewDashboard;
 
-import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.BULAN;
-import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.HARI_TEXT;
-import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.TAHUN;
-import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.TANGGAL;
-import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.bulan;
-import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.hariText;
-
 import android.Manifest;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
@@ -56,7 +49,6 @@ import com.google.android.play.core.install.model.UpdateAvailability;
 
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -67,8 +59,8 @@ import go.pemkott.appsandroidmobiletebingtinggi.api.HttpService;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import go.pemkott.appsandroidmobiletebingtinggi.dinasluarkantor.perjalanandinas.SppdActivity;
-import go.pemkott.appsandroidmobiletebingtinggi.izinshift.JadwalIzinSiftActivity;
-import go.pemkott.appsandroidmobiletebingtinggi.kehadiransift.JadwalSiftActivity;
+import go.pemkott.appsandroidmobiletebingtinggi.izinshift.JadwalIzinShiftActivity;
+import go.pemkott.appsandroidmobiletebingtinggi.kehadiransift.JadwalShiftActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
 
 import go.pemkott.appsandroidmobiletebingtinggi.model.KegiatanIzin;
@@ -77,7 +69,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.model.ValidasiData;
 import go.pemkott.appsandroidmobiletebingtinggi.rekap.RekapAbsensActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.singkronjadwal.SettingAdapter;
 import go.pemkott.appsandroidmobiletebingtinggi.singkronjadwal.TimeTebleSetting;
-import go.pemkott.appsandroidmobiletebingtinggi.singkronjadwalsift.CalendarJadwalSiftActivity;
+import go.pemkott.appsandroidmobiletebingtinggi.singkronjadwalsift.CalendarJadwalShiftActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.utils.NetworkUtil;
 import go.pemkott.appsandroidmobiletebingtinggi.verifikasi.ValidasiNewActivity;
 import retrofit2.Call;
@@ -244,7 +236,7 @@ public class DashboardVersiOne extends AppCompatActivity {
                     Intent intentJadwalSifting =
                             new Intent(
                                     DashboardVersiOne.this,
-                                    JadwalSiftActivity.class
+                                    JadwalShiftActivity.class
                             );
 
                     intentJadwalSifting.putExtra(
@@ -283,7 +275,7 @@ public class DashboardVersiOne extends AppCompatActivity {
                 if ("0".equals(statusSift)){
                     viewJadwalKerja();
                 }else{
-                    Intent intentJadwalSifting = new Intent(DashboardVersiOne.this, CalendarJadwalSiftActivity.class);
+                    Intent intentJadwalSifting = new Intent(DashboardVersiOne.this, CalendarJadwalShiftActivity.class);
                     intentJadwalSifting.putExtra("jam_masuk", jam_masuk);
                     intentJadwalSifting.putExtra("jam_pulang", jam_pulang);
                     startActivity(intentJadwalSifting);
@@ -345,7 +337,7 @@ public class DashboardVersiOne extends AppCompatActivity {
                     Intent intentJadwalSifting =
                             new Intent(
                                     DashboardVersiOne.this,
-                                    JadwalIzinSiftActivity.class
+                                    JadwalIzinShiftActivity.class
                             );
 
                     startActivity(intentJadwalSifting);

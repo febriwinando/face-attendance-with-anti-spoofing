@@ -40,7 +40,6 @@ import android.view.View;
 import android.view.ViewOutlineProvider;
 import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;

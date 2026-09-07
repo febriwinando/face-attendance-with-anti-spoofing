@@ -2,7 +2,7 @@ package go.pemkott.appsandroidmobiletebingtinggi.kehadiransift;
 
 import static android.content.ContentValues.TAG;
 import static go.pemkott.appsandroidmobiletebingtinggi.geolocation.model.LocationHelper.defaultLocation;
-import static go.pemkott.appsandroidmobiletebingtinggi.kehadiransift.JadwalSiftActivity.jadwalSiftActivity;
+import static go.pemkott.appsandroidmobiletebingtinggi.kehadiransift.JadwalShiftActivity.jadwalSiftActivity;
 import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.SIMPLE_FORMAT_JAM;
 import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.SIMPLE_FORMAT_JAM_TAGING;
 import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.SIMPLE_FORMAT_TANGGAL;
@@ -84,7 +84,6 @@ import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFoto;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.Lokasi;
-import go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat;
 import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
 import go.pemkott.appsandroidmobiletebingtinggi.utils.NetworkUtils;
 import go.pemkott.appsandroidmobiletebingtinggi.model.LocationViewModel;
@@ -96,7 +95,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class AbsenSiftActivity extends AppCompatActivity implements OnMapReadyCallback{
+public class AbsenShiftActivity extends AppCompatActivity implements OnMapReadyCallback{
 
     private static final int REQUEST_CHECK_SETTINGS = 100;
     private Context mContext;
@@ -110,7 +109,7 @@ public class AbsenSiftActivity extends AppCompatActivity implements OnMapReadyCa
     Lokasi lokasi = new Lokasi();
 
 
-    DialogView dialogView = new DialogView(AbsenSiftActivity.this);
+    DialogView dialogView = new DialogView(AbsenShiftActivity.this);
 
     private String sEmployId;
     private String rbTanggal;
@@ -159,7 +158,7 @@ public class AbsenSiftActivity extends AppCompatActivity implements OnMapReadyCa
     FusedLocationProviderClient fusedLocationProviderClient;
     LocationRequest locationRequest;
     File file;
-    AmbilFoto ambilFoto = new AmbilFoto(AbsenSiftActivity.this);
+    AmbilFoto ambilFoto = new AmbilFoto(AbsenShiftActivity.this);
 
 
     SessionManager session;
@@ -184,7 +183,7 @@ public class AbsenSiftActivity extends AppCompatActivity implements OnMapReadyCa
         // icon navigation terang/gelap
         controller.setAppearanceLightNavigationBars(true);
         setContentView(R.layout.activity_absen_sift);
-        mContext = AbsenSiftActivity.this;
+        mContext = AbsenShiftActivity.this;
         session = new SessionManager(this);
         userId = session.getPegawaiId();
 
@@ -224,12 +223,12 @@ public class AbsenSiftActivity extends AppCompatActivity implements OnMapReadyCa
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         setRoundedBackground(fragmentContainerView);
 
-        rbTanggal = JadwalSiftActivity.tanggalSift;
-        inisialsift = JadwalSiftActivity.inisialsift;
-        idsift = JadwalSiftActivity.idsift;
-        tipesift = JadwalSiftActivity.tipesift;
-        masuksift = JadwalSiftActivity.masuksift;
-        pulangsift = JadwalSiftActivity.pulangsift;
+        rbTanggal = JadwalShiftActivity.tanggalSift;
+        inisialsift = JadwalShiftActivity.inisialsift;
+        idsift = JadwalShiftActivity.idsift;
+        tipesift = JadwalShiftActivity.tipesift;
+        masuksift = JadwalShiftActivity.masuksift;
+        pulangsift = JadwalShiftActivity.pulangsift;
 
 //        String myDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString()+ "/eabsensi";
         Intent intent = getIntent();
@@ -313,7 +312,7 @@ public class AbsenSiftActivity extends AppCompatActivity implements OnMapReadyCa
         llUpload.setOnClickListener(view -> {
             requestPermission();
             if (mock_location == 1){
-                dialogView.viewNotifKosong(AbsenSiftActivity.this, "Anda terdeteksi menggunakan Fake GPS.", "Jika ditemukan berulang kali, akun anda akan terblokir otomatis dan tercatat Alpa.");
+                dialogView.viewNotifKosong(AbsenShiftActivity.this, "Anda terdeteksi menggunakan Fake GPS.", "Jika ditemukan berulang kali, akun anda akan terblokir otomatis dan tercatat Alpa.");
             }else {
                 uploadImages();
             }
@@ -468,7 +467,7 @@ public class AbsenSiftActivity extends AppCompatActivity implements OnMapReadyCa
     // this is all you need to grant your application external storage permision
     private void requestPermission(){
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
-            ActivityCompat.requestPermissions(AbsenSiftActivity.this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},REQUEST_CODE_ASK_PERMISSIONS);
+            ActivityCompat.requestPermissions(AbsenShiftActivity.this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},REQUEST_CODE_ASK_PERMISSIONS);
         }
     }
 
@@ -488,7 +487,7 @@ public class AbsenSiftActivity extends AppCompatActivity implements OnMapReadyCa
             if (rippleAnimator != null) rippleAnimator.cancel();
             map.clear();
             LatLng position = new LatLng(locationObj.getLatitude(), locationObj.getLongitude());
-            map.addMarker(new MarkerOptions().position(position).icon(bitmapDescriptorFromVector(this, R.drawable.asn_lk)).title(lokasi.getAddress(AbsenSiftActivity.this, locationObj.getLatitude(), locationObj.getLongitude())));
+            map.addMarker(new MarkerOptions().position(position).icon(bitmapDescriptorFromVector(this, R.drawable.asn_lk)).title(lokasi.getAddress(AbsenShiftActivity.this, locationObj.getLatitude(), locationObj.getLongitude())));
             rippleAnimator = MapUtils.showRippleEffect(map, position);
             map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(locationObj.getLatitude(), locationObj.getLongitude()), 18f));
             latGMap = locationObj.getLatitude();
@@ -669,7 +668,7 @@ public class AbsenSiftActivity extends AppCompatActivity implements OnMapReadyCa
     public void uploadImages(){
 
         if(file == null || !file.exists() || file.length() == 0){
-            dialogView.viewNotifKosong(AbsenSiftActivity.this, "Harap melampirkan foto taging anda.", "");
+            dialogView.viewNotifKosong(AbsenShiftActivity.this, "Harap melampirkan foto taging anda.", "");
         }else{
             selected = rgKehadiran.getCheckedRadioButtonId();
             radioSelectedKehadiran = findViewById(selected);
@@ -683,7 +682,7 @@ public class AbsenSiftActivity extends AppCompatActivity implements OnMapReadyCa
             }
 
             if (totalJarak > 150){
-                dialogView.viewNotifKosong(AbsenSiftActivity.this, "Andah harus berada dilingkungan kantor untuk melakukan absensi.", "");
+                dialogView.viewNotifKosong(AbsenShiftActivity.this, "Andah harus berada dilingkungan kantor untuk melakukan absensi.", "");
             }
             else{
                 //Malam
@@ -719,14 +718,14 @@ public class AbsenSiftActivity extends AppCompatActivity implements OnMapReadyCa
                         }
                         if (tanggal.equals(rbTanggal)) {
                                 if (tagingTime.getTime() < dateBatasWaktu.getTime()) {
-                                    dialogView.viewNotifKosong(AbsenSiftActivity.this, "Anda hanya dapat mengisi absen masuk, " + batasWaktu + " menit sebelum Jam Masuk", "");
+                                    dialogView.viewNotifKosong(AbsenShiftActivity.this, "Anda hanya dapat mengisi absen masuk, " + batasWaktu + " menit sebelum Jam Masuk", "");
                                 } else {
                                     kirimdataMasukMalam(ketKehadiran, eselon, sEmployId, timetableid, rbTanggal, rbJam, rbPosisi, "hadir", rbLat, rbLng, rbKet, mins, masuksift, rbValid);
                                 }
 
                         } else {
                             if (tagingTime.getTime() > jamPulangDate.getTime()) {
-                                dialogView.viewNotifKosong(AbsenSiftActivity.this, "Anda hanya dapat mengisi absen masuk, sebelum jam pulang malam.", "");
+                                dialogView.viewNotifKosong(AbsenShiftActivity.this, "Anda hanya dapat mengisi absen masuk, sebelum jam pulang malam.", "");
                             } else {
                                 kirimdataMasukMalam(ketKehadiran, eselon, sEmployId, timetableid, rbTanggal, rbJam, rbPosisi, "hadir", rbLat, rbLng, rbKet, mins, masuksift, rbValid);
                             }
@@ -757,10 +756,10 @@ public class AbsenSiftActivity extends AppCompatActivity implements OnMapReadyCa
                                 if (tagingTime.getTime() > jamPulangDate.getTime()) {
                                     kirimdataPulangMalam("pulang", eselon, sEmployId, timetableid, rbTanggal, rbJam, rbPosisi, "hadir", rbLat, rbLng, rbKet, 0, pulangsift, rbValid);
                                 } else {
-                                    dialogView.viewNotifKosong(AbsenSiftActivity.this, "Anda belum dapat mengisi absensi pulang,", "silahkan lanjutkan kembali aktivitas kantor anda.");
+                                    dialogView.viewNotifKosong(AbsenShiftActivity.this, "Anda belum dapat mengisi absensi pulang,", "silahkan lanjutkan kembali aktivitas kantor anda.");
                                 }
                             } else {
-                                    dialogView.viewNotifKosong(AbsenSiftActivity.this, "Anda belum dapat mengisi absensi pulang,", "silahkan lanjutkan kembali aktivitas kantor anda.");
+                                    dialogView.viewNotifKosong(AbsenShiftActivity.this, "Anda belum dapat mengisi absensi pulang,", "silahkan lanjutkan kembali aktivitas kantor anda.");
                             }
 
 
@@ -777,11 +776,11 @@ public class AbsenSiftActivity extends AppCompatActivity implements OnMapReadyCa
                         ketKehadiran = "masuk";
 
                             if (tagingTime.getTime() < dateBatasWaktu.getTime()) {
-                                dialogView.viewNotifKosong(AbsenSiftActivity.this, "Anda hanya dapat mengisi absen masuk, " + batasWaktu + " menit sebelum Jam Masuk", "");
+                                dialogView.viewNotifKosong(AbsenShiftActivity.this, "Anda hanya dapat mengisi absen masuk, " + batasWaktu + " menit sebelum Jam Masuk", "");
                             }
                             else {
                                 if (tagingTime.getTime() > jamPulangDate.getTime()) {
-                                    dialogView.viewNotifKosong(AbsenSiftActivity.this, "Anda tidak dapat melakukan absensi masuk pada jam pulang kerja.", "");
+                                    dialogView.viewNotifKosong(AbsenShiftActivity.this, "Anda tidak dapat melakukan absensi masuk pada jam pulang kerja.", "");
                                 } else {
                                     kirimdataMasukPagi(ketKehadiran, eselon, sEmployId, rbTanggal, rbJam, rbPosisi, "hadir", rbLat, rbLng, rbKet, mins, masuksift, rbValid);
                                 }
@@ -791,7 +790,7 @@ public class AbsenSiftActivity extends AppCompatActivity implements OnMapReadyCa
                     else {
                         rbPosisi = "pulang";
                             if (tagingTime.getTime() < jamPulangDate.getTime()) {
-                                dialogView.viewNotifKosong(AbsenSiftActivity.this, "Anda belum dapat mengisi absensi pulang,", "silahkan lanjutkan kembali aktivitas kantor anda ya.");
+                                dialogView.viewNotifKosong(AbsenShiftActivity.this, "Anda belum dapat mengisi absensi pulang,", "silahkan lanjutkan kembali aktivitas kantor anda ya.");
                             } else {
                                     kirimdataPulangPagi("pulang", eselon, sEmployId, rbTanggal, rbJam, rbPosisi, "hadir", rbLat, rbLng, rbKet, 0, pulangsift, rbValid);
                             }
@@ -970,37 +969,13 @@ private boolean isHariSenin() {
         finish();
     };
     public void kirimdataMasukPagi(String absensi, String eselon, String idpegawai, String tanggal, String jam, String posisi, String status,  String lat, String lng, String ket, int terlambat, String jampegawai, String validasi ){
-        Dialog dialogproses = new Dialog(AbsenSiftActivity.this, R.style.DialogStyle);
+        Dialog dialogproses = new Dialog(AbsenShiftActivity.this, R.style.DialogStyle);
         dialogproses.setContentView(R.layout.view_proses);
         dialogproses.setCancelable(false);
 
         byte[] imageBytes = ambilFoto.compressToMax80KB(file);
         MultipartBody.Part fotoPart = prepareFilePart("fototaging", imageBytes);
-//        Log.d("ABSEN_MASUK_PAGI", "===== REQUEST PARAMETER =====");
-//        Log.d("ABSEN_MASUK_PAGI", "absensi      : " + String.valueOf(absensi));
-//        Log.d("ABSEN_MASUK_PAGI", "eselon       : " + String.valueOf(eselon));
-//        Log.d("ABSEN_MASUK_PAGI", "idpegawai    : " + String.valueOf(idpegawai));
-//        Log.d("ABSEN_MASUK_PAGI", "timetableid  : " + String.valueOf(timetableid));
-//        Log.d("ABSEN_MASUK_PAGI", "tanggal      : " + String.valueOf(tanggal));
-//        Log.d("ABSEN_MASUK_PAGI", "jam          : " + String.valueOf(jam));
-//        Log.d("ABSEN_MASUK_PAGI", "posisi       : " + String.valueOf(posisi));
-//        Log.d("ABSEN_MASUK_PAGI", "status       : " + String.valueOf(status));
-//        Log.d("ABSEN_MASUK_PAGI", "lat          : " + String.valueOf(lat));
-//        Log.d("ABSEN_MASUK_PAGI", "lng          : " + String.valueOf(lng));
-//        Log.d("ABSEN_MASUK_PAGI", "eOPD         : " + String.valueOf(eOPD));
-//        Log.d("ABSEN_MASUK_PAGI", "jampegawai   : " + String.valueOf(jampegawai));
-//        Log.d("ABSEN_MASUK_PAGI", "validasi     : " + String.valueOf(validasi));
-//        Log.d("ABSEN_MASUK_PAGI", "rbFakeGPS    : " + String.valueOf(rbFakeGPS));
-//        Log.d("ABSEN_MASUK_PAGI", "batasWaktu   : " + String.valueOf(batasWaktu));
-//        Log.d("ABSEN_MASUK_PAGI", "masuksift    : " + String.valueOf(masuksift));
-//        Log.d("ABSEN_MASUK_PAGI", "pulangsift   : " + String.valueOf(pulangsift));
-//        Log.d("ABSEN_MASUK_PAGI", "inisialsift  : " + String.valueOf(inisialsift));
-//        Log.d("ABSEN_MASUK_PAGI", "tipesift     : " + String.valueOf(tipesift));
-//        Log.d("ABSEN_MASUK_PAGI", "idsift       : " + String.valueOf(idsift));
-//        Log.d("ABSEN_MASUK_PAGI", "ket          : " + String.valueOf(ket));
-//        Log.d("ABSEN_MASUK_PAGI", "terlambat    : " + String.valueOf(terlambat));
-//        Log.d("ABSEN_MASUK_PAGI", "fotoPart     : " + (fotoPart != null ? "ADA" : "NULL"));
-//        Log.d("ABSEN_MASUK_PAGI", "==============================");
+
 
         Call<ResponsePOJO> call =
                 RetroClient.getInstance().getApi().absensiftMasukPagi(
@@ -1032,18 +1007,26 @@ private boolean isHariSenin() {
             public void onResponse(@NonNull Call<ResponsePOJO> call, @NonNull Response<ResponsePOJO> response) {
 
                 if (!response.isSuccessful()) {
-                    Log.d("ABSEN_MASUK_PAGI", "log-error     : " + response.errorBody());
+                    try {
+                        if (response.errorBody() != null) {
+                            Log.e("ABSEN_SHIFT", "Gagal Masuk Pagi: " + response.errorBody().string());
+                        }
+                    } catch (Exception e) {
+                        Log.e("ABSEN_SHIFT", "Gagal baca error body", e);
+                    }
 
-                    dialogView.viewNotifKosong(AbsenSiftActivity.this, "Gagal mengisi absensi,", "silahkan coba kembali.");
+                    dialogView.viewNotifKosong(AbsenShiftActivity.this, "Gagal mengisi absensi,", "HTTP " + response.code());
                     dialogproses.dismiss();
                     return;
                 }
 
                 if (response.body().isStatus()) {
-                    databaseHelper.insertLog(sEmployId, eOPD, rbTanggal, "Melakukan Absen Masuk Pagi (Shift)", "Masuk");
+                    String shiftLabel = (tipesift != null && !tipesift.isEmpty()) ? tipesift.substring(0, 1).toUpperCase() + tipesift.substring(1) : "";
+                    String logKegiatan = "Melakukan Absen Masuk " + shiftLabel + " (Shift)";
+                    databaseHelper.insertLog(sEmployId, eOPD, rbTanggal, logKegiatan, "Masuk");
                     ResponsePOJO data = response.body();
                     dialogproses.dismiss();
-                    dialogView.viewSukses(AbsenSiftActivity.this, data.getRemarks());
+                    dialogView.viewSukses(AbsenShiftActivity.this, data.getRemarks());
 
                     // mulai hitung 10 detik
 
@@ -1057,7 +1040,7 @@ private boolean isHariSenin() {
 
                 } else {
                     dialogproses.dismiss();
-                    dialogView.viewNotifKosong(AbsenSiftActivity.this, response.body().getRemarks(), "");
+                    dialogView.viewNotifKosong(AbsenShiftActivity.this, response.body().getRemarks(), "");
                 }
 
             }
@@ -1065,7 +1048,7 @@ private boolean isHariSenin() {
             @Override
             public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
                 dialogproses.dismiss();
-                dialogView.pesanError(AbsenSiftActivity.this);
+                dialogView.pesanError(AbsenShiftActivity.this);
             }
         });
 
@@ -1074,7 +1057,7 @@ private boolean isHariSenin() {
 
 
     public void kirimdataPulangPagi(String absensi, String eselon, String idpegawai, String tanggal, String jam, String posisi, String status,  String lat, String lng, String ket, int terlambat, String jampegawai, String validasi ){
-        Dialog dialogproses = new Dialog(AbsenSiftActivity.this, R.style.DialogStyle);
+        Dialog dialogproses = new Dialog(AbsenShiftActivity.this, R.style.DialogStyle);
         dialogproses.setContentView(R.layout.view_proses);
         dialogproses.setCancelable(false);
 
@@ -1112,17 +1095,26 @@ private boolean isHariSenin() {
             public void onResponse(@NonNull Call<ResponsePOJO> call, @NonNull Response<ResponsePOJO> response) {
 
                 if (!response.isSuccessful()) {
+                    try {
+                        if (response.errorBody() != null) {
+                            Log.e("ABSEN_SHIFT", "Gagal Pulang Pagi: " + response.errorBody().string());
+                        }
+                    } catch (Exception e) {
+                        Log.e("ABSEN_SHIFT", "Gagal baca error body", e);
+                    }
 
-                    dialogView.viewNotifKosong(AbsenSiftActivity.this, "Gagal mengisi absensi,", "silahkan coba kembali.");
+                    dialogView.viewNotifKosong(AbsenShiftActivity.this, "Gagal mengisi absensi,", "HTTP " + response.code());
                     dialogproses.dismiss();
                     return;
                 }
 
                 if (response.body().isStatus()) {
-                    databaseHelper.insertLog(sEmployId, eOPD, rbTanggal, "Melakukan Absen Pulang Pagi (Shift)", "Pulang");
+                    String shiftLabel = (tipesift != null && !tipesift.isEmpty()) ? tipesift.substring(0, 1).toUpperCase() + tipesift.substring(1) : "";
+                    String logKegiatan = "Melakukan Absen Pulang " + shiftLabel + " (Shift)";
+                    databaseHelper.insertLog(sEmployId, eOPD, rbTanggal, logKegiatan, "Pulang");
                     ResponsePOJO data = response.body();
                     dialogproses.dismiss();
-                    dialogView.viewSukses(AbsenSiftActivity.this, data.getRemarks());
+                    dialogView.viewSukses(AbsenShiftActivity.this, data.getRemarks());
 
                     // mulai hitung 10 detik
 
@@ -1135,7 +1127,7 @@ private boolean isHariSenin() {
                     );
                 } else {
                     dialogproses.dismiss();
-                    dialogView.viewNotifKosong(AbsenSiftActivity.this, response.body().getRemarks(), "");
+                    dialogView.viewNotifKosong(AbsenShiftActivity.this, response.body().getRemarks(), "");
                 }
 
             }
@@ -1143,7 +1135,7 @@ private boolean isHariSenin() {
             @Override
             public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
                 dialogproses.dismiss();
-                dialogView.pesanError(AbsenSiftActivity.this);
+                dialogView.pesanError(AbsenShiftActivity.this);
             }
         });
 
@@ -1152,7 +1144,7 @@ private boolean isHariSenin() {
 
 
     public void kirimdataMasukMalam(String absensi, String eselon, String idpegawai, String timetableid, String tanggal, String jam, String posisi, String status,  String lat, String lng, String ket, int terlambat, String jampegawai, String validasi ){
-        Dialog dialogproses = new Dialog(AbsenSiftActivity.this, R.style.DialogStyle);
+        Dialog dialogproses = new Dialog(AbsenShiftActivity.this, R.style.DialogStyle);
         dialogproses.setContentView(R.layout.view_proses);
         dialogproses.setCancelable(false);
 
@@ -1216,17 +1208,26 @@ private boolean isHariSenin() {
             public void onResponse(@NonNull Call<ResponsePOJO> call, @NonNull Response<ResponsePOJO> response) {
 
                 if (!response.isSuccessful()) {
+                    try {
+                        if (response.errorBody() != null) {
+                            Log.e("ABSEN_SHIFT", "Gagal Masuk Malam: " + response.errorBody().string());
+                        }
+                    } catch (Exception e) {
+                        Log.e("ABSEN_SHIFT", "Gagal baca error body", e);
+                    }
 
-                    dialogView.viewNotifKosong(AbsenSiftActivity.this, "Gagal mengisi absensi,", "silahkan coba kembali.");
+                    dialogView.viewNotifKosong(AbsenShiftActivity.this, "Gagal mengisi absensi,", "HTTP " + response.code());
                     dialogproses.dismiss();
                     return;
                 }
 
                 if (response.body().isStatus()) {
-                    databaseHelper.insertLog(sEmployId, eOPD, rbTanggal, "Melakukan Absen Masuk Malam (Shift)", "Masuk");
+                    String shiftLabel = (tipesift != null && !tipesift.isEmpty()) ? tipesift.substring(0, 1).toUpperCase() + tipesift.substring(1) : "";
+                    String logKegiatan = "Melakukan Absen Masuk " + shiftLabel + " (Shift)";
+                    databaseHelper.insertLog(sEmployId, eOPD, rbTanggal, logKegiatan, "Masuk");
                     ResponsePOJO data = response.body();
                     dialogproses.dismiss();
-                    dialogView.viewSukses(AbsenSiftActivity.this, data.getRemarks());
+                    dialogView.viewSukses(AbsenShiftActivity.this, data.getRemarks());
 
                     // mulai hitung 10 detik
 
@@ -1240,7 +1241,7 @@ private boolean isHariSenin() {
                 } else {
                     dialogproses.dismiss();
 
-                    dialogView.viewNotifKosong(AbsenSiftActivity.this, response.body().getRemarks(), "");
+                    dialogView.viewNotifKosong(AbsenShiftActivity.this, response.body().getRemarks(), "");
                 }
 
             }
@@ -1248,7 +1249,7 @@ private boolean isHariSenin() {
             @Override
             public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
                 dialogproses.dismiss();
-                dialogView.pesanError(AbsenSiftActivity.this);
+                dialogView.pesanError(AbsenShiftActivity.this);
             }
         });
 
@@ -1257,7 +1258,7 @@ private boolean isHariSenin() {
 
 
     public void kirimdataPulangMalam(String absensi, String eselon, String idpegawai, String timetableid, String tanggal, String jam, String posisi, String status,  String lat, String lng, String ket, int terlambat, String jampegawai, String validasi ){
-        Dialog dialogproses = new Dialog(AbsenSiftActivity.this, R.style.DialogStyle);
+        Dialog dialogproses = new Dialog(AbsenShiftActivity.this, R.style.DialogStyle);
         dialogproses.setContentView(R.layout.view_proses);
         dialogproses.setCancelable(false);
 
@@ -1324,17 +1325,26 @@ private boolean isHariSenin() {
             public void onResponse(@NonNull Call<ResponsePOJO> call, @NonNull Response<ResponsePOJO> response) {
 
                 if (!response.isSuccessful()) {
+                    try {
+                        if (response.errorBody() != null) {
+                            Log.e("ABSEN_SHIFT", "Gagal Pulang Malam: " + response.errorBody().string());
+                        }
+                    } catch (Exception e) {
+                        Log.e("ABSEN_SHIFT", "Gagal baca error body", e);
+                    }
 
-                    dialogView.viewNotifKosong(AbsenSiftActivity.this, "Gagal mengisi absensi,", "silahkan coba kembali.");
+                    dialogView.viewNotifKosong(AbsenShiftActivity.this, "Gagal mengisi absensi,", "HTTP " + response.code());
                     dialogproses.dismiss();
                     return;
                 }
 
                 if (response.body().isStatus()) {
-                    databaseHelper.insertLog(sEmployId, eOPD, rbTanggal, "Melakukan Absen Pulang Malam (Shift)", "Pulang");
+                    String shiftLabel = (tipesift != null && !tipesift.isEmpty()) ? tipesift.substring(0, 1).toUpperCase() + tipesift.substring(1) : "";
+                    String logKegiatan = "Melakukan Absen Pulang " + shiftLabel + " (Shift)";
+                    databaseHelper.insertLog(sEmployId, eOPD, rbTanggal, logKegiatan, "Pulang");
                     ResponsePOJO data = response.body();
                     dialogproses.dismiss();
-                    dialogView.viewSukses(AbsenSiftActivity.this, data.getRemarks());
+                    dialogView.viewSukses(AbsenShiftActivity.this, data.getRemarks());
 
                     // mulai hitung 10 detik
 
@@ -1348,7 +1358,7 @@ private boolean isHariSenin() {
                 } else {
                     dialogproses.dismiss();
 
-                    dialogView.viewNotifKosong(AbsenSiftActivity.this, response.body().getRemarks(), "");
+                    dialogView.viewNotifKosong(AbsenShiftActivity.this, response.body().getRemarks(), "");
                 }
 
             }
@@ -1356,7 +1366,7 @@ private boolean isHariSenin() {
             @Override
             public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
                 dialogproses.dismiss();
-                dialogView.pesanError(AbsenSiftActivity.this);
+                dialogView.pesanError(AbsenShiftActivity.this);
             }
         });
 
@@ -1517,7 +1527,7 @@ statusAbsen = true;
     }
 
     public void cobarekamkembali(){
-        Dialog dataKosong = new Dialog(AbsenSiftActivity.this, R.style.DialogStyle);
+        Dialog dataKosong = new Dialog(AbsenShiftActivity.this, R.style.DialogStyle);
         dataKosong.setContentView(R.layout.view_warning_kosong);
         TextView tvWarning1 = dataKosong.findViewById(R.id.tvWarning1);
         ImageView tvTutupDialog = dataKosong.findViewById(R.id.tvTutupDialog);

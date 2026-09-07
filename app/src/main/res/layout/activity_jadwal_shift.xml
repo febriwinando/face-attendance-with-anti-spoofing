@@ -1,117 +1,228 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/background_main"
-    tools:context=".kehadiransift.JadwalSiftActivity"
+    tools:context=".kehadiransift.JadwalShiftActivity">
 
-    android:orientation="vertical">
+    <include layout="@layout/layout_background_palette" />
 
-    <RelativeLayout
-        android:id="@+id/titleHeaderPd"
+    <!-- Navigation Bar -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/clNavBarSift"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp">
+        android:layout_height="64dp"
+        android:layout_marginTop="28dp"
+        android:paddingHorizontal="12dp"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:layout_marginStart="10dp"
-            android:id="@+id/ivBack"
-            android:layout_width="38dp"
-            android:layout_height="38dp"
-            android:layout_centerVertical="true"
-            app:srcCompat="@drawable/one_left"
-            android:contentDescription="@string/todo"/>
+        <RelativeLayout
+            android:id="@+id/rlBackSift"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/ivBack"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_centerInParent="true"
+                android:src="@drawable/one_left"
+                app:tint="@color/text_primary"
+                android:contentDescription="@string/kembali" />
+        </RelativeLayout>
 
         <TextView
-            android:layout_toEndOf="@+id/ivBack"
             android:id="@+id/titleSift"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:elevation="10dp"
-            android:outlineAmbientShadowColor="@color/font"
-            android:outlineSpotShadowColor="@color/font"
+            android:layout_marginStart="8dp"
+            android:fontFamily="sans-serif-black"
             android:text="@string/jadwal_shift"
-            android:textSize="20sp"
-            android:textStyle="bold"
             android:textColor="@color/text_primary"
-            tools:ignore="UnusedAttribute" />
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/rlBackSift"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_width="38dp"
-            android:layout_height="38dp"
-            app:srcCompat="@drawable/one_sync"
-            android:layout_marginEnd="10dp"
+            android:id="@+id/ivSyncJadwalSift"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/backgoundovalabuabu"
+            android:backgroundTint="#1A1867D5"
+            android:padding="10dp"
+            android:src="@drawable/one_sync"
             app:tint="@color/primary_brand"
-            android:contentDescription="@string/todo"
-            android:id="@+id/ivSyncJadwalSift"/>
-    </RelativeLayout>
+            android:contentDescription="Sinkron"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <com.facebook.shimmer.ShimmerFrameLayout
-        android:id="@+id/shimmerJadwalSift"
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Main Content -->
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:shimmer_base_color="#CACACA"
-        app:shimmer_colored="true"
-        >
-        <ScrollView
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/clNavBarSift">
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <LinearLayout
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="40dp">
+
+            <com.facebook.shimmer.ShimmerFrameLayout
+                android:id="@+id/shimmerJadwalSift"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:layout_height="wrap_content"
+                app:shimmer_base_alpha="0.6"
+                app:shimmer_dropoff="0.5"
+                app:shimmer_duration="1200">
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvJadwalSifting"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:padding="5dp"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:paddingHorizontal="12dp"
+                    android:paddingTop="12dp"
                     tools:listitem="@layout/item_grid_jadwal" />
 
+            </com.facebook.shimmer.ShimmerFrameLayout>
+
+            <!-- Keterangan Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cvLegendSift"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="24dp"
+                app:cardBackgroundColor="@color/surface_main"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="2dp"
+                app:strokeWidth="0dp">
+
                 <LinearLayout
-                    android:layout_below="@+id/rvJadwalSifting"
-                    android:id="@+id/tvNb"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="20dp"
-                    >
+                    android:padding="20dp">
+
                     <TextView
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Keterangan:"
+                        android:fontFamily="sans-serif-black"
+                        android:text="Keterangan"
                         android:textColor="@color/text_primary"
-                        android:textStyle="bold"
-                        android:textSize="18sp"/>
+                        android:textSize="15sp"
+                        android:letterSpacing="0.02" />
 
-                    <TextView
+                    <View
+                        android:layout_width="40dp"
+                        android:layout_height="3dp"
+                        android:layout_marginTop="6dp"
+                        android:background="@color/primary_brand"
+                        android:alpha="0.5" />
+
+                    <GridLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="P: Pagi"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="16sp"/>
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="S: Sore"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="16sp"/>
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="M: Malam"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="16sp"/>
+                        android:layout_marginTop="20dp"
+                        android:columnCount="2"
+                        android:useDefaultMargins="true">
+
+                        <!-- Item Pagi -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_columnWeight="1"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingVertical="4dp">
+
+                            <View
+                                android:layout_width="12dp"
+                                android:layout_height="12dp"
+                                android:background="@drawable/backgoundovalbirusift"
+                                android:backgroundTint="@color/biru" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"
+                                android:fontFamily="sans-serif-medium"
+                                android:text="P : Pagi"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="13sp" />
+                        </LinearLayout>
+
+                        <!-- Item Sore -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_columnWeight="1"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingVertical="4dp">
+
+                            <View
+                                android:layout_width="12dp"
+                                android:layout_height="12dp"
+                                android:background="@drawable/backgoundovalbirusift"
+                                android:backgroundTint="@color/kuning" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"
+                                android:fontFamily="sans-serif-medium"
+                                android:text="S : Sore"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="13sp" />
+                        </LinearLayout>
+
+                        <!-- Item Malam -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_columnWeight="1"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingVertical="4dp">
+
+                            <View
+                                android:layout_width="12dp"
+                                android:layout_height="12dp"
+                                android:background="@drawable/backgoundovalbirusift"
+                                android:backgroundTint="@color/brand_secondary" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"
+                                android:fontFamily="sans-serif-medium"
+                                android:text="M : Malam"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="13sp" />
+                        </LinearLayout>
+
+                    </GridLayout>
+
                 </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
-            </LinearLayout>
-        </ScrollView>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
-    </com.facebook.shimmer.ShimmerFrameLayout>
-
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

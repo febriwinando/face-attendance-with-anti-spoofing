@@ -1,16 +1,17 @@
-package go.pemkott.appsandroidmobiletebingtinggi.kehadiransift;
+package go.pemkott.appsandroidmobiletebingtinggi.izinshift;
 
 import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.BULAN;
 import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.TAHUN;
 import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.TANGGALSIFT;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -27,7 +28,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.model.JadwalSift;
 import go.pemkott.appsandroidmobiletebingtinggi.model.WaktuSift;
 
-public class GridJadwalSiftAdapter extends RecyclerView.Adapter<GridJadwalSiftAdapter.GridViewHolder> {
+public class GridJadwalIzinShiftAdapter extends RecyclerView.Adapter<GridJadwalIzinShiftAdapter.GridViewHolder> {
     private OnItemClickCallback onItemClickCallback;
 
     public void setOnItemClickCallback(OnItemClickCallback onItemClickCallback) {
@@ -37,7 +38,7 @@ public class GridJadwalSiftAdapter extends RecyclerView.Adapter<GridJadwalSiftAd
     private ArrayList<JadwalSift> listJadwal;
     private ArrayList<WaktuSift> waktuSifts;
     Context context;
-    public GridJadwalSiftAdapter(Context context, ArrayList<JadwalSift> listJadwal, ArrayList<WaktuSift> waktuSifts) {
+    public GridJadwalIzinShiftAdapter(Context context, ArrayList<JadwalSift> listJadwal, ArrayList<WaktuSift> waktuSifts) {
         this.listJadwal = listJadwal;
         this.waktuSifts = waktuSifts;
         this.context = context;
@@ -61,9 +62,15 @@ public class GridJadwalSiftAdapter extends RecyclerView.Adapter<GridJadwalSiftAd
     @Override
     public void onBindViewHolder(@NonNull final GridViewHolder holder, int position) {
         holder.rlTanggalSift.setEnabled(false);
-        holder.tanggal.setTextSize(12);
         String today = TANGGALSIFT.format(new Date());
         holder.tanggal.setText(tanggalCalendar.get(position));
+        holder.txtTanggalJadwalSift.setVisibility(View.INVISIBLE);
+        holder.llTodayJadwal.setVisibility(View.GONE);
+
+        // Reset state
+        holder.tanggal.setTextColor(ContextCompat.getColor(context, R.color.text_hint));
+        holder.tanggal.setTypeface(null, Typeface.NORMAL);
+        holder.rlTanggalSift.setOnClickListener(null);
 
         for (int i = 0; i<listJadwal.size(); i++){
             JadwalSift jadwalSift = listJadwal.get(i);
@@ -73,94 +80,48 @@ public class GridJadwalSiftAdapter extends RecyclerView.Adapter<GridJadwalSiftAd
                 for (int j = 0 ; j<waktuSifts.size(); j++){
                     WaktuSift waktuSift = waktuSifts.get(j);
                     if (jadwalSift.getShift_id().equals(waktuSift.getId())){
-                        holder.tanggal.setTextColor(ContextCompat.getColor(context, R.color.text_hint));
 
                         holder.txtTanggalJadwalSift.setVisibility(View.VISIBLE);
-                        if (waktuSift.getTipe().equals("pagi")){
-                            holder.txttanggalJadwal.setText("P");
-                            holder.rlTanggalSift.setBackgroundResource(R.drawable.pagi100);
+                        int accentColor;
+                        String label;
 
-                        }else if (waktuSift.getTipe().equals("siang")){
-                            holder.rlTanggalSift.setBackgroundResource(R.drawable.siang100);
-                            holder.txttanggalJadwal.setText("S");
-
-                        }else if (waktuSift.getTipe().equals("malam")){
-                            holder.rlTanggalSift.setBackgroundResource(R.drawable.malam100);
-                            holder.txttanggalJadwal.setText("M");
+                        if (waktuSift.getTipe().equalsIgnoreCase("pagi")){
+                            accentColor = ContextCompat.getColor(context, R.color.biru);
+                            label = "P";
+                        } else if (waktuSift.getTipe().equalsIgnoreCase("siang") || waktuSift.getTipe().equalsIgnoreCase("sore")){
+                            accentColor = ContextCompat.getColor(context, R.color.kuning);
+                            label = "S";
+                        } else if (waktuSift.getTipe().equalsIgnoreCase("malam")){
+                            accentColor = ContextCompat.getColor(context, R.color.brand_secondary);
+                            label = "M";
+                        } else {
+                            accentColor = ContextCompat.getColor(context, R.color.primary_brand);
+                            label = "J";
                         }
 
-                        holder.tanggal.setTextColor(ContextCompat.getColor(context, R.color.white));
+                        holder.txtTanggalJadwalSift.setBackgroundTintList(ColorStateList.valueOf(accentColor));
+                        holder.txttanggalJadwal.setText(label);
+                        holder.txttanggalJadwal.setTextColor(Color.WHITE);
+
+                        holder.tanggal.setTextColor(ContextCompat.getColor(context, R.color.text_primary));
                         holder.tanggal.setTypeface(null, Typeface.BOLD);
 
-                        holder.rlTanggalSift.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
+                        holder.rlTanggalSift.setOnClickListener(v -> {
+                            if (onItemClickCallback != null) {
                                 onItemClickCallback.onItemClicked(tanggalJadwal.get(holder.getAdapterPosition()));
                             }
                         });
 
                     }
-
-
                 }
             }
         }
 
-        if (position == 0){
-            holder.tanggal.setTextSize(14);
-//            holder.tanggal.setTextColor(Color.parseColor("#87888c"));
-//            holder.tanggal.setTypeface(null, Typeface.BOLD_ITALIC);
-//            for (int i = 0; i<listJadwal.size(); i++){
-//                JadwalSift jadwalSift = listJadwal.get(i);
-//
-//                if (tanggalJadwal.get(position).equals(jadwalSift.getTanggal())){
-//
-//                    for (int j = 0 ; j<waktuSifts.size(); j++){
-//                        WaktuSift waktuSift = waktuSifts.get(j);
-//                        if (jadwalSift.getShift_id().equals(waktuSift.getId())){
-//                            holder.tanggal.setVisibility(View.GONE);
-//
-//                            holder.txtTanggalJadwalSift.setVisibility(View.VISIBLE);
-////                            if (waktuSift.getTipe().equals("pagi")){
-////                                holder.txttanggalJadwal.setText("P"+listJadwal.size());
-////                                holder.rlTanggalSift.setBackgroundResource(R.drawable.pagi100);
-////
-////                            }else if (waktuSift.getTipe().equals("siang")){
-////                                holder.rlTanggalSift.setBackgroundResource(R.drawable.siang100);
-////                                holder.txttanggalJadwal.setText("S");
-////
-////                            }else if (waktuSift.getTipe().equals("malam")){
-////                                holder.rlTanggalSift.setBackgroundResource(R.drawable.malam100);
-////                                holder.txttanggalJadwal.setText("M");
-////                            }
-//
-//                            holder.tanggal.setTextColor(Color.parseColor("#f4f4f4"));
-//                            holder.tanggal.setTypeface(null, Typeface.BOLD_ITALIC);
-//
-//                            holder.rlTanggalSift.setOnClickListener(new View.OnClickListener() {
-//                                @Override
-//                                public void onClick(View v) {
-//                                    onItemClickCallback.onItemClicked(tanggalJadwal.get(holder.getAdapterPosition()));
-//                                }
-//                            });
-//
-//                        }
-//
-//
-//                    }
-//                }
-//            }
-        }
-
         if (tanggalCalendar.get(position).equals(today)){
-            holder.tanggal.setTextSize(16);
-            holder.tanggal.setTypeface(null, Typeface.BOLD_ITALIC);
             holder.llTodayJadwal.setVisibility(View.VISIBLE);
-
         }
 
         holder.rlTanggalSift.setEnabled(true);
-
 
     }
 
@@ -170,11 +131,11 @@ public class GridJadwalSiftAdapter extends RecyclerView.Adapter<GridJadwalSiftAd
         return tanggalJadwal.size();
     }
 
-    public class GridViewHolder extends RecyclerView.ViewHolder {
+    public static class GridViewHolder extends RecyclerView.ViewHolder {
         TextView tanggal, txttanggalJadwal;
         RelativeLayout rlTanggalSift;
         View llTodayJadwal;
-        LinearLayout txtTanggalJadwalSift, llTanggalGridJadwal;
+        FrameLayout txtTanggalJadwalSift;
         GridViewHolder(View itemView) {
             super(itemView);
 

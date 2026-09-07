@@ -13,9 +13,13 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.activity.EdgeToEdge;
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -34,8 +38,8 @@ import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.api.HttpService;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
-import go.pemkott.appsandroidmobiletebingtinggi.izinshift.izinshiftcuti.CutiSiftActivity;
-import go.pemkott.appsandroidmobiletebingtinggi.izinshift.izinshiftpribadi.KeperluanPribadiSiftActivity;
+import go.pemkott.appsandroidmobiletebingtinggi.izinshift.izinshiftcuti.CutiShiftActivity;
+import go.pemkott.appsandroidmobiletebingtinggi.izinshift.izinshiftpribadi.KeperluanPribadiShiftActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.izinshift.izinshiftsakit.SakitShiftActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat;
 import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
@@ -47,7 +51,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class JadwalIzinSiftActivity extends AppCompatActivity {
+public class JadwalIzinShiftActivity extends AppCompatActivity {
     private RecyclerView rvJadwalSifting;
     private ArrayList<JadwalSift> listJadwalSift = new ArrayList<>();
 
@@ -77,10 +81,15 @@ public class JadwalIzinSiftActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.background_color));
-        getWindow().setNavigationBarColor(getResources().getColor(R.color.background_color));;
+        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_jadwal_izin_shift);
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, 0, systemBars.right, systemBars.bottom);
+            return insets;
+        });
+
         session = new SessionManager(this);
         userId = session.getPegawaiId();
 
@@ -111,6 +120,12 @@ public class JadwalIzinSiftActivity extends AppCompatActivity {
         });
         getData(TimeFormat.ambilbulanjadwal(bulan), bulan, String.valueOf(Integer.parseInt(tahun)-1), tahun);
 
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                finish();
+            }
+        });
     }
 
 
@@ -122,7 +137,7 @@ public class JadwalIzinSiftActivity extends AppCompatActivity {
             public void onResponse(@NonNull Call<List<WaktuSift>> call, @NonNull Response<List<WaktuSift>> response) {
 
                 if (!response.isSuccessful()){
-                    dialogView.viewNotifKosong(JadwalIzinSiftActivity.this, "Gagal mengunduh data, periksa koneksi internet anda dan coba kembali.", "");
+                    dialogView.viewNotifKosong(JadwalIzinShiftActivity.this, "Gagal mengunduh data, periksa koneksi internet anda dan coba kembali.", "");
                     return;
                 }
 
@@ -134,6 +149,7 @@ public class JadwalIzinSiftActivity extends AppCompatActivity {
                 }
 
                 if (jumlahdata == waktuSifts.size()){
+                    databaseHelper.insertLog(sEmployeID, eOPD, SIMPLE_FORMAT_TANGGAL.format(new Date()), "Sinkronisasi Master Jam Shift OPD (Izin)", "Sync");
                     unduhJadwalSift(1);
                 }
 
@@ -141,7 +157,7 @@ public class JadwalIzinSiftActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(@NonNull Call<List<WaktuSift>> call, @NonNull Throwable t) {
-                dialogView.viewNotifKosong(JadwalIzinSiftActivity.this, "Gagal mengunduh data, periksa koneksi internet anda dan coba kembali.", "");
+                dialogView.viewNotifKosong(JadwalIzinShiftActivity.this, "Gagal mengunduh data, periksa koneksi internet anda dan coba kembali.", "");
             }
         });
 
@@ -217,12 +233,7 @@ public class JadwalIzinSiftActivity extends AppCompatActivity {
         showRecyclerGrid();
         handlerProgressDialog();;
     }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        finish();
-    }
+    
 
     public void handlerProgressDialog() {
 
@@ -266,15 +277,15 @@ public class JadwalIzinSiftActivity extends AppCompatActivity {
         return waktuSifts;
     }
 
-    DialogView dialogView = new DialogView(JadwalIzinSiftActivity.this);
+    DialogView dialogView = new DialogView(JadwalIzinShiftActivity.this);
     public static String inisialsift = null, tipesift = null, masuksift = null, pulangsift = null, idsift = null, tanggalSift = null;
 
     private void showRecyclerGrid(){
         rvJadwalSifting.setLayoutManager(new GridLayoutManager(this, 4));
-        GridJadwalIzinSiftAdapter gridJadwal = new GridJadwalIzinSiftAdapter(JadwalIzinSiftActivity.this, listJadwalSift, getJamSift());
+        GridJadwalIzinShiftAdapter gridJadwal = new GridJadwalIzinShiftAdapter(JadwalIzinShiftActivity.this, listJadwalSift, getJamSift());
         rvJadwalSifting.setAdapter(gridJadwal);
 
-        gridJadwal.setOnItemClickCallback(new GridJadwalIzinSiftAdapter.OnItemClickCallback() {
+        gridJadwal.setOnItemClickCallback(new GridJadwalIzinShiftAdapter.OnItemClickCallback() {
             @Override
             public void onItemClicked(String s) {
                 tanggalSift = s;
@@ -294,65 +305,6 @@ public class JadwalIzinSiftActivity extends AppCompatActivity {
                         }
                     }
                 }
-//                String tanggal = SIMPLE_FORMAT_TANGGAL.format(new Date());
-//                Date hariini = null;
-//                try {
-//                    hariini = SIMPLE_FORMAT_TANGGAL.parse(tanggal);
-//                } catch (ParseException e) {
-//                    e.printStackTrace();
-//                }
-//
-//                Calendar calendar = Calendar.getInstance();
-//                calendar.setTime(hariini);
-//                calendar.add(Calendar.DAY_OF_YEAR, -1);
-//                Date newDate = calendar.getTime();
-//                String infoJadwalhariini = SIMPLE_FORMAT_TANGGAL.format(newDate);
-//
-//                String jamSekarangString = SIMPLE_FORMAT_JAM.format(new Date());
-//                Date jamSekarang = null, batasJamAbsenMalam = null, jadwalAbsensetelah = null;
-//                try {
-//                    batasJamAbsenMalam = SIMPLE_FORMAT_JAM.parse("12:00");
-//                    jamSekarang = SIMPLE_FORMAT_JAM.parse(jamSekarangString);
-//                    jadwalAbsensetelah = SIMPLE_FORMAT_TANGGAL.parse(s);
-//                } catch (ParseException e) {
-//                    e.printStackTrace();
-//                }
-//
-//                if (infoJadwalhariini.equals(s)) {
-//                    if (tipesift.equals("malam")) {
-//                        if (jamSekarang.getTime() > batasJamAbsenMalam.getTime()) {
-//                            Toast.makeText(JadwalIzinSiftActivity.this, "Batas waktu melakukan absen sift malam telah lewat", Toast.LENGTH_SHORT).show();
-//                        } else {
-//                            if (jam_masuk != null && jam_pulang != null){
-//                                dialogView.viewNotifKosong(JadwalIzinSiftActivity.this, "Anda Sudah mengisi absen masuk dan absen pulang untuk jadwal tanggal "+s,"");
-//                            }else{
-//                                viewinfo();
-//                            }
-//                        }
-//
-//                    }
-//
-//                } else if (jadwalAbsensetelah.getTime() > hariini.getTime()) {
-//                    Toast.makeText(JadwalIzinSiftActivity.this, "Belum dapat melakukan absen", Toast.LENGTH_SHORT).show();
-//                } else if (tanggal.equals(s)) {
-//                    if (tipesift.equals("malam")) {
-//                        if (jamSekarang.getTime() >= batasJamAbsenMalam.getTime()) {
-//                            if (jam_masuk != null && jam_pulang != null){
-//                                dialogView.viewNotifKosong(JadwalIzinSiftActivity.this, "Anda Sudah mengisi absen masuk dan absen pulang untuk jadwal tanggal "+s,"");
-//                            }else{
-//                                viewinfo();
-//                            }
-//                        } else {
-//                            dialogView.viewNotifKosong(JadwalIzinSiftActivity.this, "Sesi jadwal malam tanggal " + infoJadwalhariini + " masih berlangsung sampai pukul 12:00.", "");
-//                        }
-//                    } else {
-//                        if (jam_masuk != null && jam_pulang != null){
-//                            dialogView.viewNotifKosong(JadwalIzinSiftActivity.this, "Anda Sudah mengisi absen masuk dan absen pulang untuk jadwal tanggal "+s,"");
-//                        }else{
-//                            viewinfo();
-//                        }
-//                    }
-//                }
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
                 // tanggal hari ini
@@ -373,7 +325,7 @@ public class JadwalIzinSiftActivity extends AppCompatActivity {
 
                 if (targetDate.after(today)) {
                     try {
-                        dialogView.viewNotifKosong(JadwalIzinSiftActivity.this, "Anda belum dapat melakukan absensi masuk untuk jadwal pada "+TimeFormat.formatBahasaIndonesia(s),"");
+                        dialogView.viewNotifKosong(JadwalIzinShiftActivity.this, "Anda belum dapat melakukan absensi masuk untuk jadwal pada "+TimeFormat.formatBahasaIndonesia(s),"");
                     } catch (ParseException e) {
                         throw new RuntimeException(e);
                     }
@@ -397,7 +349,7 @@ public class JadwalIzinSiftActivity extends AppCompatActivity {
                             int currentHour = calendar.get(Calendar.HOUR_OF_DAY); // 0–23
 
                             if (currentHour >= 22) {
-                                dialogView.viewNotifKosong(JadwalIzinSiftActivity.this, "Kami informasikan bahwa waktu absensi untuk shift malam pada "+TimeFormat.formatBahasaIndonesia(s)+" tersebut telah terlewati","");
+                                dialogView.viewNotifKosong(JadwalIzinShiftActivity.this, "Kami informasikan bahwa waktu absensi untuk shift malam pada "+TimeFormat.formatBahasaIndonesia(s)+" tersebut telah terlewati","");
                             } else {
                                 viewinfo();
                             }
@@ -421,7 +373,7 @@ public class JadwalIzinSiftActivity extends AppCompatActivity {
 
     public void viewinfo(){
 
-        Dialog dialoginfo = new Dialog(JadwalIzinSiftActivity.jadwalIzinSiftActivity, R.style.DialogStyle);
+        Dialog dialoginfo = new Dialog(JadwalIzinShiftActivity.jadwalIzinSiftActivity, R.style.DialogStyle);
         dialoginfo.setContentView(R.layout.view_info_jadwal_izin_sift);
         dialoginfo.setCancelable(true);
 
@@ -441,13 +393,13 @@ public class JadwalIzinSiftActivity extends AppCompatActivity {
 
         txtKpSift.setOnClickListener(view -> {
             jenisabsensi = 9;
-            Intent absensift = new Intent(JadwalIzinSiftActivity.this, KeperluanPribadiSiftActivity.class);
+            Intent absensift = new Intent(JadwalIzinShiftActivity.this, KeperluanPribadiShiftActivity.class);
             startActivity(absensift);
         });
 
         txtCutiSift.setOnClickListener(view -> {
             jenisabsensi = 10;
-            Intent absensift = new Intent(JadwalIzinSiftActivity.this, CutiSiftActivity.class);
+            Intent absensift = new Intent(JadwalIzinShiftActivity.this, CutiShiftActivity.class);
             startActivity(absensift);
         });
 
@@ -455,7 +407,7 @@ public class JadwalIzinSiftActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 jenisabsensi = 11;
-                Intent absensift = new Intent(JadwalIzinSiftActivity.this, SakitShiftActivity.class);
+                Intent absensift = new Intent(JadwalIzinShiftActivity.this, SakitShiftActivity.class);
                 startActivity(absensift);
             }
         });
@@ -467,7 +419,7 @@ public class JadwalIzinSiftActivity extends AppCompatActivity {
     }
 
     public void unduhJadwalSift(int status){
-        Dialog dialogproses = new Dialog(JadwalIzinSiftActivity.this, R.style.DialogStyle);
+        Dialog dialogproses = new Dialog(JadwalIzinShiftActivity.this, R.style.DialogStyle);
         dialogproses.setContentView(R.layout.view_proses);
         dialogproses.setCancelable(false);
 
@@ -481,13 +433,13 @@ public class JadwalIzinSiftActivity extends AppCompatActivity {
             public void onResponse(@NonNull Call<ArrayList<JadwalSift>> call, @NonNull Response<ArrayList<JadwalSift>> response) {
                 dialogproses.dismiss();
                 if (!response.isSuccessful()){
-                    dialogView.viewNotifKosong(JadwalIzinSiftActivity.this, "Gagal mengunduh Jadwal Sift.","Silahkan coba kembali.");
+                    dialogView.viewNotifKosong(JadwalIzinShiftActivity.this, "Gagal mengunduh Jadwal Sift.","Silahkan coba kembali.");
 
                 }
 
                 ArrayList<JadwalSift> jadwalSifts = response.body();
                 if (jadwalSifts.size() == 0){
-                    dialogView.viewNotifKosong(JadwalIzinSiftActivity.this, "Jadwal belum tersedia, harap hubungi admin OPD anda.", "");
+                    dialogView.viewNotifKosong(JadwalIzinShiftActivity.this, "Jadwal belum tersedia, harap hubungi admin OPD anda.", "");
                 }else{
                     int jlhJadwalSift = 0;
                     for(JadwalSift jadwalSift : jadwalSifts){
@@ -496,10 +448,8 @@ public class JadwalIzinSiftActivity extends AppCompatActivity {
                     }
 
                     if (jlhJadwalSift ==  jadwalSifts.size()){
+                        databaseHelper.insertLog(sEmployeID, eOPD, SIMPLE_FORMAT_TANGGAL.format(new Date()), "Sinkronisasi Jadwal Shift Pegawai (Izin)", "Sync");
                         getData(TimeFormat.ambilbulanjadwal(bulan), bulan, String.valueOf(Integer.parseInt(tahun)-1), tahun);
-
-
-
                     }
                 }
 
@@ -509,7 +459,7 @@ public class JadwalIzinSiftActivity extends AppCompatActivity {
             @Override
             public void onFailure(@NonNull Call<ArrayList<JadwalSift>> call, @NonNull Throwable t) {
                 dialogproses.dismiss();
-                dialogView.viewNotifKosong(JadwalIzinSiftActivity.this, "Gagal mengakses server.", "Silahkan coba kembali.");
+                dialogView.viewNotifKosong(JadwalIzinShiftActivity.this, "Gagal mengakses server.", "Silahkan coba kembali.");
 
             }
         });

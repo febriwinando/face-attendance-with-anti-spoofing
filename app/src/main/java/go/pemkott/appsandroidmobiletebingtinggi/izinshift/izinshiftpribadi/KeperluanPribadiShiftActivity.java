@@ -11,7 +11,6 @@ import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,7 +23,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.model.Kegiatan;
 
 import go.pemkott.appsandroidmobiletebingtinggi.utils.ClsGlobal;
 
-public class KeperluanPribadiSiftActivity extends AppCompatActivity {
+public class KeperluanPribadiShiftActivity extends AppCompatActivity {
 
     private ArrayList<Kegiatan> list = new ArrayList<>();
     public static ArrayList<String> kegiatanChecked = new ArrayList<>();

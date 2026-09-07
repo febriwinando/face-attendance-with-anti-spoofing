@@ -22,7 +22,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import go.pemkott.appsandroidmobiletebingtinggi.izin.cuti.CutiAdapter;
 import go.pemkott.appsandroidmobiletebingtinggi.model.Kegiatan;
 
-public class CutiSiftActivity extends AppCompatActivity {
+public class CutiShiftActivity extends AppCompatActivity {
 
 
     public static AppCompatActivity cuti ;
@@ -151,11 +151,11 @@ public class CutiSiftActivity extends AppCompatActivity {
         if (kegiatanCheckedCuti.isEmpty() && kegiatansCutiLainnya.equals("kosong")){
 
 
-            dialogView.viewNotifKosong(CutiSiftActivity.this, "Anda Harus Mengisi Kegiatan Yang Dilaksanakan.", "");
+            dialogView.viewNotifKosong(CutiShiftActivity.this, "Anda Harus Mengisi Kegiatan Yang Dilaksanakan.", "");
 
         }else {
 
-            Intent intentTL = new Intent(CutiSiftActivity.this, databaseHelper.getCameraActivityClass());
+            Intent intentTL = new Intent(CutiShiftActivity.this, databaseHelper.getCameraActivityClass());
             intentTL.putExtra("aktivitas", "shiftizincuti");
             startActivity(intentTL);
 

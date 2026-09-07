@@ -13,9 +13,12 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -43,7 +46,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class JadwalSiftActivity extends AppCompatActivity {
+public class JadwalShiftActivity extends AppCompatActivity {
     private RecyclerView rvJadwalSifting;
     private ArrayList<JadwalSift> listJadwalSift = new ArrayList<>();
     private String title = "Mode List";
@@ -74,10 +77,15 @@ String userId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.background_color));
-        getWindow().setNavigationBarColor(getResources().getColor(R.color.background_color));
-
+        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_jadwal_shift);
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, 0, systemBars.right, systemBars.bottom);
+            return insets;
+        });
+
         session = new SessionManager(this);
         userId = session.getPegawaiId();
 
@@ -132,7 +140,7 @@ String userId;
             public void onResponse(@NonNull Call<List<WaktuSift>> call, @NonNull Response<List<WaktuSift>> response) {
 
                 if (!response.isSuccessful()){
-                    dialogView.viewNotifKosong(JadwalSiftActivity.this, "Gagal mengunduh data, periksa koneksi internet anda dan coba kembali.", "");
+                    dialogView.viewNotifKosong(JadwalShiftActivity.this, "Gagal mengunduh data, periksa koneksi internet anda dan coba kembali.", "");
                     return;
                 }
 
@@ -144,6 +152,7 @@ String userId;
                 }
 
                 if (jumlahdata == waktuSifts.size()){
+                    databaseHelper.insertLog(sEmployeID, eOPD, SIMPLE_FORMAT_TANGGAL.format(new Date()), "Sinkronisasi Master Jam Shift OPD", "Sync");
                     unduhJadwalSift(1);
                 }
 
@@ -151,7 +160,7 @@ String userId;
 
             @Override
             public void onFailure(@NonNull Call<List<WaktuSift>> call, @NonNull Throwable t) {
-                dialogView.viewNotifKosong(JadwalSiftActivity.this, "Gagal mengunduh data, periksa koneksi internet anda dan coba kembali.", "");
+                dialogView.viewNotifKosong(JadwalShiftActivity.this, "Gagal mengunduh data, periksa koneksi internet anda dan coba kembali.", "");
             }
         });
 
@@ -269,10 +278,10 @@ String userId;
     DialogView dialogView = new DialogView(this);
     private void showRecyclerGrid(){
         rvJadwalSifting.setLayoutManager(new GridLayoutManager(this, 4));
-        GridJadwalSiftAdapter gridJadwal = new GridJadwalSiftAdapter(JadwalSiftActivity.this, listJadwalSift, getJamSift());
+        GridJadwalShiftAdapter gridJadwal = new GridJadwalShiftAdapter(JadwalShiftActivity.this, listJadwalSift, getJamSift());
         rvJadwalSifting.setAdapter(gridJadwal);
 
-        gridJadwal.setOnItemClickCallback(new GridJadwalSiftAdapter.OnItemClickCallback() {
+        gridJadwal.setOnItemClickCallback(new GridJadwalShiftAdapter.OnItemClickCallback() {
             @Override
             public void onItemClicked(String s) {
 
@@ -287,13 +296,6 @@ String userId;
                                 tipesift = tipeSift.get(j);
                                 masuksift = masukSift.get(j);
                                 pulangsift = pulangSift.get(j);
-//
-//                                Log.d("ABSEN_MASUK_PAGI", idsift );
-//                                Log.d("ABSEN_MASUK_PAGI", inisialsift);
-//                                Log.d("ABSEN_MASUK_PAGI", tipesift);
-//                                Log.d("ABSEN_MASUK_PAGI", masuksift);
-//                                Log.d("ABSEN_MASUK_PAGI", pulangsift);
-//                                Log.d("ABSEN_MASUK_PAGI", tanggalSift);
                             }
                         }
                     }
@@ -319,7 +321,7 @@ String userId;
 
                 if (targetDate.after(today)) {
                     try {
-                        dialogView.viewNotifKosong(JadwalSiftActivity.this, "Anda belum dapat melakukan absensi masuk untuk jadwal pada "+TimeFormat.formatBahasaIndonesia(s),"");
+                        dialogView.viewNotifKosong(JadwalShiftActivity.this, "Anda belum dapat melakukan absensi masuk untuk jadwal pada "+TimeFormat.formatBahasaIndonesia(s),"");
                     } catch (ParseException e) {
                         throw new RuntimeException(e);
                     }
@@ -343,7 +345,7 @@ String userId;
                             int currentHour = calendar.get(Calendar.HOUR_OF_DAY); // 0–23
 
                             if (currentHour >= 22) {
-                                dialogView.viewNotifKosong(JadwalSiftActivity.this, "Kami informasikan bahwa waktu absensi untuk shift malam pada "+TimeFormat.formatBahasaIndonesia(s)+" tersebut telah terlewati","");
+                                dialogView.viewNotifKosong(JadwalShiftActivity.this, "Kami informasikan bahwa waktu absensi untuk shift malam pada "+TimeFormat.formatBahasaIndonesia(s)+" tersebut telah terlewati","");
                             } else {
                                 viewinfo();
                             }
@@ -366,7 +368,7 @@ String userId;
 
     public void viewinfo(){
 
-        Dialog dialoginfo = new Dialog(JadwalSiftActivity.this, R.style.DialogStyle);
+        Dialog dialoginfo = new Dialog(JadwalShiftActivity.this, R.style.DialogStyle);
         dialoginfo.setContentView(R.layout.view_info_jadwal_sift);
         dialoginfo.setCancelable(true);
 
@@ -383,7 +385,7 @@ String userId;
         }
 
         txtAbsen.setOnClickListener(view -> {
-            Intent absensift = new Intent(JadwalSiftActivity.this, databaseHelper.getCameraActivityClass());
+            Intent absensift = new Intent(JadwalShiftActivity.this, databaseHelper.getCameraActivityClass());
             absensift.putExtra("aktivitas", "kehadiransift");
             startActivity(absensift);
         });
@@ -394,7 +396,7 @@ String userId;
     }
 
     public void unduhJadwalSift(int status){
-        Dialog dialogproses = new Dialog(JadwalSiftActivity.this, R.style.DialogStyle);
+        Dialog dialogproses = new Dialog(JadwalShiftActivity.this, R.style.DialogStyle);
         dialogproses.setContentView(R.layout.view_proses);
         dialogproses.setCancelable(false);
 
@@ -407,7 +409,7 @@ String userId;
             @Override
             public void onResponse(@NonNull Call<ArrayList<JadwalSift>> call, @NonNull Response<ArrayList<JadwalSift>> response) {
                 if (!response.isSuccessful()){
-                    dialogView.viewNotifKosong(JadwalSiftActivity.this, "Gagal mengunduh Jadwal Sift.","Silahkan coba kembali.");
+                    dialogView.viewNotifKosong(JadwalShiftActivity.this, "Gagal mengunduh Jadwal Sift.","Silahkan coba kembali.");
                     dialogproses.dismiss();
                     return;
                 }
@@ -416,7 +418,7 @@ String userId;
                 if (jadwalSifts.size() == 0){
                     dialogproses.dismiss();
 
-                    dialogView.viewNotifKosong(JadwalSiftActivity.this, "Jadwal belum tersedia, harap hubungi admin OPD anda.", "");
+                    dialogView.viewNotifKosong(JadwalShiftActivity.this, "Jadwal belum tersedia, harap hubungi admin OPD anda.", "");
                 }else{
                     dialogproses.dismiss();
 
@@ -427,9 +429,8 @@ String userId;
                     }
 
                     if (jlhJadwalSift ==  jadwalSifts.size()){
+                        databaseHelper.insertLog(sEmployeID, eOPD, SIMPLE_FORMAT_TANGGAL.format(new Date()), "Sinkronisasi Jadwal Shift Pegawai", "Sync");
                         getData(TimeFormat.ambilbulanjadwal(bulan), bulan, String.valueOf(Integer.parseInt(tahun)-1), tahun);;
-
-
                     }
                 }
 
@@ -439,7 +440,7 @@ String userId;
             @Override
             public void onFailure(@NonNull Call<ArrayList<JadwalSift>> call, @NonNull Throwable t) {
                 dialogproses.dismiss();
-                dialogView.viewNotifKosong(JadwalSiftActivity.this, "Gagal mengakses server.", "Silahkan coba kembali.");
+                dialogView.viewNotifKosong(JadwalShiftActivity.this, "Gagal mengakses server.", "Silahkan coba kembali.");
 
             }
         });

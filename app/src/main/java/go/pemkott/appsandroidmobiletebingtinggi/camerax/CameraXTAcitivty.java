@@ -36,21 +36,18 @@ import com.google.mlkit.vision.face.*;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.Executors;
 
 import go.pemkott.appsandroidmobiletebingtinggi.R;
-import go.pemkott.appsandroidmobiletebingtinggi.camerax.FaceOverlayView;
-import go.pemkott.appsandroidmobiletebingtinggi.camerax.FaceOverlayViewTanpaDeteksi;
 import go.pemkott.appsandroidmobiletebingtinggi.dinasluarkantor.perjalanandinas.PerjalananDinasFinalActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.dinasluarkantor.tugaslapangan.TugasLapanganFinalActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.izin.cuti.IzinCutiFinalActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.izin.keperluanpribadi.KeperluanPribadiFinalActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.izin.sakit.IzinSakitFinalActivity;
-import go.pemkott.appsandroidmobiletebingtinggi.izinshift.izinshiftcuti.IzinCutiSiftFinalActivity;
-import go.pemkott.appsandroidmobiletebingtinggi.izinshift.izinshiftpribadi.KeperluanPribadiSiftActivity;
+import go.pemkott.appsandroidmobiletebingtinggi.izinshift.izinshiftcuti.IzinCutiShiftFinalActivity;
+import go.pemkott.appsandroidmobiletebingtinggi.izinshift.izinshiftpribadi.KeperluanPribadiShiftActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.izinshift.izinshiftsakit.IzinSakitShiftFinalActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.kehadiran.AbsensiKehadiranActivity;
-import go.pemkott.appsandroidmobiletebingtinggi.kehadiransift.AbsenSiftActivity;
+import go.pemkott.appsandroidmobiletebingtinggi.kehadiransift.AbsenShiftActivity;
 
 public class CameraXTAcitivty extends AppCompatActivity {
 
@@ -447,13 +444,13 @@ public class CameraXTAcitivty extends AppCompatActivity {
         } else if ("izinsakit".equals(aktivitas)) {
             i = new Intent(this, IzinSakitFinalActivity.class);
         } else if ("kehadiransift".equals(aktivitas)) {
-            i = new Intent(this, AbsenSiftActivity.class);
+            i = new Intent(this, AbsenShiftActivity.class);
         } else if ("shiftizinsakit".equals(aktivitas)) {
             i = new Intent(this, IzinSakitShiftFinalActivity.class);
         } else if ("shiftizinkp".equals(aktivitas)) {
-            i = new Intent(this, KeperluanPribadiSiftActivity.class);
+            i = new Intent(this, KeperluanPribadiShiftActivity.class);
         } else if ("shiftizincuti".equals(aktivitas)) {
-            i = new Intent(this, IzinCutiSiftFinalActivity.class);
+            i = new Intent(this, IzinCutiShiftFinalActivity.class);
         } else {
             i = new Intent();
             i.putExtra("namafile", fileName);

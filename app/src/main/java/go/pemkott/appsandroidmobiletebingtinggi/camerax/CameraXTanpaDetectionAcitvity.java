@@ -5,7 +5,6 @@ import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -35,11 +34,11 @@ import go.pemkott.appsandroidmobiletebingtinggi.dinasluarkantor.tugaslapangan.Tu
 import go.pemkott.appsandroidmobiletebingtinggi.izin.cuti.IzinCutiFinalActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.izin.keperluanpribadi.KeperluanPribadiFinalActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.izin.sakit.IzinSakitFinalActivity;
-import go.pemkott.appsandroidmobiletebingtinggi.izinshift.izinshiftcuti.IzinCutiSiftFinalActivity;
-import go.pemkott.appsandroidmobiletebingtinggi.izinshift.izinshiftpribadi.KeperluanPribadiSiftFinalActivity;
+import go.pemkott.appsandroidmobiletebingtinggi.izinshift.izinshiftcuti.IzinCutiShiftFinalActivity;
+import go.pemkott.appsandroidmobiletebingtinggi.izinshift.izinshiftpribadi.KeperluanPribadiShiftFinalActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.izinshift.izinshiftsakit.IzinSakitShiftFinalActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.kehadiran.AbsensiKehadiranActivity;
-import go.pemkott.appsandroidmobiletebingtinggi.kehadiransift.AbsenSiftActivity;
+import go.pemkott.appsandroidmobiletebingtinggi.kehadiransift.AbsenShiftActivity;
 
 public class CameraXTanpaDetectionAcitvity extends AppCompatActivity {
 
@@ -145,10 +144,10 @@ public class CameraXTanpaDetectionAcitvity extends AppCompatActivity {
         else if ("izincuti".equals(aktivitas)) i = new Intent(this, IzinCutiFinalActivity.class);
         else if ("izinkp".equals(aktivitas)) i = new Intent(this, KeperluanPribadiFinalActivity.class);
         else if ("izinsakit".equals(aktivitas)) i = new Intent(this, IzinSakitFinalActivity.class);
-        else if ("kehadiransift".equals(aktivitas)) i = new Intent(this, AbsenSiftActivity.class);
+        else if ("kehadiransift".equals(aktivitas)) i = new Intent(this, AbsenShiftActivity.class);
         else if ("shiftizinsakit".equals(aktivitas)) i = new Intent(this, IzinSakitShiftFinalActivity.class);
-        else if ("shiftizinkp".equals(aktivitas)) i = new Intent(this, KeperluanPribadiSiftFinalActivity.class);
-        else if ("shiftizincuti".equals(aktivitas)) i = new Intent(this, IzinCutiSiftFinalActivity.class);
+        else if ("shiftizinkp".equals(aktivitas)) i = new Intent(this, KeperluanPribadiShiftFinalActivity.class);
+        else if ("shiftizincuti".equals(aktivitas)) i = new Intent(this, IzinCutiShiftFinalActivity.class);
         else {
             i = new Intent();
             i.putExtra("namafile", fileName);

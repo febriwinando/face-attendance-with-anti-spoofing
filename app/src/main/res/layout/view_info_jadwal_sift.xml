@@ -1,139 +1,151 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="20dp"
-    android:orientation="vertical"
-    android:padding="10dp"
-    android:background="@drawable/backgroundnavbarputih"
-    android:backgroundTint="@color/surface_main"
-    >
-
-
+    android:layout_margin="24dp"
+    app:cardBackgroundColor="@color/surface_main"
+    app:cardCornerRadius="28dp"
+    app:cardElevation="12dp"
+    app:strokeWidth="0dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:gravity="center"
-        >
+        android:padding="24dp">
 
+        <!-- Header -->
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-            <TextView
-                android:layout_centerInParent="true"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
 
-                android:text="Info Jadwal Sift"
-                android:textAlignment="center"
-                android:textColor="@color/text_primary"
-                android:textSize="20sp"
-                />
-            <ImageView
-                android:layout_width="38dp"
-                android:layout_height="38dp"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
-                android:layout_alignParentEnd="true"
-                app:srcCompat="@drawable/one_close"
-                app:tint="@color/text_primary"
+                android:fontFamily="sans-serif-black"
+                android:text="Informasi Jadwal"
+                android:textColor="@color/text_primary"
+                android:textSize="20sp" />
+
+            <ImageView
                 android:id="@+id/ivTutupViewInfoSift"
-                />
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentEnd="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="8dp"
+                android:src="@drawable/one_close"
+                app:tint="@color/text_hint"
+                android:contentDescription="Tutup" />
         </RelativeLayout>
-        <TableLayout
-            android:padding="10dp"
+
+        <View
+            android:layout_width="40dp"
+            android:layout_height="4dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/backgoundovalbirusift"
+            android:alpha="0.5" />
+
+        <!-- Time Display Section -->
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TableRow
-                android:layout_marginBottom="10dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:orientation="horizontal"
+            android:background="@drawable/backgroundwhiteradius"
+            android:backgroundTint="@color/surface_variant"
+            android:padding="16dp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
 
                 <TextView
-                    android:textAlignment="center"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Jam Masuk"
-                    android:textColor="@color/text_primary"
-                    android:textSize="16sp"
-
-                    />
+                    android:fontFamily="sans-serif-medium"
+                    android:text="JAM MASUK"
+                    android:textColor="@color/text_hint"
+                    android:textSize="11sp"
+                    android:letterSpacing="0.1" />
 
                 <TextView
                     android:id="@+id/jamSiftMasuk"
-                    android:textAlignment="center"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="24:00"
-                    android:padding="5dp"
-                    android:background="@drawable/backgroundovalkuning"
-                    android:textColor="@color/on_primary_brand"
-                    android:textStyle="bold"
-                    android:textSize="16sp"
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="sans-serif-black"
+                    android:textColor="@color/primary_brand"
+                    android:textSize="20sp"
+                    tools:text="08:00" />
+            </LinearLayout>
 
-                    />
-            </TableRow>
+            <View
+                android:layout_width="1dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center_vertical"
+                android:background="@color/divider_color" />
 
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
 
                 <TextView
-                    android:textAlignment="center"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Jam Pulang"
-                    android:textColor="@color/text_primary"
-                    android:textSize="16sp"
-                     />
+                    android:fontFamily="sans-serif-medium"
+                    android:text="JAM PULANG"
+                    android:textColor="@color/text_hint"
+                    android:textSize="11sp"
+                    android:letterSpacing="0.1" />
 
                 <TextView
                     android:id="@+id/jamSiftPulang"
-                    android:textAlignment="center"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="08:00"
-                    android:padding="5dp"
-                    android:background="@drawable/backgroundovalkuning"
-                    android:textColor="@color/on_primary_brand"
-                    android:textStyle="bold"
-                    android:textSize="16sp"
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="sans-serif-black"
+                    android:textColor="@color/brand_secondary"
+                    android:textSize="20sp"
+                    tools:text="16:00" />
+            </LinearLayout>
+        </LinearLayout>
 
-                    />
-            </TableRow>
-        </TableLayout>
+        <!-- Main Action Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/txtAbsen"
+            style="@style/Widget.Material3.Button.TonalButton"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:layout_marginTop="32dp"
+            android:text="Masuk / Pulang Kantor"
+            android:textAllCaps="false"
+            android:textSize="16sp"
+            android:fontFamily="sans-serif-black"
+            app:cornerRadius="16dp"
+            app:icon="@drawable/ic_baseline_person_24"
+            app:iconGravity="textStart"
+            app:iconPadding="12dp" />
 
-        <LinearLayout
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:orientation="vertical">
+            android:layout_marginTop="20dp"
+            android:textAlignment="center"
+            android:fontFamily="sans-serif-italic"
+            android:text="* Ketuk tombol di atas untuk melakukan perekaman wajah."
+            android:textColor="@color/text_hint"
+            android:textSize="11sp" />
 
-            <TextView
-                android:layout_margin="5dp"
-                android:layout_width="match_parent"
-                android:textAlignment="center"
-                android:layout_height="wrap_content"
-                android:text="Masuk/Pulang Kantor"
-                android:background="@drawable/backgroundnavbar"
-                android:textColor="@color/on_primary_brand"
-                android:textStyle="bold"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp"
-                android:textSize="16sp"
-                android:id="@+id/txtAbsen"
-
-                />
-
-        </LinearLayout>
     </LinearLayout>
-</LinearLayout>
+</com.google.android.material.card.MaterialCardView>

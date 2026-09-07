@@ -100,7 +100,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.utils.MapUtils;
 import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraXLActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
-import go.pemkott.appsandroidmobiletebingtinggi.izinshift.JadwalIzinSiftActivity;
+import go.pemkott.appsandroidmobiletebingtinggi.izinshift.JadwalIzinShiftActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.izinshift.izinshiftsakit.IzinSakitShiftFinalActivity;
 
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFoto;
@@ -116,7 +116,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class IzinCutiSiftFinalActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class IzinCutiShiftFinalActivity extends AppCompatActivity implements OnMapReadyCallback {
     //Gmaps
     private static final int REQUEST_CHECK_SETTINGS = 100;
     private GoogleMap map;
@@ -160,8 +160,8 @@ public class IzinCutiSiftFinalActivity extends AppCompatActivity implements OnMa
     LinearLayout llLampiranDinasLuarCutiHead;
     View llPdfDinasLuar, llLampiranDinasLuar;
     ArrayList<String> kegiatans = new ArrayList<>();
-    AmbilFoto ambilFoto = new AmbilFoto(IzinCutiSiftFinalActivity.this);
-    AmbilFotoLampiran ambilFotoLampiran = new AmbilFotoLampiran(IzinCutiSiftFinalActivity.this);
+    AmbilFoto ambilFoto = new AmbilFoto(IzinCutiShiftFinalActivity.this);
+    AmbilFotoLampiran ambilFotoLampiran = new AmbilFotoLampiran(IzinCutiShiftFinalActivity.this);
 
     Bitmap rotationBitmapTag;
     Bitmap rotationBitmapSurat;
@@ -234,18 +234,18 @@ public class IzinCutiSiftFinalActivity extends AppCompatActivity implements OnMa
         jam_masuk = DashboardVersiOne.jam_masuk;
         jam_pulang = DashboardVersiOne.jam_pulang;
         titleDinasLuar.setText("CUTI");
-        rbTanggal = JadwalIzinSiftActivity.tanggalSift;
-        inisialsift = JadwalIzinSiftActivity.inisialsift;
-        idsift = JadwalIzinSiftActivity.idsift;
-        tipesift = JadwalIzinSiftActivity.tipesift;
-        masuksift = JadwalIzinSiftActivity.masuksift;
-        pulangsift = JadwalIzinSiftActivity.pulangsift;
-        tanggalSift = JadwalIzinSiftActivity.tanggalSift;
+        rbTanggal = JadwalIzinShiftActivity.tanggalSift;
+        inisialsift = JadwalIzinShiftActivity.inisialsift;
+        idsift = JadwalIzinShiftActivity.idsift;
+        tipesift = JadwalIzinShiftActivity.tipesift;
+        masuksift = JadwalIzinShiftActivity.masuksift;
+        pulangsift = JadwalIzinShiftActivity.pulangsift;
+        tanggalSift = JadwalIzinShiftActivity.tanggalSift;
 
 
         kegiatans.clear();
-        kegiatans = CutiSiftActivity.kegiatanCheckedCuti;
-        kegiatanlainnya = CutiSiftActivity.kegiatansCutiLainnya;
+        kegiatans = CutiShiftActivity.kegiatanCheckedCuti;
+        kegiatanlainnya = CutiShiftActivity.kegiatansCutiLainnya;
 
         //Google Maps
         Window window = this.getWindow();
@@ -290,7 +290,7 @@ public class IzinCutiSiftFinalActivity extends AppCompatActivity implements OnMa
                     }
 
                     if (sUri.toString().startsWith("content://")) {
-                        try (Cursor cursor = IzinCutiSiftFinalActivity.this.getContentResolver().query(sUri, null, null, null, null)) {
+                        try (Cursor cursor = IzinCutiShiftFinalActivity.this.getContentResolver().query(sUri, null, null, null, null)) {
                             if (cursor != null && cursor.moveToFirst()) {
                                 displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
                                 tvSuratPerintah.setText(displayName);
@@ -472,7 +472,7 @@ public class IzinCutiSiftFinalActivity extends AppCompatActivity implements OnMa
 
                 long now = System.currentTimeMillis();
                 if (now - lastWeatherUpdate > 10 * 60 * 1000) {
-                    WeatherUtil.fetchWeather(IzinCutiSiftFinalActivity.this, locationResult.getLastLocation().getLatitude(), locationResult.getLastLocation().getLongitude(), tvTemperature, tvCondition, ivWeatherIcon);
+                    WeatherUtil.fetchWeather(IzinCutiShiftFinalActivity.this, locationResult.getLastLocation().getLatitude(), locationResult.getLastLocation().getLongitude(), tvTemperature, tvCondition, ivWeatherIcon);
                     lastWeatherUpdate = now;
                 }
             }
@@ -482,11 +482,11 @@ public class IzinCutiSiftFinalActivity extends AppCompatActivity implements OnMa
     public void kirimdatacutishift(View view){
         requestPermission();
         if (mock_location == 1){
-            dialogView.viewNotifKosong(IzinCutiSiftFinalActivity.this, "Anda terdeteksi menggunakan Fake GPS.", "Jika ditemukan berulang kali, akun anda akan terblokir otomatis dan tercatat Alpa.");
+            dialogView.viewNotifKosong(IzinCutiShiftFinalActivity.this, "Anda terdeteksi menggunakan Fake GPS.", "Jika ditemukan berulang kali, akun anda akan terblokir otomatis dan tercatat Alpa.");
         }else {
 
             if (file == null || !file.exists() || file.length() == 0) {
-                dialogView.viewNotifKosong(IzinCutiSiftFinalActivity.this, "Anda harus melampirkan Foto Kegiatan dan Izin Cuti.", "");
+                dialogView.viewNotifKosong(IzinCutiShiftFinalActivity.this, "Anda harus melampirkan Foto Kegiatan dan Izin Cuti.", "");
             } else {
                 uploadImages();
             }
@@ -506,7 +506,7 @@ public class IzinCutiSiftFinalActivity extends AppCompatActivity implements OnMa
         }
 
         if (dariTanggal == null || sampaiTanggal == null){
-            dialogView.viewNotifKosong(IzinCutiSiftFinalActivity.this, "Rentang waktu masa cuti tidak boleh kosong.", "");
+            dialogView.viewNotifKosong(IzinCutiShiftFinalActivity.this, "Rentang waktu masa cuti tidak boleh kosong.", "");
 
         }
         else{
@@ -549,7 +549,7 @@ public class IzinCutiSiftFinalActivity extends AppCompatActivity implements OnMa
         );
     }
     public void kirimdata(String valid, String posisi, String status){
-        Dialog dialogproses = new Dialog(IzinCutiSiftFinalActivity.this, R.style.DialogStyle);
+        Dialog dialogproses = new Dialog(IzinCutiShiftFinalActivity.this, R.style.DialogStyle);
         dialogproses.setContentView(R.layout.view_proses);
         dialogproses.setCancelable(false);
 
@@ -619,7 +619,7 @@ public class IzinCutiSiftFinalActivity extends AppCompatActivity implements OnMa
 
 
                     dialogView.viewNotifKosong(
-                            IzinCutiSiftFinalActivity.this,
+                            IzinCutiShiftFinalActivity.this,
                             "Gagal mengisi absensi",
                             "Silahkan coba kembali ya."
                     );
@@ -630,9 +630,9 @@ public class IzinCutiSiftFinalActivity extends AppCompatActivity implements OnMa
 
                 if (Objects.requireNonNull(response.body()).isStatus()){
                     databaseHelper.insertLog(sEmployeID, eOPD, rbTanggal, "Melakukan Pengajuan Izin Cuti (Shift)", "Cuti");
-                    dialogView.viewSukses(IzinCutiSiftFinalActivity.this, data.getRemarks());
+                    dialogView.viewSukses(IzinCutiShiftFinalActivity.this, data.getRemarks());
                 }else {
-                    dialogView.viewNotifKosong(IzinCutiSiftFinalActivity.this, data.getRemarks(),"");
+                    dialogView.viewNotifKosong(IzinCutiShiftFinalActivity.this, data.getRemarks(),"");
                 }
 
             }
@@ -640,7 +640,7 @@ public class IzinCutiSiftFinalActivity extends AppCompatActivity implements OnMa
             @Override
             public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
                 dialogproses.dismiss();
-                dialogView.pesanError(IzinCutiSiftFinalActivity.this);
+                dialogView.pesanError(IzinCutiShiftFinalActivity.this);
             }
         });
 
@@ -658,7 +658,7 @@ public class IzinCutiSiftFinalActivity extends AppCompatActivity implements OnMa
             rbLat = String.valueOf(latGMap);
             rbLng = String.valueOf(lngGMap);
         }else{
-            dialogView.viewNotifKosong(IzinCutiSiftFinalActivity.this, "Pastikan anda telah terhubung internet.", "");
+            dialogView.viewNotifKosong(IzinCutiShiftFinalActivity.this, "Pastikan anda telah terhubung internet.", "");
         }
 
     }
@@ -668,7 +668,7 @@ public class IzinCutiSiftFinalActivity extends AppCompatActivity implements OnMa
     private void datauser() {
         Cursor res = databaseHelper.getAllData22(userId);
         if (res.getCount() == 0) {
-            dialogView.viewNotifKosong(IzinCutiSiftFinalActivity.this, "Error: data pegawai tidak ditemukan.", "Silahkan hubungi admin anda!");
+            dialogView.viewNotifKosong(IzinCutiShiftFinalActivity.this, "Error: data pegawai tidak ditemukan.", "Silahkan hubungi admin anda!");
 
             return;
         }
@@ -731,7 +731,7 @@ public class IzinCutiSiftFinalActivity extends AppCompatActivity implements OnMa
     }
 
     public void viewLampiran(){
-        Dialog dialogLampiran = new Dialog(IzinCutiSiftFinalActivity.this, R.style.DialogStyle);
+        Dialog dialogLampiran = new Dialog(IzinCutiShiftFinalActivity.this, R.style.DialogStyle);
         dialogLampiran.setContentView(R.layout.view_add_lampiran);
 
         View llFileManager = dialogLampiran.findViewById(R.id.llFileManager);
@@ -758,7 +758,7 @@ public class IzinCutiSiftFinalActivity extends AppCompatActivity implements OnMa
         });
 
         llKamera.setOnClickListener(v -> {
-            Intent intent = new Intent(IzinCutiSiftFinalActivity.this, CameraXLActivity.class);
+            Intent intent = new Intent(IzinCutiShiftFinalActivity.this, CameraXLActivity.class);
             intent.putExtra("aktivitas", "lampirancutisift");
             cameraLauncher.launch(intent);
             dialogLampiran.dismiss();
@@ -805,7 +805,7 @@ public class IzinCutiSiftFinalActivity extends AppCompatActivity implements OnMa
             imageFile = File.createTempFile(filename, ".png", storageDirectory);
             currentPhotoPath = null;
             currentPhotoPath = imageFile.getAbsolutePath();
-            Uri imageUri = FileProvider.getUriForFile(IzinCutiSiftFinalActivity.this, "go.pemkott.appsandroidmobiletebingtinggi.fileprovider", imageFile);
+            Uri imageUri = FileProvider.getUriForFile(IzinCutiShiftFinalActivity.this, "go.pemkott.appsandroidmobiletebingtinggi.fileprovider", imageFile);
             if (addFoto.equals("kegiatan")){
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
@@ -884,7 +884,7 @@ public class IzinCutiSiftFinalActivity extends AppCompatActivity implements OnMa
 
 
                 Uri selectedImageUri = data.getData();
-                String FilePath2  = getDriveFilePath(selectedImageUri, IzinCutiSiftFinalActivity.this);
+                String FilePath2  = getDriveFilePath(selectedImageUri, IzinCutiShiftFinalActivity.this);
                 File originalLampiran = new File(FilePath2);
                 try {
                     filelampiran = ambilFoto.compressToFile(this, originalLampiran);
@@ -971,7 +971,7 @@ public class IzinCutiSiftFinalActivity extends AppCompatActivity implements OnMa
         String absolutePath = "";
 
         try{
-            InputStream inputStream = IzinCutiSiftFinalActivity.this.getContentResolver().openInputStream(uri);
+            InputStream inputStream = IzinCutiShiftFinalActivity.this.getContentResolver().openInputStream(uri);
             byte[] pdfInBytes = new byte[inputStream.available()];
             inputStream.read(pdfInBytes);
             int offset = 0;
@@ -982,7 +982,7 @@ public class IzinCutiSiftFinalActivity extends AppCompatActivity implements OnMa
 
             String mPath;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD_MR1) {
-                mPath= IzinCutiSiftFinalActivity.this.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)+"absensi-"+sEmployeID+"-"+currentDateandTimes + ".pdf";
+                mPath= IzinCutiShiftFinalActivity.this.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)+"absensi-"+sEmployeID+"-"+currentDateandTimes + ".pdf";
             }
             else
             {
@@ -1146,7 +1146,7 @@ public class IzinCutiSiftFinalActivity extends AppCompatActivity implements OnMa
             if (rippleAnimator != null) rippleAnimator.cancel();
             map.clear();
             LatLng position = new LatLng(locationObj.getLatitude(), locationObj.getLongitude());
-            map.addMarker(new MarkerOptions().position(position).icon(bitmapDescriptorFromVector(this, R.drawable.asn_lk)).title(lokasi.getAddress(IzinCutiSiftFinalActivity.this, locationObj.getLatitude(), locationObj.getLongitude())));
+            map.addMarker(new MarkerOptions().position(position).icon(bitmapDescriptorFromVector(this, R.drawable.asn_lk)).title(lokasi.getAddress(IzinCutiShiftFinalActivity.this, locationObj.getLatitude(), locationObj.getLongitude())));
             rippleAnimator = MapUtils.showRippleEffect(map, position);
             map.animateCamera(CameraUpdateFactory.newLatLngZoom(position, 18f));
             latGMap = locationObj.getLatitude();
@@ -1313,7 +1313,7 @@ public class IzinCutiSiftFinalActivity extends AppCompatActivity implements OnMa
         tvTutupDialog.setOnClickListener(v -> {
             stopLocationUpdates();
             dialogSukes.dismiss();
-            CutiSiftActivity.cuti.finish();
+            CutiShiftActivity.cuti.finish();
             finish();
         });
 

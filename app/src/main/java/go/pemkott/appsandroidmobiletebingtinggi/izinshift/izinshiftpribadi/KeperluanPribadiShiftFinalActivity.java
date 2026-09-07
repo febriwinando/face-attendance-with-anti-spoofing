@@ -92,7 +92,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import go.pemkott.appsandroidmobiletebingtinggi.geolocation.GetLocation;
 import go.pemkott.appsandroidmobiletebingtinggi.izin.keperluanpribadi.KeperluanPribadiFinalActivity;
-import go.pemkott.appsandroidmobiletebingtinggi.izinshift.JadwalIzinSiftActivity;
+import go.pemkott.appsandroidmobiletebingtinggi.izinshift.JadwalIzinShiftActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFoto;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.Lokasi;
 import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
@@ -107,7 +107,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class KeperluanPribadiSiftFinalActivity extends AppCompatActivity  implements OnMapReadyCallback {
+public class KeperluanPribadiShiftFinalActivity extends AppCompatActivity  implements OnMapReadyCallback {
 
     //Gmaps
     private static final int REQUEST_CHECK_SETTINGS = 100;
@@ -153,7 +153,7 @@ public class KeperluanPribadiSiftFinalActivity extends AppCompatActivity  implem
 
     TextView tvKegiatanFinal, titleDinasLuar, title_content;
     ArrayList<String> kegiatans = new ArrayList<>();
-    AmbilFoto ambilFoto = new AmbilFoto(KeperluanPribadiSiftFinalActivity.this);
+    AmbilFoto ambilFoto = new AmbilFoto(KeperluanPribadiShiftFinalActivity.this);
 
     Bitmap rotationBitmapTag;
     Bitmap rotationBitmapSurat;
@@ -233,16 +233,16 @@ public class KeperluanPribadiSiftFinalActivity extends AppCompatActivity  implem
         jam_pulang = DashboardVersiOne.jam_pulang;
 
         titleDinasLuar.setText("Keperluan Pribadi");
-        rbTanggal = JadwalIzinSiftActivity.tanggalSift;
-        inisialsift = JadwalIzinSiftActivity.inisialsift;
-        idsift = JadwalIzinSiftActivity.idsift;
-        tipesift = JadwalIzinSiftActivity.tipesift;
-        masuksift = JadwalIzinSiftActivity.masuksift;
-        pulangsift = JadwalIzinSiftActivity.pulangsift;
+        rbTanggal = JadwalIzinShiftActivity.tanggalSift;
+        inisialsift = JadwalIzinShiftActivity.inisialsift;
+        idsift = JadwalIzinShiftActivity.idsift;
+        tipesift = JadwalIzinShiftActivity.tipesift;
+        masuksift = JadwalIzinShiftActivity.masuksift;
+        pulangsift = JadwalIzinShiftActivity.pulangsift;
 
         kegiatans.clear();
-        kegiatans = KeperluanPribadiSiftActivity.kegiatanChecked;
-        kegiatanlainnya = KeperluanPribadiSiftActivity.kegiatansLainnya;
+        kegiatans = KeperluanPribadiShiftActivity.kegiatanChecked;
+        kegiatanlainnya = KeperluanPribadiShiftActivity.kegiatansLainnya;
 
 
         requestPermission();
@@ -372,7 +372,7 @@ public class KeperluanPribadiSiftFinalActivity extends AppCompatActivity  implem
 
                 long now = System.currentTimeMillis();
                 if (now - lastWeatherUpdate > 10 * 60 * 1000) {
-                    WeatherUtil.fetchWeather(KeperluanPribadiSiftFinalActivity.this, locationResult.getLastLocation().getLatitude(), locationResult.getLastLocation().getLongitude(), tvTemperature, tvCondition, ivWeatherIcon);
+                    WeatherUtil.fetchWeather(KeperluanPribadiShiftFinalActivity.this, locationResult.getLastLocation().getLatitude(), locationResult.getLastLocation().getLongitude(), tvTemperature, tvCondition, ivWeatherIcon);
                     lastWeatherUpdate = now;
                 }
             }
@@ -410,11 +410,11 @@ public class KeperluanPribadiSiftFinalActivity extends AppCompatActivity  implem
     public void kirimDataDinasLuar(View view){
         requestPermission();
         if (mock_location == 1){
-            dialogView.viewNotifKosong(KeperluanPribadiSiftFinalActivity.this, "Anda terdeteksi menggunakan Fake GPS.", "Jika ditemukan berulang kali, akun anda akan terblokir otomatis dan tercatat Alpa.");
+            dialogView.viewNotifKosong(KeperluanPribadiShiftFinalActivity.this, "Anda terdeteksi menggunakan Fake GPS.", "Jika ditemukan berulang kali, akun anda akan terblokir otomatis dan tercatat Alpa.");
 
         }else {
             if (fotoTaging == null) {
-                dialogView.viewNotifKosong(KeperluanPribadiSiftFinalActivity.this, "Anda harus melampirkan Foto Kegiatan.", "");
+                dialogView.viewNotifKosong(KeperluanPribadiShiftFinalActivity.this, "Anda harus melampirkan Foto Kegiatan.", "");
             } else {
                 uploadImages();
             }
@@ -468,13 +468,13 @@ public class KeperluanPribadiSiftFinalActivity extends AppCompatActivity  implem
                         kirimdataMasuk(rbValid, rbPosisi, rbStatus, "masuk", masuksift);
                     } else if (infoJadwalhariini.equals(rbTanggal)) {
                         if (tagingTime.getTime()> jamPulangDate.getTime()){
-                            dialogView.viewNotifKosong(KeperluanPribadiSiftFinalActivity.this, "Anda tidak dapat melakukan absensi masuk pada jam pulang kerja.", "");
+                            dialogView.viewNotifKosong(KeperluanPribadiShiftFinalActivity.this, "Anda tidak dapat melakukan absensi masuk pada jam pulang kerja.", "");
                         }else{
                             kirimdataMasuk(rbValid, rbPosisi, rbStatus, "masuk", masuksift);
                         }
                     }
                 }else{
-                    dialogView.viewNotifKosong(KeperluanPribadiSiftFinalActivity.this, "Anda sudah mengisi absensi masuk.", "");
+                    dialogView.viewNotifKosong(KeperluanPribadiShiftFinalActivity.this, "Anda sudah mengisi absensi masuk.", "");
                 }
             }//Masuk
 
@@ -483,7 +483,7 @@ public class KeperluanPribadiSiftFinalActivity extends AppCompatActivity  implem
 
                 if (tanggal.equals(rbTanggal)){
                     if (jam_masuk == null){
-                        dialogView.viewNotifKosong(KeperluanPribadiSiftFinalActivity.this, "Harap mengisi absensi masuk, untuk izin Keperluan pribadi.", "");
+                        dialogView.viewNotifKosong(KeperluanPribadiShiftFinalActivity.this, "Harap mengisi absensi masuk, untuk izin Keperluan pribadi.", "");
                     }else{
                         kirimdataPulang(rbValid, rbPosisi, rbStatus, "pulang", pulangsift);
                     }
@@ -504,7 +504,7 @@ public class KeperluanPribadiSiftFinalActivity extends AppCompatActivity  implem
                                 }
                             }
                         }else {
-                            dialogView.viewNotifKosong(KeperluanPribadiSiftFinalActivity.this, "Batas melakukan absen telah lewat.", "Batas melakukan absen adalah pukul 12:00.");
+                            dialogView.viewNotifKosong(KeperluanPribadiShiftFinalActivity.this, "Batas melakukan absen telah lewat.", "Batas melakukan absen adalah pukul 12:00.");
                         }
                     }
                 }
@@ -514,7 +514,7 @@ public class KeperluanPribadiSiftFinalActivity extends AppCompatActivity  implem
         //pagi sore
         else{
             if (tagingTimePeriksa.getTime() < dateBatasWaktu.getTime()){
-                dialogView.viewNotifKosong(KeperluanPribadiSiftFinalActivity.this, "Anda hanya dapat mengisi absen masuk, "+batasWaktu+" menit sebelum Jam Masuk", "");
+                dialogView.viewNotifKosong(KeperluanPribadiShiftFinalActivity.this, "Anda hanya dapat mengisi absen masuk, "+batasWaktu+" menit sebelum Jam Masuk", "");
             }
             else {
 
@@ -522,13 +522,13 @@ public class KeperluanPribadiSiftFinalActivity extends AppCompatActivity  implem
                     if (jam_masuk == null) {
 
                         if (tagingTimePeriksa.getTime() >= pulangPeriksa.getTime()) {
-                            dialogView.viewNotifKosong(KeperluanPribadiSiftFinalActivity.this, "Anda tidak dapat melakukan absensi masuk pada jam pulang kerja.", "");
+                            dialogView.viewNotifKosong(KeperluanPribadiShiftFinalActivity.this, "Anda tidak dapat melakukan absensi masuk pada jam pulang kerja.", "");
                         } else {
                             kirimdataMasuk(rbValid, rbPosisi, rbStatus, "masuk", masuksift);
                         }
 
                     } else {
-                        dialogView.viewNotifKosong(KeperluanPribadiSiftFinalActivity.this, "Anda sudah mengisi absensi masuk.", "");
+                        dialogView.viewNotifKosong(KeperluanPribadiShiftFinalActivity.this, "Anda sudah mengisi absensi masuk.", "");
                     }
                 } else {
                     rbPosisi = "kp";
@@ -541,7 +541,7 @@ public class KeperluanPribadiSiftFinalActivity extends AppCompatActivity  implem
                         }
 
                     } else {
-                        dialogView.viewNotifKosong(KeperluanPribadiSiftFinalActivity.this, "Anda sudah mengisi absensi pulang.", "");
+                        dialogView.viewNotifKosong(KeperluanPribadiShiftFinalActivity.this, "Anda sudah mengisi absensi pulang.", "");
                     }
                 }
             }
@@ -621,7 +621,7 @@ public class KeperluanPribadiSiftFinalActivity extends AppCompatActivity  implem
     }
     public void kirimdataMasuk(String valid, String posisi, String status, String ketKehadiran, String jampegawai){
 
-        Dialog dialogproses = new Dialog(KeperluanPribadiSiftFinalActivity.this, R.style.DialogStyle);
+        Dialog dialogproses = new Dialog(KeperluanPribadiShiftFinalActivity.this, R.style.DialogStyle);
         dialogproses.setContentView(R.layout.view_proses);
         dialogproses.setCancelable(false);
 
@@ -658,7 +658,7 @@ public class KeperluanPribadiSiftFinalActivity extends AppCompatActivity  implem
                 if (!response.isSuccessful()) {
 
                     dialogView.viewNotifKosong(
-                            KeperluanPribadiSiftFinalActivity.this,
+                            KeperluanPribadiShiftFinalActivity.this,
                             "Gagal mengisi absensi",
                             "Silahkan coba kembali."
                     );
@@ -669,14 +669,14 @@ public class KeperluanPribadiSiftFinalActivity extends AppCompatActivity  implem
 
                 if (Objects.requireNonNull(response.body()).isStatus()){
                     databaseHelper.insertLog(sEmployeID, eOPD, rbTanggal, "Melakukan Pengajuan Keperluan Pribadi (Masuk - Shift)", "Masuk");
-                    dialogView.viewSukses(KeperluanPribadiSiftFinalActivity.this, data.getRemarks());
+                    dialogView.viewSukses(KeperluanPribadiShiftFinalActivity.this, data.getRemarks());
                     autoCloseHandler.postDelayed(
                             autoCloseRunnable,
                             10000
 
                     );
                 }else {
-                    dialogView.viewNotifKosong(KeperluanPribadiSiftFinalActivity.this, data.getRemarks(),"");
+                    dialogView.viewNotifKosong(KeperluanPribadiShiftFinalActivity.this, data.getRemarks(),"");
                 }
 
             }
@@ -684,7 +684,7 @@ public class KeperluanPribadiSiftFinalActivity extends AppCompatActivity  implem
             @Override
             public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
                 dialogproses.dismiss();
-                dialogView.pesanError(KeperluanPribadiSiftFinalActivity.this);
+                dialogView.pesanError(KeperluanPribadiShiftFinalActivity.this);
             }
         });
 
@@ -700,7 +700,7 @@ public class KeperluanPribadiSiftFinalActivity extends AppCompatActivity  implem
 
     public void kirimdataPulang(String valid, String posisi, String status, String ketKehadiran, String jampegawai){
 
-        Dialog dialogproses = new Dialog(KeperluanPribadiSiftFinalActivity.this, R.style.DialogStyle);
+        Dialog dialogproses = new Dialog(KeperluanPribadiShiftFinalActivity.this, R.style.DialogStyle);
         dialogproses.setContentView(R.layout.view_proses);
         dialogproses.setCancelable(false);
 
@@ -737,7 +737,7 @@ public class KeperluanPribadiSiftFinalActivity extends AppCompatActivity  implem
                 if (!response.isSuccessful()) {
 
                     dialogView.viewNotifKosong(
-                            KeperluanPribadiSiftFinalActivity.this,
+                            KeperluanPribadiShiftFinalActivity.this,
                             "Gagal mengisi absensi",
                             "Silahkan coba kembali."
                     );
@@ -748,7 +748,7 @@ public class KeperluanPribadiSiftFinalActivity extends AppCompatActivity  implem
 
                 if (Objects.requireNonNull(response.body()).isStatus()){
                     databaseHelper.insertLog(sEmployeID, eOPD, rbTanggal, "Melakukan Pengajuan Keperluan Pribadi (Pulang - Shift)", "Pulang");
-                    dialogView.viewSukses(KeperluanPribadiSiftFinalActivity.this, data.getRemarks());
+                    dialogView.viewSukses(KeperluanPribadiShiftFinalActivity.this, data.getRemarks());
                     autoCloseHandler.postDelayed(
 
                             autoCloseRunnable,
@@ -757,7 +757,7 @@ public class KeperluanPribadiSiftFinalActivity extends AppCompatActivity  implem
 
                     );
                 }else {
-                    dialogView.viewNotifKosong(KeperluanPribadiSiftFinalActivity.this, data.getRemarks(),"");
+                    dialogView.viewNotifKosong(KeperluanPribadiShiftFinalActivity.this, data.getRemarks(),"");
                 }
 
             }
@@ -765,7 +765,7 @@ public class KeperluanPribadiSiftFinalActivity extends AppCompatActivity  implem
             @Override
             public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
                 dialogproses.dismiss();
-                dialogView.pesanError(KeperluanPribadiSiftFinalActivity.this);
+                dialogView.pesanError(KeperluanPribadiShiftFinalActivity.this);
             }
         });
 
@@ -788,7 +788,7 @@ public class KeperluanPribadiSiftFinalActivity extends AppCompatActivity  implem
             rbLat = String.valueOf(latitudeSaya);
             rbLng = String.valueOf(longitudeSaya);
         }else{
-            dialogView.viewNotifKosong(KeperluanPribadiSiftFinalActivity.this, "Pastikan anda telah terhubung internet.", "");
+            dialogView.viewNotifKosong(KeperluanPribadiShiftFinalActivity.this, "Pastikan anda telah terhubung internet.", "");
         }
 
     }
@@ -796,7 +796,7 @@ public class KeperluanPribadiSiftFinalActivity extends AppCompatActivity  implem
     private void datauser(){
         Cursor res = databaseHelper.getAllData22(userId);
         if (res.getCount()==0){
-            dialogView.viewNotifKosong(KeperluanPribadiSiftFinalActivity.this, "Error: data pegawai tidak ditemuka.", "Silahkan hubungi admin anda!");
+            dialogView.viewNotifKosong(KeperluanPribadiShiftFinalActivity.this, "Error: data pegawai tidak ditemuka.", "Silahkan hubungi admin anda!");
             return;
         }
 
@@ -902,7 +902,7 @@ public class KeperluanPribadiSiftFinalActivity extends AppCompatActivity  implem
 
 
                 Uri pdfUri = data.getData();
-                String FilePath2 = ClsGlobal.getPathFromUri(KeperluanPribadiSiftFinalActivity.this, pdfUri);
+                String FilePath2 = ClsGlobal.getPathFromUri(KeperluanPribadiShiftFinalActivity.this, pdfUri);
                 File file1 = new File(FilePath2);
 
                 Bitmap bitmap = ambilFoto.fileBitmap(file1);
@@ -975,7 +975,7 @@ public class KeperluanPribadiSiftFinalActivity extends AppCompatActivity  implem
     public String getPDFPath(Uri uri){
         String absolutePath = "";
         try{
-            InputStream inputStream = KeperluanPribadiSiftFinalActivity.this.getContentResolver().openInputStream(uri);
+            InputStream inputStream = KeperluanPribadiShiftFinalActivity.this.getContentResolver().openInputStream(uri);
             byte[] pdfInBytes = new byte[inputStream.available()];
             inputStream.read(pdfInBytes);
 //            String encodePdf = Base64.encodeToString(pdfInBytes, Base64.DEFAULT);
@@ -988,7 +988,7 @@ public class KeperluanPribadiSiftFinalActivity extends AppCompatActivity  implem
 
             String mPath = "";
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD_MR1) {
-                mPath= KeperluanPribadiSiftFinalActivity.this.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)+"absensi-"+sEmployeID+"-"+currentDateandTimes + ".pdf";
+                mPath= KeperluanPribadiShiftFinalActivity.this.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)+"absensi-"+sEmployeID+"-"+currentDateandTimes + ".pdf";
             }
             else
             {
@@ -1020,13 +1020,13 @@ public class KeperluanPribadiSiftFinalActivity extends AppCompatActivity  implem
         if (i == 1){
             byteArrayTag = new ByteArrayOutputStream();
             inImage.compress(Bitmap.CompressFormat.PNG, 100, byteArrayTag);
-            String path = MediaStore.Images.Media.insertImage(KeperluanPribadiSiftFinalActivity.this.getContentResolver(), inImage, "absensi-"+sEmployeID+"-"+currentDateandTime, null);
+            String path = MediaStore.Images.Media.insertImage(KeperluanPribadiShiftFinalActivity.this.getContentResolver(), inImage, "absensi-"+sEmployeID+"-"+currentDateandTime, null);
             return Uri.parse(path);
 
         }else {
             byteArraySurat = new ByteArrayOutputStream();
             inImage.compress(Bitmap.CompressFormat.PNG, 100, byteArraySurat);
-            String paths = MediaStore.Images.Media.insertImage(KeperluanPribadiSiftFinalActivity.this.getContentResolver(), inImage, "absensi-"+sEmployeID+"-"+currentDateandTimes, null);
+            String paths = MediaStore.Images.Media.insertImage(KeperluanPribadiShiftFinalActivity.this.getContentResolver(), inImage, "absensi-"+sEmployeID+"-"+currentDateandTimes, null);
             return Uri.parse(paths);
         }
 
@@ -1103,7 +1103,7 @@ public class KeperluanPribadiSiftFinalActivity extends AppCompatActivity  implem
             if (rippleAnimator != null) rippleAnimator.cancel();
             map.clear();
             LatLng position = new LatLng(locationObj.getLatitude(), locationObj.getLongitude());
-            map.addMarker(new MarkerOptions().position(position).icon(bitmapDescriptorFromVector(this, R.drawable.asn_lk)).title(lokasi.getAddress(KeperluanPribadiSiftFinalActivity.this, locationObj.getLatitude(), locationObj.getLongitude())));
+            map.addMarker(new MarkerOptions().position(position).icon(bitmapDescriptorFromVector(this, R.drawable.asn_lk)).title(lokasi.getAddress(KeperluanPribadiShiftFinalActivity.this, locationObj.getLatitude(), locationObj.getLongitude())));
             rippleAnimator = MapUtils.showRippleEffect(map, position);
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(
                     new LatLng(locationObj.getLatitude(), locationObj.getLongitude()), 19f));
@@ -1276,7 +1276,7 @@ public class KeperluanPribadiSiftFinalActivity extends AppCompatActivity  implem
         tvTutupDialog.setOnClickListener(v -> {
             stopLocationUpdates();
             dialogSukes.dismiss();
-            KeperluanPribadiSiftActivity.kp.finish();
+            KeperluanPribadiShiftActivity.kp.finish();
             finish();
         });
 
