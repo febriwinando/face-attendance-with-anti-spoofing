@@ -1,5 +1,8 @@
 package go.pemkott.appsandroidmobiletebingtinggi.api;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -31,10 +34,14 @@ public class RetroClient {
                         .writeTimeout(120, TimeUnit.SECONDS)
                         .build();
 
+        Gson gson = new GsonBuilder()
+                .setLenient()
+                .create();
+
         retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .client(okHttpClient)
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
     }
 
@@ -55,14 +62,6 @@ public class RetroClient {
 }
 
 //package go.pemkott.appsandroidmobiletebingtinggi.api;
-//
-//import java.security.SecureRandom;
-//import java.security.cert.X509Certificate;
-//import java.util.concurrent.TimeUnit;
-//
-//import javax.net.ssl.HostnameVerifier;
-//import javax.net.ssl.SSLContext;
-//import javax.net.ssl.SSLSession;
 //import javax.net.ssl.SSLSocketFactory;
 //import javax.net.ssl.TrustManager;
 //import javax.net.ssl.X509TrustManager;

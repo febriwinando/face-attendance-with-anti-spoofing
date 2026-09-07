@@ -13,6 +13,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.helpdesk.ajukan.AjukanAduanActivity;
+import go.pemkott.appsandroidmobiletebingtinggi.helpdesk.ajukan.StatusAduanActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.helpdesk.panduan.PanduanHelpdeskActivity;
 
 public class HelpdeskActivity extends AppCompatActivity {
@@ -45,7 +46,7 @@ public class HelpdeskActivity extends AppCompatActivity {
 
         // Menu 3: Cek aduan/permohonan bantuan
         findViewById(R.id.llCekAduan).setOnClickListener(v -> {
-            Toast.makeText(this, "Fitur Cek Status Aduan sedang dikembangkan.", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, StatusAduanActivity.class));
         });
     }
 }

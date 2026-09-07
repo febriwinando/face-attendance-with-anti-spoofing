@@ -46,7 +46,16 @@ public class MediaViewerActivity extends AppCompatActivity {
             return;
         }
 
-        String mimeType = getContentResolver().getType(mediaUri);
+        String mimeType = null;
+        String scheme = mediaUri.getScheme();
+        if ("content".equals(scheme)) {
+            mimeType = getContentResolver().getType(mediaUri);
+        } else if ("http".equals(scheme) || "https".equals(scheme)) {
+            String url = mediaUri.toString().toLowerCase();
+            if (url.endsWith(".mp4") || url.endsWith(".mkv") || url.endsWith(".mov") || url.endsWith(".avi")) {
+                mimeType = "video/*";
+            }
+        }
 
         findViewById(R.id.cvBack).setOnClickListener(v -> finish());
 

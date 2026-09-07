@@ -52,6 +52,12 @@
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity
+            android:name=".helpdesk.ajukan.StatusAduanActivity"
+            android:exported="false" />
+        <activity
+            android:name=".helpdesk.ajukan.AduanDetailActivity"
+            android:exported="false" />
+        <activity
             android:name=".helpdesk.ajukan.MediaViewerActivity"
             android:exported="false" />
         <activity

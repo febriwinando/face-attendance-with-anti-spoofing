@@ -26,15 +26,19 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.gson.Gson;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.api.HttpService;
+import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
 import go.pemkott.appsandroidmobiletebingtinggi.model.FileModel;
@@ -44,8 +48,6 @@ import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class AjukanAduanActivity extends AppCompatActivity {
 
@@ -57,9 +59,10 @@ public class AjukanAduanActivity extends AppCompatActivity {
     
     // Variables for storage
     private String varNama, varNip, varOpdid;
-    
+
     private HttpService httpService;
 
+    private Map<String, String> kategoriMap;
     private LinearLayout llImageContainer;
     private final List<Uri> selectedMediaUris = new ArrayList<>();
     private ActivityResultLauncher<PickVisualMediaRequest> pickMultipleMedia;
@@ -77,11 +80,7 @@ public class AjukanAduanActivity extends AppCompatActivity {
             return insets;
         });
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://absensi.tebingtinggikota.go.id/api/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        httpService = retrofit.create(HttpService.class);
+        httpService = RetroClient.getInstance().getApi2();
 
         initViews();
         loadUserData();
@@ -171,8 +170,10 @@ public class AjukanAduanActivity extends AppCompatActivity {
             sEmployee_id = tUser.getString(1);
         }
 
+
         Cursor employee = databaseHelper.getDataEmployee(sEmployee_id);
         if (employee.moveToNext()) {
+
             varOpdid = employee.getString(4);
             varNip = employee.getString(5);
             varNama = employee.getString(6);
@@ -180,15 +181,16 @@ public class AjukanAduanActivity extends AppCompatActivity {
     }
 
     private void setupDropdowns() {
-        String[] kategoriItems = {
-                "Kendala Otentikasi & Akun",
-                "Masalah Presensi & Fitur Absensi",
-                "Pengajuan Izin, Cuti, & Koreksi",
-                "Gangguan Sistem & Teknis (Sisi Aplikasi)",
-                "Kendala Laporan & Data Rekap",
-                "Kendala lainnya"
-        };
-        ArrayAdapter<String> adapterKategori = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, kategoriItems);
+        kategoriMap = new LinkedHashMap<>();
+        kategoriMap.put("Kendala Otentikasi & Akun", "otentikasi");
+        kategoriMap.put("Masalah Presensi & Fitur Absensi", "presensi");
+        kategoriMap.put("Pengajuan Izin, Cuti, & Koreksi", "izin_cuti");
+        kategoriMap.put("Gangguan Sistem & Teknis (Sisi Aplikasi)", "sistem");
+        kategoriMap.put("Kendala Laporan & Data Rekap", "laporan");
+        kategoriMap.put("Kendala lainnya", "lainnya");
+
+        List<String> kategoriLabels = new ArrayList<>(kategoriMap.keySet());
+        ArrayAdapter<String> adapterKategori = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, kategoriLabels);
         actvKategori.setAdapter(adapterKategori);
 
         String[] prioritasItems = {"rendah", "normal", "tinggi"};
@@ -200,33 +202,27 @@ public class AjukanAduanActivity extends AppCompatActivity {
     private void kirimAduan() {
         String judul = etJudul.getText().toString().trim();
         String deskripsi = etDeskripsi.getText().toString().trim();
-        String kategori = actvKategori.getText().toString();
+        String kategoriLabel = actvKategori.getText().toString();
         String prioritas = actvPrioritas.getText().toString();
         String lokasi_aduan = etLokasi.getText().toString().trim();
 
-        if (judul.isEmpty() || deskripsi.isEmpty() || kategori.isEmpty()) {
+        if (judul.isEmpty() || deskripsi.isEmpty() || kategoriLabel.isEmpty()) {
             Toast.makeText(this, "Mohon lengkapi judul, deskripsi, dan kategori.", Toast.LENGTH_SHORT).show();
             return;
         }
 
+        String kategoriKey = kategoriMap.get(kategoriLabel);
+        if (kategoriKey == null) kategoriKey = "lainnya";
+
+        RequestBody rbEmployee_id = RequestBody.create(MediaType.parse("text/plain"), sEmployee_id);
         RequestBody rbNama = RequestBody.create(MediaType.parse("text/plain"), varNama);
         RequestBody rbNip = RequestBody.create(MediaType.parse("text/plain"), varNip);
         RequestBody rbOpdid = RequestBody.create(MediaType.parse("text/plain"), varOpdid);
-        RequestBody rbKategori = RequestBody.create(MediaType.parse("text/plain"), kategori);
+        RequestBody rbKategori = RequestBody.create(MediaType.parse("text/plain"), kategoriKey);
         RequestBody rbPrioritas = RequestBody.create(MediaType.parse("text/plain"), prioritas);
         RequestBody rbLokasi = RequestBody.create(MediaType.parse("text/plain"), lokasi_aduan);
         RequestBody rbJudul = RequestBody.create(MediaType.parse("text/plain"), judul);
         RequestBody rbDeskripsi = RequestBody.create(MediaType.parse("text/plain"), deskripsi);
-
-        Log.d("ADUAN_DEBUG", "Nama: " + varNama);
-        Log.d("ADUAN_DEBUG", "NIP: " + varNip);
-        Log.d("ADUAN_DEBUG", "OPD ID: " + varOpdid);
-        Log.d("ADUAN_DEBUG", "Kategori: " + kategori);
-        Log.d("ADUAN_DEBUG", "Prioritas: " + prioritas);
-        Log.d("ADUAN_DEBUG", "Lokasi: " + lokasi_aduan);
-        Log.d("ADUAN_DEBUG", "Judul: " + judul);
-        Log.d("ADUAN_DEBUG", "Deskripsi: " + deskripsi);
-        Log.d("ADUAN_DEBUG", "Media Count: " + selectedMediaUris.size());
 
         List<MultipartBody.Part> mediaParts = new ArrayList<>();
         for (Uri uri : selectedMediaUris) {
@@ -236,18 +232,52 @@ public class AjukanAduanActivity extends AppCompatActivity {
             }
         }
 
+        String token = "Bearer " + session.getToken();
         Call<FileModel> call = httpService.kirimAduan(
-                rbNama, rbNip, rbOpdid, rbKategori, rbPrioritas, rbLokasi, rbJudul, rbDeskripsi, mediaParts
+                token, rbEmployee_id, rbNama, rbNip, rbOpdid, rbKategori, rbPrioritas, rbLokasi, rbJudul, rbDeskripsi, mediaParts
         );
 
         call.enqueue(new Callback<FileModel>() {
             @Override
             public void onResponse(@NonNull Call<FileModel> call, @NonNull Response<FileModel> response) {
                 if (response.isSuccessful()) {
-                    Toast.makeText(AjukanAduanActivity.this, "Aduan Anda telah terkirim.", Toast.LENGTH_LONG).show();
+
+                    Log.d("API_ADUAN", "SUCCESS");
+                    Log.d("API_ADUAN", "CODE: " + response.code());
+
+                    if (response.body() != null) {
+                        Log.d("API_ADUAN", "BODY: " + new Gson().toJson(response.body()));
+                    }
+
+                    Toast.makeText(
+                            AjukanAduanActivity.this,
+                            "Aduan Anda telah terkirim.",
+                            Toast.LENGTH_LONG
+                    ).show();
+
                     finish();
+
                 } else {
-                    Toast.makeText(AjukanAduanActivity.this, "Gagal mengirim aduan.", Toast.LENGTH_SHORT).show();
+
+                    Log.e("API_ADUAN", "FAILED");
+                    Log.e("API_ADUAN", "CODE: " + response.code());
+
+                    try {
+                        if (response.errorBody() != null) {
+                            String errorBody = response.errorBody().string();
+
+                            Log.e("API_ADUAN", "ERROR BODY: " + errorBody);
+
+                            Toast.makeText(
+                                    AjukanAduanActivity.this,
+                                    "Gagal: HTTP " + response.code(),
+                                    Toast.LENGTH_LONG
+                            ).show();
+                        }
+
+                    } catch (IOException e) {
+                        Log.e("API_ADUAN", "ERROR READING BODY", e);
+                    }
                 }
             }
 

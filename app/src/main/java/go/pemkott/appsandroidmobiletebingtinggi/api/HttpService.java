@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import go.pemkott.appsandroidmobiletebingtinggi.login.Logout;
+import go.pemkott.appsandroidmobiletebingtinggi.model.AduanDetailResponse;
+import go.pemkott.appsandroidmobiletebingtinggi.model.AduanResponse;
 import go.pemkott.appsandroidmobiletebingtinggi.model.CheckUpdate;
 import go.pemkott.appsandroidmobiletebingtinggi.model.DataEmployee;
 import go.pemkott.appsandroidmobiletebingtinggi.model.Employee;
@@ -41,12 +43,17 @@ import retrofit2.http.Headers;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
+import retrofit2.http.Path;
+import retrofit2.http.Query;
 import retrofit2.http.Url;
 
 public interface HttpService {
     @Multipart
+    @Headers("Accept: application/json")
     @POST("helpdesk/aduan")
     Call<FileModel> kirimAduan(
+            @Header("Authorization") String token,
+            @Part("employee_id") RequestBody employee_id,
             @Part("nama") RequestBody nama,
             @Part("nip") RequestBody nip,
             @Part("opdid") RequestBody opdid,
@@ -56,6 +63,24 @@ public interface HttpService {
             @Part("judul") RequestBody judul,
             @Part("deskripsi") RequestBody deskripsi,
             @Part List<MultipartBody.Part> gambar
+    );
+
+    @Headers("Accept: application/json")
+    @GET("helpdesk/aduan")
+    Call<AduanResponse> getAduans(
+            @Header("Authorization") String token,
+            @Query("employee_id") int employeeId,
+            @Query("status") String status,
+            @Query("page") Integer page,
+            @Query("per_page") Integer perPage
+    );
+
+    @Headers("Accept: application/json")
+    @GET("helpdesk/aduan/{id}")
+    Call<AduanDetailResponse> getAduanDetail(
+            @Path("id") int aduanId,
+            @Header("Authorization") String token,
+            @Query("employee_id") int employeeId
     );
 
     @GET("employees")
