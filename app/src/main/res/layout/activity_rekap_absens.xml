@@ -7,6 +7,8 @@
     android:background="@color/background_color"
     tools:context=".rekap.RekapAbsensActivity">
 
+    <include layout="@layout/layout_background_palette" />
+
     <!-- Header Section -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/headerLayout"

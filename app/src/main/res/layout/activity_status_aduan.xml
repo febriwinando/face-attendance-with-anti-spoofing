@@ -6,42 +6,43 @@
     android:layout_height="match_parent"
     android:background="@color/background_main">
 
-    <!-- Header Toolbar -->
+    <include layout="@layout/layout_background_palette" />
 
+    <RelativeLayout
+        android:id="@+id/rlHeader"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:paddingHorizontal="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <RelativeLayout
-            android:layout_marginTop="25dp"
-            android:id="@+id/rlHeader"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_width="match_parent"
-            android:layout_height="70dp"
-            android:paddingHorizontal="16dp">
+        <ImageView
+            android:id="@+id/ivBack"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_centerVertical="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:contentDescription="@string/kembali"
+            android:focusable="true"
+            android:padding="8dp"
+            android:src="@drawable/one_left"
+            app:tint="@color/text_primary" />
 
-            <ImageView
-                android:id="@+id/ivBack"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_centerVertical="true"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:clickable="true"
-                android:focusable="true"
-                android:padding="8dp"
-                android:src="@drawable/one_left"
-                app:tint="@color/text_primary" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="5dp"
+            android:layout_toEndOf="@id/ivBack"
+            android:fontFamily="sans-serif-black"
+            android:text="Status Aduan Saya"
+            android:textColor="@color/text_primary"
+            android:textSize="18sp"
+            tools:ignore="HardcodedText" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginStart="5dp"
-                android:layout_toEndOf="@id/ivBack"
-                android:fontFamily="sans-serif-black"
-                android:text="Status Aduan Saya"
-                android:textColor="@color/text_primary"
-                android:textSize="18sp" />
-
-        </RelativeLayout>
+    </RelativeLayout>
 
 
     <!-- Main Content -->

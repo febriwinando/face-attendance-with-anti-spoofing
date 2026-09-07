@@ -1,52 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_main">
 
-    <com.google.android.material.appbar.AppBarLayout
+    <include layout="@layout/layout_background_palette" />
+
+    <RelativeLayout
+        android:id="@+id/rlHeader"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/surface_main">
+        android:layout_height="70dp"
+        android:paddingHorizontal="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="70dp"
-            android:paddingHorizontal="16dp">
+        <ImageView
+            android:id="@+id/ivBack"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_centerVertical="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:contentDescription="@string/kembali"
+            android:focusable="true"
+            android:padding="8dp"
+            android:src="@drawable/one_left"
+            app:tint="@color/text_primary" />
 
-            <ImageView
-                android:id="@+id/ivBack"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_centerVertical="true"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:clickable="true"
-                android:focusable="true"
-                android:padding="8dp"
-                android:src="@drawable/one_left"
-                app:tint="@color/text_primary" />
+        <TextView
+            android:id="@+id/tvNomorDetail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="8dp"
+            android:layout_toEndOf="@id/ivBack"
+            android:fontFamily="sans-serif-black"
+            android:textColor="@color/text_primary"
+            android:textSize="18sp"
+            tools:ignore="HardcodedText"
+            tools:text="HD-20260907-0001" />
 
-            <TextView
-                android:id="@+id/tvNomorDetail"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginStart="16dp"
-                android:layout_toEndOf="@id/ivBack"
-                android:fontFamily="sans-serif-black"
-                android:textColor="@color/text_primary"
-                android:textSize="18sp"
-                tools:text="HD-20260907-0001" />
-
-        </RelativeLayout>
-    </com.google.android.material.appbar.AppBarLayout>
+    </RelativeLayout>
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/nsvContent"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rlHeader">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -58,7 +63,9 @@
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="16dp"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginVertical="8dp"
+                app:cardBackgroundColor="@color/surface_main"
                 app:cardCornerRadius="24dp"
                 app:cardElevation="2dp"
                 app:strokeWidth="0dp">
@@ -105,7 +112,7 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
+                        android:layout_marginTop="16dp"
                         android:orientation="horizontal">
 
                         <TextView
@@ -142,7 +149,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingHorizontal="24dp">
+                android:paddingHorizontal="24dp"
+                android:layout_marginTop="8dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -165,7 +173,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="24dp"
                     android:fontFamily="sans-serif-black"
                     android:text="Lokasi Terkait"
                     android:textColor="@color/text_primary"
@@ -185,7 +193,7 @@
                     android:id="@+id/tvMediaTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="24dp"
                     android:fontFamily="sans-serif-black"
                     android:text="Lampiran Media"
                     android:textColor="@color/text_primary"
@@ -211,7 +219,7 @@
                 android:id="@+id/llAdminResponse"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="32dp"
                 android:orientation="vertical"
                 android:paddingHorizontal="24dp"
                 android:visibility="gone"
@@ -220,7 +228,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:layout_marginBottom="20dp"
+                    android:layout_marginBottom="24dp"
                     android:alpha="0.1"
                     android:background="@color/black" />
 
@@ -352,7 +360,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="32dp"
                 android:orientation="vertical">
 
                 <TextView
@@ -377,4 +385,4 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
