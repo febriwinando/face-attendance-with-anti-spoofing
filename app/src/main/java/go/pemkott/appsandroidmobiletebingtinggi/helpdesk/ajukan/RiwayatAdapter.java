@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import go.pemkott.appsandroidmobiletebingtinggi.R;
+import go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat;
 import go.pemkott.appsandroidmobiletebingtinggi.model.AduanRiwayat;
 
 public class RiwayatAdapter extends RecyclerView.Adapter<RiwayatAdapter.ViewHolder> {
@@ -39,7 +40,7 @@ public class RiwayatAdapter extends RecyclerView.Adapter<RiwayatAdapter.ViewHold
         holder.tvAksi.setText(riwayat.getAksi());
         holder.tvCatatan.setText(riwayat.getCatatan());
         holder.tvAktor.setText(riwayat.getPeran() + " (" + riwayat.getAktor() + ")");
-        holder.tvWaktu.setText(riwayat.getCreatedAt());
+        holder.tvWaktu.setText(TimeFormat.formatTimestampAduan(riwayat.getCreatedAt()));
 
         // Hide timeline part for first/last items if needed, or just let it be.
         holder.vTimelineLine.setVisibility(View.VISIBLE);

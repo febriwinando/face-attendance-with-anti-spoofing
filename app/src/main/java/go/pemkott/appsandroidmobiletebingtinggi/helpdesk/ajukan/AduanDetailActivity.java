@@ -26,6 +26,7 @@ import java.util.List;
 import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.api.HttpService;
 import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
+import go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat;
 import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
 import go.pemkott.appsandroidmobiletebingtinggi.model.AduanDetailResponse;
 import go.pemkott.appsandroidmobiletebingtinggi.model.AduanHelpdesk;
@@ -41,7 +42,7 @@ public class AduanDetailActivity extends AppCompatActivity {
     private HttpService httpService;
     private SessionManager session;
 
-    private TextView tvNomor, tvStatus, tvJudul, tvKategori, tvPrioritas, tvDeskripsi, tvLokasi;
+    private TextView tvNomor, tvStatus, tvJudul, tvKategori, tvPrioritas, tvDeskripsi, tvLokasi, tvTanggal;
     private LinearLayout llMediaContainer, llAdminResponse;
     private View cvCatatanOpd, cvCatatanKota, cvAlasanTolak;
     private TextView tvCatatanOpd, tvCatatanKota, tvAlasanTolak;
@@ -74,6 +75,7 @@ public class AduanDetailActivity extends AppCompatActivity {
         tvPrioritas = findViewById(R.id.tvPrioritasDetail);
         tvDeskripsi = findViewById(R.id.tvDeskripsiDetail);
         tvLokasi = findViewById(R.id.tvLokasiDetail);
+        tvTanggal = findViewById(R.id.tvTanggalDetail);
         llMediaContainer = findViewById(R.id.llMediaContainer);
         llAdminResponse = findViewById(R.id.llAdminResponse);
         
@@ -121,6 +123,7 @@ public class AduanDetailActivity extends AppCompatActivity {
     private void displayData(AduanHelpdesk aduan) {
         tvNomor.setText(aduan.getNomor());
         tvJudul.setText(aduan.getJudul());
+        tvTanggal.setText("Dibuat pada: " + TimeFormat.formatTimestampAduan(aduan.getCreatedAt()));
         tvDeskripsi.setText(aduan.getDeskripsi());
         tvKategori.setText(ClsGlobal.capitalizeEveryWord(aduan.getKategori().replace("_", " ")));
         tvPrioritas.setText("Prioritas: " + ClsGlobal.capitalizeEveryWord(aduan.getPrioritas()));

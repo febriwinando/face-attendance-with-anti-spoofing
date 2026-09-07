@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import go.pemkott.appsandroidmobiletebingtinggi.R;
+import go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat;
 import go.pemkott.appsandroidmobiletebingtinggi.model.AduanHelpdesk;
 import go.pemkott.appsandroidmobiletebingtinggi.utils.ClsGlobal;
 
@@ -75,7 +76,7 @@ public class AduanAdapter extends RecyclerView.Adapter<AduanAdapter.ViewHolder> 
             tvNomor.setText(aduan.getNomor());
             tvJudul.setText(aduan.getJudul());
             tvKategori.setText(ClsGlobal.capitalizeEveryWord(aduan.getKategori().replace("_", " ")));
-            tvTanggal.setText("Dibuat pada: " + aduan.getCreatedAt());
+            tvTanggal.setText("Dibuat pada: " + TimeFormat.formatTimestampAduan(aduan.getCreatedAt()));
             tvPrioritas.setText("Prioritas: " + ClsGlobal.capitalizeEveryWord(aduan.getPrioritas()));
             
             // Status Styling

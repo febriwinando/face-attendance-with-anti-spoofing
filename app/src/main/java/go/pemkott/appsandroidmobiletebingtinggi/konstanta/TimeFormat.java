@@ -223,6 +223,27 @@ public class TimeFormat {
         return sebelum;
     }
 
+    public static String formatTimestampAduan(String timestamp) {
+        if (timestamp == null || timestamp.isEmpty()) return "-";
+        try {
+            // Laravel standard ISO format
+            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'", Locale.US);
+            Date date = inputFormat.parse(timestamp);
+            SimpleDateFormat outputFormat = new SimpleDateFormat("dd MMM yyyy, HH:mm", localeID);
+            return outputFormat.format(date);
+        } catch (Exception e) {
+            try {
+                // Fallback for common DB format
+                SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+                Date date = inputFormat.parse(timestamp);
+                SimpleDateFormat outputFormat = new SimpleDateFormat("dd MMM yyyy, HH:mm", localeID);
+                return outputFormat.format(date);
+            } catch (Exception e2) {
+                return timestamp;
+            }
+        }
+    }
+
     }
 
 
