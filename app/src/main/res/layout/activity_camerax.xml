@@ -14,18 +14,84 @@
         android:layout_height="match_parent"
         app:implementationMode="compatible" />
 
-    <!-- Face Overlay View (Custom View) -->
+    <!-- Face Overlay View (Custom View with Scrim and Progress) -->
     <go.pemkott.appsandroidmobiletebingtinggi.camerax.FaceOverlayView
         android:id="@+id/faceOverlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <!-- Top Controls -->
+    <!-- Header / Info Bar -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:background="@drawable/backgroundtranshitam"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/ivBackCamera"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/backgoundputihtransparan"
+        android:padding="8dp"
+        android:src="@drawable/one_left"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/white" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:fontFamily="sans-serif-medium"
+        android:text="Verifikasi Wajah AI"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Instruction Card -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cvInstruction"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="32dp"
+        android:layout_marginBottom="40dp"
+        app:cardBackgroundColor="#CC000000"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/capture"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <TextView
+                android:id="@+id/txtChallenge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-black"
+                android:gravity="center"
+                android:text="Menyiapkan Sistem..."
+                android:textColor="@color/white"
+                android:textSize="17sp" />
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Side Controls -->
     <LinearLayout
         android:id="@+id/llTopControls"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="100dp"
         android:layout_marginEnd="20dp"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
@@ -36,7 +102,6 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:background="@drawable/backgoundputihtransparan"
-            android:contentDescription="Toggle Flash"
             android:padding="12dp"
             android:src="@drawable/flash"
             android:visibility="gone"
@@ -48,58 +113,26 @@
             android:layout_height="48dp"
             android:layout_marginTop="12dp"
             android:background="@drawable/backgoundputihtransparan"
-            android:contentDescription="Flip Camera"
             android:padding="12dp"
             android:src="@drawable/flip"
             android:visibility="gone"
             app:tint="@color/white" />
     </LinearLayout>
 
-    <!-- Instruction Label -->
-    <TextView
-        android:id="@+id/txtChallenge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="40dp"
-        android:background="@drawable/backgroundtranshitam"
-        android:fontFamily="sans-serif-black"
-        android:paddingHorizontal="24dp"
-        android:paddingVertical="12dp"
-        android:text="Arahkan wajah ke frame"
-        android:textAlignment="center"
-        android:textColor="@color/white"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toTopOf="@+id/capture"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
     <!-- Capture Button -->
     <ImageButton
         android:id="@+id/capture"
-        android:layout_width="84dp"
-        android:layout_height="84dp"
-        android:layout_marginBottom="48dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginBottom="50dp"
         android:background="@drawable/one_take_picture"
         android:contentDescription="Capture"
+        android:elevation="4dp"
         android:scaleType="centerInside"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:tint="@color/white" />
-
-    <!-- Back Button (Visual enhancement, even if not explicitly required by functionality) -->
-    <ImageButton
-        android:id="@+id/ivBackCamera"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="32dp"
-        android:background="@drawable/backgoundputihtransparan"
-        android:padding="12dp"
-        android:src="@drawable/one_left"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         app:tint="@color/white" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

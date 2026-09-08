@@ -9,12 +9,15 @@ import android.view.View;
 public class FaceOverlayView extends View {
 
     private Paint paint;
-    private Paint boxPaint;
+    private Paint progressPaint;
     private Paint textPaint;
     private Paint scrimPaint;
+    private Paint eraserPaint;
+
     private boolean faceInside = false;
     private RectF faceBox = null;
     private String matchText = "";
+    private float progress = 0f;
 
     // FRAME NORMALIZED (0–1)
     private final RectF frameNorm = new RectF(
@@ -26,15 +29,21 @@ public class FaceOverlayView extends View {
 
     public FaceOverlayView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        init();
+    }
+
+    private void init() {
         paint = new Paint();
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(12f);
         paint.setAntiAlias(true);
 
-        boxPaint = new Paint();
-        boxPaint.setStyle(Paint.Style.STROKE);
-        boxPaint.setStrokeWidth(5f);
-        boxPaint.setAntiAlias(true);
+        progressPaint = new Paint();
+        progressPaint.setStyle(Paint.Style.STROKE);
+        progressPaint.setStrokeWidth(12f);
+        progressPaint.setAntiAlias(true);
+        progressPaint.setStrokeCap(Paint.Cap.ROUND);
+        progressPaint.setColor(Color.parseColor("#2196F3")); // Blue progress
 
         textPaint = new Paint();
         textPaint.setColor(Color.WHITE);
@@ -45,6 +54,10 @@ public class FaceOverlayView extends View {
         scrimPaint = new Paint();
         scrimPaint.setColor(Color.parseColor("#99000000")); // Gelap transparan
         scrimPaint.setStyle(Paint.Style.FILL);
+
+        eraserPaint = new Paint();
+        eraserPaint.setAntiAlias(true);
+        eraserPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
     }
 
     public RectF getFrameNormalized() {
@@ -55,6 +68,11 @@ public class FaceOverlayView extends View {
         this.faceInside = inside;
         this.faceBox = faceBox;
         this.matchText = matchText;
+        invalidate();
+    }
+
+    public void setProgress(float progress) {
+        this.progress = progress;
         invalidate();
     }
 
@@ -74,23 +92,24 @@ public class FaceOverlayView extends View {
         canvas.drawRect(0, 0, getWidth(), getHeight(), scrimPaint);
         
         // Eraser effect for the oval hole
-        Paint eraser = new Paint();
-        eraser.setAntiAlias(true);
-        eraser.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
-        canvas.drawOval(framePx, eraser);
+        canvas.drawOval(framePx, eraserPaint);
         canvas.restoreToCount(saveCount);
 
         // 2. Draw Oval Border
-        paint.setColor(faceInside ? Color.GREEN : Color.WHITE);
+        paint.setColor(faceInside ? Color.parseColor("#4CAF50") : Color.WHITE);
         canvas.drawOval(framePx, paint);
 
-        // 3. Draw Percentage Text only (Box removed)
+        // 3. Draw Progress Arc
+        if (faceInside && progress > 0) {
+            float sweepAngle = progress * 360f;
+            canvas.drawArc(framePx, -90, sweepAngle, false, progressPaint);
+        }
+
+        // 4. Draw Percentage Text
         if (faceBox != null && !matchText.isEmpty()) {
-            // Map faceBox top coordinate to view coordinates for text positioning
             float textY = faceBox.top * getHeight() - 15;
             float textX = faceBox.left * getWidth();
             canvas.drawText(matchText, textX, textY, textPaint);
         }
     }
 }
-

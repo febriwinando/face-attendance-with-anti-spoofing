@@ -195,7 +195,7 @@ public class CameraxActivity extends AppCompatActivity {
         Challenge[] pool = Challenge.values();
         List<Challenge> temp = new ArrayList<>();
         Random r = new Random();
-        while (temp.size() < 1) {
+        while (temp.size() < 2) {
             Challenge c = pool[r.nextInt(pool.length)];
             if (!temp.contains(c)) temp.add(c);
         }
@@ -355,6 +355,7 @@ public class CameraxActivity extends AppCompatActivity {
         if (challengeIndex >= challengeQueue.size()) return;
         Challenge c = challengeQueue.get(challengeIndex);
         boolean passed = false;
+        float currentProgress = 0f;
         float eulerY = face.getHeadEulerAngleY();
         float eulerX = face.getHeadEulerAngleX();
 
@@ -363,18 +364,37 @@ public class CameraxActivity extends AppCompatActivity {
                 Float l = face.getLeftEyeOpenProbability();
                 Float r = face.getRightEyeOpenProbability();
                 passed = l != null && r != null && l < 0.3f && r < 0.3f;
+                if (l != null && r != null) currentProgress = 1f - ((l + r) / 2f);
                 break;
             case SMILE:
                 Float s = face.getSmilingProbability();
                 passed = s != null && s > 0.6f;
+                if (s != null) currentProgress = s / 0.6f;
                 break;
-            case TURN_LEFT: passed = eulerY < -15; break;
-            case TURN_RIGHT: passed = eulerY > 15; break;
-            case LOOK_UP: passed = eulerX > 10; break;
-            case LOOK_DOWN: passed = eulerX < -10; break;
+            case TURN_LEFT:
+                passed = eulerY > 15;
+                currentProgress = eulerY / 15f;
+                break;
+            case TURN_RIGHT:
+                passed = eulerY < -15;
+                currentProgress = Math.abs(eulerY) / 15f;
+                break;
+            case LOOK_UP:
+                passed = eulerX > 10;
+                currentProgress = eulerX / 10f;
+                break;
+            case LOOK_DOWN:
+                passed = eulerX < -10;
+                currentProgress = Math.abs(eulerX) / 10f;
+                break;
         }
+
+        final float finalProgress = Math.min(1f, Math.max(0f, currentProgress));
+        runOnUiThread(() -> faceOverlay.setProgress(finalProgress));
+
         if (passed) {
             challengeIndex++;
+            runOnUiThread(() -> faceOverlay.setProgress(0f));
             if (challengeIndex < challengeQueue.size()) {
                 runOnUiThread(() -> txtChallenge.setText("Tahap 1: Liveness Check\n" + getChallengeText(challengeQueue.get(challengeIndex))));
             }
