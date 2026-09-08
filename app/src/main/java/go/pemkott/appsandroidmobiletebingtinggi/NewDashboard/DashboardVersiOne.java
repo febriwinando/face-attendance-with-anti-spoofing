@@ -209,8 +209,11 @@ public class DashboardVersiOne extends AppCompatActivity {
         });
 
         cvKehadiran.setOnClickListener(new View.OnClickListener() {
+            private long lastClickTime = 0;
             @Override
             public void onClick(View v) {
+                if (System.currentTimeMillis() - lastClickTime < 1000) return;
+                lastClickTime = System.currentTimeMillis();
 
                 if (!isStorageEnough()) {
 

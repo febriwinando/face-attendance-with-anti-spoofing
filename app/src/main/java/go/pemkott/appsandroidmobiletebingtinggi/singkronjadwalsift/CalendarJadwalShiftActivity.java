@@ -109,7 +109,6 @@ public class CalendarJadwalShiftActivity extends AppCompatActivity {
         titleCalendarSift = findViewById(R.id.titleCalendarSift);
         rvJadwalSifting = findViewById(R.id.rvJadwalSifting);
         llPilihBulan = findViewById(R.id.llPilihBulan);
-        rvJadwalSifting.setHasFixedSize(true);
         shimmerJadwalSift = findViewById(R.id.shimmerJadwalSift);
         ivUnduhJadwalSift = findViewById(R.id.ivUnduhJadwalSift);
         ivSyncJadwalSift = findViewById(R.id.ivSyncJadwalSift);

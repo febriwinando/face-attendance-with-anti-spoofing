@@ -1,5 +1,8 @@
 package go.pemkott.appsandroidmobiletebingtinggi.login;
 
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.app.Dialog;
 import android.content.Intent;
 import android.database.Cursor;
@@ -20,6 +23,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -42,21 +46,12 @@ import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
-
-/**
- * Refactored DownloadDataActivity
- * - Sequential step flow
- * - Safe response checks
- * - DB writes in background
- * - Uses RequestBody empty for POST-with-URL endpoints
- */
-
 public class DownloadDataActivity extends AppCompatActivity {
 
     private ProgressBar progressBar;
-    private TextView tvInfo;
+    private TextView tvInfo, tvProgressPercentage;
+    private ImageView ivSyncIllustration;
+    private View vPulse1, vPulse2;
 
     private DatabaseHelper db;
     private DialogView dialogView;
@@ -85,6 +80,12 @@ public class DownloadDataActivity extends AppCompatActivity {
 
         progressBar = findViewById(R.id.progressBarHorizontal);
         tvInfo = findViewById(R.id.tvinfoDownload);
+        tvProgressPercentage = findViewById(R.id.tvProgressPercentage);
+        ivSyncIllustration = findViewById(R.id.ivSyncIllustration);
+        vPulse1 = findViewById(R.id.vPulse1);
+        vPulse2 = findViewById(R.id.vPulse2);
+
+        startEnhancedAnimations();
 
         db = new DatabaseHelper(this);
         dialogView = new DialogView(this);
@@ -439,10 +440,46 @@ public class DownloadDataActivity extends AppCompatActivity {
     /* =============================
        HELPER
        ============================= */
+    private void startEnhancedAnimations() {
+        // Pulse 1 Animation (Outer)
+        ObjectAnimator p1ScaleX = ObjectAnimator.ofFloat(vPulse1, "scaleX", 1f, 1.4f);
+        ObjectAnimator p1ScaleY = ObjectAnimator.ofFloat(vPulse1, "scaleY", 1f, 1.4f);
+        ObjectAnimator p1Alpha = ObjectAnimator.ofFloat(vPulse1, "alpha", 0.1f, 0f);
+        
+        p1ScaleX.setRepeatCount(ValueAnimator.INFINITE);
+        p1ScaleY.setRepeatCount(ValueAnimator.INFINITE);
+        p1Alpha.setRepeatCount(ValueAnimator.INFINITE);
+
+        // Pulse 2 Animation (Inner)
+        ObjectAnimator p2ScaleX = ObjectAnimator.ofFloat(vPulse2, "scaleX", 1f, 1.3f);
+        ObjectAnimator p2ScaleY = ObjectAnimator.ofFloat(vPulse2, "scaleY", 1f, 1.3f);
+        ObjectAnimator p2Alpha = ObjectAnimator.ofFloat(vPulse2, "alpha", 0.15f, 0f);
+        
+        p2ScaleX.setRepeatCount(ValueAnimator.INFINITE);
+        p2ScaleY.setRepeatCount(ValueAnimator.INFINITE);
+        p2Alpha.setRepeatCount(ValueAnimator.INFINITE);
+        p2ScaleX.setStartDelay(1000);
+        p2ScaleY.setStartDelay(1000);
+        p2Alpha.setStartDelay(1000);
+
+        // Main Icon Breathing
+        ObjectAnimator scaleX = ObjectAnimator.ofFloat(ivSyncIllustration, "scaleX", 1f, 1.05f, 1f);
+        ObjectAnimator scaleY = ObjectAnimator.ofFloat(ivSyncIllustration, "scaleY", 1f, 1.05f, 1f);
+        scaleX.setRepeatCount(ValueAnimator.INFINITE);
+        scaleY.setRepeatCount(ValueAnimator.INFINITE);
+
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.playTogether(p1ScaleX, p1ScaleY, p1Alpha, p2ScaleX, p2ScaleY, p2Alpha, scaleX, scaleY);
+        animatorSet.setDuration(2000);
+        animatorSet.start();
+    }
+
     private void updateUI(String text) {
         progressStep++;
+        int percentage = (progressStep * 100) / MAX_STEP;
         tvInfo.setText(text);
-        progressBar.setProgress((progressStep * 100) / MAX_STEP);
+        progressBar.setProgress(percentage);
+        tvProgressPercentage.setText(String.format(Locale.getDefault(), "%d%%", percentage));
     }
 
     private void errorStop(String msg) {

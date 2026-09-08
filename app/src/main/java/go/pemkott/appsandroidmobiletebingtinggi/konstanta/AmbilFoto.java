@@ -143,15 +143,21 @@ public class AmbilFoto {
         FileInputStream inputStream = null;
         try {
             inputStream = new FileInputStream(file);
+            BitmapFactory.decodeStream(inputStream, null, o);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-        }
-
-        BitmapFactory.decodeStream(inputStream, null, o);
-        try {
-            inputStream.close();
-        } catch (IOException e) {
+            return null;
+        } catch (OutOfMemoryError e) {
             e.printStackTrace();
+            return null;
+        } finally {
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
         // The new size we want to scale to
@@ -174,13 +180,23 @@ public class AmbilFoto {
 
         BitmapFactory.Options o2 = new BitmapFactory.Options();
         o2.inSampleSize = scale;
+        Bitmap selectedBitmap = null;
         try {
             inputStream = new FileInputStream(file);
+            selectedBitmap = BitmapFactory.decodeStream(inputStream, null, o2);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+        } catch (OutOfMemoryError e) {
+            e.printStackTrace();
+        } finally {
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
-
-        Bitmap selectedBitmap = BitmapFactory.decodeStream(inputStream, null, o2);
 
         return selectedBitmap;
     }
@@ -191,22 +207,30 @@ public class AmbilFoto {
         BitmapFactory.Options opts = new BitmapFactory.Options();
         opts.inJustDecodeBounds = true;
 
-        BitmapFactory.decodeFile(file.getAbsolutePath(), opts);
+        try {
+            BitmapFactory.decodeFile(file.getAbsolutePath(), opts);
 
-        // TARGET resolusi setelah diperkecil
-        final int REQUIRED_SIZE = 800;  // Kompres optimal
-        int scale = 1;
+            // TARGET resolusi setelah diperkecil
+            final int REQUIRED_SIZE = 800;  // Kompres optimal
+            int scale = 1;
 
-        while (opts.outWidth / scale >= REQUIRED_SIZE &&
-                opts.outHeight / scale >= REQUIRED_SIZE) {
-            scale *= 2;
+            while (opts.outWidth / scale >= REQUIRED_SIZE &&
+                    opts.outHeight / scale >= REQUIRED_SIZE) {
+                scale *= 2;
+            }
+
+            // Decode ulang dengan scale
+            BitmapFactory.Options opts2 = new BitmapFactory.Options();
+            opts2.inSampleSize = scale;
+
+            return BitmapFactory.decodeFile(file.getAbsolutePath(), opts2);
+        } catch (OutOfMemoryError e) {
+            e.printStackTrace();
+            return null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
-
-        // Decode ulang dengan scale
-        BitmapFactory.Options opts2 = new BitmapFactory.Options();
-        opts2.inSampleSize = scale;
-
-        return BitmapFactory.decodeFile(file.getAbsolutePath(), opts2);
     }
 
     public static Matrix getExifRotation(String path) {
@@ -327,27 +351,33 @@ public class AmbilFoto {
 
         while (true) {
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, stream);
+            try {
+                bitmap.compress(Bitmap.CompressFormat.JPEG, quality, stream);
 
-            int sizeKB = stream.toByteArray().length / 1024;
+                int sizeKB = stream.toByteArray().length / 1024;
 
-            if (sizeKB <= 50) {
-                break; // ukuran sudah pas
-            }
+                if (sizeKB <= 50) {
+                    break; // ukuran sudah pas
+                }
 
-            // kalau masih besar → turunkan kualitas
-            quality -= 5;
+                // kalau masih besar → turunkan kualitas
+                quality -= 5;
 
-            // kalau kualitas sudah kecil tapi ukuran masih besar → turunkan resolusi
-            if (quality < 20) {
-                REQUIRED_SIZE -= 100; // kurangi resolusi
-                scale += 1;
+                // kalau kualitas sudah kecil tapi ukuran masih besar → turunkan resolusi
+                if (quality < 20) {
+                    REQUIRED_SIZE -= 100; // kurangi resolusi
+                    scale += 1;
 
-                BitmapFactory.Options opt2 = new BitmapFactory.Options();
-                opt2.inSampleSize = scale;
-                bitmap = BitmapFactory.decodeFile(file.getAbsolutePath(), opt2);
+                    BitmapFactory.Options opt2 = new BitmapFactory.Options();
+                    opt2.inSampleSize = scale;
+                    bitmap = BitmapFactory.decodeFile(file.getAbsolutePath(), opt2);
+                    if (bitmap == null) break;
 
-                quality = 60; // reset kualitas
+                    quality = 60; // reset kualitas
+                }
+            } catch (OutOfMemoryError e) {
+                e.printStackTrace();
+                break;
             }
         }
 
@@ -498,18 +528,24 @@ public class AmbilFoto {
             );
 
             if (rotatedBitmap == null) {
-
-                bitmap.recycle();
-
+                if (bitmap != null && !bitmap.isRecycled()) {
+                    bitmap.recycle();
+                }
                 return null;
             }
 
             int quality = 80;
 
-            ByteArrayOutputStream baos;
+            ByteArrayOutputStream baos = null;
 
             while (true) {
-
+                if (baos != null) {
+                    try {
+                        baos.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
                 baos = new ByteArrayOutputStream();
 
                 rotatedBitmap.compress(
@@ -527,6 +563,13 @@ public class AmbilFoto {
                 quality -= 5;
             }
 
+            byte[] result = baos.toByteArray();
+            try {
+                baos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             if (!bitmap.isRecycled()) {
                 bitmap.recycle();
             }
@@ -535,12 +578,13 @@ public class AmbilFoto {
                 rotatedBitmap.recycle();
             }
 
-            return baos.toByteArray();
+            return result;
 
-        } catch (Exception e) {
-
+        } catch (OutOfMemoryError e) {
             e.printStackTrace();
-
+            return null;
+        } catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
     }

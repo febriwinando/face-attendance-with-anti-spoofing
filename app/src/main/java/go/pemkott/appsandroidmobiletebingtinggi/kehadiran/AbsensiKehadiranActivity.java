@@ -267,8 +267,13 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
                 return;
             }
 
-            Bitmap preview =
-                    BitmapFactory.decodeFile(file.getAbsolutePath());
+            Bitmap preview = null;
+            try {
+                preview = BitmapFactory.decodeFile(file.getAbsolutePath());
+            } catch (OutOfMemoryError e) {
+                e.printStackTrace();
+            }
+
             if (preview != null) {
                 ivTaging.setImageBitmap(preview);
             } else {

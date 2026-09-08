@@ -123,6 +123,9 @@ public class LoginActivity extends AppCompatActivity {
 
 
     public void loginUser(View view){
+        view.setEnabled(false);
+        view.postDelayed(() -> view.setEnabled(true), 2000);
+
         if (etUsername.getText().toString().trim().isEmpty() || etPassword.getText().toString().trim().isEmpty()){
             dialogView.viewNotifKosong(LoginActivity.this, "Anda harus mengisi NIP/NIK Anda dan kata kunci terlebih dahulu.", "");
         }else{
@@ -173,6 +176,7 @@ public class LoginActivity extends AppCompatActivity {
                     public void onResponse(Call<List<LoginResponse>> call,
                                            Response<List<LoginResponse>> response) {
 
+                        if (isFinishing()) return;
                         dialogproses.dismiss();
 
                         if (!response.isSuccessful()) {

@@ -107,7 +107,6 @@ public class JadwalIzinShiftActivity extends AppCompatActivity {
         ivBack.setOnClickListener(view -> finish());
         TextView titleSift = findViewById(R.id.titleSift);
         rvJadwalSifting = findViewById(R.id.rvJadwalSifting);
-        rvJadwalSifting.setHasFixedSize(true);
         shimmerJadwalSift = findViewById(R.id.shimmerJadwalSift);
         databaseHelper = new DatabaseHelper(this);
         String title = "Jadwal "+bulan(BULAN.format(new Date()))+" "+TAHUN.format(new Date());

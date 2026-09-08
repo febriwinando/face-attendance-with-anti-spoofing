@@ -117,11 +117,8 @@ String userId;
         TextView titleShift = findViewById(R.id.titleSift);
         ivSyncJadwalShift = findViewById(R.id.ivSyncJadwalSift);
         rvJadwalShift = findViewById(R.id.rvJadwalSifting);
-        rvJadwalShift.setHasFixedSize(true);
         shimmerJadwalShift = findViewById(R.id.shimmerJadwalSift);
         databaseHelper = new DatabaseHelper(this);
-
-
 
 
         String title = "Jadwal "+bulan(BULAN.format(new Date()))+" "+TAHUN.format(new Date());
