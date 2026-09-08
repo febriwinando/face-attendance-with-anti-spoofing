@@ -57,6 +57,8 @@ public class MediaViewerActivity extends AppCompatActivity {
             }
         }
 
+        findViewById(R.id.ivBack).setOnClickListener(v -> finish());
+
         findViewById(R.id.cvBack).setOnClickListener(v -> finish());
 
         if (mimeType != null && mimeType.startsWith("video")) {

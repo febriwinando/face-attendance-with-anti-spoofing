@@ -248,6 +248,8 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
         llPdfDinasLuar = findViewById(R.id.llPdfDinasLuar);
         llLampiranDinasLuar = findViewById(R.id.llLampiranDinasLuarOne);
 
+        findViewById(R.id.ivBack).setOnClickListener(v -> finish());
+
         tvAkurasi = findViewById(R.id.tvAkurasi);
         tvJarak = findViewById(R.id.tvJarak);
         tvTemperature = findViewById(R.id.tvTemperature);

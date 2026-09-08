@@ -232,6 +232,8 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
         llLampiranDinasLuar = findViewById(R.id.llLampiranDinasLuarCuti);
         llLampiranDinasLuarCutiHead = findViewById(R.id.llLampiranDinasLuarCutiHead);
 
+        findViewById(R.id.ivBack).setOnClickListener(v -> finish());
+
         tvAkurasi = findViewById(R.id.tvAkurasi);
         tvJarak = findViewById(R.id.tvJarak);
         tvTemperature = findViewById(R.id.tvTemperature);

@@ -236,6 +236,8 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
         llLampiranDinasLuarHead = findViewById(R.id.llLampiranDinasLuarHead);
         llLampiranDinasLuar = findViewById(R.id.llLampiranDinasLuar);
 
+        findViewById(R.id.ivBack).setOnClickListener(v -> finish());
+
         tvAkurasi = findViewById(R.id.tvAkurasi);
         tvJarak = findViewById(R.id.tvJarak);
         tvTemperature = findViewById(R.id.tvTemperature);

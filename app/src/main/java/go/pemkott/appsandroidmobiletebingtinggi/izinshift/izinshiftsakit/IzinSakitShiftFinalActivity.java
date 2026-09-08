@@ -223,6 +223,8 @@ public class IzinSakitShiftFinalActivity extends AppCompatActivity implements On
         llLampiranDinasLuar = findViewById(R.id.llLampiranDinasLuarSakit);
         llLampiranDinasLuarHead = findViewById(R.id.llLampiranDinasLuarHead);
 
+        findViewById(R.id.ivBack).setOnClickListener(v -> finish());
+
         tvAkurasi = findViewById(R.id.tvAkurasi);
         tvJarak = findViewById(R.id.tvJarak);
         tvTemperature = findViewById(R.id.tvTemperature);

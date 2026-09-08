@@ -53,6 +53,8 @@ public class CutiShiftActivity extends AppCompatActivity {
         etkegiatanCutiLainnya = findViewById(R.id.etKegiatanCutiLainnya);
         etkegiatanCutiLainnya.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
 
+        findViewById(R.id.ivBack).setOnClickListener(v -> finish());
+
         listCuti.clear();
         kegiatansListCuti.clear();
         databaseHelper = new DatabaseHelper(this);

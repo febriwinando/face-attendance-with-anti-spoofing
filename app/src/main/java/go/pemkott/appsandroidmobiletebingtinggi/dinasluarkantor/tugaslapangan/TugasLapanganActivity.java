@@ -45,6 +45,8 @@ public class TugasLapanganActivity extends AppCompatActivity {
 
         rvKegiatanPd = findViewById(R.id.rvKegiatanPd);
         etkegiatanLainnya = findViewById(R.id.etKegiatanLainnya);
+
+        findViewById(R.id.rlBackTl).setOnClickListener(v -> finish());
         
         setupRecyclerData();
         showRecyclerList();

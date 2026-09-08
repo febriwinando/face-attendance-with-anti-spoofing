@@ -216,6 +216,8 @@ public class KeperluanPribadiFinalActivity extends AppCompatActivity implements 
 //        Image View
         ivFinalKegiatan = findViewById(R.id.ivFinalKegiatanKp);
 
+        findViewById(R.id.ivBack).setOnClickListener(v -> finish());
+
         tvAkurasi = findViewById(R.id.tvAkurasi);
         tvJarak = findViewById(R.id.tvJarak);
         tvTemperature = findViewById(R.id.tvTemperature);

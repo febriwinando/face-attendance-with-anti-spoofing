@@ -98,6 +98,8 @@ public class CameraXTAcitivty extends AppCompatActivity {
         capture = findViewById(R.id.capture);
         txtChallenge = findViewById(R.id.txtChallenge);
 
+        findViewById(R.id.ivBackCamera).setOnClickListener(v -> finish());
+
         aktivitas = getIntent().getStringExtra("aktivitas");
 
         capture.setEnabled(true);

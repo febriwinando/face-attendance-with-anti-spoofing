@@ -228,6 +228,8 @@ public class IzinCutiShiftFinalActivity extends AppCompatActivity implements OnM
         llLampiranDinasLuarCutiHead = findViewById(R.id.llLampiranDinasLuarCutiHead);
         fragmentContainerView = findViewById(R.id.map);
 
+        findViewById(R.id.ivBack).setOnClickListener(v -> finish());
+
         tvAkurasi = findViewById(R.id.tvAkurasi);
         tvJarak = findViewById(R.id.tvJarak);
         tvTemperature = findViewById(R.id.tvTemperature);

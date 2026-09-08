@@ -52,6 +52,8 @@ public class KeperluanPribadiShiftActivity extends AppCompatActivity {
         etkegiatanKpLainnya = findViewById(R.id.etKegiatanKpLainnya);
         tvlistCheckedKp = findViewById(R.id.tvlistCheckedKp);
 
+        findViewById(R.id.ivBack).setOnClickListener(v -> finish());
+
         setupRecyclerData();
         showRecyclerList();
 

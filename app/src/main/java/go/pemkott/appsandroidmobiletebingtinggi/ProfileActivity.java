@@ -169,7 +169,7 @@ public class ProfileActivity extends AppCompatActivity {
         });
 
         ivBack.setOnClickListener(v -> {
-            onBackPressed();
+            finish();
         });
 
         ivGantiProfil.setOnClickListener(new View.OnClickListener() {

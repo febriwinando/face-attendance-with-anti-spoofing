@@ -48,6 +48,8 @@ public class SppdActivity extends AppCompatActivity {
         etkegiatanPdLainnya = findViewById(R.id.etKegiatanPdLainnya);
         etkegiatanPdLainnya.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
 
+        findViewById(R.id.rlBackSppd).setOnClickListener(v -> finish());
+
         setupRecyclerData();
         showRecyclerList();
 

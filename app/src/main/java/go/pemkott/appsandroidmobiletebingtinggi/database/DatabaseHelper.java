@@ -155,6 +155,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // =========================
     // TABLE: LOG AKTIVITAS
     // =========================
+
     public static final String TABLE_LOG = "log_aktivitas";
     public static final String LOG_ID = "ID";
     public static final String LOG_EMPLOYEE_ID = "EMPLOYEE_ID";

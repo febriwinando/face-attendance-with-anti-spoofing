@@ -48,6 +48,8 @@ public class KeperluanPribadiActivity extends AppCompatActivity {
 
         rvKegiatanKp = findViewById(R.id.rvKegiatanKp);
         etkegiatanKpLainnya = findViewById(R.id.etKegiatanKpLainnya);
+
+        findViewById(R.id.rlBackKP).setOnClickListener(v -> finish());
         
         setupRecyclerData();
         showRecyclerList();
