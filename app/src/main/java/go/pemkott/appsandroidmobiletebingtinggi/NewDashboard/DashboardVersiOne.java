@@ -138,7 +138,6 @@ public class DashboardVersiOne extends AppCompatActivity {
         if ("-".equals(ipPerangkat)) {
             ipPerangkat = NetworkUtil.getDeviceIpFallback();
         }
-//        Log.d("IP_PERANGKAT", ipPerangkat);
 
         boolean isDarkMode = (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
         controller.setAppearanceLightStatusBars(!isDarkMode);
@@ -146,8 +145,7 @@ public class DashboardVersiOne extends AppCompatActivity {
 
         setContentView(R.layout.activity_dashboard_versi_one);
 
-
-        createNotificationChannel(); // aman, tidak muncul dialog
+        createNotificationChannel();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             requestNotificationPermission();
@@ -157,13 +155,9 @@ public class DashboardVersiOne extends AppCompatActivity {
 
         checkAppUpdate();
 
-
         session = new SessionManager(this);
         userid = session.getPegawaiId();
-
         dashboardVersiOne = this;
-
-
         manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         databaseHelper = new DatabaseHelper(this);
 
@@ -302,18 +296,6 @@ public class DashboardVersiOne extends AppCompatActivity {
             }
         });
 
-//        cvMenuIzin.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if ("0".equals(statusSift)){
-//                    bukaIzin();
-//                }else{
-//                    jenisabsensi = 8;
-//                    Intent intentJadwalSifting = new Intent(DashboardVersiOne.this, JadwalIzinSiftActivity.class);
-//                    startActivity(intentJadwalSifting);
-//                }
-//            }
-//        });
 
         cvMenuIzin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -345,13 +327,6 @@ public class DashboardVersiOne extends AppCompatActivity {
             }
         });
 
-//        cvMenuPerjalananDinas.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                jenisabsensi = 3;
-//                startActivity(new Intent(DashboardVersiOne.this, SppdActivity.class));
-//            }
-//        });
         cvMenuPerjalananDinas.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
