@@ -666,6 +666,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return res;
     }
 
+    public Cursor getJadwalSiftByTanggal(String employee_id, String tanggal) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.rawQuery("SELECT * FROM " + JADWALSIFT + " WHERE " + JW_EMPLOYEE_ID + " = '" + employee_id + "' AND " + JW_TANGGAL + " = '" + tanggal + "'", null);
+    }
+
 
     public Cursor getInfoJadwalSiftToday(String ide, String tglCheck){
         String hariini = SIMPLE_FORMAT_TANGGAL.format(new Date());

@@ -230,6 +230,14 @@ public class AbsenShiftActivity extends AppCompatActivity implements OnMapReadyC
         masuksift = JadwalShiftActivity.masuksift;
         pulangsift = JadwalShiftActivity.pulangsift;
 
+        Cursor resSift = databaseHelper.getJadwalSiftByTanggal(sEmployId, rbTanggal);
+        if (resSift != null && resSift.getCount() > 0) {
+            while (resSift.moveToNext()) {
+                timetableid = resSift.getString(2);
+            }
+            resSift.close();
+        }
+
 //        String myDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString()+ "/eabsensi";
         Intent intent = getIntent();
         String uriString =
@@ -1262,7 +1270,7 @@ private boolean isHariSenin() {
         dialogproses.setContentView(R.layout.view_proses);
         dialogproses.setCancelable(false);
 
-        Log.d("ABSEN_MASUK_PAGI", "Ini absen pulang malam");
+//        Log.d("ABSEN_MASUK_PAGI", idsift+"Ini absen pulang malam"+timetableid);
 
 
         byte[] imageBytes = ambilFoto.compressToMax80KB(file);
@@ -1274,7 +1282,7 @@ private boolean isHariSenin() {
                         textPart(absensi),
                         textPart(eselon),
                         textPart(idpegawai),
-//                        textPart(timetableid),
+                        textPart(timetableid),
                         textPart(tanggal),
                         textPart(jam),
                         textPart(posisi),
@@ -1294,31 +1302,6 @@ private boolean isHariSenin() {
                         textPart(ket),
                         textPart(String.valueOf(terlambat))
                 );
-//        Call<ResponsePOJO> call = RetroClient.getInstance().getApi().absensiftMasukMalam(
-//                encodedImage,
-//                absensi,
-//                eselon,
-//                idpegawai,
-//                timetableid,
-//                tanggal,
-//                jam,
-//                posisi,
-//                status,
-//                lat,
-//                lng,
-//                eOPD,
-//                jampegawai,
-//                validasi,
-//                rbFakeGPS,
-//                batasWaktu,
-//                masuksift,
-//                pulangsift,
-//                inisialsift,
-//                tipesift,
-//                idsift,
-//                ket,
-//                terlambat
-//        );
 
         call.enqueue(new Callback<>() {
             @Override
