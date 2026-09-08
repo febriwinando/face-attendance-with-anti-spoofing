@@ -101,4 +101,5 @@ dependencies {
     implementation(libs.camera.view)
     implementation(libs.tensorflow.lite)
     implementation(libs.tensorflow.lite.support)
+    implementation(libs.work.runtime)
 }

@@ -196,49 +196,56 @@ public class CameraXLActivity extends AppCompatActivity {
                     @Override
                     public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
                         runOnUiThread(() -> {
+                            String resultPath = (outputFileResults.getSavedUri() != null) ? outputFileResults.getSavedUri().toString() : fileName;
                             if ("kehadiran".equals(aktivitas)) {
                                 Intent intent = new Intent(CameraXLActivity.this, AbsensiKehadiranActivity.class);
-                                intent.putExtra("namafile", fileName);
+                                intent.putExtra("namafile", resultPath);
                                 startActivity(intent);
                                 finish();
                             } else if ("tugaslapangan".equals(aktivitas)) {
                                 Intent intent = new Intent(CameraXLActivity.this, TugasLapanganFinalActivity.class);
-                                intent.putExtra("namafile", fileName);
+                                intent.putExtra("namafile", resultPath);
                                 startActivity(intent);
                                 finish();
                             } else if ("lampirantl".equals(aktivitas)) {
                                 Intent resultIntent = new Intent();
-                                resultIntent.putExtra("namafile", fileName);
+                                resultIntent.putExtra("namafile", resultPath);
                                 setResult(RESULT_OK, resultIntent);
 
                                 finish();
                             } else if ("perjalanandinas".equals(aktivitas)) {
                                 Intent resultIntent = new Intent();
-                                resultIntent.putExtra("namafile", fileName);
+                                resultIntent.putExtra("namafile", resultPath);
                                 setResult(RESULT_OK, resultIntent);
 
                                 finish();
                             } else if ("izincuti".equals(aktivitas)) {
                                 Intent resultIntent = new Intent();
-                                resultIntent.putExtra("namafile", fileName);
+                                resultIntent.putExtra("namafile", resultPath);
                                 setResult(RESULT_OK, resultIntent);
 
                                 finish();
                             } else if ("lampiranizinsakit".equals(aktivitas)) {
                                 Intent resultIntent = new Intent();
-                                resultIntent.putExtra("namafile", fileName);
+                                resultIntent.putExtra("namafile", resultPath);
                                 setResult(RESULT_OK, resultIntent);
 
                                 finish();
                             } else if ("lampirancutisift".equals(aktivitas)) {
                                 Intent resultIntent = new Intent();
-                                resultIntent.putExtra("namafile", fileName);
+                                resultIntent.putExtra("namafile", resultPath);
                                 setResult(RESULT_OK, resultIntent);
 
                                 finish();
                             } else if ("lampiranizinsakitshift".equals(aktivitas)) {
                                 Intent resultIntent = new Intent();
-                                resultIntent.putExtra("namafile", fileName);
+                                resultIntent.putExtra("namafile", resultPath);
+                                setResult(RESULT_OK, resultIntent);
+
+                                finish();
+                            } else {
+                                Intent resultIntent = new Intent();
+                                resultIntent.putExtra("namafile", resultPath);
                                 setResult(RESULT_OK, resultIntent);
                                 finish();
                             }

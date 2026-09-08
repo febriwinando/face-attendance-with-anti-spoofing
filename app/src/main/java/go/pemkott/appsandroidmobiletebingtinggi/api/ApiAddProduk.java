@@ -5,6 +5,7 @@ import java.util.List;
 import go.pemkott.appsandroidmobiletebingtinggi.model.CheckAbsensi;
 import go.pemkott.appsandroidmobiletebingtinggi.model.DataEmployee;
 import go.pemkott.appsandroidmobiletebingtinggi.model.Koordinat;
+import go.pemkott.appsandroidmobiletebingtinggi.model.UserActivityLogRequest;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -543,5 +544,7 @@ public interface ApiAddProduk {
     @POST("logout")
     Call<Void> logout(@Header("Authorization") String token);
 
+    @POST("user-activity-logs")
+    Call<ResponsePOJO> sendActivityLogs(@Body UserActivityLogRequest request);
 
 }

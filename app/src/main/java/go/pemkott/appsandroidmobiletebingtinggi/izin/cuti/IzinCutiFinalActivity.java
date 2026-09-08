@@ -786,10 +786,21 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
                     result -> {
                         if (result.getResultCode() == RESULT_OK && result.getData() != null) {
 
-                            String myDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString()+ "/eabsensi";
                             String fileName = result.getData().getStringExtra("namafile");
 
-                            filelampiran = new File(myDir, fileName);
+                            if (fileName != null && (fileName.startsWith("content://") || fileName.startsWith("file://"))) {
+                                try {
+                                    filelampiran = createTempFileFromUri(Uri.parse(fileName));
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                    Toast.makeText(IzinCutiFinalActivity.this, "Gagal memproses file lampiran", Toast.LENGTH_SHORT).show();
+                                    return;
+                                }
+                            } else {
+                                String myDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString() + "/eabsensi";
+                                filelampiran = new File(myDir, fileName);
+                            }
+
                             byte[] imageBytes = ambilFoto.compressToMax80KB(filelampiran);
 
                             Bitmap previewLampiran = BitmapFactory.decodeByteArray(

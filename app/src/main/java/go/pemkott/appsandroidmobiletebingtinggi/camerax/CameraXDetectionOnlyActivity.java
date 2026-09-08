@@ -8,11 +8,9 @@ import android.content.pm.PackageManager;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.media.Image;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,7 +22,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.OptIn;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.*;
-        import androidx.camera.lifecycle.ProcessCameraProvider;
+import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
 import androidx.core.content.ContextCompat;
 
@@ -32,10 +30,11 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.face.*;
 
-        import java.util.ArrayList;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.Executors;
 
 import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.dinasluarkantor.perjalanandinas.PerjalananDinasFinalActivity;
@@ -49,7 +48,8 @@ import go.pemkott.appsandroidmobiletebingtinggi.izinshift.izinshiftsakit.IzinSak
 import go.pemkott.appsandroidmobiletebingtinggi.kehadiran.AbsensiKehadiranActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.kehadiransift.AbsenShiftActivity;
 
-public class CameraXTAcitivty extends AppCompatActivity {
+
+public class CameraXDetectionOnlyActivity extends AppCompatActivity {
 
     // ================= UI =================
     private PreviewView previewView;
@@ -63,8 +63,7 @@ public class CameraXTAcitivty extends AppCompatActivity {
 
     // ================= FACE =================
     private FaceDetector faceDetector;
-    //    private boolean faceInsideFrame = false;
-    private boolean faceInsideFrame = true;
+    private boolean faceInsideFrame = false;
 
     // ================= CHALLENGE =================
     enum Challenge {
@@ -85,6 +84,7 @@ public class CameraXTAcitivty extends AppCompatActivity {
             );
 
     private String aktivitas;
+    private boolean isCapturing = false;
 
     // ================= LIFECYCLE =================
     @Override
@@ -94,30 +94,27 @@ public class CameraXTAcitivty extends AppCompatActivity {
 
         previewView = findViewById(R.id.cameraPreview);
         faceOverlay = findViewById(R.id.faceOverlay);
-        faceOverlay.setVisibility(View.GONE);
         capture = findViewById(R.id.capture);
         txtChallenge = findViewById(R.id.txtChallenge);
 
-        findViewById(R.id.ivBackCamera).setOnClickListener(v -> finish());
-
         aktivitas = getIntent().getStringExtra("aktivitas");
 
-        capture.setEnabled(true);
-        capture.setAlpha(1f);
+        capture.setEnabled(false);
+        capture.setAlpha(0.5f);
 
-//        initFaceDetector();
-//        generateChallengeQueue();
+        initFaceDetector();
+        generateChallengeQueue();
 
         capture.setOnClickListener(v -> {
-//            if (!faceInsideFrame) {
-//                Toast.makeText(this, "Posisikan wajah di dalam frame", Toast.LENGTH_SHORT).show();
-//                return;
-//            }
-//
-//            if (challengeIndex < challengeQueue.size()) {
-//                Toast.makeText(this, "Selesaikan challenge terlebih dahulu", Toast.LENGTH_SHORT).show();
-//                return;
-//            }
+            if (!faceInsideFrame) {
+                Toast.makeText(this, "Posisikan wajah di dalam frame", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (challengeIndex < challengeQueue.size()) {
+                Toast.makeText(this, "Selesaikan challenge terlebih dahulu", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
             takePicture();
         });
@@ -157,17 +154,16 @@ public class CameraXTAcitivty extends AppCompatActivity {
 
         Random r = new Random();
 
-        while (temp.size() < 1) {
+        while (temp.size() < 2) {
             Challenge c = pool[r.nextInt(pool.length)];
             if (!temp.contains(c)) temp.add(c);
         }
 
         challengeQueue.clear();
 
-        // masing-masing 2 kali
+        // masing-masing 1 kali (total 2 tantangan)
         for (Challenge c : temp) {
             challengeQueue.add(c);
-//            challengeQueue.add(c);
         }
 
         Collections.shuffle(challengeQueue);
@@ -209,15 +205,15 @@ public class CameraXTAcitivty extends AppCompatActivity {
 
                 imageCapture = new ImageCapture.Builder().build();
 
-//                ImageAnalysis analysis =
-//                        new ImageAnalysis.Builder()
-//                                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-//                                .build();
-//
-//                analysis.setAnalyzer(
-//                        Executors.newSingleThreadExecutor(),
-//                        this::analyzeFrame
-//                );
+                ImageAnalysis analysis =
+                        new ImageAnalysis.Builder()
+                                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                                .build();
+
+                analysis.setAnalyzer(
+                        Executors.newSingleThreadExecutor(),
+                        this::analyzeFrame
+                );
 
                 provider.unbindAll();
                 provider.bindToLifecycle(
@@ -226,7 +222,8 @@ public class CameraXTAcitivty extends AppCompatActivity {
                                 .requireLensFacing(CAMERA_FACING)
                                 .build(),
                         preview,
-                        imageCapture
+                        imageCapture,
+                        analysis
                 );
 
             } catch (Exception e) {
@@ -284,8 +281,14 @@ public class CameraXTAcitivty extends AppCompatActivity {
         }
 
         if (challengeIndex >= challengeQueue.size()) {
-            capture.setEnabled(true);
-            capture.setAlpha(1f);
+            if (!isCapturing) {
+                isCapturing = true;
+                runOnUiThread(() -> {
+                    capture.setEnabled(true);
+                    capture.setAlpha(1f);
+                    takePicture();
+                });
+            }
             return;
         }
 
@@ -296,6 +299,7 @@ public class CameraXTAcitivty extends AppCompatActivity {
 
         Challenge c = challengeQueue.get(challengeIndex);
         boolean passed = false;
+        float currentProgress = 0f;
 
         float eulerY = face.getHeadEulerAngleY(); // kiri-kanan
         float eulerX = face.getHeadEulerAngleX(); // atas-bawah
@@ -305,42 +309,56 @@ public class CameraXTAcitivty extends AppCompatActivity {
                 Float l = face.getLeftEyeOpenProbability();
                 Float r = face.getRightEyeOpenProbability();
                 passed = l != null && r != null && l < 0.3f && r < 0.3f;
+                if (l != null && r != null) currentProgress = 1f - ((l + r) / 2f);
                 break;
 
             case SMILE:
                 Float s = face.getSmilingProbability();
                 passed = s != null && s > 0.6f;
+                if (s != null) currentProgress = s / 0.6f;
                 break;
 
             case TURN_LEFT:
                 passed = eulerY > 15;
+                currentProgress = eulerY / 15f;
                 break;
 
             case TURN_RIGHT:
                 passed = eulerY < -15;
+                currentProgress = Math.abs(eulerY) / 15f;
                 break;
 
             case LOOK_UP:
                 passed = eulerX > 10;
+                currentProgress = eulerX / 10f;
                 break;
 
             case LOOK_DOWN:
                 passed = eulerX < -10;
+                currentProgress = Math.abs(eulerX) / 10f;
                 break;
         }
+
+        final float finalProgress = Math.min(1f, Math.max(0f, currentProgress));
+        runOnUiThread(() -> faceOverlay.setProgress(finalProgress));
 
         if (passed) advanceChallenge();
     }
 
     private void advanceChallenge() {
         challengeIndex++;
+        runOnUiThread(() -> faceOverlay.setProgress(0f));
 
         if (challengeIndex >= challengeQueue.size()) {
-            runOnUiThread(() -> {
-                txtChallenge.setText("✔ Verifikasi berhasil");
-                capture.setEnabled(true);
-                capture.setAlpha(1f);
-            });
+            if (!isCapturing) {
+                isCapturing = true;
+                runOnUiThread(() -> {
+                    txtChallenge.setText("✔ Verifikasi berhasil");
+                    capture.setEnabled(true);
+                    capture.setAlpha(1f);
+                    takePicture();
+                });
+            }
             return;
         }
 
@@ -349,6 +367,7 @@ public class CameraXTAcitivty extends AppCompatActivity {
 
     private void resetState() {
         challengeIndex = 0;
+        isCapturing = false;
         runOnUiThread(() -> {
             capture.setEnabled(false);
             capture.setAlpha(0.5f);
@@ -369,7 +388,7 @@ public class CameraXTAcitivty extends AppCompatActivity {
     // ================= CAPTURE =================
     private void takePicture() {
 
-        Dialog dialogproses = new Dialog(CameraXTAcitivty.this, R.style.DialogStyle);
+        Dialog dialogproses = new Dialog(CameraXDetectionOnlyActivity.this, R.style.DialogStyle);
         dialogproses.setContentView(R.layout.view_proses);
         dialogproses.setCancelable(false);
 
@@ -394,34 +413,20 @@ public class CameraXTAcitivty extends AppCompatActivity {
                 ContextCompat.getMainExecutor(this),
                 new ImageCapture.OnImageSavedCallback() {
 
-//                    @Override
-//                    public void onImageSaved(@NonNull ImageCapture.OutputFileResults output) {
-//                        dialogproses.dismiss();
-//                        kirimHasil(fileName);
-//                    }
-
                     @Override
-                    public void onImageSaved(
-                            @NonNull ImageCapture.OutputFileResults output
-                    ) {
+                    public void onImageSaved(@NonNull ImageCapture.OutputFileResults output) {
                         dialogproses.dismiss();
-
-                        Uri savedUri = output.getSavedUri();
-
-                        if (savedUri != null) {
-                            kirimHasil(savedUri.toString());
+                        if (output.getSavedUri() != null) {
+                            kirimHasil(output.getSavedUri().toString());
                         } else {
-                            Toast.makeText(
-                                    CameraXTAcitivty.this,
-                                    "Gagal mendapatkan lokasi foto",
-                                    Toast.LENGTH_SHORT
-                            ).show();
+                            kirimHasil(fileName);
                         }
                     }
 
                     @Override
                     public void onError(@NonNull ImageCaptureException e) {
-                        Toast.makeText(CameraXTAcitivty.this,
+                        isCapturing = false;
+                        Toast.makeText(CameraXDetectionOnlyActivity.this,
                                 e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -467,3 +472,4 @@ public class CameraXTAcitivty extends AppCompatActivity {
         finish();
     }
 }
+

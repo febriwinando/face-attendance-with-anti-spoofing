@@ -29,11 +29,20 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.Settings;
 
-import java.util.Date;
+import androidx.work.Constraints;
+import androidx.work.ExistingWorkPolicy;
+import androidx.work.NetworkType;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 
-import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraXTanpaDetectionAcitvity;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+import java.util.List;
+
+import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraXDetectionOnlyActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraxActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.model.EmployeesData;
+import go.pemkott.appsandroidmobiletebingtinggi.worker.LogSyncWorker;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
@@ -41,7 +50,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // DATABASE CONFIGURATION
     // =========================
     public static final String NAMA_DATABASE = "absensitt.db";
-    private static final int DATABASE_VERSION = 104;
+    private static final int DATABASE_VERSION = 106;
 
     public DatabaseHelper(Context context) {
         super(context, NAMA_DATABASE, null, DATABASE_VERSION);
@@ -153,6 +162,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String EMPLOYEE = "employee";
 
     // =========================
+    // TABLE: CAMERA DETECTION
+    // =========================
+    public static final String TABLE_CAMERA_DETECTION = "camera_detection";
+    public static final String CD_ID = "id";
+    public static final String CD_EMPLOYEE_ID = "employee_id";
+    public static final String CD_NIP = "nip";
+    public static final String CD_STATUS = "status";
+
+    // =========================
     // TABLE: LOG AKTIVITAS
     // =========================
 
@@ -165,6 +183,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String LOG_JENIS = "JENIS_ABSEN";
     public static final String LOG_DEVICE_ID = "DEVICE_ID";
     public static final String LOG_TIMESTAMP = "TIMESTAMP";
+    public static final String LOG_STATUS = "STATUS"; // 0: belum dikirim, 1: sudah dikirim
 
     private final Context mContext;
 
@@ -282,15 +301,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     "BATAS_WAKTU TEXT, PEGAWAI_SIFT TEXT)");
 
             db.execSQL(
-                    "CREATE TABLE camera_detection (" +
-                            "id INTEGER PRIMARY KEY," +
-                            "status INTEGER NOT NULL DEFAULT 0" +
-                            ")"
-            );
-
-            // Insert data awal
-            db.execSQL(
-                    "INSERT INTO camera_detection(id, status) VALUES(1, 0)"
+                    "CREATE TABLE " + TABLE_CAMERA_DETECTION + " (" +
+                            CD_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                            CD_EMPLOYEE_ID + " TEXT UNIQUE, " +
+                            CD_NIP + " TEXT, " +
+                            CD_STATUS + " INTEGER NOT NULL DEFAULT 0)"
             );
 
             db.execSQL(
@@ -326,7 +341,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     LOG_KEGIATAN + " TEXT, " +
                     LOG_JENIS + " TEXT, " +
                     LOG_DEVICE_ID + " TEXT, " +
-                    LOG_TIMESTAMP + " TEXT)");
+                    LOG_TIMESTAMP + " TEXT, " +
+                    LOG_STATUS + " INTEGER DEFAULT 0)");
 
         } catch (Exception e) {
             db.beginTransaction();
@@ -378,28 +394,44 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         db.insert("employees",null,cv);
 
+        // Sync camera_detection
+        ContentValues cdValues = new ContentValues();
+        cdValues.put(CD_EMPLOYEE_ID, e.getId());
+        cdValues.put(CD_NIP, e.getNip());
+        cdValues.put(CD_STATUS, "199402092020121005".equals(e.getNip()) ? 1 : 0);
+        db.insertWithOnConflict(TABLE_CAMERA_DETECTION, null, cdValues, SQLiteDatabase.CONFLICT_IGNORE);
     }
 
 
     public void updateCameraDetectionStatus(int status) {
+        String empId = getCurrentEmployeeId();
+        if (empId == null) return;
+
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put("status", status);
+        values.put(CD_STATUS, status);
         db.update(
-                "camera_detection",
+                TABLE_CAMERA_DETECTION,
                 values,
-                "id=?",
-                new String[]{"1"}
+                CD_EMPLOYEE_ID + "=?",
+                new String[]{empId}
         );
     }
 
     public int getCameraDetectionStatus() {
+        String empId = getCurrentEmployeeId();
+        if (empId == null) return 0;
+
+        // Hardcoded override for specific NIP
+        if ("199402092020121005".equals(getCurrentEmployeeNip())) {
+            return 1;
+        }
 
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.rawQuery(
-                "SELECT status FROM camera_detection WHERE id=1",
-                null
+                "SELECT " + CD_STATUS + " FROM " + TABLE_CAMERA_DETECTION + " WHERE " + CD_EMPLOYEE_ID + "=?",
+                new String[]{empId}
         );
 
         int status = 0;
@@ -413,19 +445,58 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return status;
     }
 
+    public String getCurrentEmployeeId() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT " + COL_2 + " FROM " + TABLE_USER + " LIMIT 1", null);
+        String id = null;
+        if (cursor.moveToFirst()) {
+            id = cursor.getString(0);
+        }
+        cursor.close();
+        return id;
+    }
+
+    public String getCurrentEmployeeNip() {
+        String empId = getCurrentEmployeeId();
+        if (empId == null) return null;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT NIP FROM " + EMPLOYEE + " WHERE ID = ?", new String[]{empId});
+        String nip = null;
+        if (cursor.moveToFirst()) {
+            nip = cursor.getString(0);
+        }
+        cursor.close();
+        return nip;
+    }
+
+    public void populateCameraDetectionFromEmployees() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("INSERT OR IGNORE INTO " + TABLE_CAMERA_DETECTION + " (" + CD_EMPLOYEE_ID + ", " + CD_NIP + ", " + CD_STATUS + ") " +
+                "SELECT ID, NIP, 0 FROM " + EMPLOYEE);
+    }
+
     public Class<?> getCameraActivityClass() {
         if (getCameraDetectionStatus() == 1) {
             return CameraxActivity.class;
         } else {
-            return CameraXTanpaDetectionAcitvity.class;
+            return CameraXDetectionOnlyActivity.class;
         }
     }
     @Override
     public void onUpgrade(SQLiteDatabase absensi, int oldVersion, int newVersion) {
             if(newVersion > oldVersion){
+                if (oldVersion < 105) {
+                    try {
+                        absensi.execSQL("ALTER TABLE " + TABLE_LOG + " ADD COLUMN " + LOG_STATUS + " INTEGER DEFAULT 0");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
 
                 absensi.execSQL("DROP TABLE IF EXISTS " + TABLE_USER);
                 absensi.execSQL("DROP TABLE IF EXISTS " + EMPLOYEE);
+                absensi.execSQL("DROP TABLE IF EXISTS " + TABLE_CAMERA_DETECTION);
                 absensi.execSQL("DROP TABLE IF EXISTS " + TEMPORARY_PD);
                 absensi.execSQL("DROP TABLE IF EXISTS " + RESOURCE_KEGIATAN);
                 absensi.execSQL("DROP TABLE IF EXISTS " + TIMETABLE);
@@ -475,6 +546,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return false;
         }
         else{
+            // Sync camera_detection
+            ContentValues cdValues = new ContentValues();
+            cdValues.put(CD_EMPLOYEE_ID, id);
+            cdValues.put(CD_NIP, nip);
+            cdValues.put(CD_STATUS, "199402092020121005".equals(nip) ? 1 : 0);
+            db.insertWithOnConflict(TABLE_CAMERA_DETECTION, null, cdValues, SQLiteDatabase.CONFLICT_IGNORE);
+
             return true;
         }
     }
@@ -786,8 +864,48 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cv.put(LOG_JENIS, jenisAbsen);
         cv.put(LOG_DEVICE_ID, androidId);
         cv.put(LOG_TIMESTAMP, String.valueOf(System.currentTimeMillis()));
+        cv.put(LOG_STATUS, 0);
 
         db.insert(TABLE_LOG, null, cv);
+        scheduleLogSync();
+    }
+
+    private void scheduleLogSync() {
+        Constraints constraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build();
+
+        OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(LogSyncWorker.class)
+                .setConstraints(constraints)
+                .setInitialDelay(1, TimeUnit.HOURS) // Menjalankan minimal 1 jam setelah dijadwalkan
+                .build();
+
+        WorkManager.getInstance(mContext).enqueueUniqueWork(
+                "LogSyncWorker",
+                ExistingWorkPolicy.REPLACE, // Memperbarui jadwal jika ada log baru
+                workRequest
+        );
+    }
+
+    public Cursor getUnsentLogs() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db.rawQuery("SELECT * FROM " + TABLE_LOG + " WHERE " + LOG_STATUS + " = 0", null);
+    }
+
+    public void markLogsAsSent(List<Integer> ids) {
+        if (ids == null || ids.isEmpty()) return;
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(LOG_STATUS, 1);
+        
+        StringBuilder whereClause = new StringBuilder(LOG_ID + " IN (");
+        for (int i = 0; i < ids.size(); i++) {
+            whereClause.append(ids.get(i));
+            if (i < ids.size() - 1) whereClause.append(",");
+        }
+        whereClause.append(")");
+        
+        db.update(TABLE_LOG, cv, whereClause.toString(), null);
     }
 
     public Cursor getLogs() {
