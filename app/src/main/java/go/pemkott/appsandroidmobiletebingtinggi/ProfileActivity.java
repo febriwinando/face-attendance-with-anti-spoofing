@@ -585,8 +585,8 @@ public class ProfileActivity extends AppCompatActivity {
                 databaseHelper.deleteKegiatanIzin();
                 databaseHelper.deleteTimeTableAll();
                 databaseHelper.deleteDataKoordinatEmployeeAll();
-                databaseHelper.deleteJamSift();
-                databaseHelper.deleteJadwalSift2();
+                databaseHelper.deleteJamShift();
+                databaseHelper.deleteJadwalShift2();
                 databaseHelper.deleteAllEmployees();
                 databaseHelper.deleteDataCameradetection();
 

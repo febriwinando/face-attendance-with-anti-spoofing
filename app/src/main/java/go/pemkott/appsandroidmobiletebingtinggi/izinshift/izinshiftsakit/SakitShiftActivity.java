@@ -88,6 +88,13 @@ public class SakitShiftActivity extends AppCompatActivity {
                 finish();
             }
         });
+
+        findViewById(R.id.ivBack).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
 

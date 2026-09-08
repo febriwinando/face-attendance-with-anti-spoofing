@@ -35,7 +35,7 @@ public class CutiActivity extends AppCompatActivity {
     EditText etkegiatanCutiLainnya;
     RecyclerView rvKegiatanCuti;
     DialogView dialogView = new DialogView(CutiActivity.this);
-    RelativeLayout rlBackCuti;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,7 +49,7 @@ public class CutiActivity extends AppCompatActivity {
         rvKegiatanCuti = findViewById(R.id.rvKegiatanCuti);
         etkegiatanCutiLainnya = findViewById(R.id.etKegiatanCutiLainnya);
         etkegiatanCutiLainnya.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
-        rlBackCuti = findViewById(R.id.rlBackCuti);
+
         setupRecyclerData();
         showRecyclerList();
 
@@ -59,16 +59,10 @@ public class CutiActivity extends AppCompatActivity {
                 finish();
             }
         });
-        rlBackCuti.setOnClickListener(new View.OnClickListener() {
+
+        findViewById(R.id.rlBackCuti).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
-            }
-        });
-
-        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
                 finish();
             }
         });

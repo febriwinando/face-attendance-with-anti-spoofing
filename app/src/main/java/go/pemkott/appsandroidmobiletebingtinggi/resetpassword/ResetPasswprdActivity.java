@@ -67,7 +67,11 @@ public class ResetPasswprdActivity extends AppCompatActivity {
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                finish();   // atau aksi lain
+                if (mWebView.canGoBack()) {
+                    mWebView.goBack();
+                } else {
+                    finish();
+                }
             }
         });
     }
@@ -79,15 +83,6 @@ public class ResetPasswprdActivity extends AppCompatActivity {
         {
             view.loadUrl(url);
             return true;
-        }
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (mWebView.canGoBack()) {
-            mWebView.goBack();
-        } else {
-            super.onBackPressed();
         }
     }
 }

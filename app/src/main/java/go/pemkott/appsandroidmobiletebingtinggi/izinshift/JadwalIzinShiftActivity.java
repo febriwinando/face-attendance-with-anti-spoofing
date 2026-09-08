@@ -126,11 +126,19 @@ public class JadwalIzinShiftActivity extends AppCompatActivity {
                 finish();
             }
         });
+
+        findViewById(R.id.rlBackIzinSift).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
     }
 
 
     public void unduhDataSiftOPD(){
-        databaseHelper.deleteJamSift();
+        databaseHelper.deleteJamShift();
         Call<List<WaktuSift>> jadwalSiftPegawai = holderAPI.getTestSift("https://absensi.tebingtinggikota.go.id/api/testsift?eOPD="+eOPD);
         jadwalSiftPegawai.enqueue(new Callback<List<WaktuSift>>() {
             @Override
@@ -144,7 +152,7 @@ public class JadwalIzinShiftActivity extends AppCompatActivity {
                 List<WaktuSift> waktuSifts = response.body();
                 int jumlahdata = 0;
                 for(WaktuSift waktuSift : waktuSifts){
-                    databaseHelper.insertJamSift(String.valueOf(waktuSift.getId()), String.valueOf(waktuSift.getOpd_id()), String.valueOf(waktuSift.getTipe()), String.valueOf(waktuSift.getInisial()), String.valueOf(waktuSift.getMasuk()), String.valueOf(waktuSift.getPulang()));
+                    databaseHelper.insertJamShift(String.valueOf(waktuSift.getId()), String.valueOf(waktuSift.getOpd_id()), String.valueOf(waktuSift.getTipe()), String.valueOf(waktuSift.getInisial()), String.valueOf(waktuSift.getMasuk()), String.valueOf(waktuSift.getPulang()));
                     jumlahdata += 1;
                 }
 
@@ -201,7 +209,7 @@ public class JadwalIzinShiftActivity extends AppCompatActivity {
             lngOffice = employe.getString(16);
         }
 
-        Cursor resJadwalSift = databaseHelper.getJadwalSifts2(sEmployeID, bulansebelum, bulan, tahunsebelum, tahun);
+        Cursor resJadwalSift = databaseHelper.getJadwalShifts2(sEmployeID, bulansebelum, bulan, tahunsebelum, tahun);
 
         if (resJadwalSift.getCount() > 0){
             ivSyncJadwalSift.setVisibility(View.VISIBLE);
@@ -217,7 +225,7 @@ public class JadwalIzinShiftActivity extends AppCompatActivity {
         }
 
 
-        Cursor resJamSift = databaseHelper.getJamSift(eOPD);
+        Cursor resJamSift = databaseHelper.getJamShift(eOPD);
 
         while (resJamSift.moveToNext()){
             idSift.add(resJamSift.getString(0));
@@ -229,7 +237,7 @@ public class JadwalIzinShiftActivity extends AppCompatActivity {
 
         }
 
-        listJadwalSift.addAll(getJadwalSift());
+        listJadwalSift.addAll(getJadwalShift());
         showRecyclerGrid();
         handlerProgressDialog();;
     }
@@ -241,7 +249,7 @@ public class JadwalIzinShiftActivity extends AppCompatActivity {
         shimmerJadwalSift.hideShimmer();
     }
 
-    ArrayList<JadwalSift> getJadwalSift() {
+    ArrayList<JadwalSift> getJadwalShift() {
         ArrayList<JadwalSift> listJadwal = new ArrayList<>();
         listJadwal.clear();
 
@@ -258,7 +266,7 @@ public class JadwalIzinShiftActivity extends AppCompatActivity {
         return listJadwal;
     }
 
-    ArrayList<WaktuSift> getJamSift() {
+    ArrayList<WaktuSift> getJamShift() {
         ArrayList<WaktuSift> waktuSifts = new ArrayList<>();
         waktuSifts.clear();
 
@@ -282,7 +290,7 @@ public class JadwalIzinShiftActivity extends AppCompatActivity {
 
     private void showRecyclerGrid(){
         rvJadwalSifting.setLayoutManager(new GridLayoutManager(this, 4));
-        GridJadwalIzinShiftAdapter gridJadwal = new GridJadwalIzinShiftAdapter(JadwalIzinShiftActivity.this, listJadwalSift, getJamSift());
+        GridJadwalIzinShiftAdapter gridJadwal = new GridJadwalIzinShiftAdapter(JadwalIzinShiftActivity.this, listJadwalSift, getJamShift());
         rvJadwalSifting.setAdapter(gridJadwal);
 
         gridJadwal.setOnItemClickCallback(new GridJadwalIzinShiftAdapter.OnItemClickCallback() {
@@ -424,7 +432,7 @@ public class JadwalIzinShiftActivity extends AppCompatActivity {
         dialogproses.setCancelable(false);
 
         if (status == 1){
-            databaseHelper.deleteJadwalSift(sEmployeID, bulan, tahun);
+            databaseHelper.deleteJadwalShift(sEmployeID, bulan, tahun);
         }
 
         Call<ArrayList<JadwalSift>> jadwalSiftPegawai = holderAPI.getJadwalSifts("https://absensi.tebingtinggikota.go.id/api/jadwalsift?ide="+sEmployeID+"&bulan="+bulan+"&tahun="+tahun);
@@ -443,7 +451,7 @@ public class JadwalIzinShiftActivity extends AppCompatActivity {
                 }else{
                     int jlhJadwalSift = 0;
                     for(JadwalSift jadwalSift : jadwalSifts){
-                        databaseHelper.insertJadwalSift(jadwalSift.getId(), jadwalSift.getEmployee_id(), jadwalSift.getShift_id(), jadwalSift.getTanggal());
+                        databaseHelper.insertJadwalShift(jadwalSift.getId(), jadwalSift.getEmployee_id(), jadwalSift.getShift_id(), jadwalSift.getTanggal());
                         jlhJadwalSift += 1;
                     }
 

@@ -48,6 +48,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -194,6 +195,12 @@ public class IzinCutiShiftFinalActivity extends AppCompatActivity implements OnM
         getWindow().setNavigationBarColor(getResources().getColor(R.color.background_color));
 
         setContentView(R.layout.activity_izin_cuti_sift_final);
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                finish();
+            }
+        });
 
         session = new SessionManager(this);
         userId = session.getPegawaiId();

@@ -553,7 +553,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return true;
     }
 
-    public boolean insertJamSift(String id, String opd_id, String tipe, String inisial, String masuk, String pulang){
+    public boolean insertJamShift(String id, String opd_id, String tipe, String inisial, String masuk, String pulang){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(JS_ID, id);
@@ -570,7 +570,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return true;
     }
 
-    public boolean insertJadwalSift(String id, String employee_id, String sift_id, String tanggal){
+    public boolean insertJadwalShift(String id, String employee_id, String sift_id, String tanggal){
 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -637,13 +637,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return res;
     }
 
-    public Cursor getJamSift(String opd_id){
+    public Cursor getJamShift(String opd_id){
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor res = db.rawQuery("select * from "+JAMSIFT+" where OPD_ID = '"+opd_id+"'" , null);
         return res;
     }
 
-    public Cursor getDataSift(String opd_id, String idSift){
+    public Cursor getDataShift(String opd_id, String idSift){
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor res = db.rawQuery("select * from "+JAMSIFT+" where OPD_ID = '"+opd_id+"' AND ID = '"+idSift+"' " , null);
         return res;
@@ -651,7 +651,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
 
-    public Cursor getJadwalSifts2(String ide, String bulansebelum, String bulan, String tahunsebelum, String tahun){
+    public Cursor getJadwalShifts2(String ide, String bulansebelum, String bulan, String tahunsebelum, String tahun){
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor res = db.rawQuery("select ID, EMPLOYEEID, SIFT_ID, date(TANGGAL), strftime('%m', TANGGAL) AS BULAN, strftime('%Y', TANGGAL) AS TAHUN from "+JADWALSIFT+" where EMPLOYEEID = '"+ide+"' and (BULAN = '"+bulan+"' or BULAN = '"+bulansebelum+"') and (TAHUN = '"+tahun+"' or TAHUN = '"+tahunsebelum+"')", null);
@@ -659,20 +659,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return res;
     }
 
-    public Cursor getJadwalSiftsCalendar(String ide, String bulan, String tahun){
+    public Cursor getJadwalShiftsCalendar(String ide, String bulan, String tahun){
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor res = db.rawQuery("select ID, EMPLOYEEID, SIFT_ID, date(TANGGAL), strftime('%m', TANGGAL) AS BULAN, strftime('%Y', TANGGAL) AS TAHUN from "+JADWALSIFT+" where EMPLOYEEID = '"+ide+"' and BULAN = '"+bulan+"' and TAHUN = '"+tahun+"'", null);
         return res;
     }
 
-    public Cursor getJadwalSiftByTanggal(String employee_id, String tanggal) {
+    public Cursor getJadwalShiftByTanggal(String employee_id, String tanggal) {
         SQLiteDatabase db = this.getWritableDatabase();
         return db.rawQuery("SELECT * FROM " + JADWALSIFT + " WHERE " + JW_EMPLOYEE_ID + " = '" + employee_id + "' AND " + JW_TANGGAL + " = '" + tanggal + "'", null);
     }
 
 
-    public Cursor getInfoJadwalSiftToday(String ide, String tglCheck){
+    public Cursor getInfoJadwalShiftToday(String ide, String tglCheck){
         String hariini = SIMPLE_FORMAT_TANGGAL.format(new Date());
 
 
@@ -698,11 +698,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return db.delete( TIMETABLE, null, null);
     }
 
-    public Integer deleteJamSift(){
+    public Integer deleteJamShift(){
         SQLiteDatabase db = this.getWritableDatabase();
         return db.delete( JAMSIFT, null, null);
     }
-    public Integer deleteJadwalSift(String ide, String bulan, String tahun){
+    public Integer deleteJadwalShift(String ide, String bulan, String tahun){
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor res = db.rawQuery("select ID, date(TANGGAL), strftime('%m', TANGGAL) AS BULAN, strftime('%Y', TANGGAL) AS TAHUN from "+JADWALSIFT+" where EMPLOYEEID = '"+ide+"' and BULAN = '"+bulan+"' and TAHUN = '"+tahun+"'", null);
@@ -712,7 +712,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return res.getCount();
     }
 
-    public Integer deleteJadwalSift2(){
+    public Integer deleteJadwalShift2(){
         SQLiteDatabase db = this.getWritableDatabase();
         return db.delete( JADWALSIFT, null, null);
     }

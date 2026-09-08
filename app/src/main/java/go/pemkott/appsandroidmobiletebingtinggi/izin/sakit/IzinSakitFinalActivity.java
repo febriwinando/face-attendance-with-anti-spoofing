@@ -1,7 +1,7 @@
 package go.pemkott.appsandroidmobiletebingtinggi.izin.sakit;
 
 import static go.pemkott.appsandroidmobiletebingtinggi.geolocation.model.LocationHelper.defaultLocation;
-import static go.pemkott.appsandroidmobiletebingtinggi.kehadiransift.JadwalShiftActivity.pulangsift;
+import static go.pemkott.appsandroidmobiletebingtinggi.kehadiransift.JadwalShiftActivity.pulangShift;
 import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.SIMPLE_DATE_FORMAT_TAGING_PHOTO_REPORT;
 import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.SIMPLE_FORMAT_JAM;
 import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.SIMPLE_FORMAT_JAM_TAGING;
@@ -1089,7 +1089,7 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
 
         try {
             jamMasukDate = SIMPLE_FORMAT_JAM.parse(jamMasuk);
-            jamPulangDate = SIMPLE_FORMAT_JAM.parse(pulangsift);
+            jamPulangDate = SIMPLE_FORMAT_JAM.parse(pulangShift);
 
             String jamTaging = SIMPLE_FORMAT_JAM_TAGING.format(new Date());
 

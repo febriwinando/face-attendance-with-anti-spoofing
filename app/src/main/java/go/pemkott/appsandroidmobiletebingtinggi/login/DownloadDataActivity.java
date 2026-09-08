@@ -13,6 +13,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -75,6 +76,12 @@ public class DownloadDataActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_download_data);
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                finish();
+            }
+        });
 
         progressBar = findViewById(R.id.progressBarHorizontal);
         tvInfo = findViewById(R.id.tvinfoDownload);
@@ -317,7 +324,7 @@ public class DownloadDataActivity extends AppCompatActivity {
 
                         executor.execute(() -> {
                             for (WaktuSift w : res.body()) {
-                                db.insertJamSift(
+                                db.insertJamShift(
                                         String.valueOf(w.getId()),
                                         String.valueOf(w.getOpd_id()),
                                         String.valueOf(w.getTipe()),

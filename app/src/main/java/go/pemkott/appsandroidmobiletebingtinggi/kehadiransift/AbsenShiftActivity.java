@@ -2,7 +2,7 @@ package go.pemkott.appsandroidmobiletebingtinggi.kehadiransift;
 
 import static android.content.ContentValues.TAG;
 import static go.pemkott.appsandroidmobiletebingtinggi.geolocation.model.LocationHelper.defaultLocation;
-import static go.pemkott.appsandroidmobiletebingtinggi.kehadiransift.JadwalShiftActivity.jadwalSiftActivity;
+import static go.pemkott.appsandroidmobiletebingtinggi.kehadiransift.JadwalShiftActivity.jadwalShiftActivity;
 import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.SIMPLE_FORMAT_JAM;
 import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.SIMPLE_FORMAT_JAM_TAGING;
 import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.SIMPLE_FORMAT_TANGGAL;
@@ -39,6 +39,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -154,7 +155,7 @@ public class AbsenShiftActivity extends AppCompatActivity implements OnMapReadyC
 
     private boolean mockLocationsEnabled;
     int mock_location = 0;
-    String inisialsift, tipesift, masuksift, pulangsift, idsift;
+    String inisialshift, tipeshift, masukshift, pulangshift, idshift;
     FusedLocationProviderClient fusedLocationProviderClient;
     LocationRequest locationRequest;
     File file;
@@ -183,6 +184,12 @@ public class AbsenShiftActivity extends AppCompatActivity implements OnMapReadyC
         // icon navigation terang/gelap
         controller.setAppearanceLightNavigationBars(true);
         setContentView(R.layout.activity_absen_sift);
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                finish();
+            }
+        });
         mContext = AbsenShiftActivity.this;
         session = new SessionManager(this);
         userId = session.getPegawaiId();
@@ -223,19 +230,19 @@ public class AbsenShiftActivity extends AppCompatActivity implements OnMapReadyC
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         setRoundedBackground(fragmentContainerView);
 
-        rbTanggal = JadwalShiftActivity.tanggalSift;
-        inisialsift = JadwalShiftActivity.inisialsift;
-        idsift = JadwalShiftActivity.idsift;
-        tipesift = JadwalShiftActivity.tipesift;
-        masuksift = JadwalShiftActivity.masuksift;
-        pulangsift = JadwalShiftActivity.pulangsift;
+        rbTanggal = JadwalShiftActivity.tanggalShift;
+        inisialshift = JadwalShiftActivity.inisialShift;
+        idshift = JadwalShiftActivity.idShift;
+        tipeshift = JadwalShiftActivity.tipeShift;
+        masukshift = JadwalShiftActivity.masukShift;
+        pulangshift = JadwalShiftActivity.pulangShift;
 
-        Cursor resSift = databaseHelper.getJadwalSiftByTanggal(sEmployId, rbTanggal);
-        if (resSift != null && resSift.getCount() > 0) {
-            while (resSift.moveToNext()) {
-                timetableid = resSift.getString(2);
+        Cursor resShift = databaseHelper.getJadwalShiftByTanggal(sEmployId, rbTanggal);
+        if (resShift != null && resShift.getCount() > 0) {
+            while (resShift.moveToNext()) {
+                timetableid = resShift.getString(2);
             }
-            resSift.close();
+            resShift.close();
         }
 
 //        String myDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString()+ "/eabsensi";
@@ -329,6 +336,12 @@ public class AbsenShiftActivity extends AppCompatActivity implements OnMapReadyC
 
         mockLocationsEnabled = false;
 
+        findViewById(R.id.rlHeaderKehadiranOne).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
     private File createTempFileFromUri(Uri uri)
@@ -615,19 +628,38 @@ public class AbsenShiftActivity extends AppCompatActivity implements OnMapReadyC
     @SuppressLint("ResourceAsColor")
     public void periksaWaktu(){
 
-        if (masuksift == null || pulangsift == null) {
-            Log.e("periksaWaktu", "masuksift or pulangsift is null");
+        if (masukshift == null || pulangshift == null) {
+            Log.e("periksaWaktu", "masukshift or pulangshift is null");
             return;
         }
 
         try {
-            jamMasukDate = SIMPLE_FORMAT_JAM.parse(masuksift);
-            jamPulangDate = SIMPLE_FORMAT_JAM.parse(pulangsift);
+            jamMasukDate = SIMPLE_FORMAT_JAM.parse(masukshift);
+            jamPulangDate = SIMPLE_FORMAT_JAM.parse(pulangshift);
 
             jamTaging = SIMPLE_FORMAT_JAM_TAGING.format(new Date());
+            tagingTime = SIMPLE_FORMAT_JAM_TAGING.parse(jamTaging);
+
+            // Handle cross-day shift (night shift)
+            if (jamPulangDate != null && jamMasukDate != null && jamPulangDate.before(jamMasukDate)) {
+                // Shift malam: misal masuk 22:00, pulang 06:00 (di hari berikutnya)
+                Calendar cPulang = Calendar.getInstance();
+                cPulang.setTime(jamPulangDate);
+                cPulang.add(Calendar.DATE, 1);
+                jamPulangDate = cPulang.getTime();
+
+                // Jika taging dilakukan setelah midnight (00:00 - 12:00),
+                // maka tagingTime dianggap hari berikutnya relatif terhadap jamMasuk.
+                Calendar cTaging = Calendar.getInstance();
+                cTaging.setTime(tagingTime);
+                if (cTaging.get(Calendar.HOUR_OF_DAY) < 12) {
+                    cTaging.add(Calendar.DATE, 1);
+                    tagingTime = cTaging.getTime();
+                }
+            }
 
             SimpleDateFormat df = new SimpleDateFormat("HH:mm", localeID);
-            Date d = df.parse(masuksift);
+            Date d = df.parse(masukshift);
             cal.setTime(d);
 
             int minutesToSubtract = 0;
@@ -641,7 +673,6 @@ public class AbsenShiftActivity extends AppCompatActivity implements OnMapReadyC
             cal.add(Calendar.MINUTE, -minutesToSubtract);
             String newTime = df.format(cal.getTime());
 
-            tagingTime = SIMPLE_FORMAT_JAM_TAGING.parse(jamTaging);
             dateBatasWaktu = SIMPLE_FORMAT_JAM_TAGING.parse(newTime);
 
             long millis = tagingTime.getTime() - jamMasukDate.getTime();
@@ -694,7 +725,7 @@ public class AbsenShiftActivity extends AppCompatActivity implements OnMapReadyC
             }
             else{
                 //Malam
-                if (tipesift.equals("malam")) {
+                if (tipeshift.equals("malam")) {
                     String rbPosisi = null;
                     String rbValid = "2", ketKehadiran;
                     String eselon = "0";
@@ -728,14 +759,14 @@ public class AbsenShiftActivity extends AppCompatActivity implements OnMapReadyC
                                 if (tagingTime.getTime() < dateBatasWaktu.getTime()) {
                                     dialogView.viewNotifKosong(AbsenShiftActivity.this, "Anda hanya dapat mengisi absen masuk, " + batasWaktu + " menit sebelum Jam Masuk", "");
                                 } else {
-                                    kirimdataMasukMalam(ketKehadiran, eselon, sEmployId, timetableid, rbTanggal, rbJam, rbPosisi, "hadir", rbLat, rbLng, rbKet, mins, masuksift, rbValid);
+                                    kirimdataMasukMalam(ketKehadiran, eselon, sEmployId, timetableid, rbTanggal, rbJam, rbPosisi, "hadir", rbLat, rbLng, rbKet, mins, masukshift, rbValid);
                                 }
 
                         } else {
                             if (tagingTime.getTime() > jamPulangDate.getTime()) {
                                 dialogView.viewNotifKosong(AbsenShiftActivity.this, "Anda hanya dapat mengisi absen masuk, sebelum jam pulang malam.", "");
                             } else {
-                                kirimdataMasukMalam(ketKehadiran, eselon, sEmployId, timetableid, rbTanggal, rbJam, rbPosisi, "hadir", rbLat, rbLng, rbKet, mins, masuksift, rbValid);
+                                kirimdataMasukMalam(ketKehadiran, eselon, sEmployId, timetableid, rbTanggal, rbJam, rbPosisi, "hadir", rbLat, rbLng, rbKet, mins, masukshift, rbValid);
                             }
 
                         }
@@ -758,11 +789,11 @@ public class AbsenShiftActivity extends AppCompatActivity implements OnMapReadyC
                             calendar.setTime(hariini);
                             calendar.add(Calendar.DAY_OF_YEAR, 1);
                             Date newDate = calendar.getTime();
-                            String tanggalAbsenSiftMalam = SIMPLE_FORMAT_TANGGAL.format(newDate);
+                            String tanggalAbsenShiftMalam = SIMPLE_FORMAT_TANGGAL.format(newDate);
 
-                            if (tanggal.equals(tanggalAbsenSiftMalam)) {
+                            if (tanggal.equals(tanggalAbsenShiftMalam)) {
                                 if (tagingTime.getTime() > jamPulangDate.getTime()) {
-                                    kirimdataPulangMalam("pulang", eselon, sEmployId, timetableid, rbTanggal, rbJam, rbPosisi, "hadir", rbLat, rbLng, rbKet, 0, pulangsift, rbValid);
+                                    kirimdataPulangMalam("pulang", eselon, sEmployId, timetableid, rbTanggal, rbJam, rbPosisi, "hadir", rbLat, rbLng, rbKet, 0, pulangshift, rbValid);
                                 } else {
                                     dialogView.viewNotifKosong(AbsenShiftActivity.this, "Anda belum dapat mengisi absensi pulang,", "silahkan lanjutkan kembali aktivitas kantor anda.");
                                 }
@@ -790,7 +821,7 @@ public class AbsenShiftActivity extends AppCompatActivity implements OnMapReadyC
                                 if (tagingTime.getTime() > jamPulangDate.getTime()) {
                                     dialogView.viewNotifKosong(AbsenShiftActivity.this, "Anda tidak dapat melakukan absensi masuk pada jam pulang kerja.", "");
                                 } else {
-                                    kirimdataMasukPagi(ketKehadiran, eselon, sEmployId, rbTanggal, rbJam, rbPosisi, "hadir", rbLat, rbLng, rbKet, mins, masuksift, rbValid);
+                                    kirimdataMasukPagi(ketKehadiran, eselon, sEmployId, rbTanggal, rbJam, rbPosisi, "hadir", rbLat, rbLng, rbKet, mins, masukshift, rbValid);
                                 }
                             }
 
@@ -800,7 +831,7 @@ public class AbsenShiftActivity extends AppCompatActivity implements OnMapReadyC
                             if (tagingTime.getTime() < jamPulangDate.getTime()) {
                                 dialogView.viewNotifKosong(AbsenShiftActivity.this, "Anda belum dapat mengisi absensi pulang,", "silahkan lanjutkan kembali aktivitas kantor anda ya.");
                             } else {
-                                    kirimdataPulangPagi("pulang", eselon, sEmployId, rbTanggal, rbJam, rbPosisi, "hadir", rbLat, rbLng, rbKet, 0, pulangsift, rbValid);
+                                    kirimdataPulangPagi("pulang", eselon, sEmployId, rbTanggal, rbJam, rbPosisi, "hadir", rbLat, rbLng, rbKet, 0, pulangshift, rbValid);
                             }
 
                     }
@@ -1002,12 +1033,12 @@ private boolean isHariSenin() {
                         textPart(validasi),
                         textPart(rbFakeGPS),
                         textPart(batasWaktu),
-                        textPart(masuksift),
-                        textPart(pulangsift),
-                        textPart(inisialsift),
-                        textPart(tipesift),
-                        textPart(idsift),
-                        textPart(ket),
+                        textPart(masukshift),
+                        textPart(pulangshift),
+                        textPart(inisialshift),
+                        textPart(tipeshift),
+                        textPart(idshift),
+                        textPart(rbKet),
                         textPart(String.valueOf(terlambat))
                 );
         call.enqueue(new Callback<>() {
@@ -1029,7 +1060,7 @@ private boolean isHariSenin() {
                 }
 
                 if (response.body().isStatus()) {
-                    String shiftLabel = (tipesift != null && !tipesift.isEmpty()) ? tipesift.substring(0, 1).toUpperCase() + tipesift.substring(1) : "";
+                    String shiftLabel = (tipeshift != null && !tipeshift.isEmpty()) ? tipeshift.substring(0, 1).toUpperCase() + tipeshift.substring(1) : "";
                     String logKegiatan = "Melakukan Absen Masuk " + shiftLabel + " (Shift)";
                     databaseHelper.insertLog(sEmployId, eOPD, rbTanggal, logKegiatan, "Masuk");
                     ResponsePOJO data = response.body();
@@ -1089,11 +1120,11 @@ private boolean isHariSenin() {
                         textPart(validasi),
                         textPart(rbFakeGPS),
                         textPart(batasWaktu),
-                        textPart(masuksift),
-                        textPart(pulangsift),
-                        textPart(inisialsift),
-                        textPart(tipesift),
-                        textPart(idsift),
+                        textPart(masukshift),
+                        textPart(pulangshift),
+                        textPart(inisialshift),
+                        textPart(tipeshift),
+                        textPart(idshift),
                         textPart(ket),
                         textPart(String.valueOf(terlambat))
                 );
@@ -1117,7 +1148,7 @@ private boolean isHariSenin() {
                 }
 
                 if (response.body().isStatus()) {
-                    String shiftLabel = (tipesift != null && !tipesift.isEmpty()) ? tipesift.substring(0, 1).toUpperCase() + tipesift.substring(1) : "";
+                    String shiftLabel = (tipeshift != null && !tipeshift.isEmpty()) ? tipeshift.substring(0, 1).toUpperCase() + tipeshift.substring(1) : "";
                     String logKegiatan = "Melakukan Absen Pulang " + shiftLabel + " (Shift)";
                     databaseHelper.insertLog(sEmployId, eOPD, rbTanggal, logKegiatan, "Pulang");
                     ResponsePOJO data = response.body();
@@ -1202,11 +1233,11 @@ private boolean isHariSenin() {
                         textPart(validasi),
                         textPart(rbFakeGPS),
                         textPart(batasWaktu),
-                        textPart(masuksift),
-                        textPart(pulangsift),
-                        textPart(inisialsift),
-                        textPart(tipesift),
-                        textPart(idsift),
+                        textPart(masukshift),
+                        textPart(pulangshift),
+                        textPart(inisialshift),
+                        textPart(tipeshift),
+                        textPart(idshift),
                         textPart(ket),
                         textPart(String.valueOf(terlambat))
                 );
@@ -1230,7 +1261,7 @@ private boolean isHariSenin() {
                 }
 
                 if (response.body().isStatus()) {
-                    String shiftLabel = (tipesift != null && !tipesift.isEmpty()) ? tipesift.substring(0, 1).toUpperCase() + tipesift.substring(1) : "";
+                    String shiftLabel = (tipeshift != null && !tipeshift.isEmpty()) ? tipeshift.substring(0, 1).toUpperCase() + tipeshift.substring(1) : "";
                     String logKegiatan = "Melakukan Absen Masuk " + shiftLabel + " (Shift)";
                     databaseHelper.insertLog(sEmployId, eOPD, rbTanggal, logKegiatan, "Masuk");
                     ResponsePOJO data = response.body();
@@ -1294,11 +1325,11 @@ private boolean isHariSenin() {
                         textPart(validasi),
                         textPart(rbFakeGPS),
                         textPart(batasWaktu),
-                        textPart(masuksift),
-                        textPart(pulangsift),
-                        textPart(inisialsift),
-                        textPart(tipesift),
-                        textPart(idsift),
+                        textPart(masukshift),
+                        textPart(pulangshift),
+                        textPart(inisialshift),
+                        textPart(tipeshift),
+                        textPart(idshift),
                         textPart(ket),
                         textPart(String.valueOf(terlambat))
                 );
@@ -1322,7 +1353,7 @@ private boolean isHariSenin() {
                 }
 
                 if (response.body().isStatus()) {
-                    String shiftLabel = (tipesift != null && !tipesift.isEmpty()) ? tipesift.substring(0, 1).toUpperCase() + tipesift.substring(1) : "";
+                    String shiftLabel = (tipeshift != null && !tipeshift.isEmpty()) ? tipeshift.substring(0, 1).toUpperCase() + tipeshift.substring(1) : "";
                     String logKegiatan = "Melakukan Absen Pulang " + shiftLabel + " (Shift)";
                     databaseHelper.insertLog(sEmployId, eOPD, rbTanggal, logKegiatan, "Pulang");
                     ResponsePOJO data = response.body();
@@ -1370,7 +1401,7 @@ statusAbsen = true;
         tvTutupDialog.setOnClickListener(v -> {
             stopLocationUpdates();
             dialogSukes.dismiss();
-            jadwalSiftActivity.finish();
+            jadwalShiftActivity.finish();
             finish();
         });
 
@@ -1379,7 +1410,7 @@ statusAbsen = true;
         Handler handler = new Handler();
         handler.postDelayed(() -> {
             finish();
-            jadwalSiftActivity.finish();
+            jadwalShiftActivity.finish();
 
         }, 1500);
 
@@ -1401,7 +1432,7 @@ statusAbsen = true;
         stopLocationUpdates();
     }
 
-    public void fokusLokasiSiftActivty(View view){
+    public void fokusLokasiShiftActivity(View view){
         startLocationUpdates();
     }
 

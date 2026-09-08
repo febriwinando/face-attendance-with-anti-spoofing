@@ -17,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -79,6 +80,12 @@ public class CalendarJadwalShiftActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_calendar_jadwal_shift);
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                finish();
+            }
+        });
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -226,7 +233,7 @@ public class CalendarJadwalShiftActivity extends AppCompatActivity {
             lngOffice = employe.getString(16);
         }
 
-        Cursor resJadwalSift = databaseHelper.getJadwalSiftsCalendar(sEmployeID, bulan, tahun);
+        Cursor resJadwalSift = databaseHelper.getJadwalShiftsCalendar(sEmployeID, bulan, tahun);
 
         if (resJadwalSift.getCount() > 0){
             ivSyncJadwalSift.setVisibility(View.VISIBLE);
@@ -244,7 +251,7 @@ public class CalendarJadwalShiftActivity extends AppCompatActivity {
         }
 
 
-        Cursor resJamSift = databaseHelper.getJamSift(eOPD);
+        Cursor resJamSift = databaseHelper.getJamShift(eOPD);
 
         while (resJamSift.moveToNext()){
             idSift.add(resJamSift.getString(0));
@@ -256,7 +263,7 @@ public class CalendarJadwalShiftActivity extends AppCompatActivity {
 
         }
 
-        listJadwalSift.addAll(getJadwalSift());
+        listJadwalSift.addAll(getJadwalShift());
         showRecyclerGrid();
         handlerProgressDialog();
     }
@@ -272,7 +279,7 @@ public class CalendarJadwalShiftActivity extends AppCompatActivity {
         }, 500);
     }
 
-    ArrayList<JadwalSift> getJadwalSift() {
+    ArrayList<JadwalSift> getJadwalShift() {
         ArrayList<JadwalSift> listJadwal = new ArrayList<>();
         listJadwal.clear();
 
@@ -289,7 +296,7 @@ public class CalendarJadwalShiftActivity extends AppCompatActivity {
         return listJadwal;
     }
 
-    ArrayList<WaktuSift> getJamSift() {
+    ArrayList<WaktuSift> getJamShift() {
         ArrayList<WaktuSift> waktuSifts = new ArrayList<>();
         waktuSifts.clear();
 
@@ -311,7 +318,7 @@ public class CalendarJadwalShiftActivity extends AppCompatActivity {
     DialogView dialogView = new DialogView(this);
     private void showRecyclerGrid(){
         rvJadwalSifting.setLayoutManager(new GridLayoutManager(this, 4));
-        GridCalendarJadwalShiftAdapter gridJadwal = new GridCalendarJadwalShiftAdapter(CalendarJadwalShiftActivity.this, listJadwalSift, getJamSift(), bulan, tahun);
+        GridCalendarJadwalShiftAdapter gridJadwal = new GridCalendarJadwalShiftAdapter(CalendarJadwalShiftActivity.this, listJadwalSift, getJamShift(), bulan, tahun);
         rvJadwalSifting.setAdapter(gridJadwal);
 
         gridJadwal.setOnItemClickCallback(s -> {
@@ -394,7 +401,7 @@ public class CalendarJadwalShiftActivity extends AppCompatActivity {
         dialogproses.setCancelable(false);
 
         if (status == 1){
-            databaseHelper.deleteJadwalSift(sEmployeID, bulan, tahun);
+            databaseHelper.deleteJadwalShift(sEmployeID, bulan, tahun);
         }
 
         Call<ArrayList<JadwalSift>> jadwalSiftPegawai = holderAPI.getJadwalSifts("https://absensi.tebingtinggikota.go.id/api/jadwalsift?ide="+sEmployeID+"&bulan="+bulan+"&tahun="+tahun);
@@ -415,7 +422,7 @@ public class CalendarJadwalShiftActivity extends AppCompatActivity {
                 }else{
                     int jlhJadwalSift = 0;
                     for(JadwalSift jadwalSift : jadwalSifts){
-                        databaseHelper.insertJadwalSift(jadwalSift.getId(), jadwalSift.getEmployee_id(), jadwalSift.getShift_id(), jadwalSift.getTanggal());
+                        databaseHelper.insertJadwalShift(jadwalSift.getId(), jadwalSift.getEmployee_id(), jadwalSift.getShift_id(), jadwalSift.getTanggal());
                         jlhJadwalSift += 1;
                     }
 

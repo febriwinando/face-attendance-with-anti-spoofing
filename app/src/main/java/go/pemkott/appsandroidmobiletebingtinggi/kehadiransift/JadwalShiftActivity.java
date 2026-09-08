@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -47,31 +48,31 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class JadwalShiftActivity extends AppCompatActivity {
-    private RecyclerView rvJadwalSifting;
-    private ArrayList<JadwalSift> listJadwalSift = new ArrayList<>();
+    private RecyclerView rvJadwalShift;
+    private ArrayList<JadwalSift> listJadwalShift = new ArrayList<>();
     private String title = "Mode List";
     DatabaseHelper databaseHelper;
-    ShimmerFrameLayout shimmerJadwalSift;
+    ShimmerFrameLayout shimmerJadwalShift;
 
     static ArrayList<String> idJadwal = new ArrayList<String>();
-    static ArrayList<String> employeJadwalSift = new ArrayList<String>();
-    static ArrayList<String> idSiftJadwal = new ArrayList<String>();
+    static ArrayList<String> employeJadwalShift = new ArrayList<String>();
+    static ArrayList<String> idShiftJadwal = new ArrayList<String>();
     static ArrayList<String> tanggalJadwal = new ArrayList<String>();
 
-    static ArrayList<String> idSiftArray = new ArrayList<>();
-    static ArrayList<String> opdSift = new ArrayList<String>();
-    static ArrayList<String> tipeSift = new ArrayList<String>();
-    static ArrayList<String> inisialSift = new ArrayList<String>();
-    static ArrayList<String> masukSift = new ArrayList<String>();
-    static ArrayList<String> pulangSift = new ArrayList<String>();
+    static ArrayList<String> idShiftArray = new ArrayList<>();
+    static ArrayList<String> opdShift = new ArrayList<String>();
+    static ArrayList<String> tipeShiftList = new ArrayList<String>();
+    static ArrayList<String> inisialShiftList = new ArrayList<String>();
+    static ArrayList<String> masukShiftList = new ArrayList<String>();
+    static ArrayList<String> pulangShiftList = new ArrayList<String>();
     public static String jam_masuk, jam_pulang;
-    public static AppCompatActivity jadwalSiftActivity ;
-    ImageView ivSyncJadwalSift;
+    public static AppCompatActivity jadwalShiftActivity ;
+    ImageView ivSyncJadwalShift;
     String bulan = BULAN.format(new Date());
     String tahun = TAHUN.format(new Date());
     HttpService holderAPI;
 
-    public static String tanggalSift=  null, inisialsift = null, tipesift = null, masuksift = null, pulangsift = null, idsift = null;
+    public static String tanggalShift=  null, inisialShift = null, tipeShift = null, masukShift = null, pulangShift = null, idShift = null;
 SessionManager session;
 String userId;
     @Override
@@ -79,6 +80,12 @@ String userId;
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_jadwal_shift);
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                finish();
+            }
+        });
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -90,7 +97,7 @@ String userId;
         userId = session.getPegawaiId();
 
 
-        jadwalSiftActivity = this;
+        jadwalShiftActivity = this;
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://absensi.tebingtinggikota.go.id/api/")
                 .addConverterFactory(GsonConverterFactory.create())
@@ -107,23 +114,23 @@ String userId;
             }
         });
 
-        TextView titleSift = findViewById(R.id.titleSift);
-        ivSyncJadwalSift = findViewById(R.id.ivSyncJadwalSift);
-        rvJadwalSifting = findViewById(R.id.rvJadwalSifting);
-        rvJadwalSifting.setHasFixedSize(true);
-        shimmerJadwalSift = findViewById(R.id.shimmerJadwalSift);
+        TextView titleShift = findViewById(R.id.titleSift);
+        ivSyncJadwalShift = findViewById(R.id.ivSyncJadwalSift);
+        rvJadwalShift = findViewById(R.id.rvJadwalSifting);
+        rvJadwalShift.setHasFixedSize(true);
+        shimmerJadwalShift = findViewById(R.id.shimmerJadwalSift);
         databaseHelper = new DatabaseHelper(this);
 
 
 
 
         String title = "Jadwal "+bulan(BULAN.format(new Date()))+" "+TAHUN.format(new Date());
-        titleSift.setText(title);
+        titleShift.setText(title);
 
-        ivSyncJadwalSift.setOnClickListener(new View.OnClickListener() {
+        ivSyncJadwalShift.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                unduhDataSiftOPD();
+                unduhDataShiftOPD();
             }
         });
 
@@ -132,10 +139,10 @@ String userId;
 
 
 
-    public void unduhDataSiftOPD(){
-        databaseHelper.deleteJamSift();
-        Call<List<WaktuSift>> jadwalSiftPegawai = holderAPI.getTestSift("https://absensi.tebingtinggikota.go.id/api/testsift?eOPD="+eOPD);
-        jadwalSiftPegawai.enqueue(new Callback<List<WaktuSift>>() {
+    public void unduhDataShiftOPD(){
+        databaseHelper.deleteJamShift();
+        Call<List<WaktuSift>> jadwalShiftPegawai = holderAPI.getTestSift("https://absensi.tebingtinggikota.go.id/api/testsift?eOPD="+eOPD);
+        jadwalShiftPegawai.enqueue(new Callback<List<WaktuSift>>() {
             @Override
             public void onResponse(@NonNull Call<List<WaktuSift>> call, @NonNull Response<List<WaktuSift>> response) {
 
@@ -144,16 +151,16 @@ String userId;
                     return;
                 }
 
-                List<WaktuSift> waktuSifts = response.body();
+                List<WaktuSift> waktuShifts = response.body();
                 int jumlahdata = 0;
-                for(WaktuSift waktuSift : waktuSifts){
-                    databaseHelper.insertJamSift(String.valueOf(waktuSift.getId()), String.valueOf(waktuSift.getOpd_id()), String.valueOf(waktuSift.getTipe()), String.valueOf(waktuSift.getInisial()), String.valueOf(waktuSift.getMasuk()), String.valueOf(waktuSift.getPulang()));
+                for(WaktuSift waktuShift : waktuShifts){
+                    databaseHelper.insertJamShift(String.valueOf(waktuShift.getId()), String.valueOf(waktuShift.getOpd_id()), String.valueOf(waktuShift.getTipe()), String.valueOf(waktuShift.getInisial()), String.valueOf(waktuShift.getMasuk()), String.valueOf(waktuShift.getPulang()));
                     jumlahdata += 1;
                 }
 
-                if (jumlahdata == waktuSifts.size()){
+                if (jumlahdata == waktuShifts.size()){
                     databaseHelper.insertLog(sEmployeID, eOPD, SIMPLE_FORMAT_TANGGAL.format(new Date()), "Sinkronisasi Master Jam Shift OPD", "Sync");
-                    unduhJadwalSift(1);
+                    unduhJadwalShift(1);
                 }
 
             }
@@ -170,17 +177,17 @@ String userId;
     public void getData(String bulansebelum, String bulan, String tahunsebelum, String tahun){
 
         idJadwal.clear();
-        employeJadwalSift.clear();
+        employeJadwalShift.clear();
         tanggalJadwal.clear();
-        idSiftJadwal.clear();
+        idShiftJadwal.clear();
 
-        idSiftArray.clear();
-        opdSift.clear();
-        tipeSift.clear();
-        inisialSift.clear();
-        masukSift.clear();
-        pulangSift.clear();
-        listJadwalSift.clear();
+        idShiftArray.clear();
+        opdShift.clear();
+        tipeShiftList.clear();
+        inisialShiftList.clear();
+        masukShiftList.clear();
+        pulangShiftList.clear();
+        listJadwalShift.clear();
 
         Cursor res = databaseHelper.getAllData22(userId);
         if (res.getCount() == 0) {
@@ -203,44 +210,44 @@ String userId;
             lngOffice = employe.getString(16);
         }
 
-        Cursor resJadwalSift = databaseHelper.getJadwalSifts2(sEmployeID, bulansebelum, bulan, tahunsebelum, tahun);
-        if (resJadwalSift.getCount() > 0){
-            ivSyncJadwalSift.setVisibility(View.VISIBLE);
+        Cursor resJadwalShift = databaseHelper.getJadwalShifts2(sEmployeID, bulansebelum, bulan, tahunsebelum, tahun);
+        if (resJadwalShift.getCount() > 0){
+            ivSyncJadwalShift.setVisibility(View.VISIBLE);
         }else{
-            ivSyncJadwalSift.setVisibility(View.GONE);
+            ivSyncJadwalShift.setVisibility(View.GONE);
         }
 
-        while (resJadwalSift.moveToNext()){
-            idJadwal.add(resJadwalSift.getString(0));
-            employeJadwalSift.add(resJadwalSift.getString(1));
-            idSiftJadwal.add(resJadwalSift.getString(2));
-            tanggalJadwal.add(resJadwalSift.getString(3));
+        while (resJadwalShift.moveToNext()){
+            idJadwal.add(resJadwalShift.getString(0));
+            employeJadwalShift.add(resJadwalShift.getString(1));
+            idShiftJadwal.add(resJadwalShift.getString(2));
+            tanggalJadwal.add(resJadwalShift.getString(3));
         }
 
 
-        Cursor resJamSift = databaseHelper.getJamSift(eOPD);
+        Cursor resJamShift = databaseHelper.getJamShift(eOPD);
 
-        while (resJamSift.moveToNext()){
-            idSiftArray.add(resJamSift.getString(0));
-            opdSift.add(resJamSift.getString(1));
-            tipeSift.add(resJamSift.getString(2));
-            inisialSift.add(resJamSift.getString(3));
-            masukSift.add(resJamSift.getString(4));
-            pulangSift.add(resJamSift.getString(5));
+        while (resJamShift.moveToNext()){
+            idShiftArray.add(resJamShift.getString(0));
+            opdShift.add(resJamShift.getString(1));
+            tipeShiftList.add(resJamShift.getString(2));
+            inisialShiftList.add(resJamShift.getString(3));
+            masukShiftList.add(resJamShift.getString(4));
+            pulangShiftList.add(resJamShift.getString(5));
 
         }
 
-        listJadwalSift.addAll(getJadwalSift());
+        listJadwalShift.addAll(getJadwalShift());
         showRecyclerGrid();
         handlerProgressDialog();;
     }
 
     public void handlerProgressDialog() {
-        shimmerJadwalSift.stopShimmer();
-        shimmerJadwalSift.hideShimmer();
+        shimmerJadwalShift.stopShimmer();
+        shimmerJadwalShift.hideShimmer();
     }
 
-    ArrayList<JadwalSift> getJadwalSift() {
+    ArrayList<JadwalSift> getJadwalShift() {
         ArrayList<JadwalSift> listJadwal = new ArrayList<>();
         listJadwal.clear();
 
@@ -248,54 +255,54 @@ String userId;
 
             JadwalSift jadwalSift = new JadwalSift();
             jadwalSift.setId(idJadwal.get(position));
-            jadwalSift.setEmployee_id(employeJadwalSift.get(position));
-            jadwalSift.setShift_id(idSiftJadwal.get(position));
+            jadwalSift.setEmployee_id(employeJadwalShift.get(position));
+            jadwalSift.setShift_id(idShiftJadwal.get(position));
             jadwalSift.setTanggal(tanggalJadwal.get(position));
             listJadwal.add(jadwalSift);
         }
         return listJadwal;
     }
 
-    ArrayList<WaktuSift> getJamSift() {
-        ArrayList<WaktuSift> waktuSifts = new ArrayList<>();
-        waktuSifts.clear();
+    ArrayList<WaktuSift> getJamShift() {
+        ArrayList<WaktuSift> waktuShifts = new ArrayList<>();
+        waktuShifts.clear();
 
-        for (int position = 0; position < idSiftArray.size(); position++) {
+        for (int position = 0; position < idShiftArray.size(); position++) {
 
-            WaktuSift waktuSift = new WaktuSift();
-            waktuSift.setId(idSiftArray.get(position));
-            waktuSift.setOpd_id(opdSift.get(position));
-            waktuSift.setTipe(tipeSift.get(position));
-            waktuSift.setInisial(inisialSift.get(position));
-            waktuSift.setMasuk(masukSift.get(position));
-            waktuSift.setPulang(pulangSift.get(position));
+            WaktuSift waktuShift = new WaktuSift();
+            waktuShift.setId(idShiftArray.get(position));
+            waktuShift.setOpd_id(opdShift.get(position));
+            waktuShift.setTipe(tipeShiftList.get(position));
+            waktuShift.setInisial(inisialShiftList.get(position));
+            waktuShift.setMasuk(masukShiftList.get(position));
+            waktuShift.setPulang(pulangShiftList.get(position));
 
-            waktuSifts.add(waktuSift);
+            waktuShifts.add(waktuShift);
         }
-        return waktuSifts;
+        return waktuShifts;
     }
 
     DialogView dialogView = new DialogView(this);
     private void showRecyclerGrid(){
-        rvJadwalSifting.setLayoutManager(new GridLayoutManager(this, 4));
-        GridJadwalShiftAdapter gridJadwal = new GridJadwalShiftAdapter(JadwalShiftActivity.this, listJadwalSift, getJamSift());
-        rvJadwalSifting.setAdapter(gridJadwal);
+        rvJadwalShift.setLayoutManager(new GridLayoutManager(this, 4));
+        GridJadwalShiftAdapter gridJadwal = new GridJadwalShiftAdapter(JadwalShiftActivity.this, listJadwalShift, getJamShift());
+        rvJadwalShift.setAdapter(gridJadwal);
 
         gridJadwal.setOnItemClickCallback(new GridJadwalShiftAdapter.OnItemClickCallback() {
             @Override
             public void onItemClicked(String s) {
 
-                tanggalSift = s;
+                tanggalShift = s;
 //                Log.d("ABSEN_MASUK_PAGI", s);
-                for (int i=0 ;i<listJadwalSift.size();i++){
+                for (int i=0 ;i<listJadwalShift.size();i++){
                     if (tanggalJadwal.get(i).equals(s)){
-                        for (int j = 0 ; j< idSiftArray.size();j++){
-                            if (idSiftJadwal.get(i).equals(idSiftArray.get(j))){
-                                idsift = idSiftArray.get(j);
-                                inisialsift = inisialSift.get(j);
-                                tipesift = tipeSift.get(j);
-                                masuksift = masukSift.get(j);
-                                pulangsift = pulangSift.get(j);
+                        for (int j = 0 ; j< idShiftArray.size();j++){
+                            if (idShiftJadwal.get(i).equals(idShiftArray.get(j))){
+                                idShift = idShiftArray.get(j);
+                                inisialShift = inisialShiftList.get(j);
+                                tipeShift = tipeShiftList.get(j);
+                                masukShift = masukShiftList.get(j);
+                                pulangShift = pulangShiftList.get(j);
                             }
                         }
                     }
@@ -373,39 +380,39 @@ String userId;
         dialoginfo.setCancelable(true);
 
         TextView txtAbsen = dialoginfo.findViewById(R.id.txtAbsen);
-        TextView jamSiftMasuk = dialoginfo.findViewById(R.id.jamSiftMasuk);
-        TextView jamSiftPulang = dialoginfo.findViewById(R.id.jamSiftPulang);
-        ImageView ivTutupViewInfoSift = dialoginfo.findViewById(R.id.ivTutupViewInfoSift);
+        TextView jamShiftMasuk = dialoginfo.findViewById(R.id.jamSiftMasuk);
+        TextView jamShiftPulang = dialoginfo.findViewById(R.id.jamSiftPulang);
+        ImageView ivTutupViewInfoShift = dialoginfo.findViewById(R.id.ivTutupViewInfoSift);
 
-        jamSiftMasuk.setText(masuksift);
-        if (tipeSift.equals("malam")){
-            jamSiftPulang.setText(pulangsift+"\n"+tanggalSift);
+        jamShiftMasuk.setText(masukShift);
+        if (tipeShift != null && tipeShift.equals("malam")){
+            jamShiftPulang.setText(pulangShift+"\n"+tanggalShift);
         }else{
-            jamSiftPulang.setText(pulangsift);
+            jamShiftPulang.setText(pulangShift);
         }
 
         txtAbsen.setOnClickListener(view -> {
-            Intent absensift = new Intent(JadwalShiftActivity.this, databaseHelper.getCameraActivityClass());
-            absensift.putExtra("aktivitas", "kehadiransift");
-            startActivity(absensift);
+            Intent absenshift = new Intent(JadwalShiftActivity.this, databaseHelper.getCameraActivityClass());
+            absenshift.putExtra("aktivitas", "kehadiransift");
+            startActivity(absenshift);
         });
 
-        ivTutupViewInfoSift.setOnClickListener(view -> dialoginfo.dismiss());
+        ivTutupViewInfoShift.setOnClickListener(view -> dialoginfo.dismiss());
         dialoginfo.show();
 
     }
 
-    public void unduhJadwalSift(int status){
+    public void unduhJadwalShift(int status){
         Dialog dialogproses = new Dialog(JadwalShiftActivity.this, R.style.DialogStyle);
         dialogproses.setContentView(R.layout.view_proses);
         dialogproses.setCancelable(false);
 
         if (status == 1){
-            databaseHelper.deleteJadwalSift(sEmployeID, bulan, tahun);
+            databaseHelper.deleteJadwalShift(sEmployeID, bulan, tahun);
         }
 
-        Call<ArrayList<JadwalSift>> jadwalSiftPegawai = holderAPI.getJadwalSifts("https://absensi.tebingtinggikota.go.id/api/jadwalsift?ide="+sEmployeID+"&bulan="+bulan+"&tahun="+tahun);
-        jadwalSiftPegawai.enqueue(new Callback<ArrayList<JadwalSift>>() {
+        Call<ArrayList<JadwalSift>> jadwalShiftPegawai = holderAPI.getJadwalSifts("https://absensi.tebingtinggikota.go.id/api/jadwalsift?ide="+sEmployeID+"&bulan="+bulan+"&tahun="+tahun);
+        jadwalShiftPegawai.enqueue(new Callback<ArrayList<JadwalSift>>() {
             @Override
             public void onResponse(@NonNull Call<ArrayList<JadwalSift>> call, @NonNull Response<ArrayList<JadwalSift>> response) {
                 if (!response.isSuccessful()){
@@ -414,21 +421,21 @@ String userId;
                     return;
                 }
 
-                ArrayList<JadwalSift> jadwalSifts = response.body();
-                if (jadwalSifts.size() == 0){
+                ArrayList<JadwalSift> jadwalShifts = response.body();
+                if (jadwalShifts.size() == 0){
                     dialogproses.dismiss();
 
                     dialogView.viewNotifKosong(JadwalShiftActivity.this, "Jadwal belum tersedia, harap hubungi admin OPD anda.", "");
                 }else{
                     dialogproses.dismiss();
 
-                    int jlhJadwalSift = 0;
-                    for(JadwalSift jadwalSift : jadwalSifts){
-                        databaseHelper.insertJadwalSift(jadwalSift.getId(), jadwalSift.getEmployee_id(), jadwalSift.getShift_id(), jadwalSift.getTanggal());
-                        jlhJadwalSift += 1;
+                    int jlhJadwalShift = 0;
+                    for(JadwalSift jadwalShift : jadwalShifts){
+                        databaseHelper.insertJadwalShift(jadwalShift.getId(), jadwalShift.getEmployee_id(), jadwalShift.getShift_id(), jadwalShift.getTanggal());
+                        jlhJadwalShift += 1;
                     }
 
-                    if (jlhJadwalSift ==  jadwalSifts.size()){
+                    if (jlhJadwalShift ==  jadwalShifts.size()){
                         databaseHelper.insertLog(sEmployeID, eOPD, SIMPLE_FORMAT_TANGGAL.format(new Date()), "Sinkronisasi Jadwal Shift Pegawai", "Sync");
                         getData(TimeFormat.ambilbulanjadwal(bulan), bulan, String.valueOf(Integer.parseInt(tahun)-1), tahun);;
                     }
