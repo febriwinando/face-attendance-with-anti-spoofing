@@ -78,10 +78,22 @@ public class LogAktivitasAdapter extends RecyclerView.Adapter<LogAktivitasAdapte
         Context context = holder.itemView.getContext();
 
         holder.tvKegiatan.setText(log.getKegiatan());
-        holder.tvTanggal.setText(log.getTanggal());
+        
+        // Format Date for better readability
+        try {
+            SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+            SimpleDateFormat displayFormat = new SimpleDateFormat("dd MMM yyyy", Locale.forLanguageTag("id-ID"));
+            Date date = dbFormat.parse(log.getTanggal());
+            holder.tvTanggal.setText(displayFormat.format(date));
+        } catch (Exception e) {
+            holder.tvTanggal.setText(log.getTanggal());
+        }
+
         holder.tvEmployeeName.setText(log.getEmployeeName());
         holder.tvOpdName.setText(log.getOpdName());
-        holder.tvDevice.setText(String.format("Identitas Perangkat: %s", log.getDeviceId()));
+        
+        String deviceId = log.getDeviceId() != null ? log.getDeviceId() : "-";
+        holder.tvDevice.setText(String.format("ID Perangkat: %s", deviceId));
 
         try {
             long ts = Long.parseLong(log.getTimestamp());
@@ -110,6 +122,15 @@ public class LogAktivitasAdapter extends RecyclerView.Adapter<LogAktivitasAdapte
         } else if (jenis.contains("cuti") || jenis.contains("izin") || jenis.contains("sakit")) {
             color = ContextCompat.getColor(context, R.color.kuning);
             iconRes = R.drawable.ic_artikel;
+        } else if (jenis.contains("perjalanan") || jenis.contains("pd")) {
+            color = ContextCompat.getColor(context, R.color.biru);
+            iconRes = R.drawable.ic_search_location;
+        } else if (jenis.contains("tugas") || jenis.contains("lapangan")) {
+            color = ContextCompat.getColor(context, R.color.biru);
+            iconRes = R.drawable.ic_search_location; // Or a specific field icon if available
+        } else if (jenis.contains("sinkronisasi") || jenis.contains("sync")) {
+            color = ContextCompat.getColor(context, R.color.abuabu_font);
+            iconRes = R.drawable.ic_clock_line;
         } else {
             color = ContextCompat.getColor(context, R.color.primary_brand);
             iconRes = R.drawable.ic_baseline_list_alt_24;

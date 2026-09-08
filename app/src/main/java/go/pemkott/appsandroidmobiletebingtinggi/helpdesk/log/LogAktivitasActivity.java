@@ -143,17 +143,36 @@ public class LogAktivitasActivity extends AppCompatActivity {
         Cursor cursor = databaseHelper.getLogs();
 
         if (cursor != null && cursor.moveToFirst()) {
+            int idIndex = cursor.getColumnIndex(DatabaseHelper.LOG_ID);
+            int empIdIndex = cursor.getColumnIndex(DatabaseHelper.LOG_EMPLOYEE_ID);
+            int opdIdIndex = cursor.getColumnIndex(DatabaseHelper.LOG_OPD_ID);
+            int tanggalIndex = cursor.getColumnIndex(DatabaseHelper.LOG_TANGGAL);
+            int kegiatanIndex = cursor.getColumnIndex(DatabaseHelper.LOG_KEGIATAN);
+            int jenisIndex = cursor.getColumnIndex(DatabaseHelper.LOG_JENIS);
+            int devIdIndex = cursor.getColumnIndex(DatabaseHelper.LOG_DEVICE_ID);
+            int tsIndex = cursor.getColumnIndex(DatabaseHelper.LOG_TIMESTAMP);
+            int empNameIndex = cursor.getColumnIndex("NAMA");
+            int opdNameIndex = cursor.getColumnIndex("NAMA_OPD");
+
             do {
-                int id = cursor.getInt(0);
-                String empId = cursor.getString(1);
-                String opdId = cursor.getString(2);
-                String tanggal = cursor.getString(3);
-                String kegiatan = cursor.getString(4);
-                String jenis = cursor.getString(5);
-                String devId = cursor.getString(6);
-                String ts = cursor.getString(7);
-                String empName = cursor.getString(8) != null ? cursor.getString(8) : "-";
-                String opdName = cursor.getString(9) != null ? cursor.getString(9) : "-";
+                int id = cursor.getInt(idIndex);
+                String empId = cursor.getString(empIdIndex);
+                String opdId = cursor.getString(opdIdIndex);
+                String tanggal = cursor.getString(tanggalIndex);
+                String kegiatan = cursor.getString(kegiatanIndex);
+                String jenis = cursor.getString(jenisIndex);
+                String devId = cursor.getString(devIdIndex);
+                String ts = cursor.getString(tsIndex);
+                
+                String empName = "-";
+                if (empNameIndex != -1) {
+                    empName = cursor.getString(empNameIndex) != null ? cursor.getString(empNameIndex) : "-";
+                }
+                
+                String opdName = "-";
+                if (opdNameIndex != -1) {
+                    opdName = cursor.getString(opdNameIndex) != null ? cursor.getString(opdNameIndex) : "-";
+                }
 
                 logs.add(new LogAktivitas(id, empId, opdId, empName, opdName, tanggal, kegiatan, jenis, devId, ts));
             } while (cursor.moveToNext());

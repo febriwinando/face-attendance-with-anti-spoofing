@@ -59,6 +59,9 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
                     android:layout_toStartOf="@+id/tvLogTanggal"
+                    android:layout_marginEnd="8dp"
+                    android:ellipsize="end"
+                    android:maxLines="2"
                     android:fontFamily="sans-serif-black"
                     android:textColor="@color/text_primary"
                     android:textSize="15sp"
@@ -69,10 +72,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="false"
+                    android:layout_marginTop="2dp"
                     android:fontFamily="sans-serif-medium"
                     android:textColor="@color/text_hint"
                     android:textSize="11sp"
-                    tools:text="2025-05-15" />
+                    tools:text="15 Mei 2025" />
             </RelativeLayout>
 
             <!-- Employee & OPD Section (Separated) -->
@@ -130,13 +135,15 @@
 
                     <TextView
                         android:id="@+id/tvLogDevice"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="6dp"
                         android:fontFamily="sans-serif"
                         android:textColor="@color/text_hint"
                         android:textSize="11sp"
-                        tools:text="Identitas Perangkat: a1b2c3d4..." />
+                        android:singleLine="true"
+                        android:ellipsize="middle"
+                        tools:text="ID Perangkat: a1b2c3d4..." />
                 </LinearLayout>
 
                 <TextView
