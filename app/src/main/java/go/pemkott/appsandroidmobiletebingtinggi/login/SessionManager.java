@@ -72,4 +72,15 @@ public class SessionManager {
     public String getEmployeeId() {
         return prefs.getString(KEY_EMPLOYEE_ID, null);
     }
+
+    // -------------------------
+    // VERSION CONTROL
+    // -------------------------
+    public void saveVersionCode(int versionCode) {
+        prefs.edit().putInt("LAST_VERSION_CODE", versionCode).apply();
+    }
+
+    public int getVersionCode() {
+        return prefs.getInt("LAST_VERSION_CODE", 0);
+    }
 }

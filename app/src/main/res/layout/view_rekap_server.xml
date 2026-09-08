@@ -165,12 +165,17 @@
                             android:scaleType="centerCrop"
                             app:shapeAppearanceOverlay="@style/ImageStyle2"/>
 
-                        <WebView
-                            android:id="@+id/webview"
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/txtOpenPdfMasuk"
+                            style="@style/Widget.Material3.Button.TonalButton"
                             android:layout_width="match_parent"
-                            android:layout_height="400dp"
-                            android:layout_marginTop="8dp"
-                            android:visibility="gone" />
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:text="Buka Dokumen PDF"
+                            android:visibility="gone"
+                            app:cornerRadius="12dp"
+                            app:icon="@drawable/one_tl"
+                            tools:ignore="HardcodedText" />
 
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -288,12 +293,17 @@
                                 android:scaleType="centerCrop"
                                 app:shapeAppearanceOverlay="@style/ImageStyle2"/>
 
-                            <WebView
-                                android:id="@+id/webviewpulang"
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/txtOpenPdfPulang"
+                                style="@style/Widget.Material3.Button.TonalButton"
                                 android:layout_width="match_parent"
-                                android:layout_height="400dp"
-                                android:layout_marginTop="8dp"
-                                android:visibility="gone" />
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                android:text="Buka Dokumen PDF"
+                                android:visibility="gone"
+                                app:cornerRadius="12dp"
+                                app:icon="@drawable/one_tl"
+                                tools:ignore="HardcodedText" />
 
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>

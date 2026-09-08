@@ -16,6 +16,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -70,6 +71,7 @@ public class DownloadDataActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_download_data);
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
@@ -147,6 +149,12 @@ public class DownloadDataActivity extends AppCompatActivity {
                             d.getAwal_waktu(), String.valueOf(d.getShift())
                     );
                     opd = d.getOpd_id();
+
+                    // Refresh session with fresh data
+                    session.saveEmployeeId(d.getId());
+                    if (d.getNip() != null) {
+                        // Ensure NIP is consistent in session if needed
+                    }
 
                     runOnUiThread(() -> stepKoordinatOPD());
                 });

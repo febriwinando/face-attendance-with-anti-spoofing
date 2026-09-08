@@ -118,12 +118,21 @@ public class AduanDetailActivity extends AppCompatActivity {
     }
 
     private void fetchDetail() {
+        if (sEmployeeId == null || sEmployeeId.isEmpty()) return;
+        
         String token = "Bearer " + session.getToken();
-        int empId = Integer.parseInt(sEmployeeId);
+        int empId;
+        try {
+            empId = Integer.parseInt(sEmployeeId);
+        } catch (NumberFormatException e) {
+            return;
+        }
 
         httpService.getAduanDetail(aduanId, token, empId).enqueue(new Callback<AduanDetailResponse>() {
             @Override
             public void onResponse(@NonNull Call<AduanDetailResponse> call, @NonNull Response<AduanDetailResponse> response) {
+                if (isFinishing() || isDestroyed()) return;
+                
                 if (response.isSuccessful() && response.body() != null) {
                     displayData(response.body().getData());
                 } else {
@@ -133,6 +142,7 @@ public class AduanDetailActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(@NonNull Call<AduanDetailResponse> call, @NonNull Throwable t) {
+                if (isFinishing() || isDestroyed()) return;
                 Toast.makeText(AduanDetailActivity.this, "Terjadi Kesalahan Pada Koneksi Jaringan", Toast.LENGTH_SHORT).show();
             }
         });

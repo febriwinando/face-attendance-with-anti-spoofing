@@ -12,20 +12,20 @@ import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -47,6 +47,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.api.HttpService;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
+import go.pemkott.appsandroidmobiletebingtinggi.pdf.ReadPdfActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.model.RekapServer;
 import go.pemkott.appsandroidmobiletebingtinggi.utils.NetworkUtils;
 import retrofit2.Call;
@@ -80,9 +81,7 @@ public class RekapAbsensActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.background_color));
-        getWindow().setNavigationBarColor(getResources().getColor(R.color.background_color));
-
+        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_rekap_absens);
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
@@ -181,11 +180,7 @@ public class RekapAbsensActivity extends AppCompatActivity {
 
     }
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        finish();
-    }
+
 
     @Override
     public void onStart() {
@@ -303,8 +298,8 @@ public class RekapAbsensActivity extends AppCompatActivity {
         TextView tvTagFotoRekapPulang = persyaratanDialog.findViewById(R.id.tvTagFotoRekapPulang);
         TextView tvKeteranganRekapPulang = persyaratanDialog.findViewById(R.id.tvKeteranganRekapPulang);
         TableRow trAktivitasPulang = persyaratanDialog.findViewById(R.id.trAktivitasPulang);
-        WebView webview = persyaratanDialog.findViewById(R.id.webview);
-        WebView webviewpulang = persyaratanDialog.findViewById(R.id.webviewpulang);
+        TextView txtOpenPdfMasuk = persyaratanDialog.findViewById(R.id.txtOpenPdfMasuk);
+        TextView txtOpenPdfPulang = persyaratanDialog.findViewById(R.id.txtOpenPdfPulang);
         ShapeableImageView ivAktivitasRekapPulang = persyaratanDialog.findViewById(R.id.ivAktivitasRekapPulang);
         ShapeableImageView ivLampiranRekapPulang = persyaratanDialog.findViewById(R.id.ivLampiranRekapPulang);
 
@@ -428,16 +423,13 @@ public class RekapAbsensActivity extends AppCompatActivity {
 
                 ivLampiranValidasiRekapMasuk.setVisibility(View.VISIBLE);
             }else{
-                if(NetworkUtils.isConnected(RekapAbsensActivity.this)){
-                    webview.setVisibility(View.VISIBLE);
-                    ivLampiranValidasiRekapMasuk.setVisibility(View.GONE);
-                    String pdfurl="https://absensi.tebingtinggikota.go.id/uploads-img-lampiran/"+data.getLampiran_masuk();
-                    webview.loadUrl("https://docs.google.com/gview?embedded=true&url="+pdfurl);
-                    webview.setWebViewClient(new WebViewClient());
-                    webview.getSettings().setSupportZoom(true);
-                    webview.getProgress();
-                    webview.getSettings().setJavaScriptEnabled(true);
-                }
+                ivLampiranValidasiRekapMasuk.setVisibility(View.GONE);
+                txtOpenPdfMasuk.setVisibility(View.VISIBLE);
+                txtOpenPdfMasuk.setOnClickListener(v -> {
+                    Intent intent = new Intent(RekapAbsensActivity.this, ReadPdfActivity.class);
+                    intent.putExtra("PDF_URL", "https://absensi.tebingtinggikota.go.id/uploads-img-lampiran/"+data.getLampiran_masuk());
+                    startActivity(intent);
+                });
             }
         }
 
@@ -463,16 +455,13 @@ public class RekapAbsensActivity extends AppCompatActivity {
                         .into( ivLampiranRekapPulang );
                 ivLampiranRekapPulang.setVisibility(View.VISIBLE);
             }else{
-                if (NetworkUtils.isConnected(RekapAbsensActivity.this)){
-                    webviewpulang.setVisibility(View.VISIBLE);
-                    ivLampiranRekapPulang.setVisibility(View.GONE);
-                    String pdfurl="https://absensi.tebingtinggikota.go.id/uploads-img-lampiran/"+data.getLampiran_pulang();
-                    webviewpulang.loadUrl("https://docs.google.com/gview?embedded=true&url="+pdfurl);
-                    webviewpulang.setWebViewClient(new WebViewClient());
-                    webviewpulang.getSettings().setSupportZoom(true);
-                    webviewpulang.getProgress();
-                    webviewpulang.getSettings().setJavaScriptEnabled(true);
-                }
+                ivLampiranRekapPulang.setVisibility(View.GONE);
+                txtOpenPdfPulang.setVisibility(View.VISIBLE);
+                txtOpenPdfPulang.setOnClickListener(v -> {
+                    Intent intent = new Intent(RekapAbsensActivity.this, ReadPdfActivity.class);
+                    intent.putExtra("PDF_URL", "https://absensi.tebingtinggikota.go.id/uploads-img-lampiran/"+data.getLampiran_pulang());
+                    startActivity(intent);
+                });
 
             }
         }

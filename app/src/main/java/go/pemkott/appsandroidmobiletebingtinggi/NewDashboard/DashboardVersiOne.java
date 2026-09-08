@@ -61,6 +61,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import go.pemkott.appsandroidmobiletebingtinggi.dinasluarkantor.perjalanandinas.SppdActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.izinshift.JadwalIzinShiftActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.kehadiransift.JadwalShiftActivity;
+import go.pemkott.appsandroidmobiletebingtinggi.login.DownloadDataActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
 
 import go.pemkott.appsandroidmobiletebingtinggi.model.KegiatanIzin;
@@ -156,6 +157,8 @@ public class DashboardVersiOne extends AppCompatActivity {
         checkAppUpdate();
 
         session = new SessionManager(this);
+        checkAndHandleAppUpdate();
+        
         userid = session.getPegawaiId();
         dashboardVersiOne = this;
         manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -476,6 +479,30 @@ public class DashboardVersiOne extends AppCompatActivity {
             if (resultCode != RESULT_OK) {
                 finish();
             }
+        }
+    }
+
+    private void checkAndHandleAppUpdate() {
+        int currentVersionCode = 0;
+        try {
+            currentVersionCode = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
+        } catch (Exception e) {
+            Log.e("UPDATE_HANDLER", "Error getting version code", e);
+        }
+
+        int lastSavedVersion = session.getVersionCode();
+
+        if (lastSavedVersion != 0 && currentVersionCode > lastSavedVersion) {
+            Log.d("UPDATE_HANDLER", "App updated from " + lastSavedVersion + " to " + currentVersionCode);
+            session.saveVersionCode(currentVersionCode);
+            
+            // Redirect to DownloadDataActivity to ensure data migration and session integrity
+            Intent intent = new Intent(this, DownloadDataActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
+        } else if (currentVersionCode != 0) {
+            session.saveVersionCode(currentVersionCode);
         }
     }
 

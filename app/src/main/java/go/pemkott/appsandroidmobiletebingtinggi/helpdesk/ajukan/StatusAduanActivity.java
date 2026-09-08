@@ -174,24 +174,33 @@ public class StatusAduanActivity extends AppCompatActivity {
         httpService = RetroClient.getInstance().getApi2();
         
         DatabaseHelper databaseHelper = new DatabaseHelper(this);
-        Cursor tUser = databaseHelper.getAllData22(session.getPegawaiId());
-        if (tUser.moveToNext()) {
-            sEmployee_id = tUser.getString(1);
+        try (Cursor tUser = databaseHelper.getAllData22(session.getPegawaiId())) {
+            if (tUser != null && tUser.moveToNext()) {
+                sEmployee_id = tUser.getString(1);
+            }
         }
     }
 
     private void fetchAduans() {
-        if (sEmployee_id == null) return;
+        if (sEmployee_id == null || sEmployee_id.isEmpty()) return;
 
         swipeRefresh.setRefreshing(true);
         llEmpty.setVisibility(View.GONE);
 
         String token = "Bearer " + session.getToken();
-        int empId = Integer.parseInt(sEmployee_id);
+        int empId;
+        try {
+            empId = Integer.parseInt(sEmployee_id);
+        } catch (NumberFormatException e) {
+            swipeRefresh.setRefreshing(false);
+            return;
+        }
 
         httpService.getAduans(token, empId, null, 1, 50).enqueue(new Callback<AduanResponse>() {
             @Override
             public void onResponse(@NonNull Call<AduanResponse> call, @NonNull Response<AduanResponse> response) {
+                if (isFinishing() || isDestroyed()) return;
+                
                 swipeRefresh.setRefreshing(false);
                 progressBar.setVisibility(View.GONE);
 
@@ -211,6 +220,8 @@ public class StatusAduanActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(@NonNull Call<AduanResponse> call, @NonNull Throwable t) {
+                if (isFinishing() || isDestroyed()) return;
+                
                 swipeRefresh.setRefreshing(false);
                 progressBar.setVisibility(View.GONE);
                 Log.e("API_ERROR", "Error: " + t.getMessage());

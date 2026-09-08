@@ -3,6 +3,7 @@ package go.pemkott.appsandroidmobiletebingtinggi.login;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -18,6 +19,8 @@ import androidx.core.view.WindowInsetsControllerCompat;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.play.core.appupdate.AppUpdateManager;
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
+import com.google.android.play.core.install.model.AppUpdateType;
+import com.google.android.play.core.install.model.UpdateAvailability;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 
@@ -106,7 +109,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-
+        checkAppUpdate();
     }
 
     @Override
@@ -142,12 +145,61 @@ public class LoginActivity extends AppCompatActivity {
     private void datauser(){
 
         if (session.getToken() != null) {
+            if (checkAndHandleAppUpdate()) {
+                return; // Redirected to DownloadDataActivity
+            }
+
             Intent dashboardActivity = new Intent(LoginActivity.this, DashboardVersiOne.class);
             dashboardActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(dashboardActivity);
             finish();
         }
 
+    }
+
+    private boolean checkAndHandleAppUpdate() {
+        int currentVersionCode = 0;
+        try {
+            currentVersionCode = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
+        } catch (Exception e) {
+            Log.e("UPDATE_HANDLER", "Error getting version code", e);
+        }
+
+        int lastSavedVersion = session.getVersionCode();
+
+        if (lastSavedVersion != 0 && currentVersionCode > lastSavedVersion) {
+            Log.d("UPDATE_HANDLER", "App updated from " + lastSavedVersion + " to " + currentVersionCode);
+            session.saveVersionCode(currentVersionCode);
+
+            // Redirect to DownloadDataActivity to ensure data migration and session integrity
+            Intent intent = new Intent(this, DownloadDataActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
+            return true;
+        } else if (currentVersionCode != 0) {
+            session.saveVersionCode(currentVersionCode);
+        }
+        return false;
+    }
+
+    private void checkAppUpdate() {
+        appUpdateManager.getAppUpdateInfo()
+                .addOnSuccessListener(appUpdateInfo -> {
+                    if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
+                            && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)) {
+                        try {
+                            appUpdateManager.startUpdateFlowForResult(
+                                    appUpdateInfo,
+                                    AppUpdateType.IMMEDIATE,
+                                    this,
+                                    1001 // REQ_UPDATE
+                            );
+                        } catch (IntentSender.SendIntentException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
     }
 
     DialogView dialogView = new DialogView(LoginActivity.this);

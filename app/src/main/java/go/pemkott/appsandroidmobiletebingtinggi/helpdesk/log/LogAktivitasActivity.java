@@ -3,6 +3,7 @@ package go.pemkott.appsandroidmobiletebingtinggi.helpdesk.log;
 import android.app.DatePickerDialog;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -140,43 +141,44 @@ public class LogAktivitasActivity extends AppCompatActivity {
 
     private void loadLogs() {
         List<LogAktivitas> logs = new ArrayList<>();
-        Cursor cursor = databaseHelper.getLogs();
+        try (Cursor cursor = databaseHelper.getLogs()) {
+            if (cursor != null && cursor.moveToFirst()) {
+                int idIndex = cursor.getColumnIndex(DatabaseHelper.LOG_ID);
+                int empIdIndex = cursor.getColumnIndex(DatabaseHelper.LOG_EMPLOYEE_ID);
+                int opdIdIndex = cursor.getColumnIndex(DatabaseHelper.LOG_OPD_ID);
+                int tanggalIndex = cursor.getColumnIndex(DatabaseHelper.LOG_TANGGAL);
+                int kegiatanIndex = cursor.getColumnIndex(DatabaseHelper.LOG_KEGIATAN);
+                int jenisIndex = cursor.getColumnIndex(DatabaseHelper.LOG_JENIS);
+                int devIdIndex = cursor.getColumnIndex(DatabaseHelper.LOG_DEVICE_ID);
+                int tsIndex = cursor.getColumnIndex(DatabaseHelper.LOG_TIMESTAMP);
+                int empNameIndex = cursor.getColumnIndex("NAMA");
+                int opdNameIndex = cursor.getColumnIndex("NAMA_OPD");
 
-        if (cursor != null && cursor.moveToFirst()) {
-            int idIndex = cursor.getColumnIndex(DatabaseHelper.LOG_ID);
-            int empIdIndex = cursor.getColumnIndex(DatabaseHelper.LOG_EMPLOYEE_ID);
-            int opdIdIndex = cursor.getColumnIndex(DatabaseHelper.LOG_OPD_ID);
-            int tanggalIndex = cursor.getColumnIndex(DatabaseHelper.LOG_TANGGAL);
-            int kegiatanIndex = cursor.getColumnIndex(DatabaseHelper.LOG_KEGIATAN);
-            int jenisIndex = cursor.getColumnIndex(DatabaseHelper.LOG_JENIS);
-            int devIdIndex = cursor.getColumnIndex(DatabaseHelper.LOG_DEVICE_ID);
-            int tsIndex = cursor.getColumnIndex(DatabaseHelper.LOG_TIMESTAMP);
-            int empNameIndex = cursor.getColumnIndex("NAMA");
-            int opdNameIndex = cursor.getColumnIndex("NAMA_OPD");
+                do {
+                    int id = idIndex != -1 ? cursor.getInt(idIndex) : 0;
+                    String empId = empIdIndex != -1 ? cursor.getString(empIdIndex) : "-";
+                    String opdId = opdIdIndex != -1 ? cursor.getString(opdIdIndex) : "-";
+                    String tanggal = tanggalIndex != -1 ? cursor.getString(tanggalIndex) : "-";
+                    String kegiatan = kegiatanIndex != -1 ? cursor.getString(kegiatanIndex) : "-";
+                    String jenis = jenisIndex != -1 ? cursor.getString(jenisIndex) : "-";
+                    String devId = devIdIndex != -1 ? cursor.getString(devIdIndex) : "-";
+                    String ts = tsIndex != -1 ? cursor.getString(tsIndex) : "0";
+                    
+                    String empName = "-";
+                    if (empNameIndex != -1) {
+                        empName = cursor.getString(empNameIndex) != null ? cursor.getString(empNameIndex) : "-";
+                    }
+                    
+                    String opdName = "-";
+                    if (opdNameIndex != -1) {
+                        opdName = cursor.getString(opdNameIndex) != null ? cursor.getString(opdNameIndex) : "-";
+                    }
 
-            do {
-                int id = cursor.getInt(idIndex);
-                String empId = cursor.getString(empIdIndex);
-                String opdId = cursor.getString(opdIdIndex);
-                String tanggal = cursor.getString(tanggalIndex);
-                String kegiatan = cursor.getString(kegiatanIndex);
-                String jenis = cursor.getString(jenisIndex);
-                String devId = cursor.getString(devIdIndex);
-                String ts = cursor.getString(tsIndex);
-                
-                String empName = "-";
-                if (empNameIndex != -1) {
-                    empName = cursor.getString(empNameIndex) != null ? cursor.getString(empNameIndex) : "-";
-                }
-                
-                String opdName = "-";
-                if (opdNameIndex != -1) {
-                    opdName = cursor.getString(opdNameIndex) != null ? cursor.getString(opdNameIndex) : "-";
-                }
-
-                logs.add(new LogAktivitas(id, empId, opdId, empName, opdName, tanggal, kegiatan, jenis, devId, ts));
-            } while (cursor.moveToNext());
-            cursor.close();
+                    logs.add(new LogAktivitas(id, empId, opdId, empName, opdName, tanggal, kegiatan, jenis, devId, ts));
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            Log.e("LOG_ACTIVITY", "Error loading logs", e);
         }
 
         if (logs.isEmpty()) {

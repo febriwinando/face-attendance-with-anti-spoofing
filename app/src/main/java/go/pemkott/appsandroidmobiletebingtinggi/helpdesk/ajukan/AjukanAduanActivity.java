@@ -165,18 +165,20 @@ public class AjukanAduanActivity extends AppCompatActivity {
         userId = session.getPegawaiId();
         databaseHelper = new DatabaseHelper(this);
 
-        Cursor tUser = databaseHelper.getAllData22(userId);
-        if (tUser.moveToNext()) {
-            sEmployee_id = tUser.getString(1);
+        try (Cursor tUser = databaseHelper.getAllData22(userId)) {
+            if (tUser != null && tUser.moveToNext()) {
+                sEmployee_id = tUser.getString(1);
+            }
         }
 
-
-        Cursor employee = databaseHelper.getDataEmployee(sEmployee_id);
-        if (employee.moveToNext()) {
-
-            varOpdid = employee.getString(4);
-            varNip = employee.getString(5);
-            varNama = employee.getString(6);
+        if (sEmployee_id != null) {
+            try (Cursor employee = databaseHelper.getDataEmployee(sEmployee_id)) {
+                if (employee != null && employee.moveToNext()) {
+                    varOpdid = employee.getString(4);
+                    varNip = employee.getString(5);
+                    varNama = employee.getString(6);
+                }
+            }
         }
     }
 
@@ -240,6 +242,8 @@ public class AjukanAduanActivity extends AppCompatActivity {
         call.enqueue(new Callback<FileModel>() {
             @Override
             public void onResponse(@NonNull Call<FileModel> call, @NonNull Response<FileModel> response) {
+                if (isFinishing() || isDestroyed()) return;
+                
                 if (response.isSuccessful()) {
 
                     Log.d("API_ADUAN", "SUCCESS");
@@ -283,6 +287,8 @@ public class AjukanAduanActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(@NonNull Call<FileModel> call, @NonNull Throwable t) {
+                if (isFinishing() || isDestroyed()) return;
+                
                 Log.e("API_ERROR", "Error: " + t.getMessage());
                 Toast.makeText(AjukanAduanActivity.this, "Terjadi kesalahan jaringan.", Toast.LENGTH_SHORT).show();
             }
@@ -294,9 +300,16 @@ public class AjukanAduanActivity extends AppCompatActivity {
             InputStream inputStream = getContentResolver().openInputStream(fileUri);
             if (inputStream == null) return null;
 
-            byte[] fileBytes = getBytes(inputStream);
             String fileName = getFileName(fileUri);
             String mimeType = getContentResolver().getType(fileUri);
+            
+            // Fixed OOM: Use RequestBody that doesn't load everything into memory
+            // But for simple multipart, since HttpService expects RequestBody, 
+            // we will at least use a safer byte retrieval or just create from File if possible.
+            // Since we use content provider, we'll read into bytes but with size check.
+            
+            byte[] fileBytes = getBytes(inputStream);
+            if (fileBytes == null) return null;
 
             RequestBody requestFile = RequestBody.create(
                     MediaType.parse(mimeType != null ? mimeType : "application/octet-stream"),
@@ -311,15 +324,27 @@ public class AjukanAduanActivity extends AppCompatActivity {
     }
 
     private byte[] getBytes(InputStream inputStream) throws IOException {
-        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
-        int bufferSize = 1024;
-        byte[] buffer = new byte[bufferSize];
+        try {
+            ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
+            int bufferSize = 1024;
+            byte[] buffer = new byte[bufferSize];
 
-        int len;
-        while ((len = inputStream.read(buffer)) != -1) {
-            byteBuffer.write(buffer, 0, len);
+            int len;
+            long totalRead = 0;
+            long maxAllowed = 10 * 1024 * 1024; // 10MB limit per file for helpdesk to avoid OOM
+
+            while ((len = inputStream.read(buffer)) != -1) {
+                totalRead += len;
+                if (totalRead > maxAllowed) {
+                    runOnUiThread(() -> Toast.makeText(this, "File terlalu besar (Maksimal 10MB).", Toast.LENGTH_SHORT).show());
+                    return null;
+                }
+                byteBuffer.write(buffer, 0, len);
+            }
+            return byteBuffer.toByteArray();
+        } finally {
+            try { inputStream.close(); } catch (IOException ignored) {}
         }
-        return byteBuffer.toByteArray();
     }
 
     private String getFileName(Uri uri) {
