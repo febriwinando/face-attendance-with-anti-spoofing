@@ -184,7 +184,7 @@ public class AjukanAduanActivity extends AppCompatActivity {
         kategoriMap = new LinkedHashMap<>();
         kategoriMap.put("Kendala Otentikasi & Akun", "otentikasi");
         kategoriMap.put("Masalah Presensi & Fitur Absensi", "presensi");
-        kategoriMap.put("Pengajuan Izin, Cuti, & Koreksi", "izin_cuti");
+        kategoriMap.put("Pengajuan Izin, Cuti, & Perjalanan Dinas", "izin_cuti");
         kategoriMap.put("Gangguan Sistem & Teknis (Sisi Aplikasi)", "sistem");
         kategoriMap.put("Kendala Laporan & Data Rekap", "laporan");
         kategoriMap.put("Kendala lainnya", "lainnya");
