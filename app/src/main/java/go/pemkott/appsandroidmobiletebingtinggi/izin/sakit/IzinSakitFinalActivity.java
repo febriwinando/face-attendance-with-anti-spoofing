@@ -1,6 +1,7 @@
 package go.pemkott.appsandroidmobiletebingtinggi.izin.sakit;
 
 import static go.pemkott.appsandroidmobiletebingtinggi.geolocation.model.LocationHelper.defaultLocation;
+import static go.pemkott.appsandroidmobiletebingtinggi.kehadiransift.JadwalShiftActivity.pulangsift;
 import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.SIMPLE_DATE_FORMAT_TAGING_PHOTO_REPORT;
 import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.SIMPLE_FORMAT_JAM;
 import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.SIMPLE_FORMAT_JAM_TAGING;
@@ -1088,7 +1089,7 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
 
         try {
             jamMasukDate = SIMPLE_FORMAT_JAM.parse(jamMasuk);
-            jamPulangDate = SIMPLE_FORMAT_JAM.parse(jamPulang);
+            jamPulangDate = SIMPLE_FORMAT_JAM.parse(pulangsift);
 
             String jamTaging = SIMPLE_FORMAT_JAM_TAGING.format(new Date());
 
@@ -1346,10 +1347,51 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
         finish();
     }
 
+    Boolean statusRekam = false;
+    public void handlerTutupActivity(){
+        Handler handler = new Handler();
+        handler.postDelayed(() -> {
+            if (!statusRekam){
+                cobarekamkembali();
+            }
+            }, 3 * 60 * 1000);
+    }
+
+    public void cobarekamkembali(){
+        if (isFinishing() || isDestroyed()) return;
+        Dialog dataKosong = new Dialog(IzinSakitFinalActivity.this, R.style.DialogStyle);
+        dataKosong.setContentView(R.layout.view_warning_kosong);
+        TextView tvWarning1 = dataKosong.findViewById(R.id.tvWarning1);
+        ImageView tvTutupDialog = dataKosong.findViewById(R.id.tvTutupDialog);
+        TextView tvCobaKembali = dataKosong.findViewById(R.id.tvCobaKembali);
+
+        tvWarning1.setText("Proses terlalu lama, coba ulang kembali!");
+        dataKosong.setCancelable(false);
+        tvTutupDialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dataKosong.dismiss();
+                finish();
+            }
+        });
+
+        tvCobaKembali.setVisibility(View.VISIBLE);
+        tvCobaKembali.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dataKosong.dismiss();
+                finish();
+            }
+        });
+
+        dataKosong.show();
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
         rbTanggal = SIMPLE_FORMAT_TANGGAL.format(new Date());
+        handlerTutupActivity();
         startLocationUpdates();
     }
 
@@ -1370,4 +1412,33 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
         super.onDestroy();
         stopLocationUpdates();
     }
+
+    public void viewSukses(Context context, String info1, String info2){
+        statusRekam = true;
+        Dialog dialogSukes = new Dialog(context, R.style.DialogStyle);
+        dialogSukes.setContentView(R.layout.view_sukses);
+        dialogSukes.setCancelable(false);
+        ImageView tvTutupDialog = dialogSukes.findViewById(R.id.tvTutupDialog);
+
+        tvTutupDialog.setOnClickListener(v -> {
+            stopLocationUpdates();
+
+            dialogSukes.dismiss();
+            finish();
+        });
+
+        handlerProgressDialog2();
+        dialogSukes.show();
+
+    }
+
+
+    public void handlerProgressDialog2(){
+        Handler handler = new Handler();
+        handler.postDelayed(() -> {
+            //your code here
+            finish();
+        }, 1500);
+    }
+
 }

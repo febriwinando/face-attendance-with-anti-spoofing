@@ -1120,7 +1120,7 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
             if (!statusRekam){
                 cobarekamkembali();
             }
-            }, 5 * 60 * 1000);
+            }, 3 * 60 * 1000);
     }
 
     public void cobarekamkembali(){

@@ -1420,9 +1420,52 @@ public class IzinSakitShiftFinalActivity extends AppCompatActivity implements On
     }
 
 
+    Boolean statusAbsen = false;
+    public void handlerTutupActivity(){
+        Handler handler = new Handler();
+        handler.postDelayed(() -> {
+            if (!statusAbsen){
+                cobarekamkembali();
+            }
+        }, 180000);
+
+    }
+
+    public void cobarekamkembali(){
+        if (isFinishing() || isDestroyed()) return;
+        Dialog dataKosong = new Dialog(IzinSakitShiftFinalActivity.this, R.style.DialogStyle);
+        dataKosong.setContentView(R.layout.view_warning_kosong);
+        TextView tvWarning1 = dataKosong.findViewById(R.id.tvWarning1);
+        ImageView tvTutupDialog = dataKosong.findViewById(R.id.tvTutupDialog);
+        TextView tvCobaKembali = dataKosong.findViewById(R.id.tvCobaKembali);
+        stopLocationUpdates();
+        tvWarning1.setText("Proses terlalu lama, coba ulang kembali!");
+        dataKosong.setCancelable(false);
+        tvTutupDialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dataKosong.dismiss();
+                finish();
+            }
+        });
+
+        tvCobaKembali.setVisibility(View.VISIBLE);
+        tvCobaKembali.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dataKosong.dismiss();
+                finish();
+            }
+        });
+
+        dataKosong.show();
+    }
+
+
     @Override
     protected void onResume() {
         super.onResume();
+        handlerTutupActivity();
         startLocationUpdates();
     }
 

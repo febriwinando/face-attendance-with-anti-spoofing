@@ -1294,6 +1294,7 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
 
 
     public void viewSukses(Context context){
+        statusRekam = true;
         Dialog dialogSukes = new Dialog(context, R.style.DialogStyle);
         dialogSukes.setContentView(R.layout.view_sukses);
         dialogSukes.setCancelable(false);
@@ -1309,9 +1310,50 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
         dialogSukes.show();
     }
 
+    Boolean statusRekam = false;
+    public void handlerTutupActivity(){
+        Handler handler = new Handler();
+        handler.postDelayed(() -> {
+            if (!statusRekam){
+                cobarekamkembali();
+            }
+            }, 3 * 60 * 1000);
+    }
+
+    public void cobarekamkembali(){
+        if (isFinishing() || isDestroyed()) return;
+        Dialog dataKosong = new Dialog(IzinCutiFinalActivity.this, R.style.DialogStyle);
+        dataKosong.setContentView(R.layout.view_warning_kosong);
+        TextView tvWarning1 = dataKosong.findViewById(R.id.tvWarning1);
+        ImageView tvTutupDialog = dataKosong.findViewById(R.id.tvTutupDialog);
+        TextView tvCobaKembali = dataKosong.findViewById(R.id.tvCobaKembali);
+
+        tvWarning1.setText("Proses terlalu lama, coba ulang kembali!");
+        dataKosong.setCancelable(false);
+        tvTutupDialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dataKosong.dismiss();
+                finish();
+            }
+        });
+
+        tvCobaKembali.setVisibility(View.VISIBLE);
+        tvCobaKembali.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dataKosong.dismiss();
+                finish();
+            }
+        });
+
+        dataKosong.show();
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
+        handlerTutupActivity();
         startLocationUpdates();
     }
 

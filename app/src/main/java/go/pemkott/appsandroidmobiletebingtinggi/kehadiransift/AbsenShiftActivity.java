@@ -1522,7 +1522,7 @@ statusAbsen = true;
             if (!statusAbsen){
                 cobarekamkembali();
             }
-        }, 120000);
+        }, 180000);
 
     }
 
