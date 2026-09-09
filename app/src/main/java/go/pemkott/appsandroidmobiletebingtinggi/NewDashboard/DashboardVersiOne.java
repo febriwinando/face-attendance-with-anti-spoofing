@@ -40,6 +40,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.bumptech.glide.signature.ObjectKey;
 import com.google.android.material.card.MaterialCardView;
 import com.bumptech.glide.Glide;
 import com.google.android.play.core.appupdate.AppUpdateManager;
@@ -1080,6 +1081,18 @@ public class DashboardVersiOne extends AppCompatActivity {
             statusIcon.setVisibility(View.GONE);
             cvSyncStatusToast.setVisibility(View.GONE);
         }, 5000);
+    }
+
+    public void updateProfileUI() {
+        datauser(); // Reload static variables from DB
+        runOnUiThread(() -> {
+            Glide.with(this)
+                    .load("https://absensi.tebingtinggikota.go.id/storage/foto-pegawai/" + fotoProfile)
+                    .placeholder(R.drawable.profil_pic)
+                    .error(R.drawable.profil_pic)
+                    .signature(new ObjectKey(System.currentTimeMillis()))
+                    .into(ciUser);
+        });
     }
 
 }

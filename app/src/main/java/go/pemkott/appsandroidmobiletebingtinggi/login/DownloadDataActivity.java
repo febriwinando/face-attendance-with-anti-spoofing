@@ -6,11 +6,13 @@ import android.animation.ValueAnimator;
 import android.app.Dialog;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -66,7 +68,8 @@ public class DownloadDataActivity extends AppCompatActivity {
     private String opd;
 
     private int progressStep = 0;
-    private static final int MAX_STEP = 5;
+    private static final int MAX_STEP = 7;
+    private AnimatorSet animatorSet;
     SessionManager session;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -449,20 +452,24 @@ public class DownloadDataActivity extends AppCompatActivity {
        HELPER
        ============================= */
     private void startEnhancedAnimations() {
-        // Pulse 1 Animation (Outer)
-        ObjectAnimator p1ScaleX = ObjectAnimator.ofFloat(vPulse1, "scaleX", 1f, 1.4f);
-        ObjectAnimator p1ScaleY = ObjectAnimator.ofFloat(vPulse1, "scaleY", 1f, 1.4f);
-        ObjectAnimator p1Alpha = ObjectAnimator.ofFloat(vPulse1, "alpha", 0.1f, 0f);
-        
+        // 1. Rotation for the Sync Icon
+        ObjectAnimator rotate = ObjectAnimator.ofFloat(ivSyncIllustration, "rotation", 0f, 360f);
+        rotate.setRepeatCount(ValueAnimator.INFINITE);
+        rotate.setInterpolator(new LinearInterpolator());
+        rotate.setDuration(4000);
+
+        // 2. Pulse 1 (Outer) - Scale and Alpha
+        ObjectAnimator p1ScaleX = ObjectAnimator.ofFloat(vPulse1, "scaleX", 1f, 1.5f);
+        ObjectAnimator p1ScaleY = ObjectAnimator.ofFloat(vPulse1, "scaleY", 1f, 1.5f);
+        ObjectAnimator p1Alpha = ObjectAnimator.ofFloat(vPulse1, "alpha", 0.2f, 0f);
         p1ScaleX.setRepeatCount(ValueAnimator.INFINITE);
         p1ScaleY.setRepeatCount(ValueAnimator.INFINITE);
         p1Alpha.setRepeatCount(ValueAnimator.INFINITE);
 
-        // Pulse 2 Animation (Inner)
+        // 3. Pulse 2 (Inner) - Scale and Alpha
         ObjectAnimator p2ScaleX = ObjectAnimator.ofFloat(vPulse2, "scaleX", 1f, 1.3f);
         ObjectAnimator p2ScaleY = ObjectAnimator.ofFloat(vPulse2, "scaleY", 1f, 1.3f);
-        ObjectAnimator p2Alpha = ObjectAnimator.ofFloat(vPulse2, "alpha", 0.15f, 0f);
-        
+        ObjectAnimator p2Alpha = ObjectAnimator.ofFloat(vPulse2, "alpha", 0.3f, 0f);
         p2ScaleX.setRepeatCount(ValueAnimator.INFINITE);
         p2ScaleY.setRepeatCount(ValueAnimator.INFINITE);
         p2Alpha.setRepeatCount(ValueAnimator.INFINITE);
@@ -470,23 +477,34 @@ public class DownloadDataActivity extends AppCompatActivity {
         p2ScaleY.setStartDelay(1000);
         p2Alpha.setStartDelay(1000);
 
-        // Main Icon Breathing
-        ObjectAnimator scaleX = ObjectAnimator.ofFloat(ivSyncIllustration, "scaleX", 1f, 1.05f, 1f);
-        ObjectAnimator scaleY = ObjectAnimator.ofFloat(ivSyncIllustration, "scaleY", 1f, 1.05f, 1f);
+        // 4. Subtle Breathing for Icon
+        ObjectAnimator scaleX = ObjectAnimator.ofFloat(ivSyncIllustration, "scaleX", 1f, 1.1f, 1f);
+        ObjectAnimator scaleY = ObjectAnimator.ofFloat(ivSyncIllustration, "scaleY", 1f, 1.1f, 1f);
         scaleX.setRepeatCount(ValueAnimator.INFINITE);
         scaleY.setRepeatCount(ValueAnimator.INFINITE);
 
-        AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.playTogether(p1ScaleX, p1ScaleY, p1Alpha, p2ScaleX, p2ScaleY, p2Alpha, scaleX, scaleY);
-        animatorSet.setDuration(2000);
+        animatorSet = new AnimatorSet();
+        animatorSet.playTogether(rotate, p1ScaleX, p1ScaleY, p1Alpha, p2ScaleX, p2ScaleY, p2Alpha, scaleX, scaleY);
+        animatorSet.setDuration(2000); // Base duration, some parts override this
         animatorSet.start();
     }
 
     private void updateUI(String text) {
         progressStep++;
         int percentage = (progressStep * 100) / MAX_STEP;
+        
+        // Smooth transition for Info Text
+        tvInfo.setAlpha(0f);
         tvInfo.setText(text);
-        progressBar.setProgress(percentage);
+        tvInfo.animate().alpha(1f).setDuration(300).start();
+        
+        // Smoothly update progress bar
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            progressBar.setProgress(percentage, true);
+        } else {
+            progressBar.setProgress(percentage);
+        }
+        
         tvProgressPercentage.setText(String.format(Locale.getDefault(), "%d%%", percentage));
     }
 
@@ -498,6 +516,10 @@ public class DownloadDataActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (animatorSet != null) {
+            animatorSet.cancel();
+            animatorSet = null;
+        }
         if (executor != null) executor.shutdownNow();
     }
 

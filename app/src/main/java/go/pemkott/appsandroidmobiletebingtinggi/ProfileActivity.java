@@ -1,6 +1,7 @@
 package go.pemkott.appsandroidmobiletebingtinggi;
 
 import static go.pemkott.appsandroidmobiletebingtinggi.NewDashboard.DashboardVersiOne.dashboardVersiOne;
+import go.pemkott.appsandroidmobiletebingtinggi.NewDashboard.DashboardVersiOne;
 import static go.pemkott.appsandroidmobiletebingtinggi.utils.FileUtil.getDriveFilePath;
 
 import android.Manifest;
@@ -56,6 +57,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFoto;
 import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.SIMPLE_FORMAT_TANGGAL;
 import go.pemkott.appsandroidmobiletebingtinggi.login.LoginActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
+import go.pemkott.appsandroidmobiletebingtinggi.model.DataEmployee;
 import go.pemkott.appsandroidmobiletebingtinggi.model.Updatep;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -300,6 +302,29 @@ public class ProfileActivity extends AppCompatActivity {
                 Log.d("UpdateFotoProfil", "BODY : " + new Gson().toJson(data));
 
                 if (data != null && data.isStatus()) {
+
+                    // Fetch latest data from server to get new filename
+                    api.dataEmployee(sEmployee_id).enqueue(new Callback<DataEmployee>() {
+                        @Override
+                        public void onResponse(@NonNull Call<DataEmployee> call, @NonNull Response<DataEmployee> response) {
+                            if (response.isSuccessful() && response.body() != null) {
+                                String newPhoto = response.body().getFoto();
+                                if (newPhoto != null) {
+                                    databaseHelper.updateEmployeePhoto(sEmployee_id, newPhoto);
+                                    
+                                    // Update Dashboard UI if alive
+                                    if (dashboardVersiOne != null) {
+                                        dashboardVersiOne.updateProfileUI();
+                                    }
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(@NonNull Call<DataEmployee> call, @NonNull Throwable t) {
+                            Log.e("PROFILE", "Failed to sync new photo info");
+                        }
+                    });
 
                     dialogView.viewSukses(
 

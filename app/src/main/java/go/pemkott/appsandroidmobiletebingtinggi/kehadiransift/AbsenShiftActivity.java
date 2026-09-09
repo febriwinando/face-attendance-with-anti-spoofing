@@ -329,6 +329,9 @@ public class AbsenShiftActivity extends AppCompatActivity implements OnMapReadyC
             if (mock_location == 1){
                 dialogView.viewNotifKosong(AbsenShiftActivity.this, "Anda terdeteksi menggunakan Fake GPS.", "Jika ditemukan berulang kali, akun anda akan terblokir otomatis dan tercatat Alpa.");
             }else {
+                llUpload.setEnabled(false);
+                llUpload.setClickable(false);
+                llUpload.setAlpha(0.5f);
                 uploadImages();
             }
         });
@@ -708,6 +711,9 @@ public class AbsenShiftActivity extends AppCompatActivity implements OnMapReadyC
 
         if(file == null || !file.exists() || file.length() == 0){
             dialogView.viewNotifKosong(AbsenShiftActivity.this, "Harap melampirkan foto taging anda.", "");
+            llUpload.setEnabled(true);
+            llUpload.setClickable(true);
+            llUpload.setAlpha(1.0f);
         }else{
             selected = rgKehadiran.getCheckedRadioButtonId();
             radioSelectedKehadiran = findViewById(selected);
@@ -722,6 +728,9 @@ public class AbsenShiftActivity extends AppCompatActivity implements OnMapReadyC
 
             if (totalJarak > 150){
                 dialogView.viewNotifKosong(AbsenShiftActivity.this, "Andah harus berada dilingkungan kantor untuk melakukan absensi.", "");
+                llUpload.setEnabled(true);
+                llUpload.setClickable(true);
+                llUpload.setAlpha(1.0f);
             }
             else{
                 //Malam
@@ -758,6 +767,9 @@ public class AbsenShiftActivity extends AppCompatActivity implements OnMapReadyC
                         if (tanggal.equals(rbTanggal)) {
                                 if (tagingTime.getTime() < dateBatasWaktu.getTime()) {
                                     dialogView.viewNotifKosong(AbsenShiftActivity.this, "Anda hanya dapat mengisi absen masuk, " + batasWaktu + " menit sebelum Jam Masuk", "");
+                                    llUpload.setEnabled(true);
+                                    llUpload.setClickable(true);
+                                    llUpload.setAlpha(1.0f);
                                 } else {
                                     kirimdataMasukMalam(ketKehadiran, eselon, sEmployId, timetableid, rbTanggal, rbJam, rbPosisi, "hadir", rbLat, rbLng, rbKet, mins, masukshift, rbValid);
                                 }
@@ -765,6 +777,9 @@ public class AbsenShiftActivity extends AppCompatActivity implements OnMapReadyC
                         } else {
                             if (tagingTime.getTime() > jamPulangDate.getTime()) {
                                 dialogView.viewNotifKosong(AbsenShiftActivity.this, "Anda hanya dapat mengisi absen masuk, sebelum jam pulang malam.", "");
+                                llUpload.setEnabled(true);
+                                llUpload.setClickable(true);
+                                llUpload.setAlpha(1.0f);
                             } else {
                                 kirimdataMasukMalam(ketKehadiran, eselon, sEmployId, timetableid, rbTanggal, rbJam, rbPosisi, "hadir", rbLat, rbLng, rbKet, mins, masukshift, rbValid);
                             }
@@ -796,9 +811,15 @@ public class AbsenShiftActivity extends AppCompatActivity implements OnMapReadyC
                                     kirimdataPulangMalam("pulang", eselon, sEmployId, timetableid, rbTanggal, rbJam, rbPosisi, "hadir", rbLat, rbLng, rbKet, 0, pulangshift, rbValid);
                                 } else {
                                     dialogView.viewNotifKosong(AbsenShiftActivity.this, "Anda belum dapat mengisi absensi pulang,", "silahkan lanjutkan kembali aktivitas kantor anda.");
+                                    llUpload.setEnabled(true);
+                                    llUpload.setClickable(true);
+                                    llUpload.setAlpha(1.0f);
                                 }
                             } else {
                                     dialogView.viewNotifKosong(AbsenShiftActivity.this, "Anda belum dapat mengisi absensi pulang,", "silahkan lanjutkan kembali aktivitas kantor anda.");
+                                    llUpload.setEnabled(true);
+                                    llUpload.setClickable(true);
+                                    llUpload.setAlpha(1.0f);
                             }
 
 
@@ -816,10 +837,16 @@ public class AbsenShiftActivity extends AppCompatActivity implements OnMapReadyC
 
                             if (tagingTime.getTime() < dateBatasWaktu.getTime()) {
                                 dialogView.viewNotifKosong(AbsenShiftActivity.this, "Anda hanya dapat mengisi absen masuk, " + batasWaktu + " menit sebelum Jam Masuk", "");
+                                llUpload.setEnabled(true);
+                                llUpload.setClickable(true);
+                                llUpload.setAlpha(1.0f);
                             }
                             else {
                                 if (tagingTime.getTime() > jamPulangDate.getTime()) {
                                     dialogView.viewNotifKosong(AbsenShiftActivity.this, "Anda tidak dapat melakukan absensi masuk pada jam pulang kerja.", "");
+                                    llUpload.setEnabled(true);
+                                    llUpload.setClickable(true);
+                                    llUpload.setAlpha(1.0f);
                                 } else {
                                     kirimdataMasukPagi(ketKehadiran, eselon, sEmployId, rbTanggal, rbJam, rbPosisi, "hadir", rbLat, rbLng, rbKet, mins, masukshift, rbValid);
                                 }
@@ -830,6 +857,9 @@ public class AbsenShiftActivity extends AppCompatActivity implements OnMapReadyC
                         rbPosisi = "pulang";
                             if (tagingTime.getTime() < jamPulangDate.getTime()) {
                                 dialogView.viewNotifKosong(AbsenShiftActivity.this, "Anda belum dapat mengisi absensi pulang,", "silahkan lanjutkan kembali aktivitas kantor anda ya.");
+                                llUpload.setEnabled(true);
+                                llUpload.setClickable(true);
+                                llUpload.setAlpha(1.0f);
                             } else {
                                     kirimdataPulangPagi("pulang", eselon, sEmployId, rbTanggal, rbJam, rbPosisi, "hadir", rbLat, rbLng, rbKet, 0, pulangshift, rbValid);
                             }
@@ -1056,6 +1086,9 @@ private boolean isHariSenin() {
 
                     dialogView.viewNotifKosong(AbsenShiftActivity.this, "Gagal mengisi absensi,", "HTTP " + response.code());
                     dialogproses.dismiss();
+                    llUpload.setEnabled(true);
+                    llUpload.setClickable(true);
+                    llUpload.setAlpha(1.0f);
                     return;
                 }
 
@@ -1080,6 +1113,9 @@ private boolean isHariSenin() {
                 } else {
                     dialogproses.dismiss();
                     dialogView.viewNotifKosong(AbsenShiftActivity.this, response.body().getRemarks(), "");
+                    llUpload.setEnabled(true);
+                    llUpload.setClickable(true);
+                    llUpload.setAlpha(1.0f);
                 }
 
             }
@@ -1088,6 +1124,9 @@ private boolean isHariSenin() {
             public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
                 dialogproses.dismiss();
                 dialogView.pesanError(AbsenShiftActivity.this);
+                llUpload.setEnabled(true);
+                llUpload.setClickable(true);
+                llUpload.setAlpha(1.0f);
             }
         });
 
@@ -1144,6 +1183,9 @@ private boolean isHariSenin() {
 
                     dialogView.viewNotifKosong(AbsenShiftActivity.this, "Gagal mengisi absensi,", "HTTP " + response.code());
                     dialogproses.dismiss();
+                    llUpload.setEnabled(true);
+                    llUpload.setClickable(true);
+                    llUpload.setAlpha(1.0f);
                     return;
                 }
 
@@ -1167,6 +1209,9 @@ private boolean isHariSenin() {
                 } else {
                     dialogproses.dismiss();
                     dialogView.viewNotifKosong(AbsenShiftActivity.this, response.body().getRemarks(), "");
+                    llUpload.setEnabled(true);
+                    llUpload.setClickable(true);
+                    llUpload.setAlpha(1.0f);
                 }
 
             }
@@ -1175,6 +1220,9 @@ private boolean isHariSenin() {
             public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
                 dialogproses.dismiss();
                 dialogView.pesanError(AbsenShiftActivity.this);
+                llUpload.setEnabled(true);
+                llUpload.setClickable(true);
+                llUpload.setAlpha(1.0f);
             }
         });
 
@@ -1257,6 +1305,9 @@ private boolean isHariSenin() {
 
                     dialogView.viewNotifKosong(AbsenShiftActivity.this, "Gagal mengisi absensi,", "HTTP " + response.code());
                     dialogproses.dismiss();
+                    llUpload.setEnabled(true);
+                    llUpload.setClickable(true);
+                    llUpload.setAlpha(1.0f);
                     return;
                 }
 
@@ -1281,6 +1332,9 @@ private boolean isHariSenin() {
                     dialogproses.dismiss();
 
                     dialogView.viewNotifKosong(AbsenShiftActivity.this, response.body().getRemarks(), "");
+                    llUpload.setEnabled(true);
+                    llUpload.setClickable(true);
+                    llUpload.setAlpha(1.0f);
                 }
 
             }
@@ -1289,6 +1343,9 @@ private boolean isHariSenin() {
             public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
                 dialogproses.dismiss();
                 dialogView.pesanError(AbsenShiftActivity.this);
+                llUpload.setEnabled(true);
+                llUpload.setClickable(true);
+                llUpload.setAlpha(1.0f);
             }
         });
 
@@ -1349,6 +1406,9 @@ private boolean isHariSenin() {
 
                     dialogView.viewNotifKosong(AbsenShiftActivity.this, "Gagal mengisi absensi,", "HTTP " + response.code());
                     dialogproses.dismiss();
+                    llUpload.setEnabled(true);
+                    llUpload.setClickable(true);
+                    llUpload.setAlpha(1.0f);
                     return;
                 }
 
@@ -1373,6 +1433,9 @@ private boolean isHariSenin() {
                     dialogproses.dismiss();
 
                     dialogView.viewNotifKosong(AbsenShiftActivity.this, response.body().getRemarks(), "");
+                    llUpload.setEnabled(true);
+                    llUpload.setClickable(true);
+                    llUpload.setAlpha(1.0f);
                 }
 
             }
@@ -1381,6 +1444,9 @@ private boolean isHariSenin() {
             public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
                 dialogproses.dismiss();
                 dialogView.pesanError(AbsenShiftActivity.this);
+                llUpload.setEnabled(true);
+                llUpload.setClickable(true);
+                llUpload.setAlpha(1.0f);
             }
         });
 

@@ -743,10 +743,16 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
                     "Foto belum diambil",
                     "Silakan ambil foto terlebih dahulu"
             );
+            llUpload.setEnabled(true);
+            llUpload.setClickable(true);
+            llUpload.setAlpha(1.0f);
             return;
         } else{
             if (jamMasuk == null || jamPulang == null){
                 dialogView.viewNotifKosong(AbsensiKehadiranActivity.this, "Anda tidak memiliki Jadwal Kerja untuk hari ini", "");
+                llUpload.setEnabled(true);
+                llUpload.setClickable(true);
+                llUpload.setAlpha(1.0f);
             }
             else{
 
@@ -802,6 +808,9 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
                                         "Anda tidak dapat melakukan absensi masuk pada jam pulang kerja.",
                                         ""
                                 );
+                                llUpload.setEnabled(true);
+                                llUpload.setClickable(true);
+                                llUpload.setAlpha(1.0f);
 
                                 return;
                             }

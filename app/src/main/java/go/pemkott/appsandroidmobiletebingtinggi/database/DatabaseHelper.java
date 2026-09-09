@@ -563,6 +563,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return res;
     }
 
+    public void updateEmployeePhoto(String id, String photoName) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(E_FOTO, photoName);
+        db.update(EMPLOYEE, cv, E_ID + "=?", new String[]{id});
+    }
+
 
     public boolean insertDataUserLogin(String id, String name, String username, String marks, String active, String token, String verifikator){
         SQLiteDatabase db = this.getWritableDatabase();
