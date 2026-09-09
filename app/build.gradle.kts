@@ -30,7 +30,7 @@ android {
         applicationId = "go.pemkott.appsandroidmobiletebingtinggi"
         minSdk = 24
 //        targetSdk = 36
-        versionCode = 214
+        versionCode = 215
         versionName = "3.0.1"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
