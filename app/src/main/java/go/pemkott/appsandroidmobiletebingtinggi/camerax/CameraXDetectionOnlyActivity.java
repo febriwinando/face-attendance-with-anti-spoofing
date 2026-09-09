@@ -11,7 +11,9 @@ import android.media.Image;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -55,11 +57,13 @@ public class CameraXDetectionOnlyActivity extends AppCompatActivity {
     private PreviewView previewView;
     private FaceOverlayViewTanpaDeteksi faceOverlay;
     private ImageButton capture;
+    ImageView flipCamera, toggleFlash;
     private TextView txtChallenge;
 
     // ================= CAMERA =================
     private ImageCapture imageCapture;
-    private static final int CAMERA_FACING = CameraSelector.LENS_FACING_FRONT;
+    private Camera camera;
+    private int lensFacing = CameraSelector.LENS_FACING_FRONT;
 
     // ================= FACE =================
     private FaceDetector faceDetector;
@@ -67,7 +71,7 @@ public class CameraXDetectionOnlyActivity extends AppCompatActivity {
 
     // ================= CHALLENGE =================
     enum Challenge {
-        BLINK, SMILE, TURN_LEFT, TURN_RIGHT, LOOK_UP, LOOK_DOWN
+        BLINK, SMILE, TURN_LEFT, TURN_RIGHT, LOOK_UP
     }
 
     private final List<Challenge> challengeQueue = new ArrayList<>();
@@ -96,12 +100,17 @@ public class CameraXDetectionOnlyActivity extends AppCompatActivity {
         faceOverlay = findViewById(R.id.faceOverlay);
         capture = findViewById(R.id.capture);
         txtChallenge = findViewById(R.id.txtChallenge);
+        flipCamera = findViewById(R.id.flipCamera);
+        toggleFlash = findViewById(R.id.toggleFlash);
         findViewById(R.id.ivBackCamera).setOnClickListener(v -> finish());
 
         aktivitas = getIntent().getStringExtra("aktivitas");
 
         capture.setEnabled(false);
         capture.setAlpha(0.5f);
+
+        flipCamera.setOnClickListener(v -> toggleCamera());
+        toggleFlash.setOnClickListener(v -> toggleFlashMode());
 
         initFaceDetector();
         generateChallengeQueue();
@@ -187,7 +196,6 @@ public class CameraXDetectionOnlyActivity extends AppCompatActivity {
             case TURN_LEFT: return "Hadap ke kiri";
             case TURN_RIGHT: return "Hadap ke kanan";
             case LOOK_UP: return "Angkat dagu";
-            case LOOK_DOWN: return "Tundukkan kepala";
             default: return "";
         }
     }
@@ -217,15 +225,17 @@ public class CameraXDetectionOnlyActivity extends AppCompatActivity {
                 );
 
                 provider.unbindAll();
-                provider.bindToLifecycle(
+                camera = provider.bindToLifecycle(
                         this,
                         new CameraSelector.Builder()
-                                .requireLensFacing(CAMERA_FACING)
+                                .requireLensFacing(lensFacing)
                                 .build(),
                         preview,
                         imageCapture,
                         analysis
                 );
+
+                updateFlashButtonVisibility();
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -264,11 +274,13 @@ public class CameraXDetectionOnlyActivity extends AppCompatActivity {
 
         RectF faceNorm = normalize(face.getBoundingBox(), image);
 
-        // mirror kamera depan
-        float left = 1f - faceNorm.right;
-        float right = 1f - faceNorm.left;
-        faceNorm.left = left;
-        faceNorm.right = right;
+        if (lensFacing == CameraSelector.LENS_FACING_FRONT) {
+            // mirror kamera depan
+            float left = 1f - faceNorm.right;
+            float right = 1f - faceNorm.left;
+            faceNorm.left = left;
+            faceNorm.right = right;
+        }
 
         faceInsideFrame =
                 faceOverlay.getFrameNormalized()
@@ -333,11 +345,6 @@ public class CameraXDetectionOnlyActivity extends AppCompatActivity {
                 passed = eulerX > 10;
                 currentProgress = eulerX / 10f;
                 break;
-
-            case LOOK_DOWN:
-                passed = eulerX < -10;
-                currentProgress = Math.abs(eulerX) / 10f;
-                break;
         }
 
         final float finalProgress = Math.min(1f, Math.max(0f, currentProgress));
@@ -374,6 +381,29 @@ public class CameraXDetectionOnlyActivity extends AppCompatActivity {
             capture.setAlpha(0.5f);
             showCurrentChallenge();
         });
+    }
+
+    private void toggleCamera() {
+        lensFacing = (lensFacing == CameraSelector.LENS_FACING_FRONT)
+                ? CameraSelector.LENS_FACING_BACK : CameraSelector.LENS_FACING_FRONT;
+        startCamera();
+    }
+
+    private void toggleFlashMode() {
+        if (camera != null && camera.getCameraInfo().hasFlashUnit()) {
+            Integer torchState = camera.getCameraInfo().getTorchState().getValue();
+            boolean isTorchOn = torchState != null && torchState == TorchState.ON;
+            camera.getCameraControl().enableTorch(!isTorchOn);
+            toggleFlash.setImageResource(!isTorchOn ? R.drawable.flashof : R.drawable.flash);
+        }
+    }
+
+    private void updateFlashButtonVisibility() {
+        if (camera != null && camera.getCameraInfo().hasFlashUnit()) {
+            toggleFlash.setVisibility(View.VISIBLE);
+        } else {
+            toggleFlash.setVisibility(View.GONE);
+        }
     }
 
     // ================= UTILS =================

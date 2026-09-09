@@ -256,18 +256,7 @@ public class DashboardVersiOne extends AppCompatActivity {
         });
 
 
-        if (sUsername != null && sUsername.length() > 13) {
-            String truncatedName = sUsername.substring(0, 13) + "...";
-            tvNamaUser.setText(truncatedName);
-        } else {
-            tvNamaUser.setText(sUsername);
-        }
-
-        Glide.with(this)
-                .load("https://absensi.tebingtinggikota.go.id/storage/foto-pegawai/" + fotoProfile)
-                .placeholder(R.drawable.profil_pic)
-                .error(R.drawable.profil_pic)
-                .into(ciUser);
+        updateUserInfoUI();
 
         cvJadwal.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1084,8 +1073,19 @@ public class DashboardVersiOne extends AppCompatActivity {
     }
 
     public void updateProfileUI() {
+        refreshDashboardUI();
+    }
+
+    public void refreshDashboardUI() {
         datauser(); // Reload static variables from DB
         runOnUiThread(() -> {
+            if (sUsername != null && sUsername.length() > 13) {
+                String truncatedName = sUsername.substring(0, 13) + "...";
+                tvNamaUser.setText(truncatedName);
+            } else {
+                tvNamaUser.setText(sUsername);
+            }
+
             Glide.with(this)
                     .load("https://absensi.tebingtinggikota.go.id/storage/foto-pegawai/" + fotoProfile)
                     .placeholder(R.drawable.profil_pic)
@@ -1093,6 +1093,21 @@ public class DashboardVersiOne extends AppCompatActivity {
                     .signature(new ObjectKey(System.currentTimeMillis()))
                     .into(ciUser);
         });
+    }
+
+    private void updateUserInfoUI() {
+        if (sUsername != null && sUsername.length() > 13) {
+            String truncatedName = sUsername.substring(0, 13) + "...";
+            tvNamaUser.setText(truncatedName);
+        } else {
+            tvNamaUser.setText(sUsername);
+        }
+
+        Glide.with(this)
+                .load("https://absensi.tebingtinggikota.go.id/storage/foto-pegawai/" + fotoProfile)
+                .placeholder(R.drawable.profil_pic)
+                .error(R.drawable.profil_pic)
+                .into(ciUser);
     }
 
 }

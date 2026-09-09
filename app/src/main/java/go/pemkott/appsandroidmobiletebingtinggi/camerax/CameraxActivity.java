@@ -7,13 +7,17 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.media.Image;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.Surface;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,6 +38,7 @@ import com.google.mlkit.vision.face.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -58,6 +63,8 @@ public class CameraxActivity extends AppCompatActivity {
 
     private ProcessCameraProvider cameraProvider;
     private ImageCapture imageCapture;
+    private Camera camera;
+    private int lensFacing = CameraSelector.LENS_FACING_FRONT;
     private FaceDetector faceDetector;
     private FaceRecognizer faceRecognizer;
     private ExecutorService analysisExecutor;
@@ -68,7 +75,7 @@ public class CameraxActivity extends AppCompatActivity {
     private boolean livenessPassed = false;
     private boolean isSystemReady = false;
 
-    enum Challenge { BLINK, SMILE, TURN_LEFT, TURN_RIGHT, LOOK_UP, LOOK_DOWN }
+    enum Challenge { BLINK, SMILE, TURN_LEFT, TURN_RIGHT, LOOK_UP }
     private final List<Challenge> challengeQueue = new ArrayList<>();
     private int challengeIndex = 0;
 
@@ -90,6 +97,8 @@ public class CameraxActivity extends AppCompatActivity {
         faceOverlay = findViewById(R.id.faceOverlay);
         txtChallenge = findViewById(R.id.txtChallenge);
         findViewById(R.id.ivBackCamera).setOnClickListener(v -> finish());
+        findViewById(R.id.flipCamera).setOnClickListener(v -> toggleCamera());
+        findViewById(R.id.toggleFlash).setOnClickListener(v -> toggleFlashMode());
         
         aktivitas = getIntent().getStringExtra("aktivitas");
 
@@ -211,7 +220,6 @@ public class CameraxActivity extends AppCompatActivity {
             case TURN_LEFT: return "Hadap ke kiri";
             case TURN_RIGHT: return "Hadap ke kanan";
             case LOOK_UP: return "Angkat dagu";
-            case LOOK_DOWN: return "Tundukkan kepala";
             default: return "";
         }
     }
@@ -238,7 +246,7 @@ public class CameraxActivity extends AppCompatActivity {
 
                     analysisExecutor = Executors.newSingleThreadExecutor();
 
-                    int rotation = android.view.Surface.ROTATION_0;
+                    int rotation = Surface.ROTATION_0;
                     if (previewView.getDisplay() != null) {
                         rotation = previewView.getDisplay().getRotation();
                     }
@@ -250,9 +258,11 @@ public class CameraxActivity extends AppCompatActivity {
 
                     analysis.setAnalyzer(analysisExecutor, this::analyzeFrame);
 
-                    cameraProvider.bindToLifecycle(this,
-                            new CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_FRONT).build(),
+                    camera = cameraProvider.bindToLifecycle(this,
+                            new CameraSelector.Builder().requireLensFacing(lensFacing).build(),
                             preview, imageCapture, analysis);
+
+                    updateFlashButtonVisibility();
 
                     Log.d("CameraxActivity", "Camera successfully bound to lifecycle");
 
@@ -297,9 +307,17 @@ public class CameraxActivity extends AppCompatActivity {
         }
 
         Face face = faces.get(0);
-        android.graphics.Rect rect = face.getBoundingBox();
+        Rect rect = face.getBoundingBox();
         RectF faceNorm = new RectF(rect.left / (float) image.getWidth(), rect.top / (float) image.getHeight(),
                 rect.right / (float) image.getWidth(), rect.bottom / (float) image.getHeight());
+
+        if (lensFacing == CameraSelector.LENS_FACING_FRONT) {
+            // mirror kamera depan
+            float left = 1f - faceNorm.right;
+            float right = 1f - faceNorm.left;
+            faceNorm.left = left;
+            faceNorm.right = right;
+        }
         
         faceInsideFrame = faceOverlay.getFrameNormalized().contains(faceNorm.centerX(), faceNorm.centerY());
 
@@ -333,7 +351,7 @@ public class CameraxActivity extends AppCompatActivity {
 
         float score = faceRecognizer.getSimilarityScore(currentEmbedding, referenceEmbedding);
         boolean isRecognized = score > 0.7f;
-        String percentageText = String.format(java.util.Locale.US, "%.0f%%", score * 100);
+        String percentageText = String.format(Locale.US, "%.0f%%", score * 100);
 
         runOnUiThread(() -> faceOverlay.setFaceData(true, faceNorm, percentageText));
 
@@ -383,10 +401,6 @@ public class CameraxActivity extends AppCompatActivity {
                 passed = eulerX > 10;
                 currentProgress = eulerX / 10f;
                 break;
-            case LOOK_DOWN:
-                passed = eulerX < -10;
-                currentProgress = Math.abs(eulerX) / 10f;
-                break;
         }
 
         final float finalProgress = Math.min(1f, Math.max(0f, currentProgress));
@@ -415,6 +429,36 @@ public class CameraxActivity extends AppCompatActivity {
     private void resetChallengeOnly() {
         livenessPassed = false;
         challengeIndex = 0;
+    }
+
+    private void toggleCamera() {
+        lensFacing = (lensFacing == CameraSelector.LENS_FACING_FRONT)
+                ? CameraSelector.LENS_FACING_BACK : CameraSelector.LENS_FACING_FRONT;
+        startCamera();
+    }
+
+    private void toggleFlashMode() {
+        if (camera != null && camera.getCameraInfo().hasFlashUnit()) {
+            Integer torchState = camera.getCameraInfo().getTorchState().getValue();
+            boolean isTorchOn = torchState != null && torchState == TorchState.ON;
+            camera.getCameraControl().enableTorch(!isTorchOn);
+            
+            ImageButton flashBtn = findViewById(R.id.toggleFlash);
+            if (flashBtn != null) {
+                flashBtn.setImageResource(!isTorchOn ? R.drawable.flashof : R.drawable.flash);
+            }
+        }
+    }
+
+    private void updateFlashButtonVisibility() {
+        View flashBtn = findViewById(R.id.toggleFlash);
+        if (flashBtn != null) {
+            if (camera != null && camera.getCameraInfo().hasFlashUnit()) {
+                flashBtn.setVisibility(View.VISIBLE);
+            } else {
+                flashBtn.setVisibility(View.GONE);
+            }
+        }
     }
 
     private void takePicture() {

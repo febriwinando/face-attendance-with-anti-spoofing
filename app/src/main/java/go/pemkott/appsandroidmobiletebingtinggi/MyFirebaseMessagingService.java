@@ -15,6 +15,7 @@ import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.List;
 
+import go.pemkott.appsandroidmobiletebingtinggi.NewDashboard.DashboardVersiOne;
 import go.pemkott.appsandroidmobiletebingtinggi.api.HttpService;
 import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
@@ -55,7 +56,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         SessionManager session = new SessionManager(this);
         String employeeId = session.getEmployeeId();
 
-
         api.dataEmployee(employeeId).enqueue(new Callback<DataEmployee>() {
             @Override
             public void onResponse(Call<DataEmployee> call, Response<DataEmployee> res) {
@@ -75,6 +75,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                             d.getAwal_waktu(), String.valueOf(d.getShift())
                     );
 
+                    stepTimetable();
+                    koordinat_e();
+
+                    // Refresh Dashboard UI if active
+                    if (DashboardVersiOne.dashboardVersiOne != null) {
+                        DashboardVersiOne.dashboardVersiOne.refreshDashboardUI();
+                    }
                 }
             }
 
