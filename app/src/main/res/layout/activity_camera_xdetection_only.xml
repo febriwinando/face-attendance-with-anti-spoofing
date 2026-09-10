@@ -15,7 +15,7 @@
         app:implementationMode="compatible" />
 
     <!-- Face Overlay View (Custom View with Scrim and Progress) -->
-    <go.pemkott.appsandroidmobiletebingtinggi.camerax.FaceOverlayViewTanpaDeteksi
+    <go.pemkott.appsandroidmobiletebingtinggi.camerax.FaceOverlayView
         android:id="@+id/faceOverlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

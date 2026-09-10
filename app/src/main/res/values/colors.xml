@@ -27,6 +27,8 @@
     <color name="text_hint">#87888c</color>
     <color name="text_hitam">#171717</color>
     <color name="text_putih">#FFFFFF</color>
+    <color name="fixed_black">#171717</color>
+    <color name="fixed_white">#FFFFFF</color>
 
     <!-- Legacy Mappings (Maintained for layout compatibility) -->
     <color name="putih">#FFFFFF</color>

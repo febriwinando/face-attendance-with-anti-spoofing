@@ -28,6 +28,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.Settings;
+import android.util.Log;
 
 import androidx.work.Constraints;
 import androidx.work.ExistingWorkPolicy;
@@ -40,6 +41,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.List;
 
 import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraXDetectionOnlyActivity;
+import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraXTanpaDetectionAcitvity;
 import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraxActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.model.EmployeesData;
 import go.pemkott.appsandroidmobiletebingtinggi.worker.LogSyncWorker;
@@ -50,7 +52,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // DATABASE CONFIGURATION
     // =========================
     public static final String NAMA_DATABASE = "absensitt.db";
-    private static final int DATABASE_VERSION = 106;
+    private static final int DATABASE_VERSION = 107;
 
     public DatabaseHelper(Context context) {
         super(context, NAMA_DATABASE, null, DATABASE_VERSION);
@@ -193,7 +195,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             // =========================
             // TABLE: DATA PENGGUNA
             // =========================
-            db.execSQL("CREATE TABLE " + TABLE_USER + " (" +
+            db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_USER + " (" +
                     COL_1 + " TEXT, " +
                     COL_2 + " TEXT, " +
                     COL_3 + " TEXT, " +
@@ -205,7 +207,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             // =========================
             // TABLE: KOORDINAT EMPLOYEE
             // =========================
-            db.execSQL("CREATE TABLE " + KOORDINAT_E + " (" +
+            db.execSQL("CREATE TABLE IF NOT EXISTS " + KOORDINAT_E + " (" +
                     KE_ID + " TEXT, " +
                     KE_EMP_ID + " TEXT, " +
                     KE_ALAMAT + " TEXT, " +
@@ -215,7 +217,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             // =========================
             // TABLE: KOORDINAT
             // =========================
-            db.execSQL("CREATE TABLE " + KOORDINAT + " (" +
+            db.execSQL("CREATE TABLE IF NOT EXISTS " + KOORDINAT + " (" +
                     K_ID + " TEXT, " +
                     K_OPD_ID + " TEXT, " +
                     K_ALAMAT + " TEXT, " +
@@ -225,14 +227,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             // =========================
             // TABLE: INFO LOGIN USER
             // =========================
-            db.execSQL("CREATE TABLE " + HAPUS_DATA_PENGGUNA + " (" +
+            db.execSQL("CREATE TABLE IF NOT EXISTS " + HAPUS_DATA_PENGGUNA + " (" +
                     HAPUS_ID + " TEXT, " +
                     HAPUS_INFO + " TEXT)");
 
             // =========================
             // TABLE: INFO MASUK PULANG
             // =========================
-            db.execSQL("CREATE TABLE " + INFO_MP + " (" +
+            db.execSQL("CREATE TABLE IF NOT EXISTS " + INFO_MP + " (" +
                     INFO_EMPLOYEE_ID + " TEXT, " +
                     INFO_TANGGAL + " TEXT, " +
                     INFO_JAM + " TEXT, " +
@@ -241,7 +243,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             // =========================
             // TABLE: TEMPORARY PD
             // =========================
-            db.execSQL("CREATE TABLE " + TEMPORARY_PD + " (" +
+            db.execSQL("CREATE TABLE IF NOT EXISTS " + TEMPORARY_PD + " (" +
                     T_ID + " TEXT, " +
                     T_KEGIATAN + " TEXT, " +
                     T_TGLMULAI + " TEXT, " +
@@ -252,7 +254,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             // =========================
             // TABLE: RESOURCE KEGIATAN
             // =========================
-            db.execSQL("CREATE TABLE " + RESOURCE_KEGIATAN + " (" +
+            db.execSQL("CREATE TABLE IF NOT EXISTS " + RESOURCE_KEGIATAN + " (" +
                     R_ID + " TEXT, " +
                     R_TIPE + " TEXT, " +
                     R_KET + " TEXT)");
@@ -260,7 +262,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             // =========================
             // TABLE: TIMETABLE
             // =========================
-            db.execSQL("CREATE TABLE " + TIMETABLE + " (" +
+            db.execSQL("CREATE TABLE IF NOT EXISTS " + TIMETABLE + " (" +
                     TT_ID + " TEXT, " +
                     TT_EMPLOYEE_ID + " TEXT, " +
                     TT_TIMETABLE_ID + " TEXT, " +
@@ -272,7 +274,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             // =========================
             // TABLE: JAMSIFT
             // =========================
-            db.execSQL("CREATE TABLE " + JAMSIFT + " (" +
+            db.execSQL("CREATE TABLE IF NOT EXISTS " + JAMSIFT + " (" +
                     JS_ID + " TEXT, " +
                     JS_OPD_ID + " TEXT, " +
                     JS_TIPE + " TEXT, " +
@@ -283,7 +285,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             // =========================
             // TABLE: JADWALSIFT
             // =========================
-            db.execSQL("CREATE TABLE " + JADWALSIFT + " (" +
+            db.execSQL("CREATE TABLE IF NOT EXISTS " + JADWALSIFT + " (" +
                     JW_ID + " TEXT, " +
                     JW_EMPLOYEE_ID + " TEXT, " +
                     JW_SIFT + " TEXT, " +
@@ -292,7 +294,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             // =========================
             // TABLE: EMPLOYEE
             // =========================
-            db.execSQL("CREATE TABLE " + EMPLOYEE + " (" +
+            db.execSQL("CREATE TABLE IF NOT EXISTS " + EMPLOYEE + " (" +
                     "ID TEXT, IDI TEXT, IDII TEXT, " +
                     "POSISIID TEXT, OPDID TEXT, " +
                     "NIP TEXT, NAMA TEXT, EMAIL TEXT, NOHP TEXT, " +
@@ -301,7 +303,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     "BATAS_WAKTU TEXT, PEGAWAI_SIFT TEXT)");
 
             db.execSQL(
-                    "CREATE TABLE " + TABLE_CAMERA_DETECTION + " (" +
+                    "CREATE TABLE IF NOT EXISTS " + TABLE_CAMERA_DETECTION + " (" +
                             CD_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                             CD_EMPLOYEE_ID + " TEXT UNIQUE, " +
                             CD_NIP + " TEXT, " +
@@ -309,7 +311,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             );
 
             db.execSQL(
-                    "CREATE TABLE employees(" +
+                    "CREATE TABLE IF NOT EXISTS employees(" +
                             "id INTEGER PRIMARY KEY," +
                             "atasan_id1 INTEGER," +
                             "atasan_id2 INTEGER," +
@@ -345,9 +347,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     LOG_STATUS + " INTEGER DEFAULT 0)");
 
         } catch (Exception e) {
-            db.beginTransaction();
+            Log.e("DATABASE_HELPER", "Error in onCreate", e);
         }
     }
+
     public void deleteDataCameradetection(){
         SQLiteDatabase db = getWritableDatabase();
         db.delete("camera_detection",null,null);
@@ -477,40 +480,48 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public Class<?> getCameraActivityClass() {
-        if (getCameraDetectionStatus() == 1) {
+        if ("199402092020121005".equals(getCurrentEmployeeNip())) {
             return CameraxActivity.class;
-        } else {
-            return CameraXDetectionOnlyActivity.class;
         }
+        return CameraXDetectionOnlyActivity.class;
     }
     @Override
-    public void onUpgrade(SQLiteDatabase absensi, int oldVersion, int newVersion) {
-            if(newVersion > oldVersion){
-                if (oldVersion < 105) {
-                    try {
-                        absensi.execSQL("ALTER TABLE " + TABLE_LOG + " ADD COLUMN " + LOG_STATUS + " INTEGER DEFAULT 0");
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        if (newVersion > oldVersion) {
+            Log.d("DATABASE_HELPER", "Upgrading from " + oldVersion + " to " + newVersion);
 
-                absensi.execSQL("DROP TABLE IF EXISTS " + TABLE_USER);
-                absensi.execSQL("DROP TABLE IF EXISTS " + EMPLOYEE);
-                absensi.execSQL("DROP TABLE IF EXISTS " + TABLE_CAMERA_DETECTION);
-                absensi.execSQL("DROP TABLE IF EXISTS " + TEMPORARY_PD);
-                absensi.execSQL("DROP TABLE IF EXISTS " + RESOURCE_KEGIATAN);
-                absensi.execSQL("DROP TABLE IF EXISTS " + TIMETABLE);
-//                absensi.execSQL("DROP TABLE IF EXISTS " + PRESENCES);
-                absensi.execSQL("DROP TABLE IF EXISTS " + KOORDINAT);
-                absensi.execSQL("DROP TABLE IF EXISTS " + INFO_MP);
-                absensi.execSQL("DROP TABLE IF EXISTS " + KOORDINAT_E);
-                absensi.execSQL("DROP TABLE IF EXISTS " + HAPUS_DATA_PENGGUNA);
-                absensi.execSQL("DROP TABLE IF EXISTS " + JAMSIFT);
-                absensi.execSQL("DROP TABLE IF EXISTS " + JADWALSIFT);
-                // log_aktivitas tidak didrop agar data tetap ada saat upgrade
+            // 1. Incremental Migrations (Preserve data)
+            for (int i = oldVersion; i < newVersion; i++) {
+                int nextVersion = i + 1;
+                switch (nextVersion) {
+                    case 105:
+                        try {
+                            db.execSQL("ALTER TABLE " + TABLE_LOG + " ADD COLUMN " + LOG_STATUS + " INTEGER DEFAULT 0");
+                        } catch (Exception e) {
+                            Log.e("DB_UPGRADE", "Column LOG_STATUS might already exist", e);
+                        }
+                        break;
+                }
             }
 
-            onCreate(absensi);
+            refreshCacheTables(db);
+        }
+    }
+
+    private void refreshCacheTables(SQLiteDatabase db) {
+        String[] cacheTables = {
+                EMPLOYEE, "employees", TEMPORARY_PD, RESOURCE_KEGIATAN,
+                TIMETABLE, KOORDINAT, INFO_MP, KOORDINAT_E,
+                HAPUS_DATA_PENGGUNA, JAMSIFT, JADWALSIFT
+        };
+
+        for (String table : cacheTables) {
+            db.execSQL("DROP TABLE IF EXISTS " + table);
+        }
+
+        // Re-create all tables. Existing ones (USER, LOG, CAMERA_DETECTION) 
+        // won't be affected because of IF NOT EXISTS in onCreate.
+        onCreate(db);
     }
 
 

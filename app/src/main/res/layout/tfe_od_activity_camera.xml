@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/black">
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+
+        <FrameLayout
+            app:layout_constraintEnd_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/rlTakeCamera"
+            android:id="@+id/container"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/container"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginTop="-25dp"
+            android:background="@drawable/backgroundbirubottomsheet"
+            />
+
+        <TextView
+            android:id="@+id/tvPeringatanWajah"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/ivTutupKamera"
+            app:layout_constraintTop_toTopOf="parent"
+            android:textColor="@color/text_putih"
+            android:textSize="16sp"
+            android:layout_margin="10dp"
+            android:padding="10dp"
+            android:visibility="invisible"
+            android:background="@drawable/backgoundovalmerah"/>
+
+
+
+
+        <RelativeLayout
+            android:id="@+id/rlTakeCamera"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            >
+            <ImageView
+                android:id="@+id/ivTakeFoto"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:src="@drawable/one_take_picture"
+                android:clickable="true"
+                android:focusable="true"
+                android:layout_centerInParent="true"/>
+            <ProgressBar
+                android:id="@+id/pbTakeGambar"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:visibility="gone"
+                android:indeterminateTint="@color/biru"
+                android:layout_centerInParent="true"
+                android:progress="50"
+                />
+        </RelativeLayout>
+        <ImageView
+            android:id="@+id/ivTutupKamera"
+            android:layout_margin="10dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/one_close"
+            android:background="@drawable/backgoundputihtransparan"
+            android:padding="5dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <include
+        android:id="@+id/bottom_sheet_layout"
+        layout="@layout/tfe_od_layout_bottom_sheet"
+        android:visibility="gone"/>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -53,7 +53,7 @@ public class CameraXTAcitivty extends AppCompatActivity {
 
     // ================= UI =================
     private PreviewView previewView;
-    private FaceOverlayViewTanpaDeteksi faceOverlay;
+    private FaceOverlayView faceOverlay;
     private ImageButton capture;
     private TextView txtChallenge;
 

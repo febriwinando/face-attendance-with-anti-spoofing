@@ -227,7 +227,7 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
         titleDinasLuar = findViewById(R.id.titleDinasLuar);
         rgKehadiran = findViewById(R.id.rgKehadiran);
         title_content = findViewById(R.id.title_content);
-        title_content.setText("TUGAS LAPANGAN");
+
         fragmentContainerView = findViewById(R.id.map);
         setRoundedBackground(fragmentContainerView);
 

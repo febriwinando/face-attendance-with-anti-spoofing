@@ -10,6 +10,8 @@
     <color name="text_hint">#757575</color>
     <color name="text_hitam">#F5F5F5</color>
     <color name="text_putih">#FFFFFF</color>
+    <color name="fixed_black">#171717</color>
+    <color name="fixed_white">#FFFFFF</color>
 
     <color name="primary_brand">#008DDA</color>
     <color name="on_primary_brand">#FFFFFF</color>

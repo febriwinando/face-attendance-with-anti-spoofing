@@ -29,8 +29,7 @@ android {
     defaultConfig {
         applicationId = "go.pemkott.appsandroidmobiletebingtinggi"
         minSdk = 24
-//        targetSdk = 36
-        versionCode = 215
+        versionCode = 221
         versionName = "3.0.1"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -62,7 +61,7 @@ dependencies {
     implementation(libs.activity)
     implementation(libs.constraintlayout)
     implementation(libs.app.update)
-    implementation(libs.face.detection)
+
     implementation(libs.glide)
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
@@ -99,7 +98,12 @@ dependencies {
     implementation(libs.camera.camera2)
     implementation(libs.camera.lifecycle)
     implementation(libs.camera.view)
-    implementation(libs.tensorflow.lite)
+
     implementation(libs.tensorflow.lite.support)
     implementation(libs.work.runtime)
+
+    implementation("org.pytorch:pytorch_android_lite:2.1.0")
+    implementation("org.pytorch:pytorch_android_torchvision_lite:2.1.0")
+    implementation(libs.tensorflow.lite)
+    implementation("com.google.mlkit:face-detection:16.1.7")
 }

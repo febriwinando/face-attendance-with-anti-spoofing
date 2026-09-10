@@ -225,7 +225,7 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
         titleDinasLuar = findViewById(R.id.titleDinasLuar);
         rgKehadiran = findViewById(R.id.rgKehadiran);
         title_content = findViewById(R.id.title_contentsakit);
-        title_content.setText("SAKIT");
+
 
         fragmentContainerView = findViewById(R.id.map);
         setRoundedBackground(fragmentContainerView);

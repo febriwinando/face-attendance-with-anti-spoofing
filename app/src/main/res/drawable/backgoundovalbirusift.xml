@@ -5,7 +5,7 @@
     >
 
     <solid
-        android:color="@color/white"/>
+        android:color="@color/surface_main"/>
     <corners
         android:radius="24dp"/>
 </shape>

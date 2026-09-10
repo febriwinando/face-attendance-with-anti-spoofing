@@ -8,8 +8,11 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,10 +21,12 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.camera.core.Camera;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageCapture;
 import androidx.camera.core.ImageCaptureException;
 import androidx.camera.core.Preview;
+import androidx.camera.core.TorchState;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
 import androidx.core.content.ContextCompat;
@@ -44,8 +49,11 @@ public class CameraXTanpaDetectionAcitvity extends AppCompatActivity {
 
     private PreviewView previewView;
     private ImageButton capture;
+    private ImageView flipCamera, toggleFlash;
     private TextView txtChallenge;
     private ImageCapture imageCapture;
+    private Camera camera;
+    private int lensFacing = CameraSelector.LENS_FACING_FRONT;
     private String aktivitas;
 
     private final ActivityResultLauncher<String> permissionLauncher =
@@ -63,11 +71,15 @@ public class CameraXTanpaDetectionAcitvity extends AppCompatActivity {
         previewView = findViewById(R.id.cameraPreview);
         capture = findViewById(R.id.capture);
         txtChallenge = findViewById(R.id.txtChallenge);
+        flipCamera = findViewById(R.id.flipCamera);
+        toggleFlash = findViewById(R.id.toggleFlash);
         findViewById(R.id.ivBackCamera).setOnClickListener(v -> finish());
 
         aktivitas = getIntent().getStringExtra("aktivitas");
 
         capture.setOnClickListener(v -> takePicture());
+        flipCamera.setOnClickListener(v -> toggleCamera());
+        toggleFlash.setOnClickListener(v -> toggleFlashMode());
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             permissionLauncher.launch(Manifest.permission.CAMERA);
@@ -96,9 +108,11 @@ public class CameraXTanpaDetectionAcitvity extends AppCompatActivity {
                         .build();
 
                 provider.unbindAll();
-                provider.bindToLifecycle(this,
-                        new CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_FRONT).build(),
+                camera = provider.bindToLifecycle(this,
+                        new CameraSelector.Builder().requireLensFacing(lensFacing).build(),
                         preview, imageCapture);
+
+                updateFlashButtonVisibility();
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -107,6 +121,10 @@ public class CameraXTanpaDetectionAcitvity extends AppCompatActivity {
     }
 
     private void takePicture() {
+        if (camera != null && camera.getCameraInfo().hasFlashUnit()) {
+            camera.getCameraControl().enableTorch(true);
+        }
+
         Dialog dialogproses = new Dialog(this, R.style.DialogStyle);
         dialogproses.setContentView(R.layout.view_proses);
         dialogproses.setCancelable(false);
@@ -124,6 +142,7 @@ public class CameraXTanpaDetectionAcitvity extends AppCompatActivity {
         imageCapture.takePicture(options, ContextCompat.getMainExecutor(this), new ImageCapture.OnImageSavedCallback() {
             @Override
             public void onImageSaved(@NonNull ImageCapture.OutputFileResults output) {
+                if (camera != null) camera.getCameraControl().enableTorch(false);
                 dialogproses.dismiss();
                 if (output.getSavedUri() != null) kirimHasil(output.getSavedUri().toString());
                 else kirimHasil(fileName);
@@ -159,5 +178,39 @@ public class CameraXTanpaDetectionAcitvity extends AppCompatActivity {
         i.putExtra("namafile", fileName);
         startActivity(i);
         finish();
+    }
+
+    private void toggleCamera() {
+        lensFacing = (lensFacing == CameraSelector.LENS_FACING_FRONT)
+                ? CameraSelector.LENS_FACING_BACK : CameraSelector.LENS_FACING_FRONT;
+        startCamera();
+    }
+
+    private void toggleFlashMode() {
+        if (camera != null && camera.getCameraInfo().hasFlashUnit()) {
+            Integer torchState = camera.getCameraInfo().getTorchState().getValue();
+            boolean isTorchOn = torchState != null && torchState == TorchState.ON;
+            camera.getCameraControl().enableTorch(!isTorchOn);
+
+            if (toggleFlash != null) {
+                toggleFlash.setImageResource(!isTorchOn ? R.drawable.flashof : R.drawable.flash);
+            }
+        }
+    }
+
+    private void updateFlashButtonVisibility() {
+        if (toggleFlash != null) {
+            if (camera != null && camera.getCameraInfo().hasFlashUnit()) {
+                toggleFlash.setVisibility(View.VISIBLE);
+                if (findViewById(R.id.vControlDivider) != null) {
+                    findViewById(R.id.vControlDivider).setVisibility(View.VISIBLE);
+                }
+            } else {
+                toggleFlash.setVisibility(View.GONE);
+                if (findViewById(R.id.vControlDivider) != null) {
+                    findViewById(R.id.vControlDivider).setVisibility(View.GONE);
+                }
+            }
+        }
     }
 }

@@ -319,14 +319,32 @@
                         android:src="@drawable/one_calendar"
                         app:tint="@color/primary_brand" />
 
-                    <TextView
-                        android:id="@+id/tvTanggalHariIni"
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:fontFamily="sans-serif-black"
-                        android:text="@string/rabu_09_februari_1994"
-                        android:textColor="@color/text_primary"
-                        android:textSize="15sp" />
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tvTanggalHariIni"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-black"
+                            android:text="@string/rabu_09_februari_1994"
+                            android:textColor="@color/text_primary"
+                            android:textSize="15sp" />
+
+                        <TextView
+                            android:id="@+id/tvJamBerjalan"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:fontFamily="monospace"
+                            android:text="00:00:00"
+                            android:textColor="@color/primary_brand"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 

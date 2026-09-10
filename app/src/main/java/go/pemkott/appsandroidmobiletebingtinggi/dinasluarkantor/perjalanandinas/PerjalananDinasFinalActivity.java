@@ -225,7 +225,7 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
         tvSuratPerintah = findViewById(R.id.tvSuratPerintahPd);
         titleDinasLuar = findViewById(R.id.titleDinasLuarPd);
         title_content = findViewById(R.id.title_contentPd);
-        title_content.setText("PERJALANAN DINAS");
+
 //        Image View
         ivFinalKegiatan = findViewById(R.id.ivFinalKegiatan);
         ivSuratPerintahFinal = findViewById(R.id.ivSuratPerintahFinal);

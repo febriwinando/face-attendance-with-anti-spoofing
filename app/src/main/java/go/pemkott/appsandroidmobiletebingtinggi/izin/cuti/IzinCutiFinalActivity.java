@@ -220,7 +220,7 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
         tvSuratPerintah = findViewById(R.id.tvSuratPerintahCuti);
         titleDinasLuar = findViewById(R.id.titleDinasLuarCuti);
         title_content = findViewById(R.id.title_contentCuti);
-        title_content.setText("CUTI");
+
 
 //        Image View
         ivFinalKegiatan = findViewById(R.id.ivFinalKegiatanCuti);

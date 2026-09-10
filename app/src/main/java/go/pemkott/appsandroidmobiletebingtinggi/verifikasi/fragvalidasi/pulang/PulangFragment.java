@@ -18,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -68,6 +69,7 @@ public class PulangFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        EdgeToEdge.enable(getActivity());
 
         View view =  inflater.inflate(R.layout.fragment_pulang, container, false);
         session = new SessionManager(getContext());
@@ -228,7 +230,7 @@ public class PulangFragment extends Fragment {
         TextView tagFotoTaging = viewDataValidasi.findViewById(R.id.tvTagFotoRekapValid);
         TextView tagLampiranMasuk = viewDataValidasi.findViewById(R.id.tvTagLampiranRekapValid);
         TextView alamat = viewDataValidasi.findViewById(R.id.tvLokasiAlamatLuarKantorValid);
-        TextView tvTitleValidasi = viewDataValidasi.findViewById(R.id.tvTitleValidasi);
+
         ShapeableImageView fototaging = viewDataValidasi.findViewById(R.id.ivValidasiRekapValid);
         ShapeableImageView fotolampiran = viewDataValidasi.findViewById(R.id.ivLampiranValidasiRekapValid);
         TextView txtOpenPdf = viewDataValidasi.findViewById(R.id.txtOpenPdf);
@@ -236,7 +238,7 @@ public class PulangFragment extends Fragment {
         TextView tolak = viewDataValidasi.findViewById(R.id.btnTolak);
         TextView terima = viewDataValidasi.findViewById(R.id.btnTerima);
 
-        tvTitleValidasi.setText("# Validasi Absensi Pulang");
+
         tanggal.setText(data.getTanggal());
         nama.setText(data.getNama());
         pukul.setText(data.getJam_pulang());

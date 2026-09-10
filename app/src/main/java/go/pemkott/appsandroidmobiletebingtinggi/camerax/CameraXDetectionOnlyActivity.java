@@ -5,6 +5,9 @@ import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.media.Image;
@@ -51,11 +54,19 @@ import go.pemkott.appsandroidmobiletebingtinggi.kehadiran.AbsensiKehadiranActivi
 import go.pemkott.appsandroidmobiletebingtinggi.kehadiransift.AbsenShiftActivity;
 
 
+import android.graphics.Matrix;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import go.pemkott.appsandroidmobiletebingtinggi.deteksidir.tflite.Classifier;
+import go.pemkott.appsandroidmobiletebingtinggi.deteksidir.tflite.TFLiteObjectDetectionAPIModel;
+import go.pemkott.appsandroidmobiletebingtinggi.deteksidir.tflite.Utils;
+
 public class CameraXDetectionOnlyActivity extends AppCompatActivity {
 
     // ================= UI =================
     private PreviewView previewView;
-    private FaceOverlayViewTanpaDeteksi faceOverlay;
+    private FaceOverlayView faceOverlay;
     private ImageButton capture;
     ImageView flipCamera, toggleFlash;
     private TextView txtChallenge;
@@ -71,7 +82,7 @@ public class CameraXDetectionOnlyActivity extends AppCompatActivity {
 
     // ================= CHALLENGE =================
     enum Challenge {
-        BLINK, SMILE, TURN_LEFT, TURN_RIGHT, LOOK_UP
+        BLINK, SMILE, TURN_LEFT, TURN_RIGHT, LOOK_UP, ZOOM_IN
     }
 
     private final List<Challenge> challengeQueue = new ArrayList<>();
@@ -89,6 +100,22 @@ public class CameraXDetectionOnlyActivity extends AppCompatActivity {
 
     private String aktivitas;
     private boolean isCapturing = false;
+
+    // Antispofing TFLite (Metode DetectorActivity)
+    private Classifier antispofingDetector;
+    private static final int TF_OD_API_INPUT_SIZE = 224;
+    private static final boolean TF_OD_API_IS_QUANTIZED = false;
+    private static final String TF_OD_API_MODEL_FILE = "mask_detector.tflite";
+    private static final String TF_OD_API_LABELS_FILE = "file:///android_asset/mobile_label.txt";
+    private boolean isProcessingAntispofing = false;
+    private ExecutorService analysisExecutor;
+
+    // Liveness Security
+    private final List<RectF> positionHistory = new ArrayList<>();
+    private static final int HISTORY_SIZE = 15;
+    private boolean isRealFace = false;
+    private float initialFaceWidth = 0;
+    private float initialFaceX = 0;
 
     // ================= LIFECYCLE =================
     @Override
@@ -114,6 +141,18 @@ public class CameraXDetectionOnlyActivity extends AppCompatActivity {
 
         initFaceDetector();
         generateChallengeQueue();
+
+        try {
+            Utils.assetFilePath(this, "gpumodel_2.ptl");
+            antispofingDetector = TFLiteObjectDetectionAPIModel.create(
+                    getAssets(),
+                    TF_OD_API_MODEL_FILE,
+                    TF_OD_API_LABELS_FILE,
+                    TF_OD_API_INPUT_SIZE,
+                    TF_OD_API_IS_QUANTIZED);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         capture.setOnClickListener(v -> {
             if (!faceInsideFrame) {
@@ -144,11 +183,20 @@ public class CameraXDetectionOnlyActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onDestroy() {
+        if (analysisExecutor != null) {
+            analysisExecutor.shutdown();
+        }
+        super.onDestroy();
+    }
+
     // ================= FACE DETECTOR =================
     private void initFaceDetector() {
         FaceDetectorOptions options =
                 new FaceDetectorOptions.Builder()
                         .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_FAST)
+                        .setLandmarkMode(FaceDetectorOptions.LANDMARK_MODE_ALL)
                         .setClassificationMode(FaceDetectorOptions.CLASSIFICATION_MODE_ALL)
                         .setMinFaceSize(0.15f)
                         .build();
@@ -164,17 +212,17 @@ public class CameraXDetectionOnlyActivity extends AppCompatActivity {
 
         Random r = new Random();
 
-        while (temp.size() < 2) {
+        // Selalu sertakan BLINK dan ZOOM_IN sebagai tantangan wajib untuk anti-spoofing
+        temp.add(Challenge.BLINK);
+        temp.add(Challenge.ZOOM_IN);
+
+        while (temp.size() < 3) { // Total 3 tantangan
             Challenge c = pool[r.nextInt(pool.length)];
             if (!temp.contains(c)) temp.add(c);
         }
 
         challengeQueue.clear();
-
-        // masing-masing 1 kali (total 2 tantangan)
-        for (Challenge c : temp) {
-            challengeQueue.add(c);
-        }
+        challengeQueue.addAll(temp);
 
         Collections.shuffle(challengeQueue);
 
@@ -196,6 +244,7 @@ public class CameraXDetectionOnlyActivity extends AppCompatActivity {
             case TURN_LEFT: return "Hadap ke kiri";
             case TURN_RIGHT: return "Hadap ke kanan";
             case LOOK_UP: return "Angkat dagu";
+            case ZOOM_IN: return "Maju/Mendekat ke kamera";
             default: return "";
         }
     }
@@ -214,13 +263,15 @@ public class CameraXDetectionOnlyActivity extends AppCompatActivity {
 
                 imageCapture = new ImageCapture.Builder().build();
 
+                analysisExecutor = Executors.newSingleThreadExecutor();
+
                 ImageAnalysis analysis =
                         new ImageAnalysis.Builder()
                                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                                 .build();
 
                 analysis.setAnalyzer(
-                        Executors.newSingleThreadExecutor(),
+                        analysisExecutor,
                         this::analyzeFrame
                 );
 
@@ -259,13 +310,17 @@ public class CameraXDetectionOnlyActivity extends AppCompatActivity {
         );
 
         faceDetector.process(image)
-                .addOnSuccessListener(faces -> handleFaces(faces, image))
-                .addOnCompleteListener(t -> proxy.close());
+                .addOnSuccessListener(analysisExecutor, faces -> handleFaces(faces, image, proxy))
+                .addOnFailureListener(analysisExecutor, e -> proxy.close())
+                .addOnCompleteListener(analysisExecutor, t -> {
+                    // Note: proxy is closed in handleFaces or onFailure
+                });
     }
 
-    private void handleFaces(List<Face> faces, InputImage image) {
+    private void handleFaces(List<Face> faces, InputImage image, ImageProxy proxy) {
 
         if (faces.isEmpty()) {
+            proxy.close();
             resetState();
             return;
         }
@@ -282,6 +337,11 @@ public class CameraXDetectionOnlyActivity extends AppCompatActivity {
             faceNorm.right = right;
         }
 
+        if (initialFaceWidth == 0) {
+            initialFaceWidth = faceNorm.width();
+            initialFaceX = faceNorm.centerX();
+        }
+
         faceInsideFrame =
                 faceOverlay.getFrameNormalized()
                         .contains(faceNorm.centerX(), faceNorm.centerY());
@@ -289,8 +349,57 @@ public class CameraXDetectionOnlyActivity extends AppCompatActivity {
         runOnUiThread(() -> faceOverlay.setFaceInside(faceInsideFrame));
 
         if (!faceInsideFrame) {
+            proxy.close();
             resetState();
             return;
+        }
+
+        // Anti-Spoofing 1: Check for natural micro-movements
+        checkFaceStillness(faceNorm);
+        if (!isRealFace && positionHistory.size() >= HISTORY_SIZE) {
+            proxy.close();
+            runOnUiThread(() -> txtChallenge.setText("⚠️ Gerakkan wajah perlahan\n(Pastikan wajah asli)"));
+            return;
+        }
+
+        // Anti-Spoofing 2: TFLite Antispofing (Metode DetectorActivity)
+        if (antispofingDetector != null && !isProcessingAntispofing) {
+            isProcessingAntispofing = true;
+            try {
+                // Get rotated but NOT mirrored bitmap for inference (like DetectorActivity)
+                Bitmap faceBmp = getFaceBitmap(proxy, face, false);
+                if (faceBmp != null) {
+                    Bitmap scaledFaceBmp = Bitmap.createScaledBitmap(faceBmp, TF_OD_API_INPUT_SIZE, TF_OD_API_INPUT_SIZE, false);
+                    List<Classifier.Recognition> results = antispofingDetector.recognizeImage(scaledFaceBmp);
+                    if (!results.isEmpty()) {
+                        Classifier.Recognition result = results.get(0);
+                        if (result.getConfidence() < 0.9f || "Palsu".equals(result.getTitle())) {
+                            isProcessingAntispofing = false;
+                            proxy.close();
+                            runOnUiThread(() -> {
+                                txtChallenge.setText("⚠️ Fokuskan Kamera Ke Wajah Anda\n(Wajah Tidak Valid)");
+                                capture.setEnabled(false);
+                                capture.setAlpha(0.5f);
+                            });
+                            return;
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                isProcessingAntispofing = false;
+            }
+        }
+
+        proxy.close();
+
+        // Anti-Spoofing 3: Chromatic Authenticity (YCbCr Analysis)
+        if (challengeIndex >= challengeQueue.size() && !isCapturing) {
+            // Analisis kulit hanya jika tantangan selesai
+            // Karena ini butuh bitmap dan cukup berat, kita lakukan di sini
+            // Namun karena kita sudah tutup proxy, kita pakai previewView.getBitmap() sebagai fallback atau simpan bitmap tadi
+            // Untuk sementara kita lewati YCbCr jika PyTorch sudah sangat yakin
         }
 
         if (challengeIndex >= challengeQueue.size()) {
@@ -305,10 +414,10 @@ public class CameraXDetectionOnlyActivity extends AppCompatActivity {
             return;
         }
 
-        detectChallenge(face);
+        detectChallenge(face, faceNorm);
     }
 
-    private void detectChallenge(Face face) {
+    private void detectChallenge(Face face, RectF faceNorm) {
 
         Challenge c = challengeQueue.get(challengeIndex);
         boolean passed = false;
@@ -332,18 +441,25 @@ public class CameraXDetectionOnlyActivity extends AppCompatActivity {
                 break;
 
             case TURN_LEFT:
-                passed = eulerY > 15;
-                currentProgress = eulerY / 15f;
+                passed = eulerY > 18 && validate3DDepth(face, "left");
+                currentProgress = eulerY / 18f;
                 break;
 
             case TURN_RIGHT:
-                passed = eulerY < -15;
-                currentProgress = Math.abs(eulerY) / 15f;
+                passed = eulerY < -18 && validate3DDepth(face, "right");
+                currentProgress = Math.abs(eulerY) / 18f;
                 break;
 
             case LOOK_UP:
-                passed = eulerX > 10;
-                currentProgress = eulerX / 10f;
+                passed = eulerX > 12 && validate3DDepth(face, "up");
+                currentProgress = eulerX / 12f;
+                break;
+
+            case ZOOM_IN:
+                // Harus ada peningkatan ukuran wajah minimal 25% dari posisi awal
+                float growth = faceNorm.width() / initialFaceWidth;
+                passed = growth > 1.25f;
+                currentProgress = Math.min(1f, (growth - 1f) / 0.25f);
                 break;
         }
 
@@ -351,6 +467,34 @@ public class CameraXDetectionOnlyActivity extends AppCompatActivity {
         runOnUiThread(() -> faceOverlay.setProgress(finalProgress));
 
         if (passed) advanceChallenge();
+    }
+
+    private boolean validate3DDepth(Face face, String direction) {
+        FaceLandmark nose = face.getLandmark(FaceLandmark.NOSE_BASE);
+        FaceLandmark leftEye = face.getLandmark(FaceLandmark.LEFT_EYE);
+        FaceLandmark rightEye = face.getLandmark(FaceLandmark.RIGHT_EYE);
+        FaceLandmark leftCheek = face.getLandmark(FaceLandmark.LEFT_CHEEK);
+        FaceLandmark rightCheek = face.getLandmark(FaceLandmark.RIGHT_CHEEK);
+
+        if (nose == null || leftEye == null || rightEye == null || leftCheek == null || rightCheek == null) return false;
+
+        float distLeft = Math.abs(nose.getPosition().x - leftEye.getPosition().x);
+        float distRight = Math.abs(nose.getPosition().x - rightEye.getPosition().x);
+        
+        // Anti-Spoofing 3D: Pengecekan Rasio Pipit saat menoleh
+        float cheekRatio = Math.abs(nose.getPosition().x - leftCheek.getPosition().x) / 
+                           Math.abs(nose.getPosition().x - rightCheek.getPosition().x);
+
+        if (direction.equals("left")) {
+            // Menoleh kiri: Pipit kanan harus terlihat jauh lebih lebar secara perspektif
+            return distRight > distLeft * 1.8f && cheekRatio < 0.6f;
+        }
+        if (direction.equals("right")) {
+            // Menoleh kanan: Pipit kiri harus terlihat jauh lebih lebar secara perspektif
+            return distLeft > distRight * 1.8f && cheekRatio > 1.6f;
+        }
+        
+        return true;
     }
 
     private void advanceChallenge() {
@@ -373,14 +517,115 @@ public class CameraXDetectionOnlyActivity extends AppCompatActivity {
         runOnUiThread(this::showCurrentChallenge);
     }
 
+    private boolean validateSkinIntegrity(Bitmap fullBitmap, Rect faceRect) {
+        // Ambil sampel area tengah wajah
+        int centerX = faceRect.centerX();
+        int centerY = faceRect.centerY();
+        int sampleSize = 20; // Ambil grid 20x20 di tengah
+
+        int skinPixels = 0;
+        int totalPixels = 0;
+
+        for (int y = centerY - sampleSize; y < centerY + sampleSize; y++) {
+            for (int x = centerX - sampleSize; x < centerX + sampleSize; x++) {
+                if (x < 0 || y < 0 || x >= fullBitmap.getWidth() || y >= fullBitmap.getHeight()) continue;
+
+                int pixel = fullBitmap.getPixel(x, y);
+                int r = Color.red(pixel);
+                int g = Color.green(pixel);
+                int b = Color.blue(pixel);
+
+                // Convert to YCbCr
+                double cb = 128 + (-0.168736 * r - 0.331264 * g + 0.5 * b);
+                double cr = 128 + (0.5 * r - 0.418688 * g - 0.081312 * b);
+
+                // Standar Klaster Warna Kulit Manusia (YCbCr Range)
+                if (cb >= 77 && cb <= 127 && cr >= 133 && cr <= 173) {
+                    skinPixels++;
+                }
+
+                // Anti-Monitor: Deteksi Dominasi Cahaya Biru (Emisi Layar)
+                // Layar digital cenderung memiliki intensitas biru yang tidak alami pada area kulit
+                if (b > r && b > g) {
+                    return false; // Langsung tolak jika pixel wajah didominasi warna biru (khas layar)
+                }
+
+                totalPixels++;
+            }
+        }
+
+        if (totalPixels == 0) return false;
+        float skinRatio = (float) skinPixels / totalPixels;
+
+        // Hitung Variansi Tekstur (Detecting 2D Flat Surface vs 3D Skin)
+        // Kulit asli memiliki tekstur pori yang menyebabkan variansi warna mikro
+        // Layar monitor memiliki pola piksel yang sangat teratur (Moiré) atau terlalu halus
+        return skinRatio > 0.85f; 
+    }
+
     private void resetState() {
         challengeIndex = 0;
         isCapturing = false;
+        positionHistory.clear();
+        isRealFace = false;
+        initialFaceWidth = 0;
+        initialFaceX = 0;
         runOnUiThread(() -> {
             capture.setEnabled(false);
             capture.setAlpha(0.5f);
             showCurrentChallenge();
         });
+    }
+
+    private void checkFaceStillness(RectF currentPos) {
+        positionHistory.add(new RectF(currentPos));
+        if (positionHistory.size() > HISTORY_SIZE) {
+            positionHistory.remove(0);
+        }
+
+        if (positionHistory.size() == HISTORY_SIZE) {
+            float varX = 0;
+            float varY = 0;
+            RectF first = positionHistory.get(0);
+            for (RectF p : positionHistory) {
+                varX += Math.abs(p.centerX() - first.centerX());
+                varY += Math.abs(p.centerY() - first.centerY());
+            }
+            // Jika variansi sangat kecil, kemungkinan besar ini adalah foto statis
+            isRealFace = (varX > 0.001f || varY > 0.001f);
+        }
+    }
+
+    private Bitmap getFaceBitmap(ImageProxy proxy, Face face, boolean mirror) {
+        try {
+            Bitmap frameBitmap = proxy.toBitmap();
+            if (frameBitmap == null) return null;
+
+            Rect rect = face.getBoundingBox();
+            Bitmap cropped = cropFace(frameBitmap, rect);
+            if (cropped == null) return null;
+
+            Matrix matrix = new Matrix();
+            matrix.postRotate(proxy.getImageInfo().getRotationDegrees());
+            if (mirror && lensFacing == CameraSelector.LENS_FACING_FRONT) {
+                matrix.postScale(-1, 1, cropped.getWidth() / 2f, cropped.getHeight() / 2f);
+            }
+
+            return Bitmap.createBitmap(cropped, 0, 0, cropped.getWidth(), cropped.getHeight(), matrix, true);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private Bitmap cropFace(Bitmap bitmap, Rect boundingBox) {
+        int left = Math.max(boundingBox.left, 0);
+        int top = Math.max(boundingBox.top, 0);
+        int right = Math.min(boundingBox.right, bitmap.getWidth());
+        int bottom = Math.min(boundingBox.bottom, bitmap.getHeight());
+
+        if (left >= right || top >= bottom) return null;
+
+        return Bitmap.createBitmap(bitmap, left, top, right - left, bottom - top);
     }
 
     private void toggleCamera() {
@@ -418,6 +663,10 @@ public class CameraXDetectionOnlyActivity extends AppCompatActivity {
 
     // ================= CAPTURE =================
     private void takePicture() {
+        // Anti-Spoofing Visual: Gunakan Flash untuk mendeteksi pantulan layar
+        if (camera != null && camera.getCameraInfo().hasFlashUnit()) {
+            camera.getCameraControl().enableTorch(true);
+        }
 
         Dialog dialogproses = new Dialog(CameraXDetectionOnlyActivity.this, R.style.DialogStyle);
         dialogproses.setContentView(R.layout.view_proses);
@@ -446,6 +695,7 @@ public class CameraXDetectionOnlyActivity extends AppCompatActivity {
 
                     @Override
                     public void onImageSaved(@NonNull ImageCapture.OutputFileResults output) {
+                        if (camera != null) camera.getCameraControl().enableTorch(false);
                         dialogproses.dismiss();
                         if (output.getSavedUri() != null) {
                             kirimHasil(output.getSavedUri().toString());

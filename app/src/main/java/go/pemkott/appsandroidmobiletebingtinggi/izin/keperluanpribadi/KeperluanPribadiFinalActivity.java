@@ -202,7 +202,7 @@ public class KeperluanPribadiFinalActivity extends AppCompatActivity implements 
         titleDinasLuar = findViewById(R.id.titleDinasLuar);
         rgKehadiran = findViewById(R.id.rgKehadiran);
         title_content = findViewById(R.id.title_contentkp);
-        title_content.setText("KEPERLUAN PRIBADI");
+
 
         fragmentContainerView = findViewById(R.id.map);
         setRoundedBackground(fragmentContainerView);

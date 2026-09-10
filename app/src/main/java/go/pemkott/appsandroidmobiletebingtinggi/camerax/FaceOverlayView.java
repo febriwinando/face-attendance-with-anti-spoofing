@@ -71,6 +71,14 @@ public class FaceOverlayView extends View {
         invalidate();
     }
 
+    public void setFaceInside(boolean inside) {
+        if (this.faceInside != inside) {
+            this.faceInside = inside;
+            if (!inside) progress = 0f;
+            invalidate();
+        }
+    }
+
     public void setProgress(float progress) {
         this.progress = progress;
         invalidate();

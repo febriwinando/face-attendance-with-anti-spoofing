@@ -80,7 +80,13 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.StatFs;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class DashboardVersiOne extends AppCompatActivity {
 
@@ -93,9 +99,12 @@ public class DashboardVersiOne extends AppCompatActivity {
 
     public static String statusSift, fotoProfile, jam_masuk, jam_pulang, sOPD, sNip, sJabatan, sKantor, sEmployee_id, sUsername, sAkses, sActive,  sToken, sVerifikator;
 
-    TextView tvNamaUser, tvTanggalHariIni;
+    TextView tvNamaUser, tvTanggalHariIni, tvJamBerjalan;
     public static int jenisabsensi;
     DialogView dialogView = new DialogView(DashboardVersiOne.this);
+
+    private final Handler clockHandler = new Handler(Looper.getMainLooper());
+    private Runnable clockRunnable;
 
     ProgressBar pgSingkronLokasi, pgSingkronKegiatan, pgSingkronJadwal;
     ImageView ivStatusJadwal, ivStatusLokasi, ivStatusKegiatan;
@@ -187,6 +196,7 @@ public class DashboardVersiOne extends AppCompatActivity {
         clVerifikasi = findViewById(R.id.clVerifikasi);
         clCariRekap = findViewById(R.id.clCariRekap);
         tvTanggalHariIni = findViewById(R.id.tvTanggalHariIni);
+        tvJamBerjalan = findViewById(R.id.tvJamBerjalan);
         pgSingkronLokasi = findViewById(R.id.pgSingkronLokasi);
         pgSingkronKegiatan = findViewById(R.id.pgSingkronKegiatan);
         pgSingkronJadwal = findViewById(R.id.pgSingkronJadwal);
@@ -395,6 +405,22 @@ public class DashboardVersiOne extends AppCompatActivity {
             }
         });
 
+        initLiveClock();
+    }
+
+    private void initLiveClock() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd MMMM yyyy", new Locale("id", "ID"));
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+
+        clockRunnable = new Runnable() {
+            @Override
+            public void run() {
+                Date now = new Date();
+                tvTanggalHariIni.setText(dateFormat.format(now));
+                tvJamBerjalan.setText(timeFormat.format(now));
+                clockHandler.postDelayed(this, 1000);
+            }
+        };
     }
 
     private boolean isStorageEnough() {
@@ -700,6 +726,17 @@ public class DashboardVersiOne extends AppCompatActivity {
             dataValidasi(sVerifikator, sEmployee_id);
         }
 
+        if (clockRunnable != null) {
+            clockHandler.post(clockRunnable);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (clockRunnable != null) {
+            clockHandler.removeCallbacks(clockRunnable);
+        }
     }
 
     public void dataValidasi(String verifikator, String idE){
@@ -802,6 +839,7 @@ public class DashboardVersiOne extends AppCompatActivity {
 
     public void viewJadwalKerja(){
         timeTable.clear();
+        Toast.makeText(dashboardVersiOne, "jadwal", Toast.LENGTH_SHORT).show();
 
         Dialog dialogJadwalKerja = new Dialog(DashboardVersiOne.this, R.style.DialogStyle);
         dialogJadwalKerja.setContentView(R.layout.view_jadwal_kerja);
