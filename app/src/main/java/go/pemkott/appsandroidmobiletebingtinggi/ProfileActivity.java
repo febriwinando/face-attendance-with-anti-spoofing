@@ -46,6 +46,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFoto;
 import go.pemkott.appsandroidmobiletebingtinggi.login.LoginActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
+import go.pemkott.appsandroidmobiletebingtinggi.policy.PanduanAplikasiActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.policy.PrivacyPolicyActivity;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -121,6 +122,12 @@ public class ProfileActivity extends AppCompatActivity {
 
         trGantiPassword.setOnClickListener(v -> {
             gantiPassView();
+        });
+
+        trPanduanAplikasi = findViewById(R.id.trPanduanAplikasi);
+        trPanduanAplikasi.setOnClickListener(v -> {
+            Intent intent = new Intent(ProfileActivity.this, PanduanAplikasiActivity.class);
+            startActivity(intent);
         });
 
         LinearLayout trPrivasi = findViewById(R.id.trPrivasi);
