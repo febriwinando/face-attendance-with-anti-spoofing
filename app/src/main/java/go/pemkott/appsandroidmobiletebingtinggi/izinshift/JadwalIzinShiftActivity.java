@@ -297,6 +297,12 @@ public class JadwalIzinShiftActivity extends AppCompatActivity {
             public void onItemClicked(String s) {
                 tanggalSift = s;
 
+                // Reset static values to avoid data carry-over from previous clicks
+                idsift = null;
+                inisialsift = null;
+                tipesift = null;
+                masuksift = null;
+                pulangsift = null;
 
                 for (int i = 0; i < listJadwalSift.size(); i++) {
                     if (tanggalJadwal.get(i).equals(s)) {

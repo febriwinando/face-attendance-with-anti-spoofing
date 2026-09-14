@@ -68,9 +68,14 @@ public class GridJadwalIzinShiftAdapter extends RecyclerView.Adapter<GridJadwalI
         holder.llTodayJadwal.setVisibility(View.GONE);
 
         // Reset state
-        holder.tanggal.setTextColor(ContextCompat.getColor(context, R.color.text_hint));
+        holder.tanggal.setTextColor(ContextCompat.getColor(context, R.color.text_primary));
         holder.tanggal.setTypeface(null, Typeface.NORMAL);
-        holder.rlTanggalSift.setOnClickListener(null);
+        
+        holder.rlTanggalSift.setOnClickListener(v -> {
+            if (onItemClickCallback != null) {
+                onItemClickCallback.onItemClicked(tanggalJadwal.get(holder.getAdapterPosition()));
+            }
+        });
 
         for (int i = 0; i<listJadwal.size(); i++){
             JadwalSift jadwalSift = listJadwal.get(i);
@@ -103,15 +108,7 @@ public class GridJadwalIzinShiftAdapter extends RecyclerView.Adapter<GridJadwalI
                         holder.txttanggalJadwal.setText(label);
                         holder.txttanggalJadwal.setTextColor(Color.WHITE);
 
-                        holder.tanggal.setTextColor(ContextCompat.getColor(context, R.color.text_primary));
                         holder.tanggal.setTypeface(null, Typeface.BOLD);
-
-                        holder.rlTanggalSift.setOnClickListener(v -> {
-                            if (onItemClickCallback != null) {
-                                onItemClickCallback.onItemClicked(tanggalJadwal.get(holder.getAdapterPosition()));
-                            }
-                        });
-
                     }
                 }
             }

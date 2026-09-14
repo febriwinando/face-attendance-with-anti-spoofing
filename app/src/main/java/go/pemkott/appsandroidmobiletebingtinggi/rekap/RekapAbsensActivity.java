@@ -305,7 +305,7 @@ public class RekapAbsensActivity extends AppCompatActivity {
 
 //        tvAktivitasRekapMasuk.setText(data.getKet_masuk());
 
-        if (data.getJam_masuk().isEmpty() || data.getJam_masuk() == null){
+        if (data.getJam_masuk() == null || data.getJam_masuk().isEmpty()){
             tvJamRekapMasuk.setText("--:--");
         }else{
             tvJamRekapMasuk.setText(data.getJam_masuk());
@@ -359,40 +359,40 @@ public class RekapAbsensActivity extends AppCompatActivity {
             tvStatusRekapPulang.setText("-");
         }
 
-        if (data.getStatus_masuk().equals("hadir")){
-            if (data.getPosisi_masuk().equals("tl-masuk")){
+        if ("hadir".equals(data.getStatus_masuk())){
+            if ("tl-masuk".equals(data.getPosisi_masuk())){
                 tvKehadiranRekapMasuk.setText("Tugas Lapangan");
             }else{
                 tvKehadiranRekapMasuk.setText("Masuk Kantor");
             }
-        } else if (data.getStatus_masuk().equals("perjalanan dinas")) {
+        } else if ("perjalanan dinas".equals(data.getStatus_masuk())) {
             tvKehadiranRekapMasuk.setText("Perjalanan Dinas");
-        } else if (data.getStatus_masuk().equals("izin")) {
-            if (data.getPosisi_masuk().equals("ct") || data.getPosisi_masuk().equals("cuti")){
+        } else if ("izin".equals(data.getStatus_masuk())) {
+            if ("ct".equals(data.getPosisi_masuk()) || "cuti".equals(data.getPosisi_masuk())){
                 tvKehadiranRekapMasuk.setText("Cuti");
-            } else if (data.getPosisi_masuk().equals("sk") || data.getPosisi_masuk().equals("sakit")) {
+            } else if ("sk".equals(data.getPosisi_masuk()) || "sakit".equals(data.getPosisi_masuk())) {
                 tvKehadiranRekapMasuk.setText("Izin Dengan Kondisi Sakit");
-            } else if (data.getPosisi_masuk().equals("kp")) {
+            } else if ("kp".equals(data.getPosisi_masuk())) {
                 tvKehadiranRekapMasuk.setText("Izin Dengan Keperluan Pribadi");
             }
         }else{
             tvKehadiranRekapMasuk.setText("-");
         }
 
-        if (data.getStatus_pulang().equals("hadir")){
-            if (data.getPosisi_pulang().equals("tl-pulang")){
+        if ("hadir".equals(data.getStatus_pulang())){
+            if ("tl-pulang".equals(data.getPosisi_pulang())){
                 tvKehadiranRekapPulang.setText("Tugas Lapangan");
             }else{
                 tvKehadiranRekapPulang.setText("Pulang Kantor");
             }
-        } else if (data.getStatus_pulang().equals("perjalanan dinas")) {
+        } else if ("perjalanan dinas".equals(data.getStatus_pulang())) {
             tvKehadiranRekapPulang.setText("Perjalanan Dinas");
-        } else if (data.getStatus_pulang().equals("izin")) {
-            if (data.getPosisi_pulang().equals("ct") || data.getPosisi_pulang().equals("cuti")){
+        } else if ("izin".equals(data.getStatus_pulang())) {
+            if ("ct".equals(data.getPosisi_pulang()) || "cuti".equals(data.getPosisi_pulang())){
                 tvKehadiranRekapPulang.setText("Cuti");
-            } else if (data.getPosisi_pulang().equals("sk") || data.getPosisi_pulang().equals("sakit")) {
+            } else if ("sk".equals(data.getPosisi_pulang()) || "sakit".equals(data.getPosisi_pulang())) {
                 tvKehadiranRekapPulang.setText("Izin Dengan Kondisi Sakit");
-            } else if (data.getPosisi_pulang().equals("kp")) {
+            } else if ("kp".equals(data.getPosisi_pulang())) {
                 tvKehadiranRekapPulang.setText("Izin Dengan Keperluan Pribadi");
             }
         }else{
@@ -415,7 +415,7 @@ public class RekapAbsensActivity extends AppCompatActivity {
             ivLampiranValidasiRekapMasuk.setVisibility(View.GONE);
             tvTagLampiranRekapMasuk.setVisibility(View.GONE);
         }else{
-            if (data.getEkstensi_masuk().equals("img")){
+            if ("img".equals(data.getEkstensi_masuk())){
 
                 Glide.with(this)
                         .load( "https://absensi.tebingtinggikota.go.id/uploads-img-lampiran/" + data.getLampiran_masuk())
@@ -449,7 +449,7 @@ public class RekapAbsensActivity extends AppCompatActivity {
             tvTagLampiranRekapPulang.setVisibility(View.GONE);
 
         }else{
-            if (data.getEkstensi_pulang().equals("img")){
+            if ("img".equals(data.getEkstensi_pulang())){
                 Glide.with(this)
                         .load( "https://absensi.tebingtinggikota.go.id/uploads-img-lampiran/" + data.getLampiran_pulang())
                         .into( ivLampiranRekapPulang );

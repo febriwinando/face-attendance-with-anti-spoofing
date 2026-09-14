@@ -291,6 +291,13 @@ String userId;
             public void onItemClicked(String s) {
 
                 tanggalShift = s;
+                // Reset static values to avoid data carry-over from previous clicks
+                idShift = null;
+                inisialShift = null;
+                tipeShift = null;
+                masukShift = null;
+                pulangShift = null;
+
 //                Log.d("ABSEN_MASUK_PAGI", s);
                 for (int i=0 ;i<listJadwalShift.size();i++){
                     if (tanggalJadwal.get(i).equals(s)){

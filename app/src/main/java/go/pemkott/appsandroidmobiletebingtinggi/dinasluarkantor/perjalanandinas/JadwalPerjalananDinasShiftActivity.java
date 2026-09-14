@@ -295,6 +295,12 @@ public class JadwalPerjalananDinasShiftActivity extends AppCompatActivity {
             public void onItemClicked(String s) {
                 tanggalSift = s;
 
+                // Reset static values to handle non-scheduled days and avoid data carry-over
+                idsift = "0";
+                inisialsift = "-";
+                tipesift = "pagi";
+                masuksift = "-";
+                pulangsift = "-";
 
                 for (int i = 0; i < listJadwalSift.size(); i++) {
                     if (tanggalJadwal.get(i).equals(s)) {
@@ -310,65 +316,9 @@ public class JadwalPerjalananDinasShiftActivity extends AppCompatActivity {
                         }
                     }
                 }
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
-                // tanggal hari ini
-                Date today = null;
-                try {
-                    today = sdf.parse(sdf.format(new Date()));
-                } catch (ParseException e) {
-                    throw new RuntimeException(e);
-                }
-
-                // tanggal yang mau dibandingkan
-                Date targetDate = null;
-                try {
-                    targetDate = sdf.parse(s);
-                } catch (ParseException e) {
-                    throw new RuntimeException(e);
-                }
-
-                if (targetDate.after(today)) {
-                    try {
-                        dialogView.viewNotifKosong(JadwalPerjalananDinasShiftActivity.this, "Anda belum dapat melakukan absensi masuk untuk jadwal pada "+TimeFormat.formatBahasaIndonesia(s),"");
-                    } catch (ParseException e) {
-                        throw new RuntimeException(e);
-                    }
-
-                } else if (targetDate.before(today)) {
-
-                    try {
-                        Date tanggalDB = SIMPLE_FORMAT_TANGGAL.parse(s);
-                        Date harinini = SIMPLE_FORMAT_TANGGAL.parse(
-                                SIMPLE_FORMAT_TANGGAL.format(new Date())
-                        );
-
-                        long diffDay = (harinini.getTime() - tanggalDB.getTime())
-                                / (1000 * 60 * 60 * 24);
-
-                        if (diffDay == 0) {
-                            viewinfo();
-                        }else if (diffDay == 1){
-
-                            Calendar calendar = Calendar.getInstance();
-                            int currentHour = calendar.get(Calendar.HOUR_OF_DAY); // 0–23
-
-                            if (currentHour >= 22) {
-                                dialogView.viewNotifKosong(JadwalPerjalananDinasShiftActivity.this, "Kami informasikan bahwa waktu absensi untuk shift malam pada "+TimeFormat.formatBahasaIndonesia(s)+" tersebut telah terlewati","");
-                            } else {
-                                viewinfo();
-                            }
-
-                        }
-
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-
-                } else {
-                    viewinfo();
-                }
-
+                // Untuk Perjalanan Dinas, izinkan semua tanggal untuk diklik
+                viewinfo();
             }
         });
 
@@ -387,11 +337,16 @@ public class JadwalPerjalananDinasShiftActivity extends AppCompatActivity {
         TextView jamPdSiftPulang = dialoginfo.findViewById(R.id.jamPdSiftPulang);
         ImageView ivTutupViewInfoSift = dialoginfo.findViewById(R.id.ivTutupViewInfoSift);
 
-        jamPdSiftMasuk.setText(masuksift);
-        if ("malam".equals(tipesift)){
-            jamPdSiftPulang.setText(pulangsift+"\n"+tanggalSift);
-        }else{
-            jamPdSiftPulang.setText(pulangsift);
+        if ("0".equals(idsift)) {
+            jamPdSiftMasuk.setText("-");
+            jamPdSiftPulang.setText("-");
+        } else {
+            jamPdSiftMasuk.setText(masuksift);
+            if ("malam".equals(tipesift)){
+                jamPdSiftPulang.setText(pulangsift+"\n"+tanggalSift);
+            }else{
+                jamPdSiftPulang.setText(pulangsift);
+            }
         }
 
         txtPdSift.setOnClickListener(view -> {
