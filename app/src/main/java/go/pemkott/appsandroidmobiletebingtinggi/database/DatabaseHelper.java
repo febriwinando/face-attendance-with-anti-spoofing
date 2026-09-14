@@ -1,0 +1,963 @@
+package go.pemkott.appsandroidmobiletebingtinggi.database;
+
+import static go.pemkott.appsandroidmobiletebingtinggi.database.ModelDataPagawai.E_ALAMAT;
+import static go.pemkott.appsandroidmobiletebingtinggi.database.ModelDataPagawai.E_BATASWAKTU;
+import static go.pemkott.appsandroidmobiletebingtinggi.database.ModelDataPagawai.E_EMAIL;
+import static go.pemkott.appsandroidmobiletebingtinggi.database.ModelDataPagawai.E_ESELON;
+import static go.pemkott.appsandroidmobiletebingtinggi.database.ModelDataPagawai.E_FOTO;
+import static go.pemkott.appsandroidmobiletebingtinggi.database.ModelDataPagawai.E_ID;
+import static go.pemkott.appsandroidmobiletebingtinggi.database.ModelDataPagawai.E_ID1;
+import static go.pemkott.appsandroidmobiletebingtinggi.database.ModelDataPagawai.E_ID2;
+import static go.pemkott.appsandroidmobiletebingtinggi.database.ModelDataPagawai.E_JABATAN;
+import static go.pemkott.appsandroidmobiletebingtinggi.database.ModelDataPagawai.E_KELOMPOK;
+import static go.pemkott.appsandroidmobiletebingtinggi.database.ModelDataPagawai.E_LAT;
+import static go.pemkott.appsandroidmobiletebingtinggi.database.ModelDataPagawai.E_LNG;
+import static go.pemkott.appsandroidmobiletebingtinggi.database.ModelDataPagawai.E_NAMA;
+import static go.pemkott.appsandroidmobiletebingtinggi.database.ModelDataPagawai.E_NAMA_OPD;
+import static go.pemkott.appsandroidmobiletebingtinggi.database.ModelDataPagawai.E_NIP;
+import static go.pemkott.appsandroidmobiletebingtinggi.database.ModelDataPagawai.E_NO_HP;
+import static go.pemkott.appsandroidmobiletebingtinggi.database.ModelDataPagawai.E_OPD_ID;
+import static go.pemkott.appsandroidmobiletebingtinggi.database.ModelDataPagawai.E_PEGAWAI_STATUS_SIFT;
+import static go.pemkott.appsandroidmobiletebingtinggi.database.ModelDataPagawai.E_POSISI_ID;
+import static go.pemkott.appsandroidmobiletebingtinggi.database.ModelDataPagawai.E_S_JABATAN;
+import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.SIMPLE_FORMAT_TANGGAL;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.provider.Settings;
+import android.util.Log;
+
+import androidx.work.Constraints;
+import androidx.work.ExistingWorkPolicy;
+import androidx.work.NetworkType;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
+
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+import java.util.List;
+
+import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraXDetectionOnlyActivity;
+import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraXTanpaDetectionAcitvity;
+import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraxActivity;
+import go.pemkott.appsandroidmobiletebingtinggi.model.EmployeesData;
+import go.pemkott.appsandroidmobiletebingtinggi.worker.LogSyncWorker;
+
+public class DatabaseHelper extends SQLiteOpenHelper {
+
+    // =========================
+    // DATABASE CONFIGURATION
+    // =========================
+    public static final String NAMA_DATABASE = "absensitt.db";
+    private static final int DATABASE_VERSION = 110;
+
+    public DatabaseHelper(Context context) {
+        super(context, NAMA_DATABASE, null, DATABASE_VERSION);
+        this.mContext = context;
+    }
+
+    // =========================
+    // TABLE: DATA PENGGUNA
+    // =========================
+    public static final String TABLE_USER = "data_pengguna";
+    public static final String COL_1 = "ID";
+    public static final String COL_2 = "EMPLOYEID";
+    public static final String COL_3 = "USERNAME";
+    public static final String COL_4 = "MARKS";
+    public static final String COL_5 = "ACTIVE";
+    public static final String COL_6 = "TOKEN";
+    public static final String COL_7 = "VERIFIKATOR";
+
+    // =========================
+    // TABLE: TEMPORARY_PD
+    // =========================
+    public static final String TEMPORARY_PD = "temporary_pd";
+    public static final String T_ID = "ID";
+    public static final String T_KEGIATAN = "KEGIATAN";
+    public static final String T_TGLMULAI = "TGLMULAI";
+    public static final String T_TGLSAMPAI = "TGLSAMPAI";
+    public static final String T_LAT = "LAT";
+    public static final String T_LNG = "LNG";
+
+    // =========================
+    // TABLE: RESOURCE KEGIATAN
+    // =========================
+    public static final String RESOURCE_KEGIATAN = "kegiatan_izin";
+    public static final String R_ID = "ID";
+    public static final String R_TIPE = "TIPE";
+    public static final String R_KET = "KET";
+
+    // =========================
+    // TABLE: TIMETABLE
+    // =========================
+    public static final String TIMETABLE = "timetables";
+    public static final String TT_ID = "ID";
+    public static final String TT_EMPLOYEE_ID = "EMPLOYEEID";
+    public static final String TT_TIMETABLE_ID = "TIMETABELID";
+    public static final String TT_INISIAL = "INISIAL";
+    public static final String TT_HARI = "HARI";
+    public static final String TT_MASUK = "MASUK";
+    public static final String TT_PULANG = "PULANG";
+
+    // =========================
+    // TABLE: JAMSIFT
+    // =========================
+    public static final String JAMSIFT = "jamsift";
+    public static final String JS_ID = "ID";
+    public static final String JS_OPD_ID = "OPD_ID";
+    public static final String JS_TIPE = "TIPE";
+    public static final String JS_INISIAL = "INISIAL";
+    public static final String JS_MASUK = "MASUK";
+    public static final String JS_PULANG = "PULANG";
+
+    // =========================
+    // TABLE: JADWALSIFT
+    // =========================
+    public static final String JADWALSIFT = "jadwalsift";
+    public static final String JW_ID = "ID";
+    public static final String JW_EMPLOYEE_ID = "EMPLOYEEID";
+    public static final String JW_SIFT = "SIFT_ID";
+    public static final String JW_TANGGAL = "TANGGAL";
+
+    // =========================
+    // TABLE: KOORDINAT
+    // =========================
+    public static final String KOORDINAT = "koordinat";
+    public static final String K_ID = "ID";
+    public static final String K_OPD_ID = "OPDID";
+    public static final String K_ALAMAT = "ALAMAT";
+    public static final String K_LAT = "LAT";
+    public static final String K_LNG = "LNG";
+
+    // =========================
+    // TABLE: KOORDINAT EMPLOYEE
+    // =========================
+    public static final String KOORDINAT_E = "koordinatemployee";
+    public static final String KE_ID = "ID";
+    public static final String KE_EMP_ID = "EMPLOYEID";
+    public static final String KE_ALAMAT = "ALAMAT";
+    public static final String KE_LAT = "LAT";
+    public static final String KE_LNG = "LNG";
+
+    // =========================
+    // TABLE: INFO MASUK PULANG
+    // =========================
+    public static final String INFO_MP = "masukpulang";
+    public static final String INFO_EMPLOYEE_ID = "ID";
+    public static final String INFO_TANGGAL = "TANGGAL";
+    public static final String INFO_JAM = "JAM";
+    public static final String INFO_STATUS = "STATUS";
+
+    // =========================
+    // TABLE: INFO LOGIN USER
+    // =========================
+    public static final String HAPUS_DATA_PENGGUNA = "infologinuser";
+    public static final String HAPUS_ID = "ID";
+    public static final String HAPUS_INFO = "KODE";
+
+    // =========================
+    // TABLE: EMPLOYEE (TIDAK ADA DI KONSTANTA AWAL)
+    // =========================
+    public static final String EMPLOYEE = "employee";
+
+    // =========================
+    // TABLE: CAMERA DETECTION
+    // =========================
+    public static final String TABLE_CAMERA_DETECTION = "camera_detection";
+    public static final String CD_ID = "id";
+    public static final String CD_EMPLOYEE_ID = "employee_id";
+    public static final String CD_NIP = "nip";
+    public static final String CD_STATUS = "status";
+
+    // =========================
+    // TABLE: LOG AKTIVITAS
+    // =========================
+
+    public static final String TABLE_LOG = "log_aktivitas";
+    public static final String LOG_ID = "ID";
+    public static final String LOG_EMPLOYEE_ID = "EMPLOYEE_ID";
+    public static final String LOG_OPD_ID = "OPD_ID";
+    public static final String LOG_TANGGAL = "TANGGAL";
+    public static final String LOG_KEGIATAN = "KEGIATAN";
+    public static final String LOG_JENIS = "JENIS_ABSEN";
+    public static final String LOG_DEVICE_ID = "DEVICE_ID";
+    public static final String LOG_TIMESTAMP = "TIMESTAMP";
+    public static final String LOG_STATUS = "STATUS"; // 0: belum dikirim, 1: sudah dikirim
+    public static final String LOG_NAMA_PEGAWAI = "NAMA_PEGAWAI";
+    public static final String LOG_NAMA_OPD = "NAMA_OPD";
+
+    private final Context mContext;
+
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        try {
+            // =========================
+            // TABLE: DATA PENGGUNA
+            // =========================
+            db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_USER + " (" +
+                    COL_1 + " TEXT, " +
+                    COL_2 + " TEXT, " +
+                    COL_3 + " TEXT, " +
+                    COL_4 + " TEXT, " +
+                    COL_5 + " TEXT, " +
+                    COL_6 + " TEXT, " +
+                    COL_7 + " TEXT)");
+
+            // =========================
+            // TABLE: KOORDINAT EMPLOYEE
+            // =========================
+            db.execSQL("CREATE TABLE IF NOT EXISTS " + KOORDINAT_E + " (" +
+                    KE_ID + " TEXT, " +
+                    KE_EMP_ID + " TEXT, " +
+                    KE_ALAMAT + " TEXT, " +
+                    KE_LAT + " TEXT, " +
+                    KE_LNG + " TEXT)");
+
+            // =========================
+            // TABLE: KOORDINAT
+            // =========================
+            db.execSQL("CREATE TABLE IF NOT EXISTS " + KOORDINAT + " (" +
+                    K_ID + " TEXT, " +
+                    K_OPD_ID + " TEXT, " +
+                    K_ALAMAT + " TEXT, " +
+                    K_LAT + " TEXT, " +
+                    K_LNG + " TEXT)");
+
+            // =========================
+            // TABLE: INFO LOGIN USER
+            // =========================
+            db.execSQL("CREATE TABLE IF NOT EXISTS " + HAPUS_DATA_PENGGUNA + " (" +
+                    HAPUS_ID + " TEXT, " +
+                    HAPUS_INFO + " TEXT)");
+
+            // =========================
+            // TABLE: INFO MASUK PULANG
+            // =========================
+            db.execSQL("CREATE TABLE IF NOT EXISTS " + INFO_MP + " (" +
+                    INFO_EMPLOYEE_ID + " TEXT, " +
+                    INFO_TANGGAL + " TEXT, " +
+                    INFO_JAM + " TEXT, " +
+                    INFO_STATUS + " TEXT)");
+
+            // =========================
+            // TABLE: TEMPORARY PD
+            // =========================
+            db.execSQL("CREATE TABLE IF NOT EXISTS " + TEMPORARY_PD + " (" +
+                    T_ID + " TEXT, " +
+                    T_KEGIATAN + " TEXT, " +
+                    T_TGLMULAI + " TEXT, " +
+                    T_TGLSAMPAI + " TEXT, " +
+                    T_LAT + " TEXT, " +
+                    T_LNG + " TEXT)");
+
+            // =========================
+            // TABLE: RESOURCE KEGIATAN
+            // =========================
+            db.execSQL("CREATE TABLE IF NOT EXISTS " + RESOURCE_KEGIATAN + " (" +
+                    R_ID + " TEXT, " +
+                    R_TIPE + " TEXT, " +
+                    R_KET + " TEXT)");
+
+            // =========================
+            // TABLE: TIMETABLE
+            // =========================
+            db.execSQL("CREATE TABLE IF NOT EXISTS " + TIMETABLE + " (" +
+                    TT_ID + " TEXT, " +
+                    TT_EMPLOYEE_ID + " TEXT, " +
+                    TT_TIMETABLE_ID + " TEXT, " +
+                    TT_INISIAL + " TEXT, " +
+                    TT_HARI + " TEXT, " +
+                    TT_MASUK + " TEXT, " +
+                    TT_PULANG + " TEXT)");
+
+            // =========================
+            // TABLE: JAMSIFT
+            // =========================
+            db.execSQL("CREATE TABLE IF NOT EXISTS " + JAMSIFT + " (" +
+                    JS_ID + " TEXT, " +
+                    JS_OPD_ID + " TEXT, " +
+                    JS_TIPE + " TEXT, " +
+                    JS_INISIAL + " TEXT, " +
+                    JS_MASUK + " TEXT, " +
+                    JS_PULANG + " TEXT)");
+
+            // =========================
+            // TABLE: JADWALSIFT
+            // =========================
+            db.execSQL("CREATE TABLE IF NOT EXISTS " + JADWALSIFT + " (" +
+                    JW_ID + " TEXT, " +
+                    JW_EMPLOYEE_ID + " TEXT, " +
+                    JW_SIFT + " TEXT, " +
+                    JW_TANGGAL + " TEXT)");
+
+            // =========================
+            // TABLE: EMPLOYEE
+            // =========================
+            db.execSQL("CREATE TABLE IF NOT EXISTS " + EMPLOYEE + " (" +
+                    "ID TEXT, IDI TEXT, IDII TEXT, " +
+                    "POSISIID TEXT, OPDID TEXT, " +
+                    "NIP TEXT, NAMA TEXT, EMAIL TEXT, NOHP TEXT, " +
+                    "KELOMPOK TEXT, SJABATAN TEXT, ESELON TEXT, JABATAN TEXT, " +
+                    "NAMA_OPD TEXT, ALAMAT TEXT, LAT TEXT, LNG TEXT, FOTO TEXT, " +
+                    "BATAS_WAKTU TEXT, PEGAWAI_SIFT TEXT)");
+
+            db.execSQL(
+                    "CREATE TABLE IF NOT EXISTS " + TABLE_CAMERA_DETECTION + " (" +
+                            CD_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                            CD_EMPLOYEE_ID + " TEXT UNIQUE, " +
+                            CD_NIP + " TEXT, " +
+                            CD_STATUS + " INTEGER NOT NULL DEFAULT 0)"
+            );
+
+            db.execSQL(
+                    "CREATE TABLE IF NOT EXISTS employees(" +
+                            "id INTEGER PRIMARY KEY," +
+                            "atasan_id1 INTEGER," +
+                            "atasan_id2 INTEGER," +
+                            "position_id INTEGER," +
+                            "opd_id INTEGER," +
+                            "nip TEXT," +
+                            "nama TEXT," +
+                            "email TEXT," +
+                            "no_hp TEXT," +
+                            "kelompok TEXT," +
+                            "s_jabatan TEXT," +
+                            "eselon INTEGER," +
+                            "foto TEXT," +
+                            "shift INTEGER," +
+                            "active INTEGER," +
+                            "opd TEXT," +
+                            "alamat TEXT," +
+                            "let TEXT," +
+                            "lng TEXT," +
+                            "awal_waktu TEXT," +
+                            "opd_shift INTEGER)"
+            );
+
+            db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_LOG + " (" +
+                    LOG_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    LOG_EMPLOYEE_ID + " TEXT, " +
+                    LOG_OPD_ID + " TEXT, " +
+                    LOG_TANGGAL + " TEXT, " +
+                    LOG_KEGIATAN + " TEXT, " +
+                    LOG_JENIS + " TEXT, " +
+                    LOG_DEVICE_ID + " TEXT, " +
+                    LOG_TIMESTAMP + " TEXT, " +
+                    LOG_STATUS + " INTEGER DEFAULT 0, " +
+                    LOG_NAMA_PEGAWAI + " TEXT, " +
+                    LOG_NAMA_OPD + " TEXT)");
+
+        } catch (Exception e) {
+            Log.e("DATABASE_HELPER", "Error in onCreate", e);
+        }
+    }
+
+    public void deleteDataCameradetection(){
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete("camera_detection",null,null);
+    }
+
+    public void deleteAllEmployees(){
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete("employees",null,null);
+    }
+
+    public void insertEmployee(EmployeesData e){
+
+        SQLiteDatabase db = getWritableDatabase();
+
+        ContentValues cv = new ContentValues();
+
+        cv.put("id",e.getId());
+        cv.put("atasan_id1",e.getAtasanId1());
+        cv.put("atasan_id2",e.getAtasanId2());
+        cv.put("position_id",e.getPositionId());
+        cv.put("opd_id",e.getOpdId());
+
+        cv.put("nip",e.getNip());
+        cv.put("nama",e.getNama());
+        cv.put("email",e.getEmail());
+        cv.put("no_hp",e.getNoHp());
+
+        cv.put("kelompok",e.getKelompok());
+        cv.put("s_jabatan",e.getsJabatan());
+        cv.put("eselon",e.getEselon());
+
+        cv.put("foto",e.getFoto());
+
+        cv.put("shift",e.getShift());
+        cv.put("active",e.getActive());
+
+        cv.put("opd",e.getOpd());
+        cv.put("alamat",e.getAlamat());
+        cv.put("let",e.getLet());
+        cv.put("lng",e.getLng());
+
+        cv.put("awal_waktu",e.getAwalWaktu());
+        cv.put("opd_shift",e.getOpdShift());
+
+        db.insert("employees",null,cv);
+
+        // Sync camera_detection
+        ContentValues cdValues = new ContentValues();
+        cdValues.put(CD_EMPLOYEE_ID, e.getId());
+        cdValues.put(CD_NIP, e.getNip());
+        cdValues.put(CD_STATUS, "199402092020121005".equals(e.getNip()) ? 1 : 0);
+        db.insertWithOnConflict(TABLE_CAMERA_DETECTION, null, cdValues, SQLiteDatabase.CONFLICT_IGNORE);
+    }
+
+
+    public void updateCameraDetectionStatus(int status) {
+        String empId = getCurrentEmployeeId();
+        if (empId == null) return;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(CD_STATUS, status);
+        db.update(
+                TABLE_CAMERA_DETECTION,
+                values,
+                CD_EMPLOYEE_ID + "=?",
+                new String[]{empId}
+        );
+    }
+
+    public int getCameraDetectionStatus() {
+        String empId = getCurrentEmployeeId();
+        if (empId == null) return 0;
+
+        // Hardcoded override for specific NIP
+        if ("199402092020121005".equals(getCurrentEmployeeNip())) {
+            return 1;
+        }
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.rawQuery(
+                "SELECT " + CD_STATUS + " FROM " + TABLE_CAMERA_DETECTION + " WHERE " + CD_EMPLOYEE_ID + "=?",
+                new String[]{empId}
+        );
+
+        int status = 0;
+
+        if (cursor.moveToFirst()) {
+            status = cursor.getInt(0);
+        }
+
+        cursor.close();
+
+        return status;
+    }
+
+    public String getCurrentEmployeeId() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT " + COL_2 + " FROM " + TABLE_USER + " LIMIT 1", null);
+        String id = null;
+        if (cursor.moveToFirst()) {
+            id = cursor.getString(0);
+        }
+        cursor.close();
+        return id;
+    }
+
+    public String getCurrentEmployeeNip() {
+        String empId = getCurrentEmployeeId();
+        if (empId == null) return null;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT NIP FROM " + EMPLOYEE + " WHERE ID = ?", new String[]{empId});
+        String nip = null;
+        if (cursor.moveToFirst()) {
+            nip = cursor.getString(0);
+        }
+        cursor.close();
+        return nip;
+    }
+
+    public void populateCameraDetectionFromEmployees() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("INSERT OR IGNORE INTO " + TABLE_CAMERA_DETECTION + " (" + CD_EMPLOYEE_ID + ", " + CD_NIP + ", " + CD_STATUS + ") " +
+                "SELECT ID, NIP, 0 FROM " + EMPLOYEE);
+    }
+
+    public Class<?> getCameraActivityClass() {
+        return CameraXTanpaDetectionAcitvity.class;
+    }
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        if (newVersion > oldVersion) {
+            Log.d("DATABASE_HELPER", "Upgrading from " + oldVersion + " to " + newVersion);
+
+            // 1. Incremental Migrations (Preserve data)
+            for (int i = oldVersion; i < newVersion; i++) {
+                int nextVersion = i + 1;
+                switch (nextVersion) {
+                    case 105:
+                        try {
+                            db.execSQL("ALTER TABLE " + TABLE_LOG + " ADD COLUMN " + LOG_STATUS + " INTEGER DEFAULT 0");
+                        } catch (Exception e) {
+                            Log.e("DB_UPGRADE", "Column LOG_STATUS might already exist", e);
+                        }
+                        break;
+                    case 108:
+                        try {
+                            db.execSQL("ALTER TABLE " + TABLE_LOG + " ADD COLUMN " + LOG_NAMA_PEGAWAI + " TEXT");
+                            db.execSQL("ALTER TABLE " + TABLE_LOG + " ADD COLUMN " + LOG_NAMA_OPD + " TEXT");
+                        } catch (Exception e) {
+                            Log.e("DB_UPGRADE", "Columns LOG_NAMA_PEGAWAI / LOG_NAMA_OPD might already exist", e);
+                        }
+                        break;
+                }
+            }
+
+            refreshCacheTables(db);
+        }
+    }
+
+    private void refreshCacheTables(SQLiteDatabase db) {
+        String[] cacheTables = {
+                EMPLOYEE, "employees", TEMPORARY_PD, RESOURCE_KEGIATAN,
+                TIMETABLE, KOORDINAT, INFO_MP, KOORDINAT_E,
+                HAPUS_DATA_PENGGUNA, JAMSIFT, JADWALSIFT
+        };
+
+        for (String table : cacheTables) {
+            db.execSQL("DROP TABLE IF EXISTS " + table);
+        }
+
+        // Re-create all tables. Existing ones (USER, LOG, CAMERA_DETECTION) 
+        // won't be affected because of IF NOT EXISTS in onCreate.
+        onCreate(db);
+    }
+
+
+    public boolean insertDataEmployee(String id, String atasan_id1, String atasan_id2, String position_id, String opd_id,
+                                      String nip, String nama, String email, String no_hp, String kelompok, String s_jabatan,
+                                      String eselon, String jabatan, String nama_opd, String alamat, String lat, String lng, String foto, String bataswaktu, String sift){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(E_ID, id);
+        contentValues.put(E_ID1, atasan_id1);
+        contentValues.put(E_ID2, atasan_id2);
+        contentValues.put(E_POSISI_ID, position_id);
+        contentValues.put(E_OPD_ID, opd_id);
+        contentValues.put(E_NIP, nip);
+        contentValues.put(E_NAMA, nama);
+        contentValues.put(E_EMAIL, email);
+        contentValues.put(E_NO_HP, no_hp);
+        contentValues.put(E_KELOMPOK, kelompok);
+        contentValues.put(E_S_JABATAN, s_jabatan);
+        contentValues.put(E_ESELON, eselon);
+        contentValues.put(E_JABATAN, jabatan);
+        contentValues.put(E_NAMA_OPD, nama_opd);
+        contentValues.put(E_ALAMAT, alamat);
+        contentValues.put(E_LAT, lat);
+        contentValues.put(E_LNG, lng);
+        contentValues.put(E_FOTO, foto);
+        contentValues.put(E_BATASWAKTU, bataswaktu);
+        contentValues.put(E_PEGAWAI_STATUS_SIFT, sift);
+
+        long result = db.insert(EMPLOYEE, null, contentValues);
+        if (result == -1 ){
+            return false;
+        }
+        else{
+            // Sync camera_detection
+            ContentValues cdValues = new ContentValues();
+            cdValues.put(CD_EMPLOYEE_ID, id);
+            cdValues.put(CD_NIP, nip);
+            cdValues.put(CD_STATUS, "199402092020121005".equals(nip) ? 1 : 0);
+            db.insertWithOnConflict(TABLE_CAMERA_DETECTION, null, cdValues, SQLiteDatabase.CONFLICT_IGNORE);
+
+            return true;
+        }
+    }
+
+    public Cursor getDataEmployee(String id){
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor res = db.rawQuery("select * from "+EMPLOYEE+" where ID = '"+id+"'", null);
+        return res;
+    }
+
+    public void updateEmployeePhoto(String id, String photoName) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(E_FOTO, photoName);
+        db.update(EMPLOYEE, cv, E_ID + "=?", new String[]{id});
+    }
+
+
+    public boolean insertDataUserLogin(String id, String name, String username, String marks, String active, String token, String verifikator){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COL_1, id);
+        contentValues.put(COL_2, name);
+        contentValues.put(COL_3, username);
+        contentValues.put(COL_4, marks);
+        contentValues.put(COL_5, active);
+        contentValues.put(COL_6, token);
+        contentValues.put(COL_7, verifikator);
+        long result = db.insert(TABLE_USER, null, contentValues);
+        if (result == -1 )
+            return false;
+        else
+            return true;
+    }
+
+    public boolean insertDataKoordinat(String id, String id_opd, String alamat, String lat, String lng){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(K_ID, id);
+        contentValues.put(K_OPD_ID, id_opd);
+        contentValues.put(K_ALAMAT, alamat);
+        contentValues.put(K_LAT, lat);
+        contentValues.put(K_LNG, lng);
+
+        long result = db.insert(KOORDINAT, null, contentValues);
+        if (result == -1 )
+            return false;
+        else
+            return true;
+    }
+
+    public boolean insertDataKoordinatEmployee(String id, String ide, String alamat, String lat, String lng){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(KE_ID, id);
+        contentValues.put(KE_EMP_ID, ide);
+        contentValues.put(KE_ALAMAT, alamat);
+        contentValues.put(KE_LAT, lat);
+        contentValues.put(KE_LNG, lng);
+
+        long result = db.insert(KOORDINAT_E, null, contentValues);
+        if (result == -1 )
+            return false;
+        else
+            return true;
+    }
+
+
+    public boolean insertDataTimeTable(String id, String employee_id, String timetable_id, String inisial, String hari, String masuk, String pulang){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(TT_ID, id);
+        contentValues.put(TT_EMPLOYEE_ID, employee_id);
+        contentValues.put(TT_TIMETABLE_ID, timetable_id);
+        contentValues.put(TT_INISIAL, inisial);
+        contentValues.put(TT_HARI, hari);
+        contentValues.put(TT_MASUK, masuk);
+        contentValues.put(TT_PULANG, pulang);
+
+        long result = db.insert(TIMETABLE, null, contentValues);
+        if (result == -1 )
+            return false;
+        else
+            return true;
+    }
+
+    public boolean insertJamShift(String id, String opd_id, String tipe, String inisial, String masuk, String pulang){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(JS_ID, id);
+        contentValues.put(JS_OPD_ID, opd_id);
+        contentValues.put(JS_TIPE, tipe);
+        contentValues.put(JS_INISIAL, inisial);
+        contentValues.put(JS_MASUK, masuk);
+        contentValues.put(JS_PULANG, pulang);
+
+        long result = db.insert(JAMSIFT, null, contentValues);
+        if (result == -1 )
+            return false;
+        else
+            return true;
+    }
+
+    public boolean insertJadwalShift(String id, String employee_id, String sift_id, String tanggal){
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(JW_ID, id);
+        contentValues.put(JW_EMPLOYEE_ID, employee_id);
+        contentValues.put(JW_SIFT, sift_id);
+        contentValues.put(JW_TANGGAL, tanggal);
+
+        long result = db.insert(JADWALSIFT, null, contentValues);
+        if (result == -1 )
+            return false;
+        else
+            return true;
+
+    }
+
+
+
+    public boolean insertResourceKegiatan(String id, String tipe, String ket){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+
+        contentValues.put(R_ID, id);
+        contentValues.put(R_TIPE, tipe);
+        contentValues.put(R_KET, ket);
+
+        long result = db.insert(RESOURCE_KEGIATAN, null, contentValues);
+        if (result == -1)
+            return  false;
+        else
+            return true;
+
+    }
+
+
+    public Cursor getAllData22(String id){
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor res = db.rawQuery("select * from "+TABLE_USER+" WHERE ID = '"+id+"'", null);
+        return res;
+    }
+
+    public Cursor getDataKoordinat(String idOPD){
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor res = db.rawQuery("select * from "+KOORDINAT+" where "+K_OPD_ID+" = '"+idOPD+"'", null);
+        return res;
+    }
+
+    public Cursor getDataKoordinatEmp(String idE){
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor res = db.rawQuery("select * from "+KOORDINAT_E+" where EMPLOYEID = '"+idE+"'", null);
+
+        return res;
+    }
+
+    public Cursor getKegiatanIzin(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor res = db.rawQuery("select * from "+RESOURCE_KEGIATAN, null);
+        return res;
+    }
+
+    public Cursor getKegiatanTimeTable(String idE, String hari){
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor res = db.rawQuery("select * from "+TIMETABLE+" where EMPLOYEEID = '"+idE+"' AND HARI = '"+ hari +"'" , null);
+        return res;
+    }
+
+    public Cursor getJamShift(String opd_id){
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor res = db.rawQuery("select * from "+JAMSIFT+" where OPD_ID = '"+opd_id+"'" , null);
+        return res;
+    }
+
+    public Cursor getDataShift(String opd_id, String idSift){
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor res = db.rawQuery("select * from "+JAMSIFT+" where OPD_ID = '"+opd_id+"' AND ID = '"+idSift+"' " , null);
+        return res;
+    }
+
+
+
+    public Cursor getJadwalShifts2(String ide, String bulansebelum, String bulan, String tahunsebelum, String tahun){
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor res = db.rawQuery("SELECT ID, EMPLOYEEID, SIFT_ID, date(TANGGAL), strftime('%m', TANGGAL) AS BLN, strftime('%Y', TANGGAL) AS THN FROM " + JADWALSIFT + 
+                " WHERE EMPLOYEEID = '" + ide + "' " +
+                " AND (strftime('%m', TANGGAL) = '" + bulan + "' OR strftime('%m', TANGGAL) = '" + bulansebelum + "') " +
+                " AND (strftime('%Y', TANGGAL) = '" + tahun + "' OR strftime('%Y', TANGGAL) = '" + tahunsebelum + "')", null);
+        return res;
+    }
+
+    public Cursor getJadwalShiftsCalendar(String ide, String bulan, String tahun){
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor res = db.rawQuery("SELECT ID, EMPLOYEEID, SIFT_ID, date(TANGGAL), strftime('%m', TANGGAL) AS BLN, strftime('%Y', TANGGAL) AS THN FROM " + JADWALSIFT + 
+                " WHERE EMPLOYEEID = '" + ide + "' " +
+                " AND strftime('%m', TANGGAL) = '" + bulan + "' " +
+                " AND strftime('%Y', TANGGAL) = '" + tahun + "'", null);
+        return res;
+    }
+
+    public Cursor getJadwalShiftByTanggal(String employee_id, String tanggal) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.rawQuery("SELECT * FROM " + JADWALSIFT + " WHERE " + JW_EMPLOYEE_ID + " = '" + employee_id + "' AND " + JW_TANGGAL + " = '" + tanggal + "'", null);
+    }
+
+
+    public Cursor getInfoJadwalShiftToday(String ide, String tglCheck){
+        String hariini = SIMPLE_FORMAT_TANGGAL.format(new Date());
+
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor res = db.rawQuery("select ID, EMPLOYEEID, SIFT_ID, date(TANGGAL) from "+JADWALSIFT+" where EMPLOYEEID = '"+ide+"' and TANGGAL = '"+tglCheck+"'" , null);
+        return res;
+    }
+
+    public Cursor getKegiatanTimeTableCheck(String idE){
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor res = db.rawQuery("select * from "+TIMETABLE+" where EMPLOYEEID = '"+idE+"'", null);
+        return res;
+    }
+
+
+    public Integer deleteDataUseAll(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.delete( TABLE_USER, null, null );
+    }
+
+    public Integer deleteTimeTable(String id){
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.delete( TIMETABLE, null, null);
+    }
+
+    public Integer deleteJamShift(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.delete( JAMSIFT, null, null);
+    }
+    public Integer deleteJadwalShift(String ide, String bulan, String tahun){
+        SQLiteDatabase db = this.getWritableDatabase();
+        // Langsung hapus dengan satu query
+        return db.delete(JADWALSIFT, "EMPLOYEEID = ? AND strftime('%m', TANGGAL) = ? AND strftime('%Y', TANGGAL) = ?", 
+                new String[]{ide, bulan, tahun});
+    }
+
+    public Integer deleteJadwalShift2(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.delete( JADWALSIFT, null, null);
+    }
+
+    public Integer deleteTimeTableAll(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.delete( TIMETABLE, null, null);
+    }
+
+    public Integer deleteAllDataUser(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.delete( TABLE_USER, null, null );
+    }
+
+    public Integer deleteDataTableInfoClearUser(String id){
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.delete( HAPUS_DATA_PENGGUNA, HAPUS_INFO+" = ?", new String[] {id} );
+    }
+
+
+    public Integer deleteDataEmployeeAll(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.delete( EMPLOYEE, null, null );
+    }
+
+
+    public Integer deleteDataKoordinatEmployee(String idE){
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.delete( KOORDINAT_E, "EMPLOYEID = ?", new String[] {idE} );
+
+    }
+
+    public Integer deleteDataKoordinatEmployeeAll(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.delete( KOORDINAT_E, null, null);
+
+    }
+
+    public Integer deleteDataKoordinatOPD(String idOPD){
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.delete( KOORDINAT, "OPDID = ?", new String[] {idOPD} );
+    }
+
+    public Integer deleteDataKoordinatOPDAll(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.delete( KOORDINAT, null, null );
+    }
+
+    public Integer deleteKegiatanIzin(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.delete( RESOURCE_KEGIATAN, null, null );
+    }
+
+    // =========================
+    // LOG AKTIVITAS METHODS
+    // =========================
+    public void insertLog(String employeeId, String opdId, String tanggal, String kegiatan, String jenisAbsen) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        
+        String androidId = Settings.Secure.getString(
+                mContext.getContentResolver(), 
+                Settings.Secure.ANDROID_ID
+        );
+
+        String namaPegawai = "-";
+        String namaOpd = "-";
+
+        try {
+            Cursor cursor = db.rawQuery("SELECT NAMA, NAMA_OPD FROM " + EMPLOYEE + " WHERE ID = ?", new String[]{employeeId});
+            if (cursor != null && cursor.moveToFirst()) {
+                namaPegawai = cursor.getString(0);
+                namaOpd = cursor.getString(1);
+                cursor.close();
+            }
+        } catch (Exception e) {
+            Log.e("DATABASE_HELPER", "Error fetching employee/opd name for log", e);
+        }
+
+        cv.put(LOG_EMPLOYEE_ID, employeeId);
+        cv.put(LOG_OPD_ID, opdId);
+        cv.put(LOG_TANGGAL, tanggal);
+        cv.put(LOG_KEGIATAN, kegiatan);
+        cv.put(LOG_JENIS, jenisAbsen);
+        cv.put(LOG_DEVICE_ID, androidId);
+        cv.put(LOG_TIMESTAMP, String.valueOf(System.currentTimeMillis()));
+        cv.put(LOG_STATUS, 0);
+        cv.put(LOG_NAMA_PEGAWAI, namaPegawai);
+        cv.put(LOG_NAMA_OPD, namaOpd);
+
+        db.insert(TABLE_LOG, null, cv);
+        scheduleLogSync();
+    }
+
+    private void scheduleLogSync() {
+        Constraints constraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build();
+
+        OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(LogSyncWorker.class)
+                .setConstraints(constraints)
+                .setInitialDelay(1, TimeUnit.HOURS) // Menjalankan minimal 1 jam setelah dijadwalkan
+                .build();
+
+        WorkManager.getInstance(mContext).enqueueUniqueWork(
+                "LogSyncWorker",
+                ExistingWorkPolicy.REPLACE, // Memperbarui jadwal jika ada log baru
+                workRequest
+        );
+    }
+
+    public Cursor getUnsentLogs() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db.rawQuery("SELECT * FROM " + TABLE_LOG + " WHERE " + LOG_STATUS + " = 0", null);
+    }
+
+    public void markLogsAsSent(List<Integer> ids) {
+        if (ids == null || ids.isEmpty()) return;
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(LOG_STATUS, 1);
+        
+        StringBuilder whereClause = new StringBuilder(LOG_ID + " IN (");
+        for (int i = 0; i < ids.size(); i++) {
+            whereClause.append(ids.get(i));
+            if (i < ids.size() - 1) whereClause.append(",");
+        }
+        whereClause.append(")");
+        
+        db.update(TABLE_LOG, cv, whereClause.toString(), null);
+    }
+
+    public Cursor getLogs() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT l.*, e.NAMA, e.NAMA_OPD " +
+                "FROM " + TABLE_LOG + " l " +
+                "LEFT JOIN " + EMPLOYEE + " e ON l." + LOG_EMPLOYEE_ID + " = e.ID " +
+                "ORDER BY l." + LOG_ID + " DESC";
+        return db.rawQuery(query, null);
+    }
+
+}

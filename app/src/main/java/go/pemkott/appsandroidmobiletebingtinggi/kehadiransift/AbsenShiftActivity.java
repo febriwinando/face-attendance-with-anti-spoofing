@@ -1,0 +1,1644 @@
+package go.pemkott.appsandroidmobiletebingtinggi.kehadiransift;
+
+import static android.content.ContentValues.TAG;
+import static go.pemkott.appsandroidmobiletebingtinggi.geolocation.model.LocationHelper.defaultLocation;
+import static go.pemkott.appsandroidmobiletebingtinggi.kehadiransift.JadwalShiftActivity.jadwalShiftActivity;
+import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.SIMPLE_FORMAT_JAM;
+import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.SIMPLE_FORMAT_JAM_TAGING;
+import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.SIMPLE_FORMAT_TANGGAL;
+import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.localeID;
+
+import android.Manifest;
+import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Outline;
+import android.graphics.drawable.Drawable;
+import android.location.Location;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
+import android.view.View;
+import android.view.ViewOutlineProvider;
+import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.activity.OnBackPressedCallback;
+import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
+import androidx.fragment.app.FragmentContainerView;
+import androidx.lifecycle.ViewModelProviders;
+
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.Priority;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.material.imageview.ShapeableImageView;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+
+import go.pemkott.appsandroidmobiletebingtinggi.R;
+import go.pemkott.appsandroidmobiletebingtinggi.api.ResponsePOJO;
+import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
+import go.pemkott.appsandroidmobiletebingtinggi.utils.MapUtils;
+import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
+import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
+import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFoto;
+import go.pemkott.appsandroidmobiletebingtinggi.konstanta.Lokasi;
+import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
+import go.pemkott.appsandroidmobiletebingtinggi.utils.NetworkUtils;
+import go.pemkott.appsandroidmobiletebingtinggi.model.LocationViewModel;
+import go.pemkott.appsandroidmobiletebingtinggi.utils.WeatherUtil;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+public class AbsenShiftActivity extends AppCompatActivity implements OnMapReadyCallback{
+
+    private static final int REQUEST_CHECK_SETTINGS = 100;
+    private Context mContext;
+    private LocationViewModel locationViewModel;
+    private Location locationObj;
+    private GoogleMap map;
+    private ValueAnimator rippleAnimator;
+    private static final String KEY_LOCATION = "location";
+
+    double latGMap = 0, lngGMap = 0;
+    Lokasi lokasi = new Lokasi();
+
+
+    DialogView dialogView = new DialogView(AbsenShiftActivity.this);
+
+    private String sEmployId;
+    private String rbTanggal;
+    private String rbJam;
+    private String rbLat;
+    private String rbLng;
+    private String rbKet;
+    private String batasWaktu;
+    private String rbFakeGPS ="0";
+    private TextView tvAkurasi, tvJarak, tvTemperature, tvCondition;
+    private ImageView ivWeatherIcon;
+    private View cardSafeZone;
+    private long lastWeatherUpdate = 0;
+    DatabaseHelper databaseHelper;
+    ShapeableImageView ivTaging;
+    LinearLayout llUpload;
+    Date dateBatasWaktu;
+    String jamTaging, eKelompok, eJabatan, timetableid;
+    String tanggal;
+    String diff, latOffice, lngOffice,eOPD;
+
+
+    Calendar cal = Calendar.getInstance();
+
+    RadioGroup rgKehadiran;
+    RadioButton radioSelectedKehadiran;
+    int selected;
+
+    SimpleDateFormat hari;
+    static ArrayList<String> latList = new ArrayList<>();
+    static ArrayList<String> lngList = new ArrayList<>();
+
+    static ArrayList<String> latListExc = new ArrayList<>();
+    static ArrayList<String> lngListExc = new ArrayList<>();
+    final private int REQUEST_CODE_ASK_PERMISSIONS = 123;
+    double totalJarak;
+    Date jamMasukDate, jamPulangDate, tagingTime;
+    int mins;
+    int minspulang;
+
+
+
+    private boolean mockLocationsEnabled;
+    int mock_location = 0;
+    String inisialshift, tipeshift, masukshift, pulangshift, idshift;
+    FusedLocationProviderClient fusedLocationProviderClient;
+    LocationRequest locationRequest;
+    File file;
+    AmbilFoto ambilFoto = new AmbilFoto(AbsenShiftActivity.this);
+
+
+    SessionManager session;
+    String userId;
+    FragmentContainerView fragmentContainerView;
+    @SuppressLint("WrongThread")
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+//        getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.biru));
+
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+        WindowInsetsControllerCompat controller =
+                new WindowInsetsControllerCompat(
+                        getWindow(),
+                        getWindow().getDecorView()
+                );
+        // icon status bar terang/gelap
+        controller.setAppearanceLightStatusBars(true);
+        // icon navigation terang/gelap
+        controller.setAppearanceLightNavigationBars(true);
+        setContentView(R.layout.activity_absen_sift);
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                finish();
+            }
+        });
+        mContext = AbsenShiftActivity.this;
+        session = new SessionManager(this);
+        userId = session.getPegawaiId();
+
+        databaseHelper = new DatabaseHelper(mContext);
+        databases();
+        //Google Maps
+//        Window window = this.getWindow();
+//        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+//        window.setStatusBarColor(getResources().getColor(R.color.putih));
+
+
+        if (savedInstanceState != null) {
+            locationObj = savedInstanceState.getParcelable(KEY_LOCATION);
+        }
+
+        setupViews();
+        setupViewModel();
+        checkLocationPermission();
+
+        ivTaging = findViewById(R.id.ivTagingAbsen);
+        llUpload = findViewById(R.id.llUploadkehadiran);
+        rgKehadiran = findViewById(R.id.rgKehadiran);
+        TextView title_content = findViewById(R.id.title_content);
+
+        tvAkurasi = findViewById(R.id.tvAkurasi);
+        tvJarak = findViewById(R.id.tvJarak);
+        tvTemperature = findViewById(R.id.tvTemperature);
+        tvCondition = findViewById(R.id.tvCondition);
+        ivWeatherIcon = findViewById(R.id.ivWeatherIcon);
+        cardSafeZone = findViewById(R.id.cardSafeZone);
+
+        fragmentContainerView = findViewById(R.id.map);
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        locationRequest = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 5000)
+                .setMinUpdateIntervalMillis(5000)
+                .build();
+        setRoundedBackground(fragmentContainerView);
+
+        rbTanggal = JadwalShiftActivity.tanggalShift;
+        inisialshift = JadwalShiftActivity.inisialShift;
+        idshift = JadwalShiftActivity.idShift;
+        tipeshift = JadwalShiftActivity.tipeShift;
+        masukshift = JadwalShiftActivity.masukShift;
+        pulangshift = JadwalShiftActivity.pulangShift;
+
+        Cursor resShift = databaseHelper.getJadwalShiftByTanggal(sEmployId, rbTanggal);
+        if (resShift != null && resShift.getCount() > 0) {
+            while (resShift.moveToNext()) {
+                timetableid = resShift.getString(2);
+            }
+            resShift.close();
+        }
+
+//        String myDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString()+ "/eabsensi";
+        Intent intent = getIntent();
+        String uriString =
+                intent.getStringExtra("namafile");
+
+        if (uriString == null) {
+            Toast.makeText(
+                    this,
+                    "Foto tidak ditemukan",
+                    Toast.LENGTH_SHORT
+            ).show();
+            finish();
+            return;
+        }
+
+        Uri imageUri = Uri.parse(uriString);
+
+        try {
+
+            File originalFile = createTempFileFromUri(imageUri);
+            file = ambilFoto.compressToFile(
+                    this,
+                    originalFile
+            );
+            if (file == null || !file.exists()) {
+                Toast.makeText(
+                        this,
+                        "Gagal memproses foto",
+                        Toast.LENGTH_SHORT
+                ).show();
+
+                finish();
+                return;
+            }
+
+            BitmapFactory.Options opts = new BitmapFactory.Options();
+            opts.inSampleSize = 4;
+            opts.inPreferredConfig = Bitmap.Config.RGB_565;
+            Bitmap preview =
+                    BitmapFactory.decodeFile(file.getAbsolutePath(), opts);
+            if (preview != null) {
+                ivTaging.setImageBitmap(preview);
+            } else {
+                Toast.makeText(
+                        this,
+                        "Gagal membaca foto",
+                        Toast.LENGTH_SHORT
+                ).show();
+
+                finish();
+                return;
+            }
+            // hapus file sementara hasil copy dari Uri
+            if (originalFile.exists()) {
+                originalFile.delete();
+            }
+
+        } catch (Exception e) {
+            Log.e("FOTO_ERROR",
+                    "Gagal memproses foto", e);
+            Toast.makeText(
+                    this,
+                    "Gagal memproses foto",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            finish();
+            return;
+        }
+//        String myDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString()+ "/eabsensi";
+//        Intent intent = getIntent();
+//        String fileName = intent.getStringExtra("fileName");
+//        file = new File(myDir, Objects.requireNonNull(fileName));
+//
+//        Bitmap gambardeteksi = BitmapFactory.decodeFile(file.getAbsolutePath());
+//        ivTaging.setImageBitmap(gambardeteksi);
+//        Bitmap selectedBitmap = ambilFoto.compressAndFixOrientation(file);
+//
+//        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+//        selectedBitmap.compress(Bitmap.CompressFormat.JPEG,90, byteArrayOutputStream);
+//        byte[] imageInByte = byteArrayOutputStream.toByteArray();
+//        encodedImage =  Base64.encodeToString(imageInByte,Base64.DEFAULT);
+        llUpload.setOnClickListener(view -> {
+            requestPermission();
+            if (mock_location == 1){
+                dialogView.viewNotifKosong(AbsenShiftActivity.this, "Anda terdeteksi menggunakan Fake GPS.", "Jika ditemukan berulang kali, akun anda akan terblokir otomatis dan tercatat Alpa.");
+                llUpload.setEnabled(true);
+                llUpload.setClickable(true);
+                llUpload.setAlpha(1.0f);
+            }else {
+                llUpload.setEnabled(false);
+                llUpload.setClickable(false);
+                llUpload.setAlpha(0.5f);
+                uploadImages();
+            }
+        });
+
+
+        mockLocationsEnabled = false;
+
+        findViewById(R.id.rlHeaderKehadiranOne).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+    }
+
+    private File createTempFileFromUri(Uri uri)
+            throws IOException {
+
+        InputStream is =
+                getContentResolver().openInputStream(uri);
+
+        File tempFile =
+                new File(
+                        getCacheDir(),
+                        "IMG_" + System.currentTimeMillis() + ".jpg"
+                );
+
+        FileOutputStream fos =
+                new FileOutputStream(tempFile);
+
+        byte[] buffer = new byte[8192];
+        int len;
+
+        while ((len = is.read(buffer)) > 0) {
+            fos.write(buffer, 0, len);
+        }
+
+        fos.close();
+        is.close();
+
+        return tempFile;
+    }
+    private void setRoundedBackground(FragmentContainerView view) {
+        float radius = getResources().getDimension(R.dimen.radius);
+
+        view.setBackgroundResource(R.drawable.backgoundbase);
+        view.setClipToOutline(true);
+
+        view.setOutlineProvider(new ViewOutlineProvider() {
+            @Override
+            public void getOutline(View view, Outline outline) {
+                outline.setRoundRect(0, 0, view.getWidth(), view.getHeight(), radius);
+            }
+        });
+
+        findViewById(R.id.ivBack).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+    }
+
+    private void setupViews() {
+        //Maps
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+    }
+
+    //    Maps
+    private void setupViewModel() {
+        locationViewModel = ViewModelProviders.of(this).get(LocationViewModel.class);
+    }
+
+    public void checkLocationPermission() {
+        int hasWriteStoragePermission;
+        hasWriteStoragePermission = getApplicationContext().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION);
+        if (hasWriteStoragePermission != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CHECK_SETTINGS);
+        }
+    }
+
+    public void databases(){
+
+        Cursor tUser = databaseHelper.getAllData22(userId);
+        if (tUser != null) {
+            while (tUser.moveToNext()){
+                sEmployId = tUser.getString(1);
+            }
+            tUser.close();
+        }
+
+        hari = new SimpleDateFormat("EEE", localeID);
+        tanggal = hari.format(new Date());
+
+        Cursor employe = databaseHelper.getDataEmployee(sEmployId);
+        if (employe != null) {
+            while (employe.moveToNext()){
+                eOPD = employe.getString(4);
+                eKelompok = employe.getString(9);
+                eJabatan = employe.getString(11);
+                latOffice = employe.getString(15);
+                lngOffice = employe.getString(16);
+                batasWaktu = employe.getString(18);
+            }
+            employe.close();
+        }
+
+        latList.clear();
+        lngList.clear();
+
+        Cursor koordinat = databaseHelper.getDataKoordinat(eOPD);
+        if(koordinat != null) {
+            while (koordinat.moveToNext()) {
+                String latStr = koordinat.getString(3);
+                String lngStr = koordinat.getString(4);
+                if (latStr != null && lngStr != null) {
+                    latList.add(latStr);
+                    lngList.add(lngStr);
+                }
+            }
+            koordinat.close();
+        }
+
+        latListExc.clear();
+        lngListExc.clear();
+
+        Cursor koordinatExc = databaseHelper.getDataKoordinatEmp(sEmployId);
+        if(koordinatExc != null) {
+            while (koordinatExc.moveToNext()) {
+                String latStr = koordinatExc.getString(3);
+                String lngStr = koordinatExc.getString(4);
+                if (latStr != null && lngStr != null) {
+                    latListExc.add(latStr);
+                    lngListExc.add(lngStr);
+                }
+            }
+            koordinatExc.close();
+        }
+
+        if (!latList.isEmpty() && !lngList.isEmpty()) {
+            try {
+                String latStr = latList.get(0);
+                String lngStr = lngList.get(0);
+                if (latStr != null && lngStr != null) {
+                    defaultLocation = new LatLng(
+                            Double.parseDouble(latStr),
+                            Double.parseDouble(lngStr)
+                    );
+                }
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    // this is all you need to grant your application external storage permision
+    private void requestPermission(){
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(AbsenShiftActivity.this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},REQUEST_CODE_ASK_PERMISSIONS);
+        }
+    }
+
+    private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId) {
+        Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
+        vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
+        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        vectorDrawable.draw(canvas);
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
+    }
+
+    ArrayList<Location> locationArrayList = new ArrayList<>();
+    private void plotMarkers(Location locationObj) {
+
+        if(map != null){
+            if (rippleAnimator != null) rippleAnimator.cancel();
+            map.clear();
+            LatLng position = new LatLng(locationObj.getLatitude(), locationObj.getLongitude());
+            map.addMarker(new MarkerOptions().position(position).icon(bitmapDescriptorFromVector(this, R.drawable.asn_lk)).title(lokasi.getAddress(AbsenShiftActivity.this, locationObj.getLatitude(), locationObj.getLongitude())));
+            rippleAnimator = MapUtils.showRippleEffect(map, position);
+            map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(locationObj.getLatitude(), locationObj.getLongitude()), 18f));
+            latGMap = locationObj.getLatitude();
+            lngGMap = locationObj.getLongitude();
+
+            locationArrayList.add(locationObj);
+
+            //Draw Line
+            LatLng singleLatLong = null;
+            ArrayList<LatLng> pnts = new ArrayList<LatLng>();
+            if(locationArrayList != null) {
+                for(int i = 0 ; i < locationArrayList.size(); i++) {
+                    double routePoint1Lat = locationArrayList.get(i).getLatitude();
+                    double routePoint2Long = locationArrayList.get(i).getLongitude();
+                    singleLatLong = new LatLng(routePoint1Lat,
+                            routePoint2Long);
+                    pnts.add(singleLatLong);
+                }
+            }
+
+        } else {
+
+            map.moveCamera(CameraUpdateFactory
+                    .newLatLngZoom(defaultLocation, 19f));
+            map.getUiSettings().setMyLocationButtonEnabled(true);
+        }
+
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case REQUEST_CHECK_SETTINGS:
+
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    if (ContextCompat.checkSelfPermission(this,
+                            Manifest.permission.ACCESS_FINE_LOCATION)
+                            == PackageManager.PERMISSION_GRANTED) {
+
+                    }
+
+                } else {
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        checkLocationPermission();
+                    }
+                }
+                return;
+
+            case REQUEST_CODE_ASK_PERMISSIONS:
+                if(grantResults[0]!=PackageManager.PERMISSION_GRANTED){
+
+                }
+                break;
+
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        }
+    }
+
+    @Override
+    public void onMapReady(@NonNull GoogleMap googleMap) {
+        this.map = googleMap;
+        this.map.setPadding(0, 0, 0, 1050);
+        try {
+            boolean success = googleMap.setMapStyle(
+                    MapStyleOptions.loadRawResourceStyle(
+                            this, R.raw.style_json));
+
+            if (!success) {
+                Log.e(TAG, "Style parsing failed.");
+            }
+        } catch (Resources.NotFoundException e) {
+            Log.e(TAG, "Can't find style. Error: ", e);
+        }
+
+        this.map.addMarker(new MarkerOptions().position(defaultLocation).icon(bitmapDescriptorFromVector(this, R.drawable.asn_lk)));
+        this.map.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                defaultLocation, 10f));
+        this.map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        this.map.getUiSettings().setMyLocationButtonEnabled( false );
+        this.map.getUiSettings().setCompassEnabled( false );
+        this.map.getUiSettings().setRotateGesturesEnabled(false);
+
+        this.map.getCameraPosition();
+
+        this.map.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+
+            @Override
+            public View getInfoWindow(@NonNull Marker arg0) {
+                return null;
+            }
+
+            @Override
+            public View getInfoContents(@NonNull Marker marker) {
+                // Inflate the layouts for the info window, title and snippet.
+                View infoWindow = getLayoutInflater().inflate(R.layout.custom_info_contents,
+                        findViewById(R.id.map), false);
+
+                TextView title = infoWindow.findViewById(R.id.title);
+                title.setText(marker.getTitle());
+
+                TextView snippet = infoWindow.findViewById(R.id.snippet);
+                snippet.setText(marker.getSnippet());
+
+                return infoWindow;
+            }
+        });
+    }
+
+    @SuppressLint("ResourceAsColor")
+    public void periksaWaktu(){
+
+        if (masukshift == null || pulangshift == null) {
+            Log.e("periksaWaktu", "masukshift or pulangshift is null");
+            return;
+        }
+
+        try {
+            jamMasukDate = SIMPLE_FORMAT_JAM.parse(masukshift);
+            jamPulangDate = SIMPLE_FORMAT_JAM.parse(pulangshift);
+
+            jamTaging = SIMPLE_FORMAT_JAM_TAGING.format(new Date());
+            tagingTime = SIMPLE_FORMAT_JAM_TAGING.parse(jamTaging);
+
+            // Handle cross-day shift (night shift)
+            if (jamPulangDate != null && jamMasukDate != null && jamPulangDate.before(jamMasukDate)) {
+                // Shift malam: misal masuk 22:00, pulang 06:00 (di hari berikutnya)
+                Calendar cPulang = Calendar.getInstance();
+                cPulang.setTime(jamPulangDate);
+                cPulang.add(Calendar.DATE, 1);
+                jamPulangDate = cPulang.getTime();
+
+                // Jika taging dilakukan setelah midnight (00:00 - 12:00),
+                // maka tagingTime dianggap hari berikutnya relatif terhadap jamMasuk.
+                Calendar cTaging = Calendar.getInstance();
+                cTaging.setTime(tagingTime);
+                if (cTaging.get(Calendar.HOUR_OF_DAY) < 12) {
+                    cTaging.add(Calendar.DATE, 1);
+                    tagingTime = cTaging.getTime();
+                }
+            }
+
+            SimpleDateFormat df = new SimpleDateFormat("HH:mm", localeID);
+            Date d = df.parse(masukshift);
+            cal.setTime(d);
+
+            int minutesToSubtract = 0;
+            if (batasWaktu != null && !batasWaktu.isEmpty()) {
+                try {
+                    minutesToSubtract = Integer.parseInt(batasWaktu);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+            cal.add(Calendar.MINUTE, -minutesToSubtract);
+            String newTime = df.format(cal.getTime());
+
+            dateBatasWaktu = SIMPLE_FORMAT_JAM_TAGING.parse(newTime);
+
+            long millis = tagingTime.getTime() - jamMasukDate.getTime();
+            int hours = (int) (millis / (1000 * 60 * 60));
+
+            mins = (int) ((millis / (1000 * 60)) % 60) + (hours * 60);
+            if (mins <= 0){
+                mins = 0;
+            }
+
+            long millispulang = jamPulangDate.getTime() - tagingTime.getTime();
+            int hourspulang = (int) (millispulang / (1000 * 60 * 60));
+            minspulang = (int) ((millispulang / (1000 * 60)) % 60) + (hourspulang * 60);
+
+            diff = hours + " jam :" + mins+" menit";
+
+            rbJam = SIMPLE_FORMAT_JAM.format(new Date());
+            if (tagingTime.getTime() <= jamMasukDate.getTime()) {
+
+                rbKet = "sesuai waktu";
+                mins = 0;
+            }else if(tagingTime.getTime() > jamMasukDate.getTime()){
+
+                rbKet = "terlambat";
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public void uploadImages(){
+
+        if(file == null || !file.exists() || file.length() == 0){
+            dialogView.viewNotifKosong(AbsenShiftActivity.this, "Harap melampirkan foto taging anda.", "");
+            llUpload.setEnabled(true);
+            llUpload.setClickable(true);
+            llUpload.setAlpha(1.0f);
+        }else{
+            selected = rgKehadiran.getCheckedRadioButtonId();
+            radioSelectedKehadiran = findViewById(selected);
+
+
+            periksaWaktu();
+            hitungJarakAbsensi();
+
+            if (eJabatan.equals("2")){
+                totalJarak = 1;
+            }
+
+            if (totalJarak > 150){
+                dialogView.viewNotifKosong(AbsenShiftActivity.this, "Andah harus berada dilingkungan kantor untuk melakukan absensi.", "");
+                llUpload.setEnabled(true);
+                llUpload.setClickable(true);
+                llUpload.setAlpha(1.0f);
+            }
+            else{
+                //Malam
+                if (tipeshift.equals("malam")) {
+                    String rbPosisi = null;
+                    String rbValid = "2", ketKehadiran;
+                    String eselon = "0";
+
+                    if (radioSelectedKehadiran.getText().toString().equals("MASUK")) {
+                        ketKehadiran = "masuk";
+                        rbPosisi = "masuk";
+
+                        String tanggal = SIMPLE_FORMAT_TANGGAL.format(new Date());
+                        Date hariini = null;
+                        try {
+                            hariini = SIMPLE_FORMAT_TANGGAL.parse(tanggal);
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTime(hariini);
+                        calendar.add(Calendar.DAY_OF_YEAR, -1);
+                        Date newDate = calendar.getTime();
+                        String infoJadwalhariini = SIMPLE_FORMAT_TANGGAL.format(newDate);
+                        String jamSekarangString = SIMPLE_FORMAT_JAM_TAGING.format(new Date());
+                        Date jamSekarang = null, jamAbsenMalam = null, batasWaktuJamMalam = null;
+                        try {
+                            jamSekarang = SIMPLE_FORMAT_JAM_TAGING.parse(jamSekarangString);
+                            batasWaktuJamMalam = SIMPLE_FORMAT_JAM_TAGING.parse("12:00");
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                        if (tanggal.equals(rbTanggal)) {
+                                if (tagingTime.getTime() < dateBatasWaktu.getTime()) {
+                                    dialogView.viewNotifKosong(AbsenShiftActivity.this, "Anda hanya dapat mengisi absen masuk, " + batasWaktu + " menit sebelum Jam Masuk", "");
+                                    llUpload.setEnabled(true);
+                                    llUpload.setClickable(true);
+                                    llUpload.setAlpha(1.0f);
+                                } else {
+                                    kirimdataMasukMalam(ketKehadiran, eselon, sEmployId, timetableid, rbTanggal, rbJam, rbPosisi, "hadir", rbLat, rbLng, rbKet, mins, masukshift, rbValid);
+                                }
+
+                        } else {
+                            if (tagingTime.getTime() > jamPulangDate.getTime()) {
+                                dialogView.viewNotifKosong(AbsenShiftActivity.this, "Anda hanya dapat mengisi absen masuk, sebelum jam pulang malam.", "");
+                                llUpload.setEnabled(true);
+                                llUpload.setClickable(true);
+                                llUpload.setAlpha(1.0f);
+                            } else {
+                                kirimdataMasukMalam(ketKehadiran, eselon, sEmployId, timetableid, rbTanggal, rbJam, rbPosisi, "hadir", rbLat, rbLng, rbKet, mins, masukshift, rbValid);
+                            }
+
+                        }
+
+                    }
+                    else {
+                        rbPosisi = "pulang";
+                        String tanggal = SIMPLE_FORMAT_TANGGAL.format(new Date());
+
+                            Date hariini = null;
+                            try {
+                                hariini = SIMPLE_FORMAT_TANGGAL.parse(rbTanggal);
+                            } catch (ParseException e) {
+                                throw new RuntimeException(e);
+                            }
+
+
+                            Calendar calendar = Calendar.getInstance();
+                            assert hariini != null;
+                            calendar.setTime(hariini);
+                            calendar.add(Calendar.DAY_OF_YEAR, 1);
+                            Date newDate = calendar.getTime();
+                            String tanggalAbsenShiftMalam = SIMPLE_FORMAT_TANGGAL.format(newDate);
+
+                            if (tanggal.equals(tanggalAbsenShiftMalam)) {
+                                if (tagingTime.getTime() > jamPulangDate.getTime()) {
+                                    kirimdataPulangMalam("pulang", eselon, sEmployId, timetableid, rbTanggal, rbJam, rbPosisi, "hadir", rbLat, rbLng, rbKet, 0, pulangshift, rbValid);
+                                } else {
+                                    dialogView.viewNotifKosong(AbsenShiftActivity.this, "Anda belum dapat mengisi absensi pulang,", "silahkan lanjutkan kembali aktivitas kantor anda.");
+                                    llUpload.setEnabled(true);
+                                    llUpload.setClickable(true);
+                                    llUpload.setAlpha(1.0f);
+                                }
+                            } else {
+                                    dialogView.viewNotifKosong(AbsenShiftActivity.this, "Anda belum dapat mengisi absensi pulang,", "silahkan lanjutkan kembali aktivitas kantor anda.");
+                                    llUpload.setEnabled(true);
+                                    llUpload.setClickable(true);
+                                    llUpload.setAlpha(1.0f);
+                            }
+
+
+                    }
+                }//Malam
+                //Pagi
+                else {
+                    String rbPosisi = null;
+                    String rbValid = "2", ketKehadiran = null;
+
+                    String eselon = "0";
+                    if (radioSelectedKehadiran.getText().toString().equals("MASUK")) {
+                        rbPosisi = "masuk";
+                        ketKehadiran = "masuk";
+
+                            if (tagingTime.getTime() < dateBatasWaktu.getTime()) {
+                                dialogView.viewNotifKosong(AbsenShiftActivity.this, "Anda hanya dapat mengisi absen masuk, " + batasWaktu + " menit sebelum Jam Masuk", "");
+                                llUpload.setEnabled(true);
+                                llUpload.setClickable(true);
+                                llUpload.setAlpha(1.0f);
+                            }
+                            else {
+                                if (tagingTime.getTime() > jamPulangDate.getTime()) {
+                                    dialogView.viewNotifKosong(AbsenShiftActivity.this, "Anda tidak dapat melakukan absensi masuk pada jam pulang kerja.", "");
+                                    llUpload.setEnabled(true);
+                                    llUpload.setClickable(true);
+                                    llUpload.setAlpha(1.0f);
+                                } else {
+                                    kirimdataMasukPagi(ketKehadiran, eselon, sEmployId, rbTanggal, rbJam, rbPosisi, "hadir", rbLat, rbLng, rbKet, mins, masukshift, rbValid);
+                                }
+                            }
+
+                    }
+                    else {
+                        rbPosisi = "pulang";
+                            if (tagingTime.getTime() < jamPulangDate.getTime()) {
+                                dialogView.viewNotifKosong(AbsenShiftActivity.this, "Anda belum dapat mengisi absensi pulang,", "silahkan lanjutkan kembali aktivitas kantor anda ya.");
+                                llUpload.setEnabled(true);
+                                llUpload.setClickable(true);
+                                llUpload.setAlpha(1.0f);
+                            } else {
+                                    kirimdataPulangPagi("pulang", eselon, sEmployId, rbTanggal, rbJam, rbPosisi, "hadir", rbLat, rbLng, rbKet, 0, pulangshift, rbValid);
+                            }
+
+                    }
+
+
+                }
+                //Pagi
+            }
+        }
+
+
+    }
+private static final double RADIUS_NORMAL = 150.0;
+    private static final double RADIUS_SENIN = 200.0;
+    private static final double JARAK_TIDAK_VALID = -1;
+private boolean isHariSenin() {
+    SimpleDateFormat sdf = new SimpleDateFormat("EEE", localeID);
+    String hari = sdf.format(new Date());
+    return "Sen".equals(hari) || "Mon".equals(hari);
+}
+    private double getRadiusAbsensi(String kelompok) {
+
+        // CT selalu 150
+        if ("ct".equalsIgnoreCase(kelompok)) {
+            return RADIUS_NORMAL;
+        }
+
+        // Pegawai
+        if (isHariSenin()) {
+            return RADIUS_SENIN;
+        }
+
+        return RADIUS_NORMAL;
+    }
+
+    private double cariJarakTerdekat(
+            ArrayList<String> latList,
+            ArrayList<String> lngList,
+            double latUser,
+            double lngUser
+    ) {
+        if (latList == null || lngList == null || latList.isEmpty()) {
+            return JARAK_TIDAK_VALID;
+        }
+
+        double minJarak = Double.MAX_VALUE;
+
+        for (int i = 0; i < latList.size(); i++) {
+            String latStr = latList.get(i);
+            String lngStr = lngList.get(i);
+            if (latStr == null || lngStr == null) continue;
+
+            try {
+                double lat = Double.parseDouble(latStr);
+                double lng = Double.parseDouble(lngStr);
+
+                double jarak = getDistance(lat, lng, latUser, lngUser);
+                if (jarak < minJarak) {
+                    minJarak = jarak;
+                }
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return minJarak;
+    }
+
+    private boolean isInternetValid() {
+
+        if (!NetworkUtils.isConnectedMobile(this)
+                && !NetworkUtils.isConnectedWifi(this)) {
+
+            dialogView.viewNotifKosong(
+                    this,
+                    "Pastikan anda telah terhubung ke internet.",
+                    ""
+            );
+            return false;
+        }
+
+        if (!NetworkUtils.isConnectedFast(this)) {
+            dialogView.viewNotifKosong(
+                    this,
+                    "Koneksi internet tidak stabil.",
+                    ""
+            );
+            return false;
+        }
+
+        return true;
+    }
+
+    public void hitungJarakAbsensi() {
+
+        if (!isInternetValid()) return;
+
+        double latUser = latGMap;
+        double lngUser = lngGMap;
+
+        rbLat = String.valueOf(latUser);
+        rbLng = String.valueOf(lngUser);
+
+        double radius = getRadiusAbsensi(eKelompok);
+
+        // 1️⃣ Cek lokasi utama
+        double jarakUtama = cariJarakTerdekat(
+                latList, lngList, latUser, lngUser
+        );
+
+        if (jarakUtama != JARAK_TIDAK_VALID && jarakUtama <= radius) {
+            totalJarak = jarakUtama;
+            return;
+        }
+
+        // 2️⃣ Cek lokasi exception
+        double jarakException = cariJarakTerdekat(
+                latListExc, lngListExc, latUser, lngUser
+        );
+
+        if (jarakException != JARAK_TIDAK_VALID && jarakException <= radius) {
+            totalJarak = jarakException;
+        } else {
+            totalJarak = JARAK_TIDAK_VALID;
+        }
+    }
+
+
+
+
+
+    private Double getDistance(Double latitudeTujuan, Double longitudeTujuan, Double latitudeUser, Double longitudeUser) {
+        /* VARIABLE */
+        double pi = 3.14159265358979;
+
+        Double R = 6371e3;
+
+        double latRad1 = latitudeTujuan * (pi / 180);
+        double latRad2 = latitudeUser * (pi / 180);
+        double deltaLatRad = (latitudeUser - latitudeTujuan) * (pi / 180);
+        double deltaLonRad = (longitudeUser - longitudeTujuan) * (pi / 180);
+
+        /* RUMUS HAVERSINE */
+        double a = Math.sin(deltaLatRad / 2) * Math.sin(deltaLatRad / 2) + Math.cos(latRad1) * Math.cos(latRad2) * Math.sin(deltaLonRad / 2) * Math.sin(deltaLonRad / 2);
+        Double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+    }
+
+    private MultipartBody.Part prepareFilePart(String partName, byte[] imageBytes) {
+        RequestBody requestBody =
+                RequestBody.create(
+                        imageBytes,
+                        MediaType.parse("image/jpeg")
+                );
+
+        return MultipartBody.Part.createFormData(
+                partName,
+                "fototaging.jpg",
+                requestBody
+        );
+    }
+
+    private RequestBody textPart(String value) {
+        return RequestBody.create(
+                MediaType.parse("text/plain"),
+                value
+        );
+    }
+
+
+    private final Handler autoCloseHandler = new Handler();
+
+    private final Runnable autoCloseRunnable = () -> {
+        finish();
+    };
+    public void kirimdataMasukPagi(String absensi, String eselon, String idpegawai, String tanggal, String jam, String posisi, String status,  String lat, String lng, String ket, int terlambat, String jampegawai, String validasi ){
+        Dialog dialogproses = new Dialog(AbsenShiftActivity.this, R.style.DialogStyle);
+        dialogproses.setContentView(R.layout.view_proses);
+        dialogproses.setCancelable(false);
+
+        byte[] imageBytes = ambilFoto.compressToMax80KB(file);
+        MultipartBody.Part fotoPart = prepareFilePart("fototaging", imageBytes);
+
+
+        Call<ResponsePOJO> call =
+                RetroClient.getInstance().getApi().absensiftMasukPagi(
+                        fotoPart,
+//                        textPart(absensi),
+//                        textPart(eselon),
+                        textPart(idpegawai),
+                        textPart(tanggal),
+                        textPart(jam),
+                        textPart(posisi),
+                        textPart(status),
+                        textPart(lat),
+                        textPart(lng),
+//                        textPart(eOPD),
+                        textPart(jampegawai),
+                        textPart(validasi),
+                        textPart(rbFakeGPS),
+                        textPart(batasWaktu),
+                        textPart(masukshift),
+                        textPart(pulangshift),
+                        textPart(inisialshift),
+                        textPart(tipeshift),
+                        textPart(idshift),
+                        textPart(rbKet),
+                        textPart(String.valueOf(terlambat))
+                );
+        call.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponsePOJO> call, @NonNull Response<ResponsePOJO> response) {
+
+                if (!response.isSuccessful()) {
+                    try {
+                        if (response.errorBody() != null) {
+                            Log.e("ABSEN_SHIFT", "Gagal Masuk Pagi: " + response.errorBody().string());
+                        }
+                    } catch (Exception e) {
+                        Log.e("ABSEN_SHIFT", "Gagal baca error body", e);
+                    }
+
+                    dialogView.viewNotifKosong(AbsenShiftActivity.this, "Gagal mengisi absensi,", "HTTP " + response.code());
+                    dialogproses.dismiss();
+                    llUpload.setEnabled(true);
+                    llUpload.setClickable(true);
+                    llUpload.setAlpha(1.0f);
+                    return;
+                }
+
+                if (response.body().isStatus()) {
+                    String shiftLabel = (tipeshift != null && !tipeshift.isEmpty()) ? tipeshift.substring(0, 1).toUpperCase() + tipeshift.substring(1) : "";
+                    String logKegiatan = "Melakukan Absen Masuk " + shiftLabel + " (Shift)";
+                    databaseHelper.insertLog(sEmployId, eOPD, rbTanggal, logKegiatan, "Masuk");
+                    ResponsePOJO data = response.body();
+                    dialogproses.dismiss();
+                    dialogView.viewSukses(AbsenShiftActivity.this, data.getRemarks());
+
+                    // mulai hitung 10 detik
+
+                    autoCloseHandler.postDelayed(
+
+                            autoCloseRunnable,
+
+                            10000
+
+                    );
+
+                } else {
+                    dialogproses.dismiss();
+                    dialogView.viewNotifKosong(AbsenShiftActivity.this, response.body().getRemarks(), "");
+                    llUpload.setEnabled(true);
+                    llUpload.setClickable(true);
+                    llUpload.setAlpha(1.0f);
+                }
+
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
+                dialogproses.dismiss();
+                dialogView.pesanError(AbsenShiftActivity.this);
+                llUpload.setEnabled(true);
+                llUpload.setClickable(true);
+                llUpload.setAlpha(1.0f);
+            }
+        });
+
+        dialogproses.show();
+    }
+
+
+    public void kirimdataPulangPagi(String absensi, String eselon, String idpegawai, String tanggal, String jam, String posisi, String status,  String lat, String lng, String ket, int terlambat, String jampegawai, String validasi ){
+        Dialog dialogproses = new Dialog(AbsenShiftActivity.this, R.style.DialogStyle);
+        dialogproses.setContentView(R.layout.view_proses);
+        dialogproses.setCancelable(false);
+
+        byte[] imageBytes = ambilFoto.compressToMax80KB(file);
+        MultipartBody.Part fotoPart = prepareFilePart("fototaging", imageBytes);
+
+        Call<ResponsePOJO> call =
+                RetroClient.getInstance().getApi().absensiftPulangPagi(
+                        fotoPart,
+                        textPart(absensi),
+                        textPart(eselon),
+                        textPart(idpegawai),
+                        textPart(tanggal),
+                        textPart(jam),
+                        textPart(posisi),
+                        textPart(status),
+                        textPart(lat),
+                        textPart(lng),
+                        textPart(eOPD),
+                        textPart(jampegawai),
+                        textPart(validasi),
+                        textPart(rbFakeGPS),
+                        textPart(batasWaktu),
+                        textPart(masukshift),
+                        textPart(pulangshift),
+                        textPart(inisialshift),
+                        textPart(tipeshift),
+                        textPart(idshift),
+                        textPart(ket),
+                        textPart(String.valueOf(terlambat))
+                );
+
+        call.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponsePOJO> call, @NonNull Response<ResponsePOJO> response) {
+
+                if (!response.isSuccessful()) {
+                    try {
+                        if (response.errorBody() != null) {
+                            Log.e("ABSEN_SHIFT", "Gagal Pulang Pagi: " + response.errorBody().string());
+                        }
+                    } catch (Exception e) {
+                        Log.e("ABSEN_SHIFT", "Gagal baca error body", e);
+                    }
+
+                    dialogView.viewNotifKosong(AbsenShiftActivity.this, "Gagal mengisi absensi,", "HTTP " + response.code());
+                    dialogproses.dismiss();
+                    llUpload.setEnabled(true);
+                    llUpload.setClickable(true);
+                    llUpload.setAlpha(1.0f);
+                    return;
+                }
+
+                if (response.body().isStatus()) {
+                    String shiftLabel = (tipeshift != null && !tipeshift.isEmpty()) ? tipeshift.substring(0, 1).toUpperCase() + tipeshift.substring(1) : "";
+                    String logKegiatan = "Melakukan Absen Pulang " + shiftLabel + " (Shift)";
+                    databaseHelper.insertLog(sEmployId, eOPD, rbTanggal, logKegiatan, "Pulang");
+                    ResponsePOJO data = response.body();
+                    dialogproses.dismiss();
+                    dialogView.viewSukses(AbsenShiftActivity.this, data.getRemarks());
+
+                    // mulai hitung 10 detik
+
+                    autoCloseHandler.postDelayed(
+
+                            autoCloseRunnable,
+
+                            10000
+
+                    );
+                } else {
+                    dialogproses.dismiss();
+                    dialogView.viewNotifKosong(AbsenShiftActivity.this, response.body().getRemarks(), "");
+                    llUpload.setEnabled(true);
+                    llUpload.setClickable(true);
+                    llUpload.setAlpha(1.0f);
+                }
+
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
+                dialogproses.dismiss();
+                dialogView.pesanError(AbsenShiftActivity.this);
+                llUpload.setEnabled(true);
+                llUpload.setClickable(true);
+                llUpload.setAlpha(1.0f);
+            }
+        });
+
+        dialogproses.show();
+    }
+
+
+    public void kirimdataMasukMalam(String absensi, String eselon, String idpegawai, String timetableid, String tanggal, String jam, String posisi, String status,  String lat, String lng, String ket, int terlambat, String jampegawai, String validasi ){
+        Dialog dialogproses = new Dialog(AbsenShiftActivity.this, R.style.DialogStyle);
+        dialogproses.setContentView(R.layout.view_proses);
+        dialogproses.setCancelable(false);
+
+        byte[] imageBytes = ambilFoto.compressToMax80KB(file);
+        MultipartBody.Part fotoPart = prepareFilePart("fototaging", imageBytes);
+//
+//        Log.d("ABSEN_MASUK_PAGI", "===== REQUEST PARAMETER =====");
+//        Log.d("ABSEN_MASUK_PAGI", "absensi      : " + String.valueOf(absensi));
+//        Log.d("ABSEN_MASUK_PAGI", "eselon       : " + String.valueOf(eselon));
+//        Log.d("ABSEN_MASUK_PAGI", "idpegawai    : " + String.valueOf(idpegawai));
+//        Log.d("ABSEN_MASUK_PAGI", "timetableid  : " + String.valueOf(timetableid));
+//        Log.d("ABSEN_MASUK_PAGI", "tanggal      : " + String.valueOf(tanggal));
+//        Log.d("ABSEN_MASUK_PAGI", "jam          : " + String.valueOf(jam));
+//        Log.d("ABSEN_MASUK_PAGI", "posisi       : " + String.valueOf(posisi));
+//        Log.d("ABSEN_MASUK_PAGI", "status       : " + String.valueOf(status));
+//        Log.d("ABSEN_MASUK_PAGI", "lat          : " + String.valueOf(lat));
+//        Log.d("ABSEN_MASUK_PAGI", "lng          : " + String.valueOf(lng));
+//        Log.d("ABSEN_MASUK_PAGI", "eOPD         : " + String.valueOf(eOPD));
+//        Log.d("ABSEN_MASUK_PAGI", "jampegawai   : " + String.valueOf(jampegawai));
+//        Log.d("ABSEN_MASUK_PAGI", "validasi     : " + String.valueOf(validasi));
+//        Log.d("ABSEN_MASUK_PAGI", "rbFakeGPS    : " + String.valueOf(rbFakeGPS));
+//        Log.d("ABSEN_MASUK_PAGI", "batasWaktu   : " + String.valueOf(batasWaktu));
+//        Log.d("ABSEN_MASUK_PAGI", "masuksift    : " + String.valueOf(masuksift));
+//        Log.d("ABSEN_MASUK_PAGI", "pulangsift   : " + String.valueOf(pulangsift));
+//        Log.d("ABSEN_MASUK_PAGI", "inisialsift  : " + String.valueOf(inisialsift));
+//        Log.d("ABSEN_MASUK_PAGI", "tipesift     : " + String.valueOf(tipesift));
+//        Log.d("ABSEN_MASUK_PAGI", "idsift       : " + String.valueOf(idsift));
+//        Log.d("ABSEN_MASUK_PAGI", "ket          : " + String.valueOf(ket));
+//        Log.d("ABSEN_MASUK_PAGI", "terlambat    : " + String.valueOf(terlambat));
+//        Log.d("ABSEN_MASUK_PAGI", "fotoPart     : " + (fotoPart != null ? "ADA" : "NULL"));
+//        Log.d("ABSEN_MASUK_PAGI", "==============================");
+
+        Call<ResponsePOJO> call =
+                RetroClient.getInstance().getApi().absensiftMasukMalam(
+                        fotoPart,
+                        textPart(absensi),
+                        textPart(eselon),
+                        textPart(idpegawai),
+                        textPart(tanggal),
+                        textPart(jam),
+                        textPart(posisi),
+                        textPart(status),
+                        textPart(lat),
+                        textPart(lng),
+                        textPart(eOPD),
+                        textPart(jampegawai),
+                        textPart(validasi),
+                        textPart(rbFakeGPS),
+                        textPart(batasWaktu),
+                        textPart(masukshift),
+                        textPart(pulangshift),
+                        textPart(inisialshift),
+                        textPart(tipeshift),
+                        textPart(idshift),
+                        textPart(ket),
+                        textPart(String.valueOf(terlambat))
+                );
+
+        call.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponsePOJO> call, @NonNull Response<ResponsePOJO> response) {
+
+                if (!response.isSuccessful()) {
+                    try {
+                        if (response.errorBody() != null) {
+                            Log.e("ABSEN_SHIFT", "Gagal Masuk Malam: " + response.errorBody().string());
+                        }
+                    } catch (Exception e) {
+                        Log.e("ABSEN_SHIFT", "Gagal baca error body", e);
+                    }
+
+                    dialogView.viewNotifKosong(AbsenShiftActivity.this, "Gagal mengisi absensi,", "HTTP " + response.code());
+                    dialogproses.dismiss();
+                    llUpload.setEnabled(true);
+                    llUpload.setClickable(true);
+                    llUpload.setAlpha(1.0f);
+                    return;
+                }
+
+                if (response.body().isStatus()) {
+                    String shiftLabel = (tipeshift != null && !tipeshift.isEmpty()) ? tipeshift.substring(0, 1).toUpperCase() + tipeshift.substring(1) : "";
+                    String logKegiatan = "Melakukan Absen Masuk " + shiftLabel + " (Shift)";
+                    databaseHelper.insertLog(sEmployId, eOPD, rbTanggal, logKegiatan, "Masuk");
+                    ResponsePOJO data = response.body();
+                    dialogproses.dismiss();
+                    dialogView.viewSukses(AbsenShiftActivity.this, data.getRemarks());
+
+                    // mulai hitung 10 detik
+
+                    autoCloseHandler.postDelayed(
+
+                            autoCloseRunnable,
+
+                            10000
+
+                    );
+                } else {
+                    dialogproses.dismiss();
+
+                    dialogView.viewNotifKosong(AbsenShiftActivity.this, response.body().getRemarks(), "");
+                    llUpload.setEnabled(true);
+                    llUpload.setClickable(true);
+                    llUpload.setAlpha(1.0f);
+                }
+
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
+                dialogproses.dismiss();
+                dialogView.pesanError(AbsenShiftActivity.this);
+                llUpload.setEnabled(true);
+                llUpload.setClickable(true);
+                llUpload.setAlpha(1.0f);
+            }
+        });
+
+        dialogproses.show();
+    }
+
+
+    public void kirimdataPulangMalam(String absensi, String eselon, String idpegawai, String timetableid, String tanggal, String jam, String posisi, String status,  String lat, String lng, String ket, int terlambat, String jampegawai, String validasi ){
+        Dialog dialogproses = new Dialog(AbsenShiftActivity.this, R.style.DialogStyle);
+        dialogproses.setContentView(R.layout.view_proses);
+        dialogproses.setCancelable(false);
+
+//        Log.d("ABSEN_MASUK_PAGI", idsift+"Ini absen pulang malam"+timetableid);
+
+
+        byte[] imageBytes = ambilFoto.compressToMax80KB(file);
+        MultipartBody.Part fotoPart = prepareFilePart("fototaging", imageBytes);
+
+        Call<ResponsePOJO> call =
+                RetroClient.getInstance().getApi().absensiftPulangMalam(
+                        fotoPart,
+                        textPart(absensi),
+                        textPart(eselon),
+                        textPart(idpegawai),
+                        textPart(timetableid),
+                        textPart(tanggal),
+                        textPart(jam),
+                        textPart(posisi),
+                        textPart(status),
+                        textPart(lat),
+                        textPart(lng),
+                        textPart(eOPD),
+                        textPart(jampegawai),
+                        textPart(validasi),
+                        textPart(rbFakeGPS),
+                        textPart(batasWaktu),
+                        textPart(masukshift),
+                        textPart(pulangshift),
+                        textPart(inisialshift),
+                        textPart(tipeshift),
+                        textPart(idshift),
+                        textPart(ket),
+                        textPart(String.valueOf(terlambat))
+                );
+
+        call.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponsePOJO> call, @NonNull Response<ResponsePOJO> response) {
+
+                if (!response.isSuccessful()) {
+                    try {
+                        if (response.errorBody() != null) {
+                            Log.e("ABSEN_SHIFT", "Gagal Pulang Malam: " + response.errorBody().string());
+                        }
+                    } catch (Exception e) {
+                        Log.e("ABSEN_SHIFT", "Gagal baca error body", e);
+                    }
+
+                    dialogView.viewNotifKosong(AbsenShiftActivity.this, "Gagal mengisi absensi,", "HTTP " + response.code());
+                    dialogproses.dismiss();
+                    llUpload.setEnabled(true);
+                    llUpload.setClickable(true);
+                    llUpload.setAlpha(1.0f);
+                    return;
+                }
+
+                if (response.body().isStatus()) {
+                    String shiftLabel = (tipeshift != null && !tipeshift.isEmpty()) ? tipeshift.substring(0, 1).toUpperCase() + tipeshift.substring(1) : "";
+                    String logKegiatan = "Melakukan Absen Pulang " + shiftLabel + " (Shift)";
+                    databaseHelper.insertLog(sEmployId, eOPD, rbTanggal, logKegiatan, "Pulang");
+                    ResponsePOJO data = response.body();
+                    dialogproses.dismiss();
+                    dialogView.viewSukses(AbsenShiftActivity.this, data.getRemarks());
+
+                    // mulai hitung 10 detik
+
+                    autoCloseHandler.postDelayed(
+
+                            autoCloseRunnable,
+
+                            10000
+
+                    );
+                } else {
+                    dialogproses.dismiss();
+
+                    dialogView.viewNotifKosong(AbsenShiftActivity.this, response.body().getRemarks(), "");
+                    llUpload.setEnabled(true);
+                    llUpload.setClickable(true);
+                    llUpload.setAlpha(1.0f);
+                }
+
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
+                dialogproses.dismiss();
+                dialogView.pesanError(AbsenShiftActivity.this);
+                llUpload.setEnabled(true);
+                llUpload.setClickable(true);
+                llUpload.setAlpha(1.0f);
+            }
+        });
+
+        dialogproses.show();
+    }
+
+
+    public void viewSukses(Context context){
+
+        Dialog dialogSukes = new Dialog(context, R.style.DialogStyle);
+        dialogSukes.setContentView(R.layout.view_sukses);
+        dialogSukes.setCancelable(false);
+statusAbsen = true;
+        ImageView tvTutupDialog = dialogSukes.findViewById(R.id.tvTutupDialog);
+
+
+
+        tvTutupDialog.setOnClickListener(v -> {
+            stopLocationUpdates();
+            dialogSukes.dismiss();
+            jadwalShiftActivity.finish();
+            finish();
+        });
+
+        stopLocationUpdates();
+
+        Handler handler = new Handler();
+        handler.postDelayed(() -> {
+            finish();
+            jadwalShiftActivity.finish();
+
+        }, 1500);
+
+        dialogSukes.show();
+
+    }
+
+
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        stopLocationUpdates();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        stopLocationUpdates();
+    }
+
+    public void fokusLokasiShiftActivity(View view){
+        startLocationUpdates();
+    }
+
+    private void startLocationUpdates() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
+        }
+    }
+
+    private void stopLocationUpdates() {
+        fusedLocationProviderClient.removeLocationUpdates(locationCallback);
+    }
+
+    LocationCallback locationCallback = new LocationCallback() {
+        @Override
+        public void onLocationResult(@NonNull LocationResult locationResult) {
+            super.onLocationResult(locationResult);
+
+            boolean isMock = mockLocationsEnabled || locationResult.getLastLocation().isFromMockProvider();
+            if (isMock){
+                mock_location = 1;
+                rbFakeGPS ="1";
+            }else{
+                mock_location = 0;
+            }
+            if (map != null) {
+                plotMarkers(locationResult.getLastLocation());
+            }
+
+            if (locationResult.getLastLocation() != null) {
+                if (tvAkurasi != null) {
+                    tvAkurasi.setText(String.format(localeID, "± %.0f m", locationResult.getLastLocation().getAccuracy()));
+                }
+
+                updateRealtimeInfo(locationResult.getLastLocation());
+            }
+        }
+    };
+
+    private void updateRealtimeInfo(Location location) {
+        if (location == null) return;
+
+        // 1. Update Jarak & Zona Aman
+        double latUser = location.getLatitude();
+        double lngUser = location.getLongitude();
+
+        double radius = getRadiusAbsensi(eKelompok);
+        double jarakUtama = cariJarakTerdekat(latList, lngList, latUser, lngUser);
+        double jarakExc = cariJarakTerdekat(latListExc, lngListExc, latUser, lngUser);
+
+        double jarakTerdekat = JARAK_TIDAK_VALID;
+        if (jarakUtama != JARAK_TIDAK_VALID) jarakTerdekat = jarakUtama;
+        if (jarakExc != JARAK_TIDAK_VALID && (jarakTerdekat == JARAK_TIDAK_VALID || jarakExc < jarakTerdekat)) {
+            jarakTerdekat = jarakExc;
+        }
+
+        totalJarak = jarakTerdekat;
+
+        if (tvJarak != null) {
+            if (jarakTerdekat != JARAK_TIDAK_VALID) {
+                tvJarak.setText(String.format(localeID, "Jarak: %.0f m", jarakTerdekat));
+            } else {
+                tvJarak.setText("Jarak: -");
+            }
+        }
+
+        if (cardSafeZone != null) {
+            if (jarakTerdekat != JARAK_TIDAK_VALID && jarakTerdekat <= radius) {
+                cardSafeZone.setVisibility(View.VISIBLE);
+            } else {
+                cardSafeZone.setVisibility(View.GONE);
+            }
+        }
+
+        // 2. Update Cuaca (setiap 10 menit)
+        long now = System.currentTimeMillis();
+        if (now - lastWeatherUpdate > 10 * 60 * 1000) {
+            WeatherUtil.fetchWeather(this, latUser, lngUser, tvTemperature, tvCondition, ivWeatherIcon);
+            lastWeatherUpdate = now;
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        handlerTutupActivity();
+        startLocationUpdates();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        stopLocationUpdates();
+    }
+
+
+    Boolean statusAbsen = false;
+    public void handlerTutupActivity(){
+        Handler handler = new Handler();
+        handler.postDelayed(() -> {
+            if (!statusAbsen){
+                cobarekamkembali();
+            }
+        }, 180000);
+
+    }
+
+    public void cobarekamkembali(){
+        Dialog dataKosong = new Dialog(AbsenShiftActivity.this, R.style.DialogStyle);
+        dataKosong.setContentView(R.layout.view_warning_kosong);
+        TextView tvWarning1 = dataKosong.findViewById(R.id.tvWarning1);
+        ImageView tvTutupDialog = dataKosong.findViewById(R.id.tvTutupDialog);
+        TextView tvCobaKembali = dataKosong.findViewById(R.id.tvCobaKembali);
+        stopLocationUpdates();
+        tvWarning1.setText("Proses terlalu lama, coba ulang kembali!");
+        dataKosong.setCancelable(false);
+        tvTutupDialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dataKosong.dismiss();
+                finish();
+            }
+        });
+
+        tvCobaKembali.setVisibility(View.VISIBLE);
+        tvCobaKembali.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dataKosong.dismiss();
+                finish();
+            }
+        });
+
+        dataKosong.show();
+    }
+
+}

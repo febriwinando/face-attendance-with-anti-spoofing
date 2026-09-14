@@ -1,0 +1,133 @@
+<resources>
+    <string name="app_name">Absensi</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="already_have_an_account">Already Have An Account?</string>
+    <string name="title_activity_menu">Menu</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">"Welcome !"</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
+    <string name="title_dashboard">Beranda</string>
+    <string name="title_rekap">Rekap</string>
+    <string name="title_jadwal">Jadwal</string>
+    <string name="title_profil">Profil</string>
+
+    <string name="agenda">Agenda</string>
+    <string name="shift">Jadwal Shift</string>
+    <string name="izin">Izin</string>
+    <string name="perjalanan_dinas">Perjalanan Dinas</string>
+    <string name="kehadiran">Kehadiran</string>
+
+    <string name="empty">--</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Mmmmh, no</string>
+    <string name="error">Error</string>
+
+    <string name="mockLocationMessage">Stop\nMocking\nMe</string>
+    <string name="todo">TODO</string>
+    <string name="_0">0</string>
+    <string name="timenol">--:--</string>
+    <string name="_09_februari_2022">09 Februari 2022</string>
+    <string name="ttkehadiran">Kehadiran</string>
+    <string name="beranda">Beranda</string>
+    <string name="rekap">Rekap</string>
+    <string name="jadwal">Jadwal</string>
+    <string name="profil">Profil</string>
+    <string name="tltitle">Tugas Lapangan</string>
+    <string name="masuk">MASUK</string>
+    <string name="kirim">KIRIM</string>
+    <string name="pulang">PULANG</string>
+    <string name="titlepd">Perjalanan Dinas</string>
+    <string name="versiapp">Versi: 3.0.4</string>
+    <string name="eabsensi">eAbsensi</string>
+    <string name="nip_nik">NIP/NIK</string>
+    <string name="silahkan_masuk_ke_akun_anda">Silahkan Masuk ke Akun Anda</string>
+    <string name="password">Password</string>
+    <string name="cttan">Jika anda belum memiliki akun pegawai, silahkan hubungi bagian umum OPD anda.</string>
+    <string name="dokumen_surat_perintah">Dokumen Surat Perintah</string>
+    <string name="kegiatan">Kegiatan</string>
+    <string name="data_perjalanan_dinas">Data Perjalanan Dinas</string>
+    <string name="kegiatan_lainnya_opsional">Kegiatan Lainnya: (Opsional)</string>
+    <string name="cuti">Cuti</string>
+    <string name="_10">10</string>
+    <string name="keperluan_pribadi">Keperluan Pribadi</string>
+    <string name="sakit">Sakit</string>
+    <string name="penyakit_opsional">Penyakit: (Opsional)</string>
+    <string name="jadwal_shift">Jadwal Shift</string>
+    <string name="singkronkan_kegiatan">Singkronkan Kegiatan</string>
+    <string name="singkronkan_lokasi">Singkronkan Lokasi</string>
+    <string name="singkronkan_jadwal_shift">Singkronkan Jadwal Shift</string>
+    <string name="berhasil">Berhasil!</string>
+    <string name="x">x</string>
+    <string name="kembali">Kembali</string>
+    <string name="tugas_lapangan">Tugas Lapangan</string>
+    <string name="download_info">download info</string>
+    <string name="unduh_data">Unduh Data</string>
+    <string name="m_malam">M: Malam</string>
+    <string name="s_sore">S: Sore</string>
+    <string name="p_pagi">P: Pagi</string>
+    <string name="keterangan">Keterangan:</string>
+    <string name="tfe_od_app_name" translation_description="Object Detection demo app [CHAR_LIMIT=40]">TFL Detect</string>
+    <string name="tfe_od_camera_error" translation_description="Error regarding camera support[CHAR_LIMIT=40]">Perangkat ini tidak mendukung Camera2 API.</string>
+    <string name="cari_rekap_kehadiran">Cari Rekap Kehadiran</string>
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyDpoOACMXG6YJoY-OD1z9JhPD56z-efFpE</string>
+    <string name="tutup_modal_ganti_password">tutup modal ganti password</string>
+    <string name="ganti_password">Ganti Password</string>
+    <string name="password_sebelumnya">password sebelumnya</string>
+    <string name="password_baru">password baru</string>
+    <string name="masukkan_kembali_password_baru">masukkan kembali password baru</string>
+    <string name="profil_pegawai">Profil Pegawai</string>
+    <string name="informasi_pegawai">Informasi Pegawai</string>
+    <string name="jabatan">Jabatan</string>
+    <string name="staf">Staf</string>
+    <string name="pegawai">Pegawai</string>
+    <string name="pengatur_ii_c">Pengatur (II/c)</string>
+    <string name="kelompok">Kelompok</string>
+    <string name="bidang_aplikasi_dan_informatika">Bidang Aplikasi dan Informatika</string>
+    <string name="pengembangan_aplikasi_informatika">Pengembangan Aplikasi Informatika</string>
+    <string name="email">Email</string>
+    <string name="febriwinando_gmail_com">febriwinando@gmail.com</string>
+    <string name="nomor_hp">Nomor HP</string>
+    <string name="_085762183348">085762183348</string>
+    <string name="strip">-</string>
+    <string name="opd">OPD</string>
+    <string name="jl_m_akub_hasibuan_kel_tanjung_marulak_kec_rambutan_tebing_tinggi">Jl. M. Akub Hasibuan, Kel. Tanjung Marulak, Kec. Rambutan, Tebing Tinggi</string>
+    <string name="pengaturan_profil">Pengaturan Profil</string>
+    <string name="panduan">panduan</string>
+    <string name="panduan_aplikasi">Panduan Aplikasi</string>
+    <string name="privasi">Privasi</string>
+    <string name="privacy_policy">Kebijakan Privasi</string>
+    <string name="privacy_policy_title">Kebijakan Privasi eAbsensi</string>
+    <string name="privacy_policy_last_updated">Terakhir diperbarui: 24 Mei 2024</string>
+    <string name="privacy_policy_intro">Pemerintah Kota Tebing Tinggi melalui Dinas Komunikasi dan Informatika berkomitmen untuk melindungi dan menghormati privasi Anda. Kebijakan Privasi ini menjelaskan bagaimana kami mengumpulkan, menggunakan, dan melindungi data Anda dalam aplikasi eAbsensi.</string>
+    <string name="privacy_policy_section_1">1. Informasi yang Kami Kumpulkan</string>
+    <string name="privacy_policy_content_1">• Data Identitas: Nama lengkap, NIP/NIK, instansi/OPD, dan jabatan.\n• Data Kontak: Alamat email dan nomor telepon.\n• Data Lokasi Presisi (GPS): Kami mengumpulkan koordinat lokasi perangkat Anda saat proses absensi dilakukan untuk memvalidasi keberadaan Anda di titik lokasi yang ditentukan.\n• Kamera dan Foto: Akses kamera diperlukan untuk mengambil foto wajah sebagai bukti kehadiran (biometrik wajah).</string>
+    <string name="privacy_policy_section_2">2. Penggunaan Data</string>
+    <string name="privacy_policy_content_2">Data yang dikumpulkan digunakan semata-mata untuk:\n• Verifikasi dan validasi kehadiran pegawai secara akurat.\n• Pelaporan administratif kepegawaian kepada masing-masing OPD.\n• Sinkronisasi jadwal kerja dan penugasan luar kantor.\n• Keamanan akun pengguna.</string>
+    <string name="privacy_policy_section_3">3. Keamanan Data</string>
+    <string name="privacy_policy_content_3">Seluruh data Anda disimpan secara aman dalam server Pemerintah Kota Tebing Tinggi dengan standar keamanan teknis yang ketat. Kami tidak akan membagikan, menjual, atau menyewakan data pribadi Anda kepada pihak ketiga di luar kepentingan administratif pemerintah yang sah.</string>
+    <string name="privacy_policy_section_4">4. Hak Pengguna</string>
+    <string name="privacy_policy_content_4">Anda memiliki hak untuk mengakses data Anda, memperbarui informasi melalui admin OPD, dan memahami bagaimana data Anda diproses dalam sistem ini.</string>
+    <string name="developed_by">Dikembangkan dan dikelola oleh\nDinas Komunikasi dan Informatika Kota Tebing Tinggi</string>
+    <string name="keluar">Keluar</string>
+    <string name="reset_password">Reset Password!</string>
+    <string name="lupa_password">Lupa Password,</string>
+    <string name="apakah_anda_yakin_akan_keluar">Apakah anda yakin akan keluar?</string>
+    <string name="batal">Batal</string>
+    <string name="peringatan">Peringatan!</string>
+    <string name="sedang_proses">Memproses…</string>
+    <string name="close_view_success">close view success</string>
+    <string name="survei_core_value">SURVEI CORE VALUE</string>
+    <string name="silahkan_pilih_core_values_asn_berakhlak_yang_anda_kerjakan_hari_ini">Silahkan pilih Core Values ASN BerAKHLAK yang anda kerjakan hari ini:</string>
+    <string name="coba_kembali">Coba Kembali</string>
+    <string name="rabu_09_februari_1994">Rabu, 09 Februari 1994</string>
+    <string name="validasi_masuk">VALIDASI MASUK</string>
+
+
+
+</resources>

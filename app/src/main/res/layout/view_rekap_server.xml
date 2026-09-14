@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="12dp"
+    app:cardBackgroundColor="@color/surface_main"
+    app:cardCornerRadius="28dp"
+    app:cardElevation="8dp"
+    app:strokeWidth="0dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Custom Header -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="20dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:fontFamily="sans-serif-black"
+                android:text="Detail Rekap"
+                android:textColor="@color/primary_brand"
+                android:textSize="18sp"
+                android:letterSpacing="0.1"
+                tools:ignore="HardcodedText" />
+
+            <ImageView
+                android:id="@+id/ivTutupViewListKehdiran"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentEnd="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="8dp"
+                android:src="@drawable/one_close"
+                app:tint="@color/text_hint"
+                android:contentDescription="@string/todo" />
+        </RelativeLayout>
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="600dp"
+            android:scrollbarSize="2dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingBottom="24dp">
+
+                <!-- Section: Absensi Masuk -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="16dp"
+                    android:layout_marginBottom="16dp"
+                    app:cardBackgroundColor="@color/surface_variant"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="0dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-black"
+                            android:text="Absensi Masuk"
+                            android:textColor="@color/primary_brand"
+                            android:textSize="16sp"
+                            android:layout_marginBottom="12dp"
+                            tools:ignore="HardcodedText" />
+
+                        <TableLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:stretchColumns="2">
+
+                            <!-- Pukul Masuk -->
+                            <TableRow android:id="@+id/trPukulRekapMasuk" android:layout_marginBottom="8dp">
+                                <TextView android:text="Pukul" android:textColor="@color/text_primary" android:textSize="14sp" android:fontFamily="sans-serif-medium" tools:ignore="HardcodedText"/>
+                                <TextView android:text=" :  " android:textColor="@color/text_hint" tools:ignore="HardcodedText"/>
+                                <TextView android:id="@+id/tvJamRekapMasuk" android:textColor="@color/text_primary" android:textSize="14sp" android:fontFamily="sans-serif-black"/>
+                            </TableRow>
+
+                            <!-- Kehadiran -->
+                            <TableRow android:id="@+id/trKegiatanRekapMasuk" android:layout_marginBottom="8dp">
+                                <TextView android:id="@+id/tvKehadiranlabel" android:text="Kehadiran" android:textColor="@color/text_primary" android:textSize="14sp" tools:ignore="HardcodedText"/>
+                                <TextView android:text=" :  " android:textColor="@color/text_hint" tools:ignore="HardcodedText"/>
+                                <TextView android:id="@+id/tvKehadiranRekapMasuk" android:textColor="@color/text_secondary" android:textSize="14sp"/>
+                            </TableRow>
+
+                            <!-- Keterangan -->
+                            <TableRow android:layout_marginBottom="8dp">
+                                <TextView android:id="@+id/tvFieldRekapMasuk" android:text="Keterangan" android:textColor="@color/text_primary" android:textSize="14sp" tools:ignore="HardcodedText"/>
+                                <TextView android:text=" :  " android:textColor="@color/text_hint" tools:ignore="HardcodedText"/>
+                                <TextView android:id="@+id/tvKeteranganRekapMasuk" android:textColor="@color/text_secondary" android:textSize="14sp"/>
+                            </TableRow>
+
+                            <!-- Status -->
+                            <TableRow android:layout_marginBottom="8dp">
+                                <TextView android:id="@+id/tvFieldStatusMasuk" android:text="Status" android:textColor="@color/text_primary" android:textSize="14sp" tools:ignore="HardcodedText"/>
+                                <TextView android:text=" :  " android:textColor="@color/text_hint" tools:ignore="HardcodedText"/>
+                                <TextView android:id="@+id/tvStatusRekapMasuk" android:textColor="@color/text_secondary" android:textSize="14sp" android:fontFamily="sans-serif-medium"/>
+                            </TableRow>
+
+                            <!-- Lokasi -->
+                            <TableRow android:id="@+id/trAlamatLuarKantor">
+                                <TextView android:text="Lokasi" android:textColor="@color/text_primary" android:textSize="14sp" tools:ignore="HardcodedText"/>
+                                <TextView android:text=" :  " android:textColor="@color/text_hint" tools:ignore="HardcodedText"/>
+                                <TextView android:id="@+id/tvLokasiAlamatLuarKantor" android:textColor="@color/text_secondary" android:textSize="14sp"/>
+                            </TableRow>
+                        </TableLayout>
+
+                        <!-- Photos Masuk -->
+                        <TextView
+                            android:id="@+id/tvTagFotoRekapMasuk"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:text="Foto Aktivitas"
+                            android:textColor="@color/text_primary"
+                            android:textSize="13sp"
+                            android:fontFamily="sans-serif-bold"
+                            tools:ignore="HardcodedText" />
+
+                        <com.google.android.material.imageview.ShapeableImageView
+                            android:id="@+id/ivValidasiRekapMasuk"
+                            android:layout_width="match_parent"
+                            android:layout_height="320dp"
+                            android:layout_marginTop="8dp"
+                            android:scaleType="centerCrop"
+                            app:shapeAppearanceOverlay="@style/ImageStyle2"/>
+
+                        <!-- Attachments Masuk -->
+                        <TextView
+                            android:id="@+id/tvTagLampiranRekapMasuk"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:text="Dokumen Lampiran"
+                            android:textColor="@color/text_primary"
+                            android:textSize="13sp"
+                            android:fontFamily="sans-serif-bold"
+                            tools:ignore="HardcodedText" />
+
+                        <com.google.android.material.imageview.ShapeableImageView
+                            android:id="@+id/ivLampiranValidasiRekapMasuk"
+                            android:layout_width="match_parent"
+                            android:layout_height="320dp"
+                            android:layout_marginTop="8dp"
+                            android:scaleType="centerCrop"
+                            app:shapeAppearanceOverlay="@style/ImageStyle2"/>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/txtOpenPdfMasuk"
+                            style="@style/Widget.Material3.Button.TonalButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:text="Buka Dokumen PDF"
+                            android:visibility="gone"
+                            app:cornerRadius="12dp"
+                            app:icon="@drawable/one_tl"
+                            tools:ignore="HardcodedText" />
+
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Section: Absensi Pulang -->
+                <LinearLayout
+                    android:id="@+id/llPulang"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="16dp"
+                        app:cardBackgroundColor="@color/surface_variant"
+                        app:cardCornerRadius="20dp"
+                        app:cardElevation="0dp"
+                        app:strokeWidth="0dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="sans-serif-black"
+                                android:text="Absensi Pulang"
+                                android:textColor="@color/brand_secondary"
+                                android:textSize="16sp"
+                                android:layout_marginBottom="12dp"
+                                tools:ignore="HardcodedText" />
+
+                            <TableLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:stretchColumns="2">
+
+                                <!-- Pukul Pulang -->
+                                <TableRow android:id="@+id/trPukulRekapPulang" android:layout_marginBottom="8dp">
+                                    <TextView android:text="Pukul" android:textColor="@color/text_primary" android:textSize="14sp" android:fontFamily="sans-serif-medium" tools:ignore="HardcodedText"/>
+                                    <TextView android:text=" :  " android:textColor="@color/text_hint" tools:ignore="HardcodedText"/>
+                                    <TextView android:id="@+id/tvJamRekapPulang" android:textColor="@color/text_primary" android:textSize="14sp" android:fontFamily="sans-serif-black"/>
+                                </TableRow>
+
+                                <!-- Kehadiran Pulang -->
+                                <TableRow android:id="@+id/trKegiatanRekapPulang" android:layout_marginBottom="8dp">
+                                    <TextView android:id="@+id/tvLabelKehadiran" android:text="Kehadiran" android:textColor="@color/text_primary" android:textSize="14sp" tools:ignore="HardcodedText"/>
+                                    <TextView android:text=" :  " android:textColor="@color/text_hint" tools:ignore="HardcodedText"/>
+                                    <TextView android:id="@+id/tvKehadiranRekapPulang" android:textColor="@color/text_secondary" android:textSize="14sp"/>
+                                </TableRow>
+
+                                <!-- Keterangan Pulang -->
+                                <TableRow android:id="@+id/trAktivitasPulang" android:layout_marginBottom="8dp">
+                                    <TextView android:id="@+id/tvFieldRekapPulang" android:text="Keterangan" android:textColor="@color/text_primary" android:textSize="14sp" tools:ignore="HardcodedText"/>
+                                    <TextView android:text=" :  " android:textColor="@color/text_hint" tools:ignore="HardcodedText"/>
+                                    <TextView android:id="@+id/tvKeteranganRekapPulang" android:textColor="@color/text_secondary" android:textSize="14sp"/>
+                                </TableRow>
+
+                                <!-- Status Pulang -->
+                                <TableRow android:layout_marginBottom="8dp">
+                                    <TextView android:id="@+id/tvFieldStatusPulang" android:text="Status" android:textColor="@color/text_primary" android:textSize="14sp" tools:ignore="HardcodedText"/>
+                                    <TextView android:text=" :  " android:textColor="@color/text_hint" tools:ignore="HardcodedText"/>
+                                    <TextView android:id="@+id/tvStatusRekapPulang" android:textColor="@color/text_secondary" android:textSize="14sp" android:fontFamily="sans-serif-medium"/>
+                                </TableRow>
+
+                                <!-- Lokasi Pulang -->
+                                <TableRow android:id="@+id/trAlamatLuarKantorPulang">
+                                    <TextView android:text="Lokasi" android:textColor="@color/text_primary" android:textSize="14sp" tools:ignore="HardcodedText"/>
+                                    <TextView android:text=" :  " android:textColor="@color/text_hint" tools:ignore="HardcodedText"/>
+                                    <TextView android:id="@+id/tvLokasiAlamatLuarKantorPulang" android:textColor="@color/text_secondary" android:textSize="14sp"/>
+                                </TableRow>
+                            </TableLayout>
+
+                            <!-- Photos Pulang -->
+                            <TextView
+                                android:id="@+id/tvTagFotoRekapPulang"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="Foto Aktivitas"
+                                android:textColor="@color/text_primary"
+                                android:textSize="13sp"
+                                android:fontFamily="sans-serif-bold"
+                                tools:ignore="HardcodedText" />
+
+                            <com.google.android.material.imageview.ShapeableImageView
+                                android:id="@+id/ivAktivitasRekapPulang"
+                                android:layout_width="match_parent"
+                                android:layout_height="320dp"
+                                android:layout_marginTop="8dp"
+                                android:scaleType="centerCrop"
+                                app:shapeAppearanceOverlay="@style/ImageStyle2"/>
+
+                            <!-- Attachments Pulang -->
+                            <TextView
+                                android:id="@+id/tvTagLampiranRekapPulang"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="Dokumen Lampiran"
+                                android:textColor="@color/text_primary"
+                                android:textSize="13sp"
+                                android:fontFamily="sans-serif-bold"
+                                tools:ignore="HardcodedText" />
+
+                            <com.google.android.material.imageview.ShapeableImageView
+                                android:id="@+id/ivLampiranRekapPulang"
+                                android:layout_width="match_parent"
+                                android:layout_height="320dp"
+                                android:layout_marginTop="8dp"
+                                android:scaleType="centerCrop"
+                                app:shapeAppearanceOverlay="@style/ImageStyle2"/>
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/txtOpenPdfPulang"
+                                style="@style/Widget.Material3.Button.TonalButton"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                android:text="Buka Dokumen PDF"
+                                android:visibility="gone"
+                                app:cornerRadius="12dp"
+                                app:icon="@drawable/one_tl"
+                                tools:ignore="HardcodedText" />
+
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

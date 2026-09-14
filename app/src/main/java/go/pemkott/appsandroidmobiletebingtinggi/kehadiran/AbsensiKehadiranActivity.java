@@ -1,0 +1,1888 @@
+package go.pemkott.appsandroidmobiletebingtinggi.kehadiran;
+
+
+import static android.content.ContentValues.TAG;
+import static go.pemkott.appsandroidmobiletebingtinggi.geolocation.model.LocationHelper.defaultLocation;
+import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.SIMPLE_FORMAT_JAM;
+import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.SIMPLE_FORMAT_JAM_TAGING;
+import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.SIMPLE_FORMAT_TANGGAL;
+import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.hari;
+import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.localeID;
+
+import android.Manifest;
+import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
+import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Outline;
+import android.graphics.drawable.Drawable;
+import android.location.Location;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
+import android.view.HapticFeedbackConstants;
+import android.view.View;
+import android.view.ViewOutlineProvider;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import androidx.activity.EdgeToEdge;
+import androidx.activity.OnBackPressedCallback;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
+import androidx.fragment.app.FragmentContainerView;
+
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.Priority;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.material.imageview.ShapeableImageView;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Objects;
+
+import go.pemkott.appsandroidmobiletebingtinggi.R;
+import go.pemkott.appsandroidmobiletebingtinggi.api.ResponsePOJO;
+import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
+import go.pemkott.appsandroidmobiletebingtinggi.utils.MapUtils;
+import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
+import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
+import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFoto;
+import go.pemkott.appsandroidmobiletebingtinggi.konstanta.Lokasi;
+import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
+import go.pemkott.appsandroidmobiletebingtinggi.utils.NetworkUtils;
+import go.pemkott.appsandroidmobiletebingtinggi.utils.WeatherUtil;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMapReadyCallback {
+
+    private static final int REQUEST_CHECK_SETTINGS = 100;
+    private Context mContext;
+    private GoogleMap map;
+    private ValueAnimator rippleAnimator;
+
+    double latGMap = 0, lngGMap = 0;
+    Lokasi lokasi = new Lokasi();
+    DialogView dialogView = new DialogView(AbsensiKehadiranActivity.this);
+    private String sEmployId;
+    private String rbTanggal;
+    private String rbJam;
+    private String rbLat;
+    private String rbLng;
+    private String rbKet;
+    private TextView tvJamRealtime, tvTanggalRealtime, tvAkurasi, tvJarak, tvTemperature, tvCondition, tvSafeZoneDesc;
+    private View cardSafeZone;
+    private ImageView ivWeatherIcon;
+    private String batasWaktu, statushift;
+    private String rbFakeGPS ="0";
+    DatabaseHelper databaseHelper;
+    ShapeableImageView ivTaging;
+    LinearLayout llUpload;
+    Date dateBatasWaktu;
+    String jamTaging, jamMasuk, jamPulang, hariIni, eKelompok, eJabatan, timetableid;
+    String tanggal;
+    String latOffice, lngOffice,eOPD;
+
+//    Calendar cal = Calendar.getInstance();
+    private boolean lokasiSiap = false;
+
+    RadioGroup rgKehadiran;
+    RadioButton radioSelectedKehadiran;
+    int selected;
+    SimpleDateFormat hari;
+    static ArrayList<String> latList = new ArrayList<>();
+    static ArrayList<String> lngList = new ArrayList<>();
+
+    static ArrayList<String> latListExc = new ArrayList<>();
+    static ArrayList<String> lngListExc = new ArrayList<>();
+    double totalJarak;
+    Date jamMasukDate, jamPulangDate, tagingTime;
+    int mins;
+    int minspulang;
+
+    FusedLocationProviderClient fusedLocationProviderClient;
+    LocationRequest locationRequest;
+
+    FragmentContainerView fragmentContainerView;
+
+    private final boolean mockLocationsEnabled = false;
+    int mock_location = 0;
+    File file;
+    private LatLng targetLocation;
+
+    SessionManager session;
+    String userId;
+    private Uri capturedImageUri;
+
+    @SuppressLint("WrongThread")
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        EdgeToEdge.enable(this);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.biru));
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+        WindowInsetsControllerCompat controller =
+                new WindowInsetsControllerCompat(
+                        getWindow(),
+                        getWindow().getDecorView()
+                );
+        // icon status bar terang/gelap
+        controller.setAppearanceLightStatusBars(true);
+        // icon navigation terang/gelap
+        controller.setAppearanceLightNavigationBars(true);
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_kehadiran_one);
+
+        session = new SessionManager(this);
+        userId = session.getPegawaiId();
+
+        databaseHelper = new DatabaseHelper(this);
+        databases();
+
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        locationRequest = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 5000)
+                .setMinUpdateIntervalMillis(5000)
+                .build();
+
+        //Google Maps
+        Window window = this.getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(getResources().getColor(R.color.putih));
+
+
+        if (savedInstanceState != null) {
+        }
+
+        // ambilFoto();
+        mContext = this;
+        setupViews();
+        setupViewModel();
+
+
+        rbTanggal = SIMPLE_FORMAT_TANGGAL.format(new Date());
+
+        ivTaging = findViewById(R.id.ivTagingAbsen);
+        llUpload = findViewById(R.id.llUploadkehadiran);
+        rgKehadiran = findViewById(R.id.rgKehadiran);
+        tvJamRealtime = findViewById(R.id.tvJamRealtime);
+        tvTanggalRealtime = findViewById(R.id.tvTanggalRealtime);
+        tvAkurasi = findViewById(R.id.tvAkurasi);
+        tvJarak = findViewById(R.id.tvJarak);
+        tvTemperature = findViewById(R.id.tvTemperature);
+        tvCondition = findViewById(R.id.tvCondition);
+        ivWeatherIcon = findViewById(R.id.ivWeatherIcon);
+        cardSafeZone = findViewById(R.id.cardSafeZone);
+        tvSafeZoneDesc = findViewById(R.id.tvSafeZoneDesc);
+        fragmentContainerView = findViewById(R.id.mapKehadiranOne);
+        setRoundedBackground(fragmentContainerView);
+
+
+        Intent intent = getIntent();
+        String uriString =
+                intent.getStringExtra("namafile");
+
+        if (uriString == null) {
+            Toast.makeText(
+                    this,
+                    "Foto tidak ditemukan",
+                    Toast.LENGTH_SHORT
+            ).show();
+            finish();
+            return;
+        }
+
+        Uri imageUri = Uri.parse(uriString);
+        capturedImageUri = Uri.parse(uriString);
+        try {
+
+            File originalFile = createTempFileFromUri(imageUri);
+            file = ambilFoto.compressToFile(
+                    this,
+                    originalFile
+            );
+            if (file == null || !file.exists()) {
+                Toast.makeText(
+                        this,
+                        "Gagal memproses foto",
+                        Toast.LENGTH_SHORT
+                ).show();
+
+                finish();
+                return;
+            }
+
+            Bitmap preview = null;
+            try {
+                BitmapFactory.Options opts = new BitmapFactory.Options();
+                opts.inSampleSize = 4; // Decode preview 4x lebih kecil untuk hemat RAM
+                preview = BitmapFactory.decodeFile(file.getAbsolutePath(), opts);
+            } catch (OutOfMemoryError e) {
+                e.printStackTrace();
+            }
+
+            if (preview != null) {
+                ivTaging.setImageBitmap(preview);
+            } else {
+                Toast.makeText(
+                        this,
+                        "Gagal membaca foto",
+                        Toast.LENGTH_SHORT
+                ).show();
+
+                finish();
+                return;
+            }
+            // hapus file sementara hasil copy dari Uri
+            if (originalFile.exists()) {
+                originalFile.delete();
+            }
+
+        } catch (Exception e) {
+            Log.e("FOTO_ERROR",
+                    "Gagal memproses foto", e);
+            Toast.makeText(
+                    this,
+                    "Gagal memproses foto",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            finish();
+            return;
+        }
+
+        llUpload.setEnabled(false);
+        llUpload.setClickable(false);
+        llUpload.setAlpha(0.5f);
+
+        llUpload.setOnClickListener(view -> {
+            if (!lokasiSiap) {
+                dialogView.viewNotifKosong(
+                        this,
+                        "Lokasi belum diperoleh",
+                        "Mohon tunggu beberapa detik."
+                );
+                return;
+
+            }
+//            if (mock_location == 1){
+//                dialogView.viewNotifKosong(AbsensiKehadiranActivity.this, "Anda terdeteksi menggunakan Fake GPS.", "Jika ditemukan berulang kali, akun anda akan terblokir otomatis dan tercatat Alpa.");
+//            }else {
+                llUpload.setEnabled(false);
+                llUpload.setClickable(false);
+                llUpload.setAlpha(0.5f);
+                uploadImages();
+//            }
+        });
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                finish();   // atau aksi lain
+            }
+        });
+
+        findViewById(R.id.ivBack).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
+        handlerTutupActivity();
+        startRealtimeClock();
+    }
+
+    private void startRealtimeClock() {
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (!isFinishing() && !isDestroyed()) {
+                    Date now = new Date();
+                    tvJamRealtime.setText(new SimpleDateFormat("HH:mm:ss", localeID).format(now));
+                    tvTanggalRealtime.setText(new SimpleDateFormat("EEEE, d MMMM yyyy", localeID).format(now));
+                    handler.postDelayed(this, 1000);
+                }
+            }
+        });
+    }
+
+    private File createTempFileFromUri(Uri uri)
+            throws IOException {
+
+        InputStream is =
+                getContentResolver().openInputStream(uri);
+
+        File tempFile =
+                new File(
+                        getCacheDir(),
+                        "IMG_" + System.currentTimeMillis() + ".jpg"
+                );
+
+        FileOutputStream fos =
+                new FileOutputStream(tempFile);
+
+        byte[] buffer = new byte[8192];
+        int bytesRead;
+
+        while ((bytesRead = is.read(buffer)) > 0) {
+            fos.write(buffer, 0, bytesRead);
+        }
+
+        fos.close();
+        is.close();
+
+        return tempFile;
+    }
+
+    private MultipartBody.Part prepareFilePart(String partName, byte[] imageBytes) {
+        RequestBody requestBody =
+                RequestBody.create(
+                        imageBytes,
+                        MediaType.parse("image/jpeg")
+                );
+
+        return MultipartBody.Part.createFormData(
+                partName,
+                "fototaging.jpg",
+                requestBody
+        );
+    }
+
+    private RequestBody textPart(String value) {
+        return RequestBody.create(
+                MediaType.parse("text/plain"),
+                value
+        );
+    }
+
+    private void setRoundedBackground(FragmentContainerView view) {
+        float radius = getResources().getDimension(R.dimen.radius);
+
+        view.setBackgroundResource(R.drawable.backgoundbase);
+        view.setClipToOutline(true);
+
+        view.setOutlineProvider(new ViewOutlineProvider() {
+            @Override
+            public void getOutline(View view, Outline outline) {
+                outline.setRoundRect(0, 0, view.getWidth(), view.getHeight(), radius);
+            }
+        });
+    }
+    public void fokusLokasiKehadiran(View view){
+        startLocationUpdates();
+        llUpload.setEnabled(true);
+        llUpload.setClickable(true);
+        llUpload.setAlpha(1.0f);
+    }
+
+    private void startLocationUpdates() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
+        }
+    }
+
+    private void stopLocationUpdates() {
+        fusedLocationProviderClient.removeLocationUpdates(locationCallback);
+    }
+
+    LocationCallback locationCallback = new LocationCallback() {
+        @Override
+        public void onLocationResult(@NonNull LocationResult locationResult) {
+            super.onLocationResult(locationResult);
+
+            Location location = locationResult.getLastLocation();
+            if (location == null) return;
+
+            // Deteksi lokasi palsu (Mock Location)
+            boolean isMock = mockLocationsEnabled || location.isFromMockProvider();
+            if (isMock) {
+                mock_location = 1;
+                rbFakeGPS = "1";
+                // Kita tidak melakukan 'return' agar data tetap bisa dikirim ke server 
+                // dengan flag 'fakegps = 1' untuk keperluan audit/log.
+            } else {
+                mock_location = 0;
+                rbFakeGPS = "0";
+            }
+
+            if (tvAkurasi != null) {
+                tvAkurasi.setText(String.format(localeID, "± %.0f m", location.getAccuracy()));
+            }
+
+            // Update info jarak dan target TERLEBIH DAHULU
+            updateRealtimeInfo(location);
+
+            // Baru gambar di peta agar garisnya akurat ke target terbaru
+            if (map != null) {
+                plotMarkers(location);
+            }
+        }
+    };
+
+    private long lastWeatherUpdate = 0;
+    private void updateRealtimeInfo(Location location) {
+        if (location == null) return;
+
+        // 1. Update Jarak & Zona Aman
+        double latUser = location.getLatitude();
+        double lngUser = location.getLongitude();
+
+        double radius = getRadiusAbsensi(eKelompok);
+
+
+        double jarakTerdekat = JARAK_TIDAK_VALID;
+        LatLng currentNearestTarget = null;
+
+        // 1.1 Cek Jarak Utama
+        for (int i = 0; i < latList.size(); i++) {
+            try {
+                double lat = Double.parseDouble(latList.get(i));
+                double lng = Double.parseDouble(lngList.get(i));
+                double jarak = getDistance(lat, lng, latUser, lngUser);
+                if (jarakTerdekat == JARAK_TIDAK_VALID || jarak < jarakTerdekat) {
+                    jarakTerdekat = jarak;
+                    currentNearestTarget = new LatLng(lat, lng);
+                }
+            } catch (Exception e) { e.printStackTrace(); }
+        }
+
+        // 1.2 Cek Jarak Exception
+        for (int i = 0; i < latListExc.size(); i++) {
+            try {
+                double lat = Double.parseDouble(latListExc.get(i));
+                double lng = Double.parseDouble(lngListExc.get(i));
+                double jarak = getDistance(lat, lng, latUser, lngUser);
+                if (jarakTerdekat == JARAK_TIDAK_VALID || jarak < jarakTerdekat) {
+                    jarakTerdekat = jarak;
+                    currentNearestTarget = new LatLng(lat, lng);
+                }
+            } catch (Exception e) { e.printStackTrace(); }
+        }
+
+        totalJarak = jarakTerdekat;
+        targetLocation = currentNearestTarget;
+
+        Log.d("ABSENSI_JARAK", "User: " + latUser + "," + lngUser);
+        if (targetLocation != null) {
+            Log.d("ABSENSI_JARAK", "Target Terdekat Ditemukan: " + targetLocation.latitude + "," + targetLocation.longitude);
+            Log.d("ABSENSI_JARAK", "Jarak Terhitung: " + totalJarak + " meter");
+        } else {
+            Log.d("ABSENSI_JARAK", "Tidak ada target lokasi yang dimuat!");
+        }
+
+        if (tvJarak != null) {
+            if (jarakTerdekat != JARAK_TIDAK_VALID) {
+                tvJarak.setText(String.format(localeID, "Jarak: %.0f m", jarakTerdekat));
+            } else {
+                tvJarak.setText("Jarak: -");
+            }
+        }
+
+        if (cardSafeZone != null) {
+            if (jarakTerdekat != JARAK_TIDAK_VALID && jarakTerdekat <= radius) {
+                cardSafeZone.setVisibility(View.VISIBLE);
+                if (tvSafeZoneDesc != null) {
+                    tvSafeZoneDesc.setText(String.format(localeID, "Anda berada dalam\narea absensi (%.0f m)", jarakTerdekat));
+                }
+            } else {
+                cardSafeZone.setVisibility(View.GONE);
+            }
+        }
+
+        // 2. Update Cuaca (setiap 10 menit)
+        long now = System.currentTimeMillis();
+        if (now - lastWeatherUpdate > 10 * 60 * 1000) {
+            WeatherUtil.fetchWeather(this, latUser, lngUser, tvTemperature, tvCondition, ivWeatherIcon);
+            lastWeatherUpdate = now;
+        }
+    }
+
+    public void databases(){
+        Cursor tUser = databaseHelper.getAllData22(userId);
+        while (tUser.moveToNext()){
+            sEmployId = tUser.getString(1);
+        }
+
+        hari = new SimpleDateFormat("EEE", localeID);
+        tanggal = hari.format(new Date());
+
+        Cursor tTimeTable = databaseHelper.getKegiatanTimeTable(sEmployId, String.valueOf(hari(tanggal)));
+        if(tTimeTable.getCount() > 0){
+            while (tTimeTable.moveToNext()){
+                timetableid = tTimeTable.getString(2);
+                hariIni = tTimeTable.getString(3);
+                jamMasuk = tTimeTable.getString(5);
+                jamPulang = tTimeTable.getString(6);
+            }
+            tTimeTable.close();
+        } else {
+            jamMasuk = null;
+            jamPulang = null;
+        }
+
+        Cursor employe = databaseHelper.getDataEmployee(sEmployId);
+        if (employe != null) {
+            while (employe.moveToNext()){
+                eOPD = employe.getString(4);
+                eKelompok = employe.getString(9);
+                eJabatan = employe.getString(11);
+                latOffice = employe.getString(15);
+                lngOffice = employe.getString(16);
+                batasWaktu = employe.getString(18);
+                statushift = employe.getString(19);
+            }
+            employe.close();
+        }
+
+        latList.clear();
+        lngList.clear();
+
+        Cursor koordinat = databaseHelper.getDataKoordinat(eOPD);
+        if(koordinat != null) {
+            int latIdx = koordinat.getColumnIndex("LAT");
+            int lngIdx = koordinat.getColumnIndex("LNG");
+            
+            while (koordinat.moveToNext()) {
+                String latStr = (latIdx != -1) ? koordinat.getString(latIdx) : null;
+                String lngStr = (lngIdx != -1) ? koordinat.getString(lngIdx) : null;
+                
+                if (latStr != null && lngStr != null) {
+                    latList.add(latStr);
+                    lngList.add(lngStr);
+                }
+            }
+            koordinat.close();
+        }
+        Log.d("ABSENSI_JARAK", "Loaded " + latList.size() + " main coordinates");
+        for (int i = 0; i < latList.size(); i++) {
+            Log.d("ABSENSI_JARAK", "[Main List] " + latList.get(i) + "," + lngList.get(i));
+        }
+
+        latListExc.clear();
+        lngListExc.clear();
+
+        Cursor koordinatExc = databaseHelper.getDataKoordinatEmp(sEmployId);
+        if(koordinatExc != null) {
+            int latIdx = koordinatExc.getColumnIndex("LAT");
+            int lngIdx = koordinatExc.getColumnIndex("LNG");
+
+            while (koordinatExc.moveToNext()) {
+                String latStr = (latIdx != -1) ? koordinatExc.getString(latIdx) : null;
+                String lngStr = (lngIdx != -1) ? koordinatExc.getString(lngIdx) : null;
+                
+                if (latStr != null && lngStr != null) {
+                    latListExc.add(latStr);
+                    lngListExc.add(lngStr);
+                }
+            }
+            koordinatExc.close();
+        }
+        Log.d("ABSENSI_JARAK", "Loaded " + latListExc.size() + " exception coordinates for ID: " + sEmployId);
+        for (int i = 0; i < latListExc.size(); i++) {
+            Log.d("ABSENSI_JARAK", "[Exc List] " + latListExc.get(i) + "," + lngListExc.get(i));
+        }
+
+        if (!latList.isEmpty() && !lngList.isEmpty()) {
+            try {
+                String latStr = latList.get(0);
+                String lngStr = lngList.get(0);
+                if (latStr != null && lngStr != null) {
+                    defaultLocation = new LatLng(
+                            Double.parseDouble(latStr),
+                            Double.parseDouble(lngStr)
+                    );
+                }
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        }
+//        defaultLocation = new LatLng(Double.parseDouble( latList.get(0)), Double.parseDouble(lngList.get(0)));
+    }
+
+    private static final double RADIUS_NORMAL = 150.0;
+    private static final double RADIUS_SENIN = 200.0;
+    private static final double JARAK_TIDAK_VALID = -1;
+
+    private boolean isHariSenin() {
+        SimpleDateFormat sdf = new SimpleDateFormat("EEE", localeID);
+        String hari = sdf.format(new Date());
+        return "Sen".equals(hari) || "Mon".equals(hari);
+    }
+
+    private double getRadiusAbsensi(String kelompok) {
+
+        // CT selalu 150
+        if ("ct".equalsIgnoreCase(kelompok)) {
+            return RADIUS_NORMAL;
+        }
+
+        // Pegawai
+        if (isHariSenin()) {
+            return RADIUS_SENIN;
+        }
+
+        return RADIUS_NORMAL;
+    }
+
+    private double cariJarakTerdekat(
+            ArrayList<String> latList,
+            ArrayList<String> lngList,
+            double latUser,
+            double lngUser
+    ) {
+        if (latList == null || lngList == null || latList.isEmpty()) {
+
+            startLocationUpdates();
+
+            return JARAK_TIDAK_VALID;
+        }
+
+        double minJarak = Double.MAX_VALUE;
+
+        for (int i = 0; i < latList.size(); i++) {
+            String latStr = latList.get(i);
+            String lngStr = lngList.get(i);
+            if (latStr == null || lngStr == null) continue;
+
+            try {
+                double lat = Double.parseDouble(latStr);
+                double lng = Double.parseDouble(lngStr);
+
+                double jarak = getDistance(lat, lng, latUser, lngUser);
+                if (jarak < minJarak) {
+                    minJarak = jarak;
+                }
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return minJarak;
+    }
+
+    private boolean isInternetValid() {
+
+        if (!NetworkUtils.isConnectedMobile(this)
+                && !NetworkUtils.isConnectedWifi(this)) {
+
+            dialogView.viewNotifKosong(
+                    this,
+                    "Pastikan anda telah terhubung ke internet.",
+                    ""
+            );
+            return false;
+        }
+
+        if (!NetworkUtils.isConnectedFast(this)) {
+            dialogView.viewNotifKosong(
+                    this,
+                    "Koneksi internet tidak stabil.",
+                    ""
+            );
+            return false;
+        }
+
+        return true;
+    }
+
+    public void hitungJarakAbsensi() {
+
+        if (!isInternetValid()) return;
+
+        double latUser = latGMap;
+        double lngUser = lngGMap;
+
+        rbLat = String.valueOf(latUser);
+        rbLng = String.valueOf(lngUser);
+
+        // 1️⃣ Cari jarak terdekat dari lokasi utama
+        double jarakUtama = cariJarakTerdekat(latList, lngList, latUser, lngUser);
+
+        // 2️⃣ Cari jarak terdekat dari lokasi exception (employee)
+        double jarakException = cariJarakTerdekat(latListExc, lngListExc, latUser, lngUser);
+
+        double terdekat = JARAK_TIDAK_VALID;
+
+        if (jarakUtama != JARAK_TIDAK_VALID) {
+            terdekat = jarakUtama;
+        }
+
+        if (jarakException != JARAK_TIDAK_VALID) {
+            if (terdekat == JARAK_TIDAK_VALID || jarakException < terdekat) {
+                terdekat = jarakException;
+            }
+        }
+
+        // Sekarang totalJarak berisi jarak koordinat paling dekat dari SEMUA daftar
+        totalJarak = terdekat;
+        Log.d("ABSENSI_JARAK", "hitungJarakAbsensi totalJarak: " + totalJarak);
+
+    }
+
+
+    private Double getDistance(Double latitudeTujuan, Double longitudeTujuan, Double latitudeUser, Double longitudeUser) {
+        /* VARIABLE */
+        double pi = 3.14159265358979;
+
+        Double R = 6371e3;
+
+        double latRad1 = latitudeTujuan * (pi / 180);
+        double latRad2 = latitudeUser * (pi / 180);
+        double deltaLatRad = (latitudeUser - latitudeTujuan) * (pi / 180);
+        double deltaLonRad = (longitudeUser - longitudeTujuan) * (pi / 180);
+
+        /* RUMUS HAVERSINE */
+        double a = Math.sin(deltaLatRad / 2) * Math.sin(deltaLatRad / 2) + Math.cos(latRad1) * Math.cos(latRad2) * Math.sin(deltaLonRad / 2) * Math.sin(deltaLonRad / 2);
+        Double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+    }
+
+    AmbilFoto ambilFoto = new AmbilFoto(AbsensiKehadiranActivity.this);
+    public void uploadImages(){
+
+        if (file == null || !file.exists() || file.length() == 0) {
+            dialogView.viewNotifKosong(
+                    this,
+                    "Foto belum diambil",
+                    "Silakan ambil foto terlebih dahulu"
+            );
+            llUpload.setEnabled(true);
+            llUpload.setClickable(true);
+            llUpload.setAlpha(1.0f);
+            return;
+        } else{
+            if (jamMasuk == null || jamPulang == null){
+                dialogView.viewNotifKosong(AbsensiKehadiranActivity.this, "Anda tidak memiliki Jadwal Kerja untuk hari ini", "");
+                llUpload.setEnabled(true);
+                llUpload.setClickable(true);
+                llUpload.setAlpha(1.0f);
+            }
+            else{
+
+                periksaWaktu();
+                hitungJarakAbsensi();
+
+                if (tagingTime.before(dateBatasWaktu)){
+                    dialogView.viewNotifKosong(AbsensiKehadiranActivity.this, "Anda hanya dapat mengisi absen masuk, "+batasWaktu+" menit sebelum Jam Masuk", "");
+                    llUpload.setEnabled(true);
+                    llUpload.setClickable(true);
+                    llUpload.setAlpha(1.0f);
+                } else{
+                    selected = rgKehadiran.getCheckedRadioButtonId();
+                    radioSelectedKehadiran = findViewById(selected);
+
+                    if (eJabatan.equals("2")){
+                        totalJarak = 1;
+                    }
+                    Log.d("JARAK_DEBUG", "total jarak: "+totalJarak);
+
+                    if (latGMap == 0.0 && lngGMap == 0.0) {
+                        dialogView.viewNotifKosong(
+                                AbsensiKehadiranActivity.this,
+                                "Lokasi belum berhasil diperoleh.",
+                                "Mohon tunggu beberapa detik atau fokuskan lokasi."
+                        );
+                        llUpload.setEnabled(true);
+                        llUpload.setClickable(true);
+                        llUpload.setAlpha(1.0f);
+                        return;
+
+                    }
+
+                    if (totalJarak == JARAK_TIDAK_VALID || totalJarak > 100) {
+                        dialogView.viewNotifKosong(AbsensiKehadiranActivity.this, "Anda harus berada dilingkungan kantor untuk melakukan absensi.", "");
+                        llUpload.setEnabled(true);
+                        llUpload.setClickable(true);
+                        llUpload.setAlpha(1.0f);
+                        return;
+                    }
+                    else{
+
+                        String ketKehadiran;
+                        String rbPosisi;
+                        String rbStatus;
+                        String rbValid;
+                        if (radioSelectedKehadiran.getText().toString().equals("MASUK")){
+
+                            if (!tagingTime.before(jamPulangDate)) {
+
+                                dialogView.viewNotifKosong(
+                                        AbsensiKehadiranActivity.this,
+                                        "Anda tidak dapat melakukan absensi masuk pada jam pulang kerja.",
+                                        ""
+                                );
+                                llUpload.setEnabled(true);
+                                llUpload.setClickable(true);
+                                llUpload.setAlpha(1.0f);
+
+                                return;
+                            }
+
+                                else{
+                                    ketKehadiran = "masuk";
+                                    rbPosisi = "masuk";
+                                    rbStatus = "hadir";
+
+                                    rbValid = "2";
+                                    String eselon = "0";
+
+                                    if (eJabatan.equals("2")){
+                                        rbJam = "07:30";
+                                        rbKet = "sesuai waktu";
+                                        rbPosisi = "masuk";
+                                        rbStatus = "hadir";
+                                        eselon = "2";
+                                    }
+
+                                    kirimDataMasuk(ketKehadiran, eselon, sEmployId, timetableid, rbTanggal, rbJam, rbPosisi, rbStatus, rbLat, rbLng, rbKet, mins, jamMasuk, rbValid, "100");
+                                }
+                        }
+                        else{
+
+                            rbPosisi = "pulang";
+                            rbStatus = "hadir";
+
+                            if (!tagingTime.before(jamPulangDate)) {
+                                rbKet = "sesuai waktu";
+                                mins = 0;
+                            }else{
+                                rbKet = "kecepatan";
+                            }
+
+
+                                    String eselon = "0";
+                                    if (eJabatan.equals("2")){
+                                        eselon = "2";
+                                    }
+
+                                    if (eJabatan.equals("2")){
+                                        rbJam = "07:30";
+                                        rbKet = "sesuai waktu";
+                                        rbPosisi = "pulang";
+                                        rbStatus = "hadir";
+                                        eselon = "2";
+                                    }
+                                    rbValid = "2";
+                                    viewBerakhlak("pulang", eselon, sEmployId, timetableid, rbTanggal, rbJam, rbPosisi, rbStatus, rbLat, rbLng, rbKet, 0,  jamPulang, rbValid);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    private void hapusFileSementara() {
+        if (capturedImageUri != null) {
+
+            getContentResolver().delete(
+                    capturedImageUri,
+                    null,
+                    null
+            );
+
+        }
+        if (file != null && file.exists()) {
+
+            boolean deleted = file.delete();
+
+            Log.d("CACHE_DELETE",
+                    "deleted=" + deleted +
+                            " path=" + file.getAbsolutePath());
+
+            file = null;
+        }
+
+
+    }
+
+    public void kirimDataMasuk(String absensi, String eselon, String idpegawai, String timetableid, String tanggal, String jam, String posisi, String status, String lat, String lng, String ket, int terlambat, String jampegawai, String validasi, String berakhlak){
+
+        Dialog dialogproses = new Dialog(AbsensiKehadiranActivity.this, R.style.DialogStyle);
+        dialogproses.setContentView(R.layout.view_proses);
+        dialogproses.setCancelable(false);
+        dialogproses.show();
+        byte[] imageBytes = ambilFoto.compressToMax80KB(file);
+        MultipartBody.Part fotoPart = prepareFilePart("fototaging", imageBytes);
+
+        Call<ResponsePOJO> call =
+                RetroClient.getInstance().getApi().uploadAbsenKehadiranMasuk(
+                        fotoPart,
+                        textPart(absensi),
+                        textPart(eselon),
+                        textPart(idpegawai),
+                        textPart(timetableid),
+                        textPart(tanggal),
+                        textPart(jam),
+                        textPart(posisi),
+                        textPart(status),
+                        textPart(lat),
+                        textPart(lng),
+                        textPart(ket),
+                        textPart(String.valueOf(terlambat)),
+                        textPart(eOPD),
+                        textPart(jampegawai),
+                        textPart(validasi),
+                        textPart(rbFakeGPS),
+                        textPart(batasWaktu),
+                        textPart(berakhlak),
+                        textPart(statushift)
+                );
+
+        call.enqueue(new Callback<ResponsePOJO>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponsePOJO> call, @NonNull Response<ResponsePOJO> response) {
+                dialogproses.dismiss();
+
+                if (!response.isSuccessful()) {
+                    try {
+                        if (response.errorBody() != null) {
+                            Log.e("ABSENSI_HTTP",
+                                    "Error Body: " + response.errorBody().string());
+                        }
+                    } catch (Exception e) {
+                        Log.e("ABSENSI_HTTP",
+                                "Gagal baca error body", e);
+                    }
+
+                    dialogView.viewNotifKosong(
+                            AbsensiKehadiranActivity.this,
+                            "Gagal mengisi absensi",
+                            "HTTP " + response.code()
+                    );
+
+                    llUpload.setEnabled(true);
+                    llUpload.setClickable(true);
+                    llUpload.setAlpha(1.0f);
+                    return;
+                }
+
+                ResponsePOJO data = response.body();
+
+                if (Objects.requireNonNull(response.body()).isStatus()){
+                    databaseHelper.insertLog(sEmployId, eOPD, rbTanggal, "Melakukan Absen Masuk", "Masuk");
+                    hapusFileSementara();
+                    dialogView.viewSukses(AbsensiKehadiranActivity.this, data.getRemarks());
+                    autoCloseHandler.postDelayed(
+                            autoCloseRunnable,
+                            10000
+                    );
+                }else {
+                    dialogView.viewNotifKosong(AbsensiKehadiranActivity.this, data.getRemarks(),"");
+                    llUpload.setEnabled(true);
+                    llUpload.setClickable(true);
+                    llUpload.setAlpha(1.0f);
+                }
+
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
+                dialogproses.dismiss();
+                llUpload.setEnabled(true);
+                llUpload.setClickable(true);
+                llUpload.setAlpha(1.0f);
+                dialogView.pesanError(AbsensiKehadiranActivity.this);
+            }
+        });
+
+    }
+
+
+    private final Handler autoCloseHandler = new Handler();
+
+    private final Runnable autoCloseRunnable = () -> {
+        finish();
+    };
+
+    public void kirimDataPulang(String absensi, String eselon, String idpegawai, String timetableid, String tanggal, String jam, String posisi, String status, String lat, String lng, String ket, int terlambat, String jampegawai, String validasi, String berakhlak){
+        Dialog dialogproses = new Dialog(AbsensiKehadiranActivity.this, R.style.DialogStyle);
+        dialogproses.setContentView(R.layout.view_proses);
+        dialogproses.setCancelable(false);
+        dialogproses.show();
+
+        byte[] imageBytes = ambilFoto.compressToMax80KB(file);
+        MultipartBody.Part fotoPart = prepareFilePart("fototaging", imageBytes);
+
+        Call<ResponsePOJO> call =
+                RetroClient.getInstance().getApi().uploadAbsenKehadiranPulang(
+                        fotoPart,
+                        textPart(absensi),
+                        textPart(eselon),
+                        textPart(idpegawai),
+                        textPart(timetableid),
+                        textPart(tanggal),
+                        textPart(jam),
+                        textPart(posisi),
+                        textPart(status),
+                        textPart(lat),
+                        textPart(lng),
+                        textPart(ket),
+                        textPart(String.valueOf(terlambat)),
+                        textPart(eOPD),
+                        textPart(jampegawai),
+                        textPart(validasi),
+                        textPart(rbFakeGPS),
+                        textPart(batasWaktu),
+                        textPart(berakhlak),
+                        textPart(statushift)
+                );
+        call.enqueue(new Callback<ResponsePOJO>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponsePOJO> call, @NonNull Response<ResponsePOJO> response) {
+                dialogproses.dismiss();
+
+                if (!response.isSuccessful()){
+
+
+                    String errorBody = "";
+
+                    try {
+
+                        if (response.errorBody() != null) {
+
+                            errorBody = response.errorBody().string();
+
+                        }
+
+                    } catch (Exception e) {
+
+                        e.printStackTrace();
+
+                    }
+
+                    dialogView.viewNotifKosong(
+
+                            AbsensiKehadiranActivity.this,
+                            "Error " + response.code(),
+                            errorBody
+
+                    );
+
+//                    dialogView.viewNotifKosong(AbsensiKehadiranActivity.this, "Gagal mengisi absensi,", "silahkan coba kembali.");
+                    llUpload.setEnabled(true);
+                    llUpload.setClickable(true);
+                    llUpload.setAlpha(1.0f);
+                    return;
+                }
+
+//                Log.d("Response Status Normal", response.body().getRemarks());
+                ResponsePOJO data = response.body();
+
+                if (Objects.requireNonNull(response.body()).isStatus()){
+                    databaseHelper.insertLog(sEmployId, eOPD, rbTanggal, "Melakukan Absen Pulang", "Pulang");
+                    hapusFileSementara();
+                    dialogView.viewSukses(AbsensiKehadiranActivity.this, data.getRemarks());
+                    // mulai hitung 10 detik
+                    autoCloseHandler.postDelayed(
+                            autoCloseRunnable,
+                            10000
+                    );
+
+                }else {
+                    dialogView.viewNotifKosong(AbsensiKehadiranActivity.this, data.getRemarks(),"");
+                    llUpload.setEnabled(true);
+                    llUpload.setClickable(true);
+                    llUpload.setAlpha(1.0f);
+                }
+
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
+                Log.e("Response Status Normal", "Gagal memanggil API absensi: " + t.getMessage(), t);
+                dialogproses.dismiss();
+                llUpload.setEnabled(true);
+                llUpload.setClickable(true);
+                llUpload.setAlpha(1.0f);
+                dialogView.viewNotifKosong(AbsensiKehadiranActivity.this, "Gagal terhubung","silahkan coba kembali");
+
+            }
+        });
+
+
+    }
+
+    Boolean statusRekam = false;
+    public void viewSukses(Context context){
+        statusRekam = true;
+        Dialog dialogSukes = new Dialog(context, R.style.DialogStyle);
+        dialogSukes.setContentView(R.layout.view_sukses);
+        dialogSukes.setCancelable(false);
+
+        ImageView tvTutupDialog = dialogSukes.findViewById(R.id.tvTutupDialog);
+
+
+        tvTutupDialog.setOnClickListener(v -> {
+
+            dialogSukes.dismiss();
+            finish();
+        });
+        stopLocationUpdates();
+        if (file.exists()) file.delete();
+        Handler handler = new Handler();
+        handler.postDelayed(() -> {
+
+            dialogSukes.dismiss();
+
+            finish();
+
+            }, 1500);
+
+        dialogSukes.show();
+    }
+
+    public void handlerTutupActivity(){
+        Handler handler = new Handler();
+        handler.postDelayed(() -> {
+            if (!statusRekam){
+                cobarekamkembali();
+            }
+            }, 3 * 60 * 1000);
+    }
+
+    public void cobarekamkembali(){
+        Dialog dataKosong = new Dialog(AbsensiKehadiranActivity.this, R.style.DialogStyle);
+        dataKosong.setContentView(R.layout.view_warning_kosong);
+        TextView tvWarning1 = dataKosong.findViewById(R.id.tvWarning1);
+        ImageView tvTutupDialog = dataKosong.findViewById(R.id.tvTutupDialog);
+        TextView tvCobaKembali = dataKosong.findViewById(R.id.tvCobaKembali);
+
+        tvWarning1.setText("Proses terlalu lama, coba ulang kembali!");
+        dataKosong.setCancelable(false);
+        tvTutupDialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dataKosong.dismiss();
+                finish();
+            }
+        });
+
+        tvCobaKembali.setVisibility(View.VISIBLE);
+        tvCobaKembali.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dataKosong.dismiss();
+                finish();
+            }
+        });
+
+        dataKosong.show();
+    }
+
+    SimpleDateFormat format = new SimpleDateFormat("HH:mm", localeID);
+
+
+    public void periksaWaktu() {
+        if (jamMasuk == null || jamPulang == null) {
+            Log.e("periksaWaktu", "jamMasuk or jamPulang is null");
+            return;
+        }
+
+        jamMasuk = jamMasuk.trim();
+        jamPulang = jamPulang.trim();
+        try {
+
+            Log.d("JAM_DEBUG", "jamMasuk = [" + jamMasuk + "]");
+            Log.d("JAM_DEBUG", "jamPulang = [" + jamPulang + "]");
+            jamMasukDate = format.parse(jamMasuk);
+            jamPulangDate = format.parse(jamPulang);
+
+            Log.d("JAM_DEBUG", "jamMasukDate = " + jamMasukDate);
+            Log.d("JAM_DEBUG", "jamPulangDate = " + jamPulangDate);
+            rbJam = format.format(new Date());
+
+            tagingTime = format.parse(rbJam);
+
+            Calendar batasCalendar = Calendar.getInstance();
+            batasCalendar.setTime(jamMasukDate);
+
+            int minutesToAdd = 0;
+            if (batasWaktu != null && !batasWaktu.isEmpty()) {
+                try {
+                    minutesToAdd = Integer.parseInt(batasWaktu);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+            batasCalendar.add(Calendar.MINUTE, -minutesToAdd);
+
+            dateBatasWaktu = batasCalendar.getTime();
+
+            long selisihMasuk = tagingTime.getTime() - jamMasukDate.getTime();
+
+            mins = (int) (selisihMasuk / (1000 * 60));
+
+            if (mins <= 0) {
+                mins = 0;
+                rbKet = "tepat waktu";
+            } else {
+                rbKet = "terlambat";
+            }
+
+            long selisihPulang = jamPulangDate.getTime() - tagingTime.getTime();
+
+            minspulang = (int) (selisihPulang / (1000 * 60));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    //  Maps
+    //    Maps
+    private void setupViewModel() {
+    }
+
+    public void checkLocationPermission() {
+        int hasWriteStoragePermission;
+        hasWriteStoragePermission = getApplicationContext().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION);
+        if (hasWriteStoragePermission != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CHECK_SETTINGS);
+            return;
+        }
+
+    }
+
+
+    public void backFinalDinasLuar(View view){
+        finish();
+    }
+
+    public void kirimDataDinasLuar(View view) {
+        if (llUpload != null && llUpload.isEnabled()) {
+            llUpload.performClick();
+        }
+    }
+
+
+
+
+    private void setupViews() {
+        //Maps
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapKehadiranOne);
+        mapFragment.getMapAsync(this);
+    }
+
+
+    int ulang = 0;
+
+
+    private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId) {
+        Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
+        vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
+        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        vectorDrawable.draw(canvas);
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
+    }
+
+    ArrayList<Location> locationArrayList = new ArrayList<>();
+
+    private void plotMarkers(Location locationObj) {
+
+        if(map != null){
+            if (rippleAnimator != null) rippleAnimator.cancel();
+            map.clear();
+            LatLng position = new LatLng(locationObj.getLatitude(), locationObj.getLongitude());
+            map.addMarker(new MarkerOptions()
+                    .position(position)
+                    .icon(bitmapDescriptorFromVector(this, R.drawable.asn_lk))
+                    .anchor(0.5f, 0.5f) // Membuat posisi avatar lebih naik (center)
+                    .title(lokasi.getAddress(AbsensiKehadiranActivity.this, locationObj.getLatitude(), locationObj.getLongitude())));
+            rippleAnimator = MapUtils.showRippleEffect(map, position);
+            map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(locationObj.getLatitude(), locationObj.getLongitude()), 18f));
+            latGMap = locationObj.getLatitude();
+            lngGMap = locationObj.getLongitude();
+
+            // Draw target marker and line to target
+            if (targetLocation != null) {
+                map.addMarker(new MarkerOptions()
+                        .position(targetLocation)
+                        .icon(bitmapDescriptorFromVector(this, R.drawable.ic_locasi_office))
+                        .anchor(0.5f, 0.5f)
+                        .title("Lokasi Tujuan"));
+
+                map.addPolyline(new PolylineOptions()
+                        .add(position, targetLocation)
+                        .width(5f)
+                        .color(ContextCompat.getColor(this, R.color.primary_brand)));
+            }
+
+            locationArrayList.add(locationObj);
+
+            //Draw Line
+            LatLng singleLatLong = null;
+            ArrayList<LatLng> pnts = new ArrayList<LatLng>();
+            if(locationArrayList != null) {
+                for(int i = 0 ; i < locationArrayList.size(); i++) {
+                    double routePoint1Lat = locationArrayList.get(i).getLatitude();
+                    double routePoint2Long = locationArrayList.get(i).getLongitude();
+                    singleLatLong = new LatLng(routePoint1Lat,
+                            routePoint2Long);
+                    pnts.add(singleLatLong);
+                }
+            }
+
+        } else {
+
+            map.moveCamera(CameraUpdateFactory
+                    .newLatLngZoom(defaultLocation, 19f));
+            map.getUiSettings().setMyLocationButtonEnabled(true);
+        }
+
+        if (!lokasiSiap) {
+            lokasiSiap = true;
+
+            llUpload.setEnabled(true);
+            llUpload.setClickable(true);
+            llUpload.setAlpha(1f);
+        }
+
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String permissions[], @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case REQUEST_CHECK_SETTINGS:
+
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    if (ContextCompat.checkSelfPermission(this,
+                            Manifest.permission.ACCESS_FINE_LOCATION)
+                            == PackageManager.PERMISSION_GRANTED) {
+                        if (ulang == 1){
+                            ulang = 0;
+                        }
+                    }
+
+                } else {
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        checkLocationPermission();
+                    }
+                }
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        }
+    }
+
+
+    @Override
+    public void onMapReady(@NonNull GoogleMap googleMap) {
+        this.map = googleMap;
+        this.map.setPadding(0, 0, 0, 1050);
+
+        try {
+            boolean success = false;
+            int nightModeFlags = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+            switch (nightModeFlags) {
+                case Configuration.UI_MODE_NIGHT_YES:
+                    // Mode tema gelap aktif
+                    success = googleMap.setMapStyle(
+                            MapStyleOptions.loadRawResourceStyle(
+                                    this, R.raw.style_json_dark));
+                    break;
+                case Configuration.UI_MODE_NIGHT_NO:
+                    // Mode tema terang aktif
+                    success = googleMap.setMapStyle(
+                            MapStyleOptions.loadRawResourceStyle(
+                                    this, R.raw.style_json));
+                    break;
+                case Configuration.UI_MODE_NIGHT_UNDEFINED:
+                    // Mode tema tidak ditentukan
+                    success = googleMap.setMapStyle(
+                            MapStyleOptions.loadRawResourceStyle(
+                                    this, R.raw.style_json));
+                    break;
+            }
+
+            if (!success) {
+                Log.e(TAG, "Style parsing failed.");
+            }
+        } catch (Resources.NotFoundException e) {
+            Log.e(TAG, "Can't find style. Error: ", e);
+        }
+
+        this.map.addMarker(new MarkerOptions().position(defaultLocation).icon(bitmapDescriptorFromVector(this, R.drawable.asn_lk)));
+        this.map.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                defaultLocation, 10f));
+        this.map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+
+        this.map.getUiSettings().setMyLocationButtonEnabled( false );
+        this.map.getUiSettings().setCompassEnabled( false );
+        this.map.getUiSettings().setRotateGesturesEnabled(false);
+
+        this.map.getCameraPosition();
+
+        this.map.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+
+            @Override
+            public View getInfoWindow(@NonNull Marker arg0) {
+                return null;
+            }
+
+            @Override
+            public View getInfoContents(@NonNull Marker marker) {
+                // Inflate the layouts for the info window, title and snippet.
+                View infoWindow = getLayoutInflater().inflate(R.layout.custom_info_contents,
+                        findViewById(R.id.map), false);
+
+                TextView title = infoWindow.findViewById(R.id.title);
+                title.setText(marker.getTitle());
+
+                TextView snippet = infoWindow.findViewById(R.id.snippet);
+                snippet.setText(marker.getSnippet());
+
+                return infoWindow;
+            }
+        });
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        handlerTutupActivity();
+        startRealtimeClock();
+        startLocationUpdates();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        stopLocationUpdates();
+    }
+
+    //endregion
+//Bottom Sheet
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        stopLocationUpdates();
+    }
+
+    @Override
+    protected void onDestroy() {
+        stopLocationUpdates();
+        autoCloseHandler.removeCallbacksAndMessages(null);
+        super.onDestroy();
+    }
+
+    private final StringBuffer stringBuffer = new StringBuffer();
+
+    private int ber = 0;
+    private int a = 0;
+    private int k = 0;
+    private int h = 0;
+    private int l = 0;
+    private int ad = 0;
+    private int ko = 0;
+
+    private String berakhlak = "";
+
+    public void viewBerakhlak(
+            String pulang,
+            String eselon,
+            String sEmployId,
+            String timetableid,
+            String rbTanggal,
+            String rbJam,
+            String rbPosisi,
+            String rbStatus,
+            String rbLat,
+            String rbLng,
+            String rbKet,
+            Integer terlambat,
+            String jamPulang,
+            String rbValid
+    ) {
+
+        // Hindari crash Xiaomi
+        if (isFinishing() || isDestroyed()) {
+            return;
+        }
+
+        // RESET
+        ber = 0;
+        a = 0;
+        k = 0;
+        h = 0;
+        l = 0;
+        ad = 0;
+        ko = 0;
+
+        stringBuffer.setLength(0);
+
+        Dialog berakhlakDialog = new Dialog(
+                AbsensiKehadiranActivity.this,
+                R.style.DialogStyle
+        );
+
+        berakhlakDialog.setContentView(R.layout.vire_berakhlak);
+        berakhlakDialog.setCancelable(false);
+
+        // =========================
+        // FIND VIEW
+        // =========================
+
+        LinearLayout llListBerakhlak1 =
+                berakhlakDialog.findViewById(R.id.llListBerakhlak1);
+
+        LinearLayout llListBerakhlak2 =
+                berakhlakDialog.findViewById(R.id.llListBerakhlak2);
+
+        LinearLayout llListBerakhlak3 =
+                berakhlakDialog.findViewById(R.id.llListBerakhlak3);
+
+        LinearLayout llListBerakhlak4 =
+                berakhlakDialog.findViewById(R.id.llListBerakhlak4);
+
+        LinearLayout llListBerakhlak5 =
+                berakhlakDialog.findViewById(R.id.llListBerakhlak5);
+
+        LinearLayout llListBerakhlak6 =
+                berakhlakDialog.findViewById(R.id.llListBerakhlak6);
+
+        LinearLayout llListBerakhlak7 =
+                berakhlakDialog.findViewById(R.id.llListBerakhlak7);
+
+        ImageView ivListBerakhlak1 =
+                berakhlakDialog.findViewById(R.id.ivListBerakhlak1);
+
+        ImageView ivListBerakhlak2 =
+                berakhlakDialog.findViewById(R.id.ivListBerakhlak2);
+
+        ImageView ivListBerakhlak3 =
+                berakhlakDialog.findViewById(R.id.ivListBerakhlak3);
+
+        ImageView ivListBerakhlak4 =
+                berakhlakDialog.findViewById(R.id.ivListBerakhlak4);
+
+        ImageView ivListBerakhlak5 =
+                berakhlakDialog.findViewById(R.id.ivListBerakhlak5);
+
+        ImageView ivListBerakhlak6 =
+                berakhlakDialog.findViewById(R.id.ivListBerakhlak6);
+
+        ImageView ivListBerakhlak7 =
+                berakhlakDialog.findViewById(R.id.ivListBerakhlak7);
+
+        ImageView ivCheckBer1 =
+                berakhlakDialog.findViewById(R.id.ivCheckBer1);
+
+        ImageView ivCheckBer2 =
+                berakhlakDialog.findViewById(R.id.ivCheckBer2);
+
+        ImageView ivCheckBer3 =
+                berakhlakDialog.findViewById(R.id.ivCheckBer3);
+
+        ImageView ivCheckBer4 =
+                berakhlakDialog.findViewById(R.id.ivCheckBer4);
+
+        ImageView ivCheckBer5 =
+                berakhlakDialog.findViewById(R.id.ivCheckBer5);
+
+        ImageView ivCheckBer6 =
+                berakhlakDialog.findViewById(R.id.ivCheckBer6);
+
+        ImageView ivCheckBer7 =
+                berakhlakDialog.findViewById(R.id.ivCheckBer7);
+
+        ImageView ivCloseBerakhlak =
+                berakhlakDialog.findViewById(R.id.ivCloseBerakhlak);
+
+        View tvKirimSurveiBerakhlak =
+                berakhlakDialog.findViewById(R.id.tvKirimSurveiBerakhlak);
+
+        // Tambahkan animasi pembukaan dialog agar lebih keren
+        if (berakhlakDialog.getWindow() != null) {
+            berakhlakDialog.getWindow().setWindowAnimations(R.style.Animation_App_Activity);
+        }
+
+        // =========================
+        // VALIDASI VIEW
+        // =========================
+
+        if (llListBerakhlak1 == null ||
+                llListBerakhlak2 == null ||
+                llListBerakhlak3 == null ||
+                llListBerakhlak4 == null ||
+                llListBerakhlak5 == null ||
+                llListBerakhlak6 == null ||
+                llListBerakhlak7 == null ||
+
+                ivListBerakhlak1 == null ||
+                ivListBerakhlak2 == null ||
+                ivListBerakhlak3 == null ||
+                ivListBerakhlak4 == null ||
+                ivListBerakhlak5 == null ||
+                ivListBerakhlak6 == null ||
+                ivListBerakhlak7 == null ||
+
+                ivCheckBer1 == null ||
+                ivCheckBer2 == null ||
+                ivCheckBer3 == null ||
+                ivCheckBer4 == null ||
+                ivCheckBer5 == null ||
+                ivCheckBer6 == null ||
+                ivCheckBer7 == null ||
+
+                ivCloseBerakhlak == null ||
+                tvKirimSurveiBerakhlak == null) {
+
+            Toast.makeText(
+                    this,
+                    "Terjadi kesalahan tampilan.",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return;
+        }
+
+        // =========================
+        // CLOSE
+        // =========================
+
+        ivCloseBerakhlak.setOnClickListener(v -> {
+            if (berakhlakDialog.isShowing()) {
+                berakhlakDialog.dismiss();
+            }
+            llUpload.setEnabled(true);
+        });
+
+        // =========================
+        // CLICK LIST
+        // =========================
+
+        llListBerakhlak1.setOnClickListener(v ->
+                ber = toggleSelection(
+                        ber,
+                        ivListBerakhlak1,
+                        ivCheckBer1
+                )
+        );
+
+        llListBerakhlak2.setOnClickListener(v ->
+                a = toggleSelection(
+                        a,
+                        ivListBerakhlak2,
+                        ivCheckBer2
+                )
+        );
+
+        llListBerakhlak3.setOnClickListener(v ->
+                k = toggleSelection(
+                        k,
+                        ivListBerakhlak3,
+                        ivCheckBer3
+                )
+        );
+
+        llListBerakhlak4.setOnClickListener(v ->
+                h = toggleSelection(
+                        h,
+                        ivListBerakhlak4,
+                        ivCheckBer4
+                )
+        );
+
+        llListBerakhlak5.setOnClickListener(v ->
+                l = toggleSelection(
+                        l,
+                        ivListBerakhlak5,
+                        ivCheckBer5
+                )
+        );
+
+        llListBerakhlak6.setOnClickListener(v ->
+                ad = toggleSelection(
+                        ad,
+                        ivListBerakhlak6,
+                        ivCheckBer6
+                )
+        );
+
+        llListBerakhlak7.setOnClickListener(v ->
+                ko = toggleSelection(
+                        ko,
+                        ivListBerakhlak7,
+                        ivCheckBer7
+                )
+        );
+
+        // =========================
+        // KIRIM
+        // =========================
+
+        tvKirimSurveiBerakhlak.setOnClickListener(v -> {
+
+            stringBuffer.setLength(0);
+
+            if (ber == 0 &&
+                    a == 0 &&
+                    k == 0 &&
+                    h == 0 &&
+                    l == 0 &&
+                    ad == 0 &&
+                    ko == 0) {
+
+                Toast.makeText(
+                        mContext,
+                        "Tentukan Core Values",
+                        Toast.LENGTH_SHORT
+                ).show();
+
+                return;
+            }
+
+            if (ber == 1) stringBuffer.append("1,");
+            if (a == 1) stringBuffer.append("2,");
+            if (k == 1) stringBuffer.append("3,");
+            if (h == 1) stringBuffer.append("4,");
+            if (l == 1) stringBuffer.append("5,");
+            if (ad == 1) stringBuffer.append("6,");
+            if (ko == 1) stringBuffer.append("7,");
+
+            if (stringBuffer.length() > 0) {
+                stringBuffer.deleteCharAt(
+                        stringBuffer.length() - 1
+                );
+            }
+
+            berakhlak = stringBuffer.toString();
+
+            if (berakhlakDialog.isShowing()) {
+                berakhlakDialog.dismiss();
+            }
+
+            kirimDataPulang(
+                    "pulang",
+                    eselon,
+                    sEmployId,
+                    timetableid,
+                    rbTanggal,
+                    rbJam,
+                    rbPosisi,
+                    rbStatus,
+                    rbLat,
+                    rbLng,
+                    rbKet,
+                    0,
+                    jamPulang,
+                    rbValid,
+                    berakhlak
+            );
+        });
+
+        try {
+            if (!isFinishing() &&
+                    !isDestroyed() &&
+                    !berakhlakDialog.isShowing()) {
+
+                berakhlakDialog.show();
+            }
+//            berakhlakDialog.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            Toast.makeText(
+                    this,
+                    "Dialog gagal ditampilkan.",
+                    Toast.LENGTH_SHORT
+            ).show();
+        }
+    }
+
+    private int toggleSelection(
+            int state,
+            ImageView uncheckedView,
+            ImageView checkedView
+    ) {
+
+        if (uncheckedView == null || checkedView == null) {
+            return state;
+        }
+
+        // Memberikan feedback getar halus agar terasa premium
+        uncheckedView.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+
+        if (state == 0) {
+
+            uncheckedView.setVisibility(View.GONE);
+            checkedView.setVisibility(View.VISIBLE);
+
+            return 1;
+
+        } else {
+
+            uncheckedView.setVisibility(View.VISIBLE);
+            checkedView.setVisibility(View.GONE);
+
+            return 0;
+        }
+    }
+}

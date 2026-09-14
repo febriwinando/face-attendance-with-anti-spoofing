@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!-- Blue Glow (Top Left) -->
+    <View
+        android:layout_width="400dp"
+        android:layout_height="400dp"
+        android:background="@drawable/backgoundovalabuabu"
+        android:backgroundTint="@color/primary_brand"
+        android:alpha="0.05"
+        android:translationX="-150dp"
+        android:translationY="-100dp" />
+
+    <!-- Pink/Secondary Glow (Top Right) -->
+    <View
+        android:layout_width="320dp"
+        android:layout_height="320dp"
+        android:background="@drawable/backgoundovalabuabu"
+        android:backgroundTint="@color/brand_secondary"
+        android:alpha="0.07"
+        android:translationX="150dp"
+        android:translationY="-50dp" />
+
+    <!-- Green Glow (Bottom Left) -->
+    <View
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:background="@drawable/backgoundovalabuabu"
+        android:backgroundTint="@color/hijau"
+        android:alpha="0.05"
+        android:translationX="-80dp"
+        android:translationY="450dp" />
+
+    <!-- Yellow Glow (Middle Right) -->
+    <View
+        android:layout_width="220dp"
+        android:layout_height="220dp"
+        android:background="@drawable/backgoundovalabuabu"
+        android:backgroundTint="@color/kuning"
+        android:alpha="0.04"
+        android:translationX="120dp"
+        android:translationY="250dp" />
+
+</merge>
