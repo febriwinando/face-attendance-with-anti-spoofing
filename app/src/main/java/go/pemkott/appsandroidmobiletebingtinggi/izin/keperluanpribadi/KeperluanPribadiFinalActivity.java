@@ -857,30 +857,25 @@ public class KeperluanPribadiFinalActivity extends AppCompatActivity implements 
 
     ArrayList<Location> locationArrayList = new ArrayList<>();
     private void plotMarkers(Location locationObj) {
+        if (locationObj == null) return;
 
+        if (map != null) {
+            try {
+                if (rippleAnimator != null) rippleAnimator.cancel();
+                map.clear();
+                LatLng position = new LatLng(locationObj.getLatitude(), locationObj.getLongitude());
+                String addr = lokasi.getAddress(KeperluanPribadiFinalActivity.this, locationObj.getLatitude(), locationObj.getLongitude());
+                map.addMarker(new MarkerOptions().position(position).icon(bitmapDescriptorFromVector(this, R.drawable.asn_lk)).title(addr != null ? addr : "Lokasi Saya"));
+                rippleAnimator = MapUtils.showRippleEffect(map, position);
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(position, 19f));
+                latGMap = locationObj.getLatitude();
+                lngGMap = locationObj.getLongitude();
 
-        if(map != null){
-
-            if (rippleAnimator != null) rippleAnimator.cancel();
-            map.clear();
-            LatLng position = new LatLng(locationObj.getLatitude(), locationObj.getLongitude());
-            map.addMarker(new MarkerOptions().position(position).icon(bitmapDescriptorFromVector(this, R.drawable.asn_lk)).title(lokasi.getAddress(KeperluanPribadiFinalActivity.this, locationObj.getLatitude(), locationObj.getLongitude())));
-            rippleAnimator = MapUtils.showRippleEffect(map, position);
-            map.animateCamera(CameraUpdateFactory.newLatLngZoom(position, 19f));
-            latGMap = locationObj.getLatitude();
-            lngGMap = locationObj.getLongitude();
-
-
-            locationArrayList.add(locationObj);
-
-
-        }else{
-
-            map.moveCamera(CameraUpdateFactory
-                    .newLatLngZoom(defaultLocation, 19f));
-            map.getUiSettings().setMyLocationButtonEnabled(true);
+                locationArrayList.add(locationObj);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
-
     }
 
 

@@ -36,6 +36,7 @@ import java.util.Locale;
 import go.pemkott.appsandroidmobiletebingtinggi.NewDashboard.DashboardVersiOne;
 import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.api.HttpService;
+import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import go.pemkott.appsandroidmobiletebingtinggi.izinshift.GridJadwalIzinShiftAdapter;
@@ -92,11 +93,7 @@ public class JadwalPerjalananDinasShiftActivity extends AppCompatActivity {
         userId = session.getPegawaiId();
 
         jadwalPdSiftActivity = this;
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://absensi.tebingtinggikota.go.id/api/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        holderAPI = retrofit.create(HttpService.class);
+        holderAPI = RetroClient.getInstance().getApi2();
 
         jam_masuk = DashboardVersiOne.jam_masuk;
         jam_pulang = DashboardVersiOne.jam_pulang;

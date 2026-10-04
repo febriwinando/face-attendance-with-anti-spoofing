@@ -66,6 +66,8 @@ import java.util.concurrent.Executors;
 
 import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.dinasluarkantor.tugaslapangan.TugasLapanganFinalActivity;
+import go.pemkott.appsandroidmobiletebingtinggi.dinasluarkantor.tugaslapangan.TugasLapanganShiftActivity;
+import go.pemkott.appsandroidmobiletebingtinggi.dinasluarkantor.tugaslapangan.TugasLapanganShiftFinalActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.kehadiran.AbsensiKehadiranActivity;
 
 public class CameraXLActivity extends AppCompatActivity {
@@ -204,6 +206,13 @@ public class CameraXLActivity extends AppCompatActivity {
                                 finish();
                             } else if ("tugaslapangan".equals(aktivitas)) {
                                 Intent intent = new Intent(CameraXLActivity.this, TugasLapanganFinalActivity.class);
+                                if (getIntent().getExtras() != null) intent.putExtras(getIntent().getExtras());
+                                intent.putExtra("namafile", resultPath);
+                                startActivity(intent);
+                                finish();
+                            } else if ("tugaslapanganshiftfinal".equals(aktivitas)) {
+                                Intent intent = new Intent(CameraXLActivity.this, TugasLapanganShiftFinalActivity.class);
+                                if (getIntent().getExtras() != null) intent.putExtras(getIntent().getExtras());
                                 intent.putExtra("namafile", resultPath);
                                 startActivity(intent);
                                 finish();

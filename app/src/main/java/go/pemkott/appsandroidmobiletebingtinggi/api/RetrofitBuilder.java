@@ -12,7 +12,7 @@ public class RetrofitBuilder {
 
     public static Retrofit getClient(){
 
-        final OkHttpClient okHttpClient = new OkHttpClient.Builder()
+        final OkHttpClient okHttpClient = SSLHelper.getUnsafeOkHttpClientBuilder()
                 .readTimeout(60, TimeUnit.SECONDS)
                 .connectTimeout(60, TimeUnit.SECONDS)
                 .build();

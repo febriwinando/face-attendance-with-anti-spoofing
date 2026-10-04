@@ -358,34 +358,36 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
             @Override
             public void onActivityResult(ActivityResult result) {
                 Intent data = result.getData();
-                if (data != null){
+                if (data != null && data.getData() != null){
                     Uri sUri = data.getData();
-                    File file= new File(sUri.getPath());
-                    file.getName();
                     llLampiranDinasLuar.setVisibility(View.GONE);
                     llLampiranDinasLuarHead.setVisibility(View.GONE);
                     llPdfDinasLuar.setVisibility(View.VISIBLE);
-                    String displayName;
+                    String displayName = "dokumen.pdf";
 
                     try {
                         pathDokument = getPDFPath(sUri);
-
-                    }catch (Exception e){
+                    } catch (Exception e){
                         Log.d(TAG, "Exception"+e);
                     }
 
                     if (sUri.toString().startsWith("content://")) {
                         try (Cursor cursor = IzinSakitFinalActivity.this.getContentResolver().query(sUri, null, null, null, null)) {
                             if (cursor != null && cursor.moveToFirst()) {
-                                displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
-                                tvSuratPerintah.setText(displayName);
-
+                                int nameIdx = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                                if (nameIdx != -1) {
+                                    displayName = cursor.getString(nameIdx);
+                                }
                             }
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
                     } else if (sUri.toString().startsWith("file://")) {
-                        displayName = file.getName();
-                        tvSuratPerintah.setText(displayName);
+                        if (sUri.getPath() != null) {
+                            displayName = new File(sUri.getPath()).getName();
+                        }
                     }
+                    tvSuratPerintah.setText(displayName);
                 }
             }
         });
@@ -396,11 +398,13 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
         selected = rgKehadiran.getCheckedRadioButtonId();
         radioSelectedKehadiran = findViewById(selected);
 
-        if (!Settings.Secure.getString(this.getContentResolver(), Settings
-                        .Secure.ALLOW_MOCK_LOCATION).equals("0")) {
-            mockLocationsEnabled = true;
-        } else{
-            mockLocationsEnabled = false;
+        try {
+            String mockSetting = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ALLOW_MOCK_LOCATION);
+            if (mockSetting != null && !mockSetting.equals("0")) {
+                mock_location = 1;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
@@ -1221,31 +1225,26 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
 
     ArrayList<Location> locationArrayList = new ArrayList<>();
     private void plotMarkers(Location locationObj) {
+        if (locationObj == null) return;
 
+        if (map != null) {
+            try {
+                if (rippleAnimator != null) rippleAnimator.cancel();
+                map.clear();
+                LatLng position = new LatLng(locationObj.getLatitude(), locationObj.getLongitude());
+                String addr = lokasi.getAddress(IzinSakitFinalActivity.this, locationObj.getLatitude(), locationObj.getLongitude());
+                map.addMarker(new MarkerOptions().position(position).icon(bitmapDescriptorFromVector(this, R.drawable.asn_lk)).title(addr != null ? addr : "Lokasi Saya"));
+                rippleAnimator = MapUtils.showRippleEffect(map, position);
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(position, 19f));
+                map.getUiSettings().setMyLocationButtonEnabled(true);
+                latGMap = locationObj.getLatitude();
+                lngGMap = locationObj.getLongitude();
 
-        if(map != null){
-
-            if (rippleAnimator != null) rippleAnimator.cancel();
-            map.clear();
-            LatLng position = new LatLng(locationObj.getLatitude(), locationObj.getLongitude());
-            map.addMarker(new MarkerOptions().position(position).icon(bitmapDescriptorFromVector(this, R.drawable.asn_lk)).title(lokasi.getAddress(IzinSakitFinalActivity.this, locationObj.getLatitude(), locationObj.getLongitude())));
-            rippleAnimator = MapUtils.showRippleEffect(map, position);
-            map.animateCamera(CameraUpdateFactory.newLatLngZoom(position, 19f));
-            map.getUiSettings().setMyLocationButtonEnabled(true);
-            latGMap = locationObj.getLatitude();
-            lngGMap = locationObj.getLongitude();
-
-
-            locationArrayList.add(locationObj);
-
-
-        }else{
-
-            map.moveCamera(CameraUpdateFactory
-                    .newLatLngZoom(defaultLocation, 19f));
-            map.getUiSettings().setMyLocationButtonEnabled(true);
+                locationArrayList.add(locationObj);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
-
     }
 
 

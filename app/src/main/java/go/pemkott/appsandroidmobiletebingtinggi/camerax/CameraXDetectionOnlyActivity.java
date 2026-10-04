@@ -6,13 +6,17 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.media.Image;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Size;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -25,24 +29,41 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.OptIn;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.camera.core.*;
+import androidx.camera.core.Camera;
+import androidx.camera.core.CameraSelector;
+import androidx.camera.core.ExperimentalGetImage;
+import androidx.camera.core.ImageAnalysis;
+import androidx.camera.core.ImageCapture;
+import androidx.camera.core.ImageCaptureException;
+import androidx.camera.core.ImageProxy;
+import androidx.camera.core.Preview;
+import androidx.camera.core.TorchState;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
 import androidx.core.content.ContextCompat;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.mlkit.vision.common.InputImage;
-import com.google.mlkit.vision.face.*;
+import com.google.mlkit.vision.face.Face;
+import com.google.mlkit.vision.face.FaceDetection;
+import com.google.mlkit.vision.face.FaceDetector;
+import com.google.mlkit.vision.face.FaceDetectorOptions;
+import com.google.mlkit.vision.face.FaceLandmark;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.nio.ByteBuffer;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import go.pemkott.appsandroidmobiletebingtinggi.R;
+import go.pemkott.appsandroidmobiletebingtinggi.deteksidir.env.ImageUtils;
+import go.pemkott.appsandroidmobiletebingtinggi.deteksidir.tflite.Classifier;
+import go.pemkott.appsandroidmobiletebingtinggi.deteksidir.tflite.TFLiteObjectDetectionAPIModel;
+import go.pemkott.appsandroidmobiletebingtinggi.deteksidir.tflite.Utils;
 import go.pemkott.appsandroidmobiletebingtinggi.dinasluarkantor.perjalanandinas.PerjalananDinasFinalActivity;
-import go.pemkott.appsandroidmobiletebingtinggi.dinasluarkantor.perjalanandinas.PerjalananDinasShiftFinalActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.dinasluarkantor.tugaslapangan.TugasLapanganFinalActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.izin.cuti.IzinCutiFinalActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.izin.keperluanpribadi.KeperluanPribadiFinalActivity;
@@ -53,12 +74,11 @@ import go.pemkott.appsandroidmobiletebingtinggi.izinshift.izinshiftsakit.IzinSak
 import go.pemkott.appsandroidmobiletebingtinggi.kehadiran.AbsensiKehadiranActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.kehadiransift.AbsenShiftActivity;
 
-
 public class CameraXDetectionOnlyActivity extends AppCompatActivity {
 
     // ================= UI =================
     private PreviewView previewView;
-    private FaceOverlayViewTanpaDeteksi faceOverlay;
+    private FaceOverlayView faceOverlay;
     private ImageButton capture;
     ImageView flipCamera, toggleFlash;
     private TextView txtChallenge;
@@ -72,9 +92,19 @@ public class CameraXDetectionOnlyActivity extends AppCompatActivity {
     private FaceDetector faceDetector;
     private boolean faceInsideFrame = false;
 
+    // ================= CAPTURE STAGES =================
+    private enum CaptureStage {
+        ANTI_SPOOFING_INIT, // Tahap 1
+        CHALLENGES,         // Tahap 2
+        ANTI_SPOOFING_FINAL, // Tahap 3
+        CAPTURE,            // Tahap 4
+        DONE
+    }
+    private CaptureStage currentStage = CaptureStage.ANTI_SPOOFING_INIT;
+
     // ================= CHALLENGE =================
     enum Challenge {
-        BLINK, SMILE, TURN_LEFT, TURN_RIGHT, LOOK_UP, ZOOM_IN
+        BLINK, SMILE, TURN_LEFT, TURN_RIGHT, LOOK_UP
     }
 
     private final List<Challenge> challengeQueue = new ArrayList<>();
@@ -93,12 +123,25 @@ public class CameraXDetectionOnlyActivity extends AppCompatActivity {
     private String aktivitas;
     private boolean isCapturing = false;
 
-    // Liveness Security
-    private final List<RectF> positionHistory = new ArrayList<>();
-    private static final int HISTORY_SIZE = 15;
-    private boolean isRealFace = false;
-    private float initialFaceWidth = 0;
-    private float initialFaceX = 0;
+    // Buffers for optimized anti-spoofing processing (DetectorActivity style)
+    private Bitmap rgbFrameBitmap = null;
+    private Bitmap faceBmp = null;
+    private int[] rgbBytes = null;
+    private byte[] yBuffer = null;
+    private byte[] uBuffer = null;
+    private byte[] vBuffer = null;
+
+    // Antispofing TFLite (Metode DetectorActivity)
+    private Classifier antispofingDetector;
+    private static final int TF_OD_API_INPUT_SIZE = 224;
+    private static final boolean TF_OD_API_IS_QUANTIZED = false;
+    private static final String TF_OD_API_MODEL_FILE = "mask_detector.tflite";
+    private static final String TF_OD_API_LABELS_FILE = "file:///android_asset/mobile_label.txt";
+    private boolean isProcessingAntispofing = false;
+    private boolean isAnalyzing = false;
+    private int nyataStreak = 0;
+    private ExecutorService analysisExecutor;
+
 
     // ================= LIFECYCLE =================
     @Override
@@ -124,6 +167,18 @@ public class CameraXDetectionOnlyActivity extends AppCompatActivity {
 
         initFaceDetector();
         generateChallengeQueue();
+
+        try {
+            Utils.assetFilePath(this, "DeepPixBis_121_v5.ptl");
+            antispofingDetector = TFLiteObjectDetectionAPIModel.create(
+                    getAssets(),
+                    TF_OD_API_MODEL_FILE,
+                    TF_OD_API_LABELS_FILE,
+                    TF_OD_API_INPUT_SIZE,
+                    TF_OD_API_IS_QUANTIZED);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         capture.setOnClickListener(v -> {
             if (!faceInsideFrame) {
@@ -154,6 +209,28 @@ public class CameraXDetectionOnlyActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        resetState();
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (analysisExecutor != null) {
+            analysisExecutor.shutdown();
+        }
+        if (rgbFrameBitmap != null) {
+            rgbFrameBitmap.recycle();
+            rgbFrameBitmap = null;
+        }
+        if (faceBmp != null) {
+            faceBmp.recycle();
+            faceBmp = null;
+        }
+        super.onDestroy();
+    }
+
     // ================= FACE DETECTOR =================
     private void initFaceDetector() {
         FaceDetectorOptions options =
@@ -169,24 +246,17 @@ public class CameraXDetectionOnlyActivity extends AppCompatActivity {
 
     // ================= CHALLENGE =================
     private void generateChallengeQueue() {
-
         Challenge[] pool = Challenge.values();
         List<Challenge> temp = new ArrayList<>();
-
         Random r = new Random();
 
-        // Selalu sertakan BLINK dan ZOOM_IN sebagai tantangan wajib untuk anti-spoofing
-        temp.add(Challenge.BLINK);
-        temp.add(Challenge.ZOOM_IN);
-
-        while (temp.size() < 3) { // Total 3 tantangan
+        while (temp.size() < 2) { // 2 tantangan random
             Challenge c = pool[r.nextInt(pool.length)];
             if (!temp.contains(c)) temp.add(c);
         }
 
         challengeQueue.clear();
         challengeQueue.addAll(temp);
-
         Collections.shuffle(challengeQueue);
 
         challengeIndex = 0;
@@ -194,10 +264,12 @@ public class CameraXDetectionOnlyActivity extends AppCompatActivity {
     }
 
     private void showCurrentChallenge() {
-        txtChallenge.setText(
-                "Pemeriksaan " + (challengeIndex + 1) + " / " + challengeQueue.size()
-                        + "\n" + getChallengeText(challengeQueue.get(challengeIndex))
-        );
+        runOnUiThread(() -> {
+            if (challengeIndex < challengeQueue.size()) {
+                Challenge c = challengeQueue.get(challengeIndex);
+                txtChallenge.setText("Tahap 2: Liveness Check\n" + getChallengeText(c));
+            }
+        });
     }
 
     private String getChallengeText(Challenge c) {
@@ -207,7 +279,6 @@ public class CameraXDetectionOnlyActivity extends AppCompatActivity {
             case TURN_LEFT: return "Hadap ke kiri";
             case TURN_RIGHT: return "Hadap ke kanan";
             case LOOK_UP: return "Angkat dagu";
-            case ZOOM_IN: return "Maju/Mendekat ke kamera";
             default: return "";
         }
     }
@@ -226,13 +297,16 @@ public class CameraXDetectionOnlyActivity extends AppCompatActivity {
 
                 imageCapture = new ImageCapture.Builder().build();
 
+                analysisExecutor = Executors.newSingleThreadExecutor();
+
                 ImageAnalysis analysis =
                         new ImageAnalysis.Builder()
                                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                                .setTargetResolution(new Size(640, 480))
                                 .build();
 
                 analysis.setAnalyzer(
-                        Executors.newSingleThreadExecutor(),
+                        analysisExecutor,
                         this::analyzeFrame
                 );
 
@@ -258,6 +332,10 @@ public class CameraXDetectionOnlyActivity extends AppCompatActivity {
     // ================= ANALYSIS =================
     @OptIn(markerClass = ExperimentalGetImage.class)
     private void analyzeFrame(ImageProxy proxy) {
+        if (isFinishing() || isDestroyed() || isAnalyzing) {
+            proxy.close();
+            return;
+        }
 
         Image img = proxy.getImage();
         if (img == null) {
@@ -265,83 +343,293 @@ public class CameraXDetectionOnlyActivity extends AppCompatActivity {
             return;
         }
 
+        isAnalyzing = true;
         InputImage image = InputImage.fromMediaImage(
                 img,
                 proxy.getImageInfo().getRotationDegrees()
         );
 
         faceDetector.process(image)
-                .addOnSuccessListener(faces -> handleFaces(faces, image))
-                .addOnCompleteListener(t -> proxy.close());
+                .addOnSuccessListener(analysisExecutor, faces -> handleFaces(faces, image, proxy))
+                .addOnFailureListener(analysisExecutor, e -> proxy.close())
+                .addOnCompleteListener(analysisExecutor, t -> {
+                    isAnalyzing = false;
+                });
     }
 
-    private void handleFaces(List<Face> faces, InputImage image) {
+    private void handleFaces(List<Face> faces, InputImage image, ImageProxy proxy) {
 
         if (faces.isEmpty()) {
-            resetState();
+            proxy.close();
+            // Jangan resetStage sepenuhnya agar tahap tidak kembali ke awal
+            runOnUiThread(() -> {
+                faceOverlay.setFaceInside(false);
+                faceOverlay.setProgress(0f);
+            });
             return;
         }
 
         Face face = faces.get(0);
+        Rect rect = face.getBoundingBox();
+        float l = rect.left / (float) image.getWidth();
+        float t = rect.top / (float) image.getHeight();
+        float r = rect.right / (float) image.getWidth();
+        float b = rect.bottom / (float) image.getHeight();
 
-        RectF faceNorm = normalize(face.getBoundingBox(), image);
+        RectF projectedFace = new RectF();
+        int rotation = proxy.getImageInfo().getRotationDegrees();
 
+        // Proyeksi koordinat Landscape Buffer ke Portrait UI
+        if (rotation == 270) {
+            projectedFace.left = t;
+            projectedFace.top = 1f - r;
+            projectedFace.right = b;
+            projectedFace.bottom = 1f - l;
+        } else if (rotation == 90) {
+            projectedFace.left = 1f - b;
+            projectedFace.top = l;
+            projectedFace.right = 1f - t;
+            projectedFace.bottom = r;
+        } else {
+            projectedFace.set(l, t, r, b);
+        }
+
+        // Mirroring untuk kamera depan
         if (lensFacing == CameraSelector.LENS_FACING_FRONT) {
-            // mirror kamera depan
-            float left = 1f - faceNorm.right;
-            float right = 1f - faceNorm.left;
-            faceNorm.left = left;
-            faceNorm.right = right;
+            float left = 1f - projectedFace.right;
+            float right = 1f - projectedFace.left;
+            projectedFace.left = left;
+            projectedFace.right = right;
         }
 
-        if (initialFaceWidth == 0) {
-            initialFaceWidth = faceNorm.width();
-            initialFaceX = faceNorm.centerX();
-        }
-
-        faceInsideFrame =
-                faceOverlay.getFrameNormalized()
-                        .contains(faceNorm.centerX(), faceNorm.centerY());
-
-        runOnUiThread(() -> faceOverlay.setFaceInside(faceInsideFrame));
+        faceInsideFrame = faceOverlay.getFrameNormalized().contains(projectedFace.centerX(), projectedFace.centerY());
+        runOnUiThread(() -> {
+            faceOverlay.setFaceInside(faceInsideFrame);
+            // Tampilkan kotak AI yang sudah sinkron dengan posisi wajah di layar
+            faceOverlay.setFaceData(faceInsideFrame, projectedFace, "");
+        });
 
         if (!faceInsideFrame) {
-            resetState();
+            proxy.close();
+            runOnUiThread(() -> {
+                txtChallenge.setText("⚠️ Posisikan wajah di dalam oval");
+                faceOverlay.setProgress(0f);
+            });
             return;
         }
 
-        // Anti-Spoofing 1: Check for natural micro-movements
-        checkFaceStillness(faceNorm);
-        if (!isRealFace && positionHistory.size() >= HISTORY_SIZE) {
-            runOnUiThread(() -> txtChallenge.setText("⚠️ Gerakkan wajah perlahan\n(Pastikan wajah asli)"));
-            return;
+        // Anti-Spoofing Langsung Bekerja secara berkelanjutan
+        if (antispofingDetector != null && !isProcessingAntispofing) {
+            isProcessingAntispofing = true;
+            analysisExecutor.execute(() -> {
+                try {
+                    // 1. Proses Gambar Wajah dengan Koordinat yang Benar (SINKRON)
+                    Bitmap faceBitmap = prepareFaceBitmap(proxy, face);
+                    if (faceBitmap == null) return;
+
+                    // 2. Cek Anti-Spoofing (AI + Sharpness + Moire)
+                    boolean isSharp = isImageSharp(faceBitmap);
+                    boolean hasMoire = detectMoirePattern(faceBitmap);
+                    List<Classifier.Recognition> results = antispofingDetector.recognizeImage(faceBitmap);
+                    float confidence = (!results.isEmpty()) ? results.get(0).getConfidence() : 0f;
+                    boolean aiNyata = confidence >= 0.95f;
+
+                    // 3. Update Streak Keaslian
+                    if (aiNyata && isSharp && !hasMoire) {
+                        nyataStreak++;
+                    } else {
+                        nyataStreak = 0;
+                    }
+
+                    // 4. Logika Stage & UI Update
+                    runOnUiThread(() -> {
+                        if (nyataStreak < 3) {
+                             // Jika belum yakin wajah asli, tahan di Tahap 1/3 (Verifikasi)
+                             String prefix = (currentStage.ordinal() < CaptureStage.CHALLENGES.ordinal()) 
+                                     ? "Tahap 1: Verifikasi Awal" : "Tahap 3: Verifikasi Akhir";
+
+                             String statusText;
+                             if (!isSharp) {
+                                 statusText = "⚠️ Gambar Kabur";
+                             } else if (hasMoire) {
+                                 statusText = "❌ PALSU (Layar Digital)";
+                             } else if (!aiNyata) {
+                                 statusText = "❌ PALSU (" + String.format("%.0f%%", confidence*100) + ")";
+                             } else {
+                                 statusText = "✅ NYATA (Memproses...)";
+                             }
+
+                             txtChallenge.setText(prefix + "\n" + statusText);
+                        } else {
+                             // Wajah Asli Terverifikasi (Streak >= 3), jalankan logika stage
+                             processStageLogic(face, projectedFace);
+                        }
+                    });
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    isProcessingAntispofing = false;
+                    proxy.close();
+                }
+            });
+        } else {
+            proxy.close();
+        }
+    }
+
+    private void processStageLogic(Face face, RectF faceNorm) {
+        switch (currentStage) {
+            case ANTI_SPOOFING_INIT:
+                currentStage = CaptureStage.CHALLENGES;
+                runOnUiThread(this::showCurrentChallenge);
+                break;
+
+            case CHALLENGES:
+                if (challengeIndex >= challengeQueue.size()) {
+                    currentStage = CaptureStage.ANTI_SPOOFING_FINAL;
+                    nyataStreak = 0;
+                } else {
+                    detectChallenge(face, faceNorm);
+                }
+                break;
+
+            case ANTI_SPOOFING_FINAL:
+                currentStage = CaptureStage.CAPTURE;
+                break;
+
+            case CAPTURE:
+                if (!isCapturing) {
+                    isCapturing = true;
+                    txtChallenge.setText("Tahap 4: Mengambil Foto...");
+                    takePicture();
+                }
+                break;
+
+            case DONE:
+                break;
+        }
+    }
+
+    private interface OnAntiSpoofingPassListener {
+        void onPass();
+    }
+
+
+    private synchronized Bitmap prepareFaceBitmap(ImageProxy proxy, Face face) {
+        int width = proxy.getWidth();
+        int height = proxy.getHeight();
+        int rotation = proxy.getImageInfo().getRotationDegrees();
+
+        // Lazy allocation of buffers
+        if (rgbBytes == null || rgbBytes.length != width * height) {
+            rgbBytes = new int[width * height];
+            rgbFrameBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+            faceBmp = Bitmap.createBitmap(TF_OD_API_INPUT_SIZE, TF_OD_API_INPUT_SIZE, Bitmap.Config.ARGB_8888);
+
+            yBuffer = new byte[width * height];
+            uBuffer = new byte[(width / 2) * (height / 2) * 2]; // Max possible size
+            vBuffer = new byte[(width / 2) * (height / 2) * 2];
         }
 
-        // Anti-Spoofing 2: Chromatic Authenticity (YCbCr Analysis)
-        if (challengeIndex >= challengeQueue.size() && !isCapturing) {
-            // Kita butuh bitmap untuk analisis warna
-            Bitmap faceBitmap = previewView.getBitmap();
-            if (faceBitmap != null) {
-                if (!validateSkinIntegrity(faceBitmap, face.getBoundingBox())) {
-                    runOnUiThread(() -> txtChallenge.setText("⚠️ Tekstur wajah tidak valid\n(Gunakan wajah asli, bukan foto/layar)"));
-                    return;
+        ImageProxy.PlaneProxy[] planes = proxy.getPlanes();
+        fillBuffer(planes[0].getBuffer(), yBuffer);
+        fillBuffer(planes[1].getBuffer(), uBuffer);
+        fillBuffer(planes[2].getBuffer(), vBuffer);
+
+        ImageUtils.convertYUV420ToARGB8888(
+                yBuffer, uBuffer, vBuffer,
+                width, height,
+                planes[0].getRowStride(),
+                planes[1].getRowStride(),
+                planes[1].getPixelStride(),
+                rgbBytes);
+
+        rgbFrameBitmap.setPixels(rgbBytes, 0, width, 0, 0, width, height);
+
+        // --- SINKRONISASI PRESISI KOORDINAT ---
+        Canvas canvas = new Canvas(faceBmp);
+        Rect rect = face.getBoundingBox(); // Koordinat Portrait dari ML Kit
+
+        Matrix matrix = new Matrix();
+
+        // 1. Geser ke origin (tengah wajah di portrait space)
+        matrix.postTranslate(-rect.centerX(), -rect.centerY());
+
+        // 2. Putar buffer Landscape ke Portrait (agar searah dengan bounding box)
+        matrix.postRotate(rotation);
+
+        // 3. Mirroring untuk kamera depan
+        if (lensFacing == CameraSelector.LENS_FACING_FRONT) {
+            matrix.postScale(-1, 1);
+        }
+
+        // 4. Tarik (Stretch) ke ukuran input AI 224x224
+        float sx = (float) TF_OD_API_INPUT_SIZE / rect.width();
+        float sy = (float) TF_OD_API_INPUT_SIZE / rect.height();
+        matrix.postScale(sx, sy);
+
+        // 5. Pindahkan hasil ke tengah bitmap 224x224
+        matrix.postTranslate(TF_OD_API_INPUT_SIZE / 2f, TF_OD_API_INPUT_SIZE / 2f);
+
+        canvas.drawColor(Color.BLACK);
+        canvas.drawBitmap(rgbFrameBitmap, matrix, new Paint(Paint.FILTER_BITMAP_FLAG));
+
+        return faceBmp;
+    }
+
+    private void fillBuffer(ByteBuffer buffer, byte[] array) {
+        buffer.rewind();
+        int remaining = buffer.remaining();
+        if (array.length < remaining) return;
+        buffer.get(array, 0, remaining);
+    }
+
+    private boolean isImageSharp(Bitmap bitmap) {
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        int[] pixels = new int[width * height];
+        bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
+
+        long laplacianSum = 0;
+        for (int y = 1; y < height - 1; y++) {
+            for (int x = 1; x < width - 1; x++) {
+                int center = pixels[y * width + x] & 0xff;
+                int left = pixels[y * width + (x - 1)] & 0xff;
+                int right = pixels[y * width + (x + 1)] & 0xff;
+                int top = pixels[(y - 1) * width + x] & 0xff;
+                int bottom = pixels[(y + 1) * width + x] & 0xff;
+
+                int laplacian = Math.abs(4 * center - left - right - top - bottom);
+                laplacianSum += laplacian;
+            }
+        }
+        float variance = (float) laplacianSum / (width * height);
+        return variance > 5.0f;
+    }
+
+    private boolean detectMoirePattern(Bitmap bitmap) {
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        int[] pixels = new int[width * height];
+        bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
+
+        int moireScore = 0;
+        for (int y = 0; y < height - 1; y++) {
+            for (int x = 0; x < width - 1; x++) {
+                int p1 = pixels[y * width + x] & 0xFF;
+                int p2 = pixels[y * width + (x + 1)] & 0xFF;
+                int p3 = pixels[(y + 1) * width + x] & 0xFF;
+
+                int diffH = Math.abs(p1 - p2);
+                int diffV = Math.abs(p1 - p3);
+
+                if (diffH > 40 || diffV > 40) {
+                    moireScore++;
                 }
             }
         }
-
-        if (challengeIndex >= challengeQueue.size()) {
-            if (!isCapturing) {
-                isCapturing = true;
-                runOnUiThread(() -> {
-                    capture.setEnabled(true);
-                    capture.setAlpha(1f);
-                    takePicture();
-                });
-            }
-            return;
-        }
-
-        detectChallenge(face, faceNorm);
+        return moireScore > (width * height * 0.08);
     }
 
     private void detectChallenge(Face face, RectF faceNorm) {
@@ -368,25 +656,18 @@ public class CameraXDetectionOnlyActivity extends AppCompatActivity {
                 break;
 
             case TURN_LEFT:
-                passed = eulerY > 18 && validate3DDepth(face, "left");
-                currentProgress = eulerY / 18f;
+                passed = eulerY < -1;
+                currentProgress = passed ? 1f : Math.abs(eulerY) / 1f;
                 break;
 
             case TURN_RIGHT:
-                passed = eulerY < -18 && validate3DDepth(face, "right");
-                currentProgress = Math.abs(eulerY) / 18f;
+                passed = eulerY > 1;
+                currentProgress = passed ? 1f : Math.abs(eulerY) / 1f;
                 break;
 
             case LOOK_UP:
-                passed = eulerX > 12 && validate3DDepth(face, "up");
-                currentProgress = eulerX / 12f;
-                break;
-
-            case ZOOM_IN:
-                // Harus ada peningkatan ukuran wajah minimal 25% dari posisi awal
-                float growth = faceNorm.width() / initialFaceWidth;
-                passed = growth > 1.25f;
-                currentProgress = Math.min(1f, (growth - 1f) / 0.25f);
+                passed = eulerX < -1;
+                currentProgress = passed ? 1f : Math.abs(eulerX) / 1f;
                 break;
         }
 
@@ -396,132 +677,33 @@ public class CameraXDetectionOnlyActivity extends AppCompatActivity {
         if (passed) advanceChallenge();
     }
 
-    private boolean validate3DDepth(Face face, String direction) {
-        FaceLandmark nose = face.getLandmark(FaceLandmark.NOSE_BASE);
-        FaceLandmark leftEye = face.getLandmark(FaceLandmark.LEFT_EYE);
-        FaceLandmark rightEye = face.getLandmark(FaceLandmark.RIGHT_EYE);
-        FaceLandmark leftCheek = face.getLandmark(FaceLandmark.LEFT_CHEEK);
-        FaceLandmark rightCheek = face.getLandmark(FaceLandmark.RIGHT_CHEEK);
-
-        if (nose == null || leftEye == null || rightEye == null || leftCheek == null || rightCheek == null) return false;
-
-        float distLeft = Math.abs(nose.getPosition().x - leftEye.getPosition().x);
-        float distRight = Math.abs(nose.getPosition().x - rightEye.getPosition().x);
-        
-        // Anti-Spoofing 3D: Pengecekan Rasio Pipit saat menoleh
-        float cheekRatio = Math.abs(nose.getPosition().x - leftCheek.getPosition().x) / 
-                           Math.abs(nose.getPosition().x - rightCheek.getPosition().x);
-
-        if (direction.equals("left")) {
-            // Menoleh kiri: Pipit kanan harus terlihat jauh lebih lebar secara perspektif
-            return distRight > distLeft * 1.8f && cheekRatio < 0.6f;
-        }
-        if (direction.equals("right")) {
-            // Menoleh kanan: Pipit kiri harus terlihat jauh lebih lebar secara perspektif
-            return distLeft > distRight * 1.8f && cheekRatio > 1.6f;
-        }
-        
-        return true;
-    }
 
     private void advanceChallenge() {
         challengeIndex++;
         runOnUiThread(() -> faceOverlay.setProgress(0f));
 
         if (challengeIndex >= challengeQueue.size()) {
-            if (!isCapturing) {
-                isCapturing = true;
-                runOnUiThread(() -> {
-                    txtChallenge.setText("✔ Verifikasi berhasil");
-                    capture.setEnabled(true);
-                    capture.setAlpha(1f);
-                    takePicture();
-                });
-            }
+            currentStage = CaptureStage.ANTI_SPOOFING_FINAL;
+            runOnUiThread(() -> txtChallenge.setText("Tahap 3: Verifikasi Akhir\n(Fokuskan wajah ke kamera)"));
             return;
         }
 
         runOnUiThread(this::showCurrentChallenge);
     }
 
-    private boolean validateSkinIntegrity(Bitmap fullBitmap, Rect faceRect) {
-        // Ambil sampel area tengah wajah
-        int centerX = faceRect.centerX();
-        int centerY = faceRect.centerY();
-        int sampleSize = 20; // Ambil grid 20x20 di tengah
-
-        int skinPixels = 0;
-        int totalPixels = 0;
-
-        for (int y = centerY - sampleSize; y < centerY + sampleSize; y++) {
-            for (int x = centerX - sampleSize; x < centerX + sampleSize; x++) {
-                if (x < 0 || y < 0 || x >= fullBitmap.getWidth() || y >= fullBitmap.getHeight()) continue;
-
-                int pixel = fullBitmap.getPixel(x, y);
-                int r = Color.red(pixel);
-                int g = Color.green(pixel);
-                int b = Color.blue(pixel);
-
-                // Convert to YCbCr
-                double cb = 128 + (-0.168736 * r - 0.331264 * g + 0.5 * b);
-                double cr = 128 + (0.5 * r - 0.418688 * g - 0.081312 * b);
-
-                // Standar Klaster Warna Kulit Manusia (YCbCr Range)
-                if (cb >= 77 && cb <= 127 && cr >= 133 && cr <= 173) {
-                    skinPixels++;
-                }
-
-                // Anti-Monitor: Deteksi Dominasi Cahaya Biru (Emisi Layar)
-                // Layar digital cenderung memiliki intensitas biru yang tidak alami pada area kulit
-                if (b > r && b > g) {
-                    return false; // Langsung tolak jika pixel wajah didominasi warna biru (khas layar)
-                }
-
-                totalPixels++;
-            }
-        }
-
-        if (totalPixels == 0) return false;
-        float skinRatio = (float) skinPixels / totalPixels;
-
-        // Hitung Variansi Tekstur (Detecting 2D Flat Surface vs 3D Skin)
-        // Kulit asli memiliki tekstur pori yang menyebabkan variansi warna mikro
-        // Layar monitor memiliki pola piksel yang sangat teratur (Moiré) atau terlalu halus
-        return skinRatio > 0.85f; 
-    }
-
     private void resetState() {
+        currentStage = CaptureStage.ANTI_SPOOFING_INIT;
         challengeIndex = 0;
         isCapturing = false;
-        positionHistory.clear();
-        isRealFace = false;
-        initialFaceWidth = 0;
-        initialFaceX = 0;
+        nyataStreak = 0;
+        if (camera != null) camera.getCameraControl().enableTorch(false);
+        generateChallengeQueue();
         runOnUiThread(() -> {
-            capture.setEnabled(false);
-            capture.setAlpha(0.5f);
-            showCurrentChallenge();
+            faceOverlay.setFaceData(false, null, "");
+            txtChallenge.setText("Arahkan wajah ke frame");
         });
     }
 
-    private void checkFaceStillness(RectF currentPos) {
-        positionHistory.add(new RectF(currentPos));
-        if (positionHistory.size() > HISTORY_SIZE) {
-            positionHistory.remove(0);
-        }
-
-        if (positionHistory.size() == HISTORY_SIZE) {
-            float varX = 0;
-            float varY = 0;
-            RectF first = positionHistory.get(0);
-            for (RectF p : positionHistory) {
-                varX += Math.abs(p.centerX() - first.centerX());
-                varY += Math.abs(p.centerY() - first.centerY());
-            }
-            // Jika variansi sangat kecil, kemungkinan besar ini adalah foto statis
-            isRealFace = (varX > 0.001f || varY > 0.001f);
-        }
-    }
 
     private void toggleCamera() {
         lensFacing = (lensFacing == CameraSelector.LENS_FACING_FRONT)
@@ -546,15 +728,6 @@ public class CameraXDetectionOnlyActivity extends AppCompatActivity {
         }
     }
 
-    // ================= UTILS =================
-    private RectF normalize(Rect r, InputImage img) {
-        return new RectF(
-                r.left / (float) img.getWidth(),
-                r.top / (float) img.getHeight(),
-                r.right / (float) img.getWidth(),
-                r.bottom / (float) img.getHeight()
-        );
-    }
 
     // ================= CAPTURE =================
     private void takePicture() {
@@ -620,8 +793,6 @@ public class CameraXDetectionOnlyActivity extends AppCompatActivity {
             i = new Intent(this, TugasLapanganFinalActivity.class);
         } else if ("perjalanandinas".equals(aktivitas)) {
             i = new Intent(this, PerjalananDinasFinalActivity.class);
-        } else if ("perjalanandinas_shift".equals(aktivitas)) {
-            i = new Intent(this, PerjalananDinasShiftFinalActivity.class);
         } else if ("izincuti".equals(aktivitas)) {
             i = new Intent(this, IzinCutiFinalActivity.class);
         } else if ("izinkp".equals(aktivitas)) {

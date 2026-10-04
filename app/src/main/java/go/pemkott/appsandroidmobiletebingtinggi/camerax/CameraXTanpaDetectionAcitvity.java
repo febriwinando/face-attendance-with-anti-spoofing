@@ -37,6 +37,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.dinasluarkantor.perjalanandinas.PerjalananDinasFinalActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.dinasluarkantor.perjalanandinas.PerjalananDinasShiftFinalActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.dinasluarkantor.tugaslapangan.TugasLapanganFinalActivity;
+import go.pemkott.appsandroidmobiletebingtinggi.dinasluarkantor.tugaslapangan.TugasLapanganShiftFinalActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.izin.cuti.IzinCutiFinalActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.izin.keperluanpribadi.KeperluanPribadiFinalActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.izin.sakit.IzinSakitFinalActivity;
@@ -160,6 +161,7 @@ public class CameraXTanpaDetectionAcitvity extends AppCompatActivity {
         Intent i;
         if ("kehadiran".equals(aktivitas)) i = new Intent(this, AbsensiKehadiranActivity.class);
         else if ("tugaslapangan".equals(aktivitas)) i = new Intent(this, TugasLapanganFinalActivity.class);
+        else if ("tugaslapanganshiftfinal".equals(aktivitas)) i = new Intent(this, TugasLapanganShiftFinalActivity.class);
         else if ("perjalanandinas".equals(aktivitas)) i = new Intent(this, PerjalananDinasFinalActivity.class);
         else if ("perjalanandinas_shift".equals(aktivitas)) i = new Intent(this, PerjalananDinasShiftFinalActivity.class);
         else if ("izincuti".equals(aktivitas)) i = new Intent(this, IzinCutiFinalActivity.class);

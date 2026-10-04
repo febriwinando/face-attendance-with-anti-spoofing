@@ -121,21 +121,43 @@
             </LinearLayout>
         </LinearLayout>
 
-        <!-- Main Action Button -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/txtAbsen"
-            style="@style/Widget.Material3.Button.TonalButton"
+        <!-- Main Action Buttons -->
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="64dp"
-            android:layout_marginTop="32dp"
-            android:text="Masuk / Pulang Kantor"
-            android:textAllCaps="false"
-            android:textSize="16sp"
-            android:fontFamily="sans-serif-black"
-            app:cornerRadius="16dp"
-            app:icon="@drawable/ic_baseline_person_24"
-            app:iconGravity="textStart"
-            app:iconPadding="12dp" />
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="32dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/txtAbsen"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:text="Masuk / Pulang Kantor"
+                android:textAllCaps="false"
+                android:textSize="16sp"
+                android:fontFamily="sans-serif-black"
+                app:cornerRadius="16dp"
+                app:icon="@drawable/ic_baseline_person_24"
+                app:iconGravity="textStart"
+                app:iconPadding="12dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/txtTugasLapangan"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:layout_marginTop="12dp"
+                android:text="@string/tugas_lapangan"
+                android:textAllCaps="false"
+                android:textSize="16sp"
+                android:fontFamily="sans-serif-black"
+                app:cornerRadius="16dp"
+                app:icon="@drawable/one_tl"
+                app:iconGravity="textStart"
+                app:iconPadding="12dp" />
+
+        </LinearLayout>
 
         <TextView
             android:layout_width="match_parent"

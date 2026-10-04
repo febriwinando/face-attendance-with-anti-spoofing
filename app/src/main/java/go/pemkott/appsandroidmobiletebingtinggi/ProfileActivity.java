@@ -39,6 +39,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.api.ApiAddProduk;
 import go.pemkott.appsandroidmobiletebingtinggi.api.HttpService;
 import go.pemkott.appsandroidmobiletebingtinggi.api.ResponsePOJO;
+import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
 import go.pemkott.appsandroidmobiletebingtinggi.api.RetrofitBuilder;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.model.DataEmployee;
@@ -104,12 +105,7 @@ public class ProfileActivity extends AppCompatActivity {
         ivBack = findViewById(R.id.ivBack);
         llBukaDaftarPegawai = findViewById(R.id.llBukaDaftarPegawai);
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://absensi.tebingtinggikota.go.id/api/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        holderAPI = retrofit.create(HttpService.class);
+        holderAPI = RetroClient.getInstance().getApi2();
 
         databaseHelper = new DatabaseHelper(this);
 

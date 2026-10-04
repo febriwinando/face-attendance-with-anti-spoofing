@@ -26,9 +26,7 @@ public class RetroClient {
 
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
 
-        // Menghapus CertificatePinner agar aplikasi tidak terganggu saat SSL diupdate di server.
-        // Keamanan tetap terjaga melalui network_security_config.xml yang mempercayai Root CA sistem.
-        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+        OkHttpClient okHttpClient = SSLHelper.getUnsafeOkHttpClientBuilder()
                         .addInterceptor(logging)
                         .retryOnConnectionFailure(true)
                         .connectTimeout(120, TimeUnit.SECONDS)

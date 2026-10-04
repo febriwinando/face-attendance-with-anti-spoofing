@@ -36,8 +36,11 @@ import java.util.Locale;
 
 import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.api.HttpService;
+import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
+import go.pemkott.appsandroidmobiletebingtinggi.dinasluarkantor.tugaslapangan.TugasLapanganActivity;
+import go.pemkott.appsandroidmobiletebingtinggi.dinasluarkantor.tugaslapangan.TugasLapanganShiftActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat;
 import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
 import go.pemkott.appsandroidmobiletebingtinggi.model.JadwalSift;
@@ -99,11 +102,7 @@ String userId;
 
 
         jadwalShiftActivity = this;
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://absensi.tebingtinggikota.go.id/api/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        holderAPI = retrofit.create(HttpService.class);
+        holderAPI = RetroClient.getInstance().getApi2();
         Bundle intent = getIntent().getExtras();
         jam_masuk = intent.getString("jam_masuk");
         jam_pulang = intent.getString("jam_pulang");
@@ -385,6 +384,7 @@ String userId;
         dialoginfo.setCancelable(true);
 
         TextView txtAbsen = dialoginfo.findViewById(R.id.txtAbsen);
+        TextView txtTugasLapangan = dialoginfo.findViewById(R.id.txtTugasLapangan);
         TextView jamShiftMasuk = dialoginfo.findViewById(R.id.jamSiftMasuk);
         TextView jamShiftPulang = dialoginfo.findViewById(R.id.jamSiftPulang);
         ImageView ivTutupViewInfoShift = dialoginfo.findViewById(R.id.ivTutupViewInfoSift);
@@ -400,6 +400,18 @@ String userId;
             Intent absenshift = new Intent(JadwalShiftActivity.this, databaseHelper.getCameraActivityClass());
             absenshift.putExtra("aktivitas", "kehadiransift");
             startActivity(absenshift);
+        });
+
+        txtTugasLapangan.setOnClickListener(view -> {
+            Intent intentTL = new Intent(JadwalShiftActivity.this, TugasLapanganShiftActivity.class);
+            intentTL.putExtra("isShift", true);
+            intentTL.putExtra("tanggalShift", tanggalShift);
+            intentTL.putExtra("idShift", idShift);
+            intentTL.putExtra("inisialShift", inisialShift);
+            intentTL.putExtra("tipeShift", tipeShift);
+            intentTL.putExtra("masukShift", masukShift);
+            intentTL.putExtra("pulangShift", pulangShift);
+            startActivity(intentTL);
         });
 
         ivTutupViewInfoShift.setOnClickListener(view -> dialoginfo.dismiss());

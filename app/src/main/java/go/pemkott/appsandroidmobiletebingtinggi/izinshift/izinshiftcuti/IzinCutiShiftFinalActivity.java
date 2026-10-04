@@ -322,10 +322,13 @@ public class IzinCutiShiftFinalActivity extends AppCompatActivity implements OnM
         datePickerSampai();
 //
 //        if (false && !Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ALLOW_MOCK_LOCATION).equals("0")) {
-        if (!Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ALLOW_MOCK_LOCATION).equals("0")) {
-            mockLocationsEnabled = true;
-        } else{
-            mockLocationsEnabled = false;
+        try {
+            String mockSetting = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ALLOW_MOCK_LOCATION);
+            if (mockSetting != null && !mockSetting.equals("0")) {
+                mock_location = 1;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         Intent intent = getIntent();
 
@@ -1170,39 +1173,25 @@ public class IzinCutiShiftFinalActivity extends AppCompatActivity implements OnM
 
     ArrayList<Location> locationArrayList = new ArrayList<>();
     private void plotMarkers(Location locationObj) {
+        if (locationObj == null) return;
 
-        if(map != null){
-            if (rippleAnimator != null) rippleAnimator.cancel();
-            map.clear();
-            LatLng position = new LatLng(locationObj.getLatitude(), locationObj.getLongitude());
-            map.addMarker(new MarkerOptions().position(position).icon(bitmapDescriptorFromVector(this, R.drawable.asn_lk)).title(lokasi.getAddress(IzinCutiShiftFinalActivity.this, locationObj.getLatitude(), locationObj.getLongitude())));
-            rippleAnimator = MapUtils.showRippleEffect(map, position);
-            map.animateCamera(CameraUpdateFactory.newLatLngZoom(position, 18f));
-            latGMap = locationObj.getLatitude();
-            lngGMap = locationObj.getLongitude();
+        if (map != null) {
+            try {
+                if (rippleAnimator != null) rippleAnimator.cancel();
+                map.clear();
+                LatLng position = new LatLng(locationObj.getLatitude(), locationObj.getLongitude());
+                String addr = lokasi.getAddress(IzinCutiShiftFinalActivity.this, locationObj.getLatitude(), locationObj.getLongitude());
+                map.addMarker(new MarkerOptions().position(position).icon(bitmapDescriptorFromVector(this, R.drawable.asn_lk)).title(addr != null ? addr : "Lokasi Saya"));
+                rippleAnimator = MapUtils.showRippleEffect(map, position);
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(position, 18f));
+                latGMap = locationObj.getLatitude();
+                lngGMap = locationObj.getLongitude();
 
-            locationArrayList.add(locationObj);
-
-            //Draw Line
-            LatLng singleLatLong = null;
-            ArrayList<LatLng> pnts = new ArrayList<LatLng>();
-            if(locationArrayList != null) {
-                for(int i = 0 ; i < locationArrayList.size(); i++) {
-                    double routePoint1Lat = locationArrayList.get(i).getLatitude();
-                    double routePoint2Long = locationArrayList.get(i).getLongitude();
-                    singleLatLong = new LatLng(routePoint1Lat,
-                            routePoint2Long);
-                    pnts.add(singleLatLong);
-                }
+                locationArrayList.add(locationObj);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-
-        }else{
-
-            map.moveCamera(CameraUpdateFactory
-                    .newLatLngZoom(defaultLocation, 19f));
-            map.getUiSettings().setMyLocationButtonEnabled(true);
         }
-
     }
 
 

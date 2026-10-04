@@ -96,12 +96,7 @@ public class LoginActivity extends AppCompatActivity {
 
         session = new SessionManager(this);
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://absensi.tebingtinggikota.go.id/api/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        httpService = retrofit.create(HttpService.class);
+        httpService = RetroClient.getInstance().getApi2();
         databaseHelper = new DatabaseHelper(this);
 
         etUsername = findViewById(R.id.etUsername);
@@ -135,8 +130,6 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-
-
     public void loginUser(View view){
         view.setEnabled(false);
         view.postDelayed(() -> view.setEnabled(true), 2000);
@@ -153,9 +146,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-
     private void datauser(){
-
         if (session.getToken() != null) {
             if (checkAndHandleAppUpdate()) {
                 return; // Redirected to DownloadDataActivity
@@ -166,7 +157,6 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(dashboardActivity);
             finish();
         }
-
     }
 
     private boolean checkAndHandleAppUpdate() {
@@ -332,7 +322,7 @@ public class LoginActivity extends AppCompatActivity {
                                           @NonNull Throwable t) {
 
                         dialogproses.dismiss();
-                        Log.e("LOGIN_ERROR", t.toString());
+                        Log.e("LOGIN_ERROR", "Gagal koneksi ke server", t);
 
                         String errorTitle = "Koneksi Gagal";
                         String errorMsg = t.getMessage() != null ? t.getMessage() : t.toString();
@@ -347,8 +337,10 @@ public class LoginActivity extends AppCompatActivity {
                             errorTitle = "Server Gagal Terhubung";
                             errorMsg = "Tidak dapat menjangkau server. Periksa pengaturan VPN/Proxy Anda atau server sedang maintenance.";
                         } else if (t instanceof SSLHandshakeException || t.toString().contains("SSL") || t.toString().contains("Certificate")) {
-                            errorTitle = "Masalah SSL";
-                            errorMsg = "Terjadi kegagalan koneksi aman (SSL). Pastikan tanggal HP Anda benar.";
+                            errorTitle = "Masalah Sertifikat SSL";
+                            String detailCause = t.getCause() != null ? t.getCause().getMessage() : t.getLocalizedMessage();
+                            errorMsg = "Kegagalan sertifikat SSL: " + (detailCause != null ? detailCause : t.toString());
+                            Log.e("SSL_ERROR_DETAIL", "Detail SSL: " + detailCause, t);
                         } else if (t.toString().contains("Proxy") || t.toString().contains("proxy")) {
                             errorTitle = "Masalah Proxy";
                             errorMsg = "Koneksi ditolak oleh Proxy. Mohon matikan Proxy di pengaturan jaringan Anda.";

@@ -557,8 +557,11 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
 
     public void databases(){
         Cursor tUser = databaseHelper.getAllData22(userId);
-        while (tUser.moveToNext()){
-            sEmployId = tUser.getString(1);
+        if (tUser != null) {
+            while (tUser.moveToNext()){
+                sEmployId = tUser.getString(1);
+            }
+            tUser.close();
         }
 
         hari = new SimpleDateFormat("EEE", localeID);
@@ -1487,8 +1490,7 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
             @Override
             public View getInfoContents(@NonNull Marker marker) {
                 // Inflate the layouts for the info window, title and snippet.
-                View infoWindow = getLayoutInflater().inflate(R.layout.custom_info_contents,
-                        findViewById(R.id.map), false);
+                View infoWindow = getLayoutInflater().inflate(R.layout.custom_info_contents, null);
 
                 TextView title = infoWindow.findViewById(R.id.title);
                 title.setText(marker.getTitle());

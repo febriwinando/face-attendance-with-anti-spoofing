@@ -33,6 +33,7 @@ import java.util.Locale;
 
 import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.api.HttpService;
+import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
@@ -78,11 +79,7 @@ public class MasukFragment extends Fragment {
         tvv2 = view.findViewById(R.id.tvv2);
         ivBackValidasi = view.findViewById(R.id.ivBackValidasi);
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://absensi.tebingtinggikota.go.id/api/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        holderAPI = retrofit.create(HttpService.class);
+        holderAPI = RetroClient.getInstance().getApi2();
 
         databaseHelper = new DatabaseHelper(getActivity());
         dataUser();

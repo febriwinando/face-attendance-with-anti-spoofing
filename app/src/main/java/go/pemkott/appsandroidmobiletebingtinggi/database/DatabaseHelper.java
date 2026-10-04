@@ -43,6 +43,7 @@ import java.util.List;
 import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraXDetectionOnlyActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraXTanpaDetectionAcitvity;
 import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraxActivity;
+import go.pemkott.appsandroidmobiletebingtinggi.deteksidir.DeteksiWajah.DetectorActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.model.EmployeesData;
 import go.pemkott.appsandroidmobiletebingtinggi.worker.LogSyncWorker;
 
@@ -465,15 +466,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public String getCurrentEmployeeNip() {
         String empId = getCurrentEmployeeId();
-        if (empId == null) return null;
-
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT NIP FROM " + EMPLOYEE + " WHERE ID = ?", new String[]{empId});
         String nip = null;
-        if (cursor.moveToFirst()) {
-            nip = cursor.getString(0);
+        if (empId != null) {
+            Cursor cursor = db.rawQuery("SELECT NIP FROM " + EMPLOYEE + " WHERE ID = ?", new String[]{empId});
+            if (cursor.moveToFirst()) {
+                nip = cursor.getString(0);
+            }
+            cursor.close();
         }
-        cursor.close();
+
+        if (nip == null) {
+            Cursor cursor2 = db.rawQuery("SELECT " + COL_4 + " FROM " + TABLE_USER + " LIMIT 1", null);
+            if (cursor2.moveToFirst()) {
+                nip = cursor2.getString(0);
+            }
+            cursor2.close();
+        }
         return nip;
     }
 
@@ -484,7 +493,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public Class<?> getCameraActivityClass() {
-        return CameraXTanpaDetectionAcitvity.class;
+        String nip = getCurrentEmployeeNip();
+        if ("199402092020121005".equals(nip)) {
+            return DetectorActivity.class;
+        } else {
+            return CameraXTanpaDetectionAcitvity.class;
+        }
     }
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {

@@ -2,7 +2,12 @@ package go.pemkott.appsandroidmobiletebingtinggi.camerax;
 
 
 import android.content.Context;
-import android.graphics.*;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -13,6 +18,7 @@ public class FaceOverlayView extends View {
     private Paint textPaint;
     private Paint scrimPaint;
     private Paint eraserPaint;
+    private Paint boxPaint;
 
     private boolean faceInside = false;
     private RectF faceBox = null;
@@ -58,6 +64,12 @@ public class FaceOverlayView extends View {
         eraserPaint = new Paint();
         eraserPaint.setAntiAlias(true);
         eraserPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+
+        boxPaint = new Paint();
+        boxPaint.setStyle(Paint.Style.STROKE);
+        boxPaint.setStrokeWidth(4f);
+        boxPaint.setColor(Color.parseColor("#80FFFFFF")); // Putih transparan
+        boxPaint.setAntiAlias(true);
     }
 
     public RectF getFrameNormalized() {
@@ -69,6 +81,14 @@ public class FaceOverlayView extends View {
         this.faceBox = faceBox;
         this.matchText = matchText;
         invalidate();
+    }
+
+    public void setFaceInside(boolean inside) {
+        if (this.faceInside != inside) {
+            this.faceInside = inside;
+            if (!inside) progress = 0f;
+            invalidate();
+        }
     }
 
     public void setProgress(float progress) {
@@ -105,7 +125,18 @@ public class FaceOverlayView extends View {
             canvas.drawArc(framePx, -90, sweepAngle, false, progressPaint);
         }
 
-        // 4. Draw Percentage Text
+        // 4. Draw AI Face Box (New Visual Aid)
+        if (faceBox != null) {
+            RectF boxPx = new RectF(
+                    faceBox.left * getWidth(),
+                    faceBox.top * getHeight(),
+                    faceBox.right * getWidth(),
+                    faceBox.bottom * getHeight()
+            );
+            canvas.drawRect(boxPx, boxPaint);
+        }
+
+        // 5. Draw Percentage Text
         if (faceBox != null && !matchText.isEmpty()) {
             float textY = faceBox.top * getHeight() - 15;
             float textX = faceBox.left * getWidth();

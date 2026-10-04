@@ -92,7 +92,16 @@ public class TugasLapanganActivity extends AppCompatActivity {
             dialogView.viewNotifKosong(this, "Anda Harus Mengisi Kegiatan Yang Dilaksanakan.", "");
         } else {
             Intent intentTL = new Intent(this, databaseHelper.getCameraActivityClass());
-            intentTL.putExtra("aktivitas", "tugaslapangan");
+            if (getIntent().getBooleanExtra("isShift", false)){
+                intentTL.putExtra("aktivitas", "tugaslapanganshift");
+            } else {
+                intentTL.putExtra("aktivitas", "tugaslapangan");
+            }
+
+            if (getIntent().getExtras() != null){
+                intentTL.putExtras(getIntent().getExtras());
+            }
+
             intentTL.putExtra("title", "Isi Data Tugas Lapangan");
             intentTL.putStringArrayListExtra("kegiatan_checked", kegiatanChecked);
             intentTL.putExtra("kegiatans_lainnya", kegiatansLainnya);

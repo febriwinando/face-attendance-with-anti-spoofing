@@ -381,11 +381,13 @@ public class IzinSakitShiftFinalActivity extends AppCompatActivity implements On
         radioSelectedKehadiran = findViewById(selected);
 
 
-        if (!Settings.Secure.getString(this.getContentResolver(), Settings
-                .Secure.ALLOW_MOCK_LOCATION).equals("0")) {
-            mockLocationsEnabled = true;
-        } else{
-            mockLocationsEnabled = false;
+        try {
+            String mockSetting = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ALLOW_MOCK_LOCATION);
+            if (mockSetting != null && !mockSetting.equals("0")) {
+                mock_location = 1;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
@@ -1264,29 +1266,25 @@ public class IzinSakitShiftFinalActivity extends AppCompatActivity implements On
 
     ArrayList<Location> locationArrayList = new ArrayList<>();
     private void plotMarkers(Location locationObj) {
+        if (locationObj == null) return;
 
+        if (map != null) {
+            try {
+                if (rippleAnimator != null) rippleAnimator.cancel();
+                map.clear();
+                LatLng position = new LatLng(locationObj.getLatitude(), locationObj.getLongitude());
+                String addr = lokasi.getAddress(IzinSakitShiftFinalActivity.this, locationObj.getLatitude(), locationObj.getLongitude());
+                map.addMarker(new MarkerOptions().position(position).icon(bitmapDescriptorFromVector(this, R.drawable.asn_lk)).title(addr != null ? addr : "Lokasi Saya"));
+                rippleAnimator = MapUtils.showRippleEffect(map, position);
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(position, 19f));
+                map.getUiSettings().setMyLocationButtonEnabled(true);
+                latGMap = locationObj.getLatitude();
+                lngGMap = locationObj.getLongitude();
 
-        if(map != null){
-
-            if (rippleAnimator != null) rippleAnimator.cancel();
-            map.clear();
-            LatLng position = new LatLng(locationObj.getLatitude(), locationObj.getLongitude());
-            map.addMarker(new MarkerOptions().position(position).icon(bitmapDescriptorFromVector(this, R.drawable.asn_lk)).title(lokasi.getAddress(IzinSakitShiftFinalActivity.this, locationObj.getLatitude(), locationObj.getLongitude())));
-            rippleAnimator = MapUtils.showRippleEffect(map, position);
-            map.animateCamera(CameraUpdateFactory.newLatLngZoom(position, 19f));
-            map.getUiSettings().setMyLocationButtonEnabled(true);
-            latGMap = locationObj.getLatitude();
-            lngGMap = locationObj.getLongitude();
-
-
-            locationArrayList.add(locationObj);
-
-
-        }else{
-
-            map.moveCamera(CameraUpdateFactory
-                    .newLatLngZoom(defaultLocation, 19f));
-            map.getUiSettings().setMyLocationButtonEnabled(true);
+                locationArrayList.add(locationObj);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 

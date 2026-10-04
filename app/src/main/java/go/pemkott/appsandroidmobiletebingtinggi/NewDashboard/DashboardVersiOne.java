@@ -56,6 +56,7 @@ import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import go.pemkott.appsandroidmobiletebingtinggi.ProfileActivity;
+import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
 import go.pemkott.appsandroidmobiletebingtinggi.helpdesk.HelpdeskActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.api.HttpService;
@@ -182,12 +183,7 @@ public class DashboardVersiOne extends AppCompatActivity {
 
         datauser();
 
-        retrofit = new Retrofit.Builder()
-                .baseUrl("https://absensi.tebingtinggikota.go.id/api/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        httpService = retrofit.create(HttpService.class);
+        httpService = RetroClient.getInstance().getApi2();
 
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
         cvKehadiran = findViewById(R.id.cvKehadiran);
