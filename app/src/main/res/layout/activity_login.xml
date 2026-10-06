@@ -156,6 +156,18 @@
                         android:textColor="@color/brand_secondary"
                         android:textSize="13sp" />
 
+                    <!-- SSL Bypass Toggle Switch -->
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/switchSslBypass"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:fontFamily="sans-serif-medium"
+                        android:text="@string/bypass_ssl_server"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="13sp"
+                        app:useMaterialThemeColors="true" />
+
                     <!-- Primary Action Button -->
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnLogin"

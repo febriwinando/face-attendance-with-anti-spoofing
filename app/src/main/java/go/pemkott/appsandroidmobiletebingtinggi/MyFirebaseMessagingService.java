@@ -33,6 +33,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import go.pemkott.appsandroidmobiletebingtinggi.utils.FcmTokenHelper;
+
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
     DatabaseHelper databaseHelper = new DatabaseHelper(this);
 
@@ -42,6 +44,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Log.d("FCM", "Token: " + token);
         SessionManager session = new SessionManager(this);
         session.saveFcmToken(token);
+        String pegawaiId = session.getPegawaiId();
+        if (pegawaiId != null && !"0".equals(pegawaiId)) {
+            FcmTokenHelper.sendTokenToServer(this, pegawaiId, token, null);
+        }
     }
 
     @Override

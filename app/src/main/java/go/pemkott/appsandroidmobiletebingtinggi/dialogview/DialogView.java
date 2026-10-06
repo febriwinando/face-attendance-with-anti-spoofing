@@ -26,13 +26,17 @@ public class DialogView {
         TextView tvWarning1 = dataKosong.findViewById(R.id.tvWarning1);
         ImageView tvTutupDialog = dataKosong.findViewById(R.id.tvTutupDialog);
 
-        tvWarning1.setText(w1+" "+w2);
+        String msg = (w1 != null ? w1 : "") + (w2 != null ? " " + w2 : "");
+        if (tvWarning1 != null) {
+            tvWarning1.setText(msg.trim());
+        }
         dataKosong.setCancelable(true);
-        tvTutupDialog.setOnClickListener(v -> dataKosong.dismiss());
+        if (tvTutupDialog != null) {
+            tvTutupDialog.setOnClickListener(v -> dataKosong.dismiss());
+        }
 
         dataKosong.show();
     }
-
 
     public void viewErrorKosong(Context context){
         Dialog dataKosong = new Dialog(context, R.style.DialogStyle);
@@ -42,20 +46,25 @@ public class DialogView {
     }
 
     public void viewSukses(Activity activity, String info){
-        Dialog dialogSukes = new Dialog(context, R.style.DialogStyle);
+        Context ctx = (activity != null) ? activity : context;
+        Dialog dialogSukes = new Dialog(ctx, R.style.DialogStyle);
         dialogSukes.setContentView(R.layout.view_sukses);
         dialogSukes.setCancelable(true);
         ImageView tvTutupDialog = dialogSukes.findViewById(R.id.ivTutupDialogBerhasil);
         TextView tvSukseKeterangan = dialogSukes.findViewById(R.id.tvSukseKeterangan);
-        tvSukseKeterangan.setText(info);
 
-        tvTutupDialog.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        if (tvSukseKeterangan != null) {
+            tvSukseKeterangan.setText(info);
+        }
+
+        if (tvTutupDialog != null) {
+            tvTutupDialog.setOnClickListener(v -> {
                 dialogSukes.dismiss();
-                activity.finish();
-            }
-        });
+                if (activity != null) {
+                    activity.finish();
+                }
+            });
+        }
 
         dialogSukes.show();
     }
@@ -68,29 +77,43 @@ public class DialogView {
         ShapeableImageView imageView = dialogFoto.findViewById(R.id.ivFoto);
         ImageView tvTutupDialog = dialogFoto.findViewById(R.id.tvCloseViewFoto);
 
-        imageView.setImageBitmap(data);
+        if (imageView != null) {
+            imageView.setImageBitmap(data);
+        }
 
-        tvTutupDialog.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialogFoto.dismiss();
-            }
-        });
+        if (tvTutupDialog != null) {
+            tvTutupDialog.setOnClickListener(v -> dialogFoto.dismiss());
+        }
 
         dialogFoto.show();
     }
 
     public void pesanError(Context context){
-
         Dialog errorDialogs = new Dialog(context, R.style.DialogStyle);
         errorDialogs.setContentView(R.layout.view_error);
         ImageView tvTutupDialog = errorDialogs.findViewById(R.id.tvTutupDialog);
 
-        tvTutupDialog.setOnClickListener(v -> errorDialogs.dismiss());
+        if (tvTutupDialog != null) {
+            tvTutupDialog.setOnClickListener(v -> errorDialogs.dismiss());
+        }
 
         errorDialogs.show();
-
     }
 
+    public void pesanErrorDetail(Context context, String title, String detailMessage){
+        Dialog errorDialogs = new Dialog(context, R.style.DialogStyle);
+        errorDialogs.setContentView(R.layout.view_warning_kosong);
+        TextView tvWarning1 = errorDialogs.findViewById(R.id.tvWarning1);
+        ImageView tvTutupDialog = errorDialogs.findViewById(R.id.tvTutupDialog);
 
+        if (tvWarning1 != null) {
+            tvWarning1.setText(detailMessage);
+        }
+        errorDialogs.setCancelable(true);
+        if (tvTutupDialog != null) {
+            tvTutupDialog.setOnClickListener(v -> errorDialogs.dismiss());
+        }
+
+        errorDialogs.show();
+    }
 }

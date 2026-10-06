@@ -10,6 +10,7 @@ public class SessionManager {
     private static final String KEY_JABTAN = "JABATAN";
     private static final String KEY_FCM_TOKEN = "FCM_TOKEN";
     private static final String KEY_EMPLOYEE_ID = "KEY_EMPLOYEE_ID";
+    private static final String KEY_SSL_BYPASS = "KEY_SSL_BYPASS";
 
     private final SharedPreferences prefs;
 
@@ -82,5 +83,16 @@ public class SessionManager {
 
     public int getVersionCode() {
         return prefs.getInt("LAST_VERSION_CODE", 0);
+    }
+
+    // -------------------------
+    // SSL BYPASS CONTROL
+    // -------------------------
+    public void saveSslBypass(boolean enabled) {
+        prefs.edit().putBoolean(KEY_SSL_BYPASS, enabled).apply();
+    }
+
+    public boolean isSslBypassEnabled() {
+        return prefs.getBoolean(KEY_SSL_BYPASS, false);
     }
 }

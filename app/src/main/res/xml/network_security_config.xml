@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
-    <base-config cleartextTrafficPermitted="true">
+    <!-- Mencegah koneksi HTTP (Cleartext) di seluruh aplikasi -->
+    <base-config cleartextTrafficPermitted="false">
         <trust-anchors>
             <certificates src="system" />
             <certificates src="user" />
         </trust-anchors>
     </base-config>
-    <domain-config cleartextTrafficPermitted="true">
+
+    <!-- Mengizinkan domain resmi via HTTPS dengan Sertifikat Sistem & User -->
+    <domain-config cleartextTrafficPermitted="false">
         <domain includeSubdomains="true">tebingtinggikota.go.id</domain>
         <trust-anchors>
             <certificates src="system" />

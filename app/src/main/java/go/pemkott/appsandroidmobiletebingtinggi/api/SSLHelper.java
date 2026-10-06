@@ -35,7 +35,7 @@ public class SSLHelper {
                     }
             };
 
-            final SSLContext sslContext = SSLContext.getInstance("SSL");
+            final SSLContext sslContext = SSLContext.getInstance("TLS");
             sslContext.init(null, trustAllCerts, new SecureRandom());
 
             final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
@@ -73,7 +73,7 @@ public class SSLHelper {
                     }
             };
 
-            SSLContext sc = SSLContext.getInstance("SSL");
+            SSLContext sc = SSLContext.getInstance("TLS");
             sc.init(null, trustAllCerts, new SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
             HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
@@ -82,6 +82,16 @@ public class SSLHelper {
                     return true;
                 }
             });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void restoreDefaultSSLCertificateChecking() {
+        try {
+            SSLContext sc = SSLContext.getInstance("TLS");
+            sc.init(null, null, new SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
         } catch (Exception e) {
             e.printStackTrace();
         }

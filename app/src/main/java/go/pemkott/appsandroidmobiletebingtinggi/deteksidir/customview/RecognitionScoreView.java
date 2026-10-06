@@ -25,6 +25,7 @@ import java.util.List;
 
 import go.pemkott.appsandroidmobiletebingtinggi.deteksidir.tflite.Classifier;
 
+
 public class RecognitionScoreView extends View implements ResultsView {
   private static final float TEXT_SIZE_DIP = 14;
   private final float textSizePx;

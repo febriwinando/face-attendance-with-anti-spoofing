@@ -14,8 +14,6 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import go.pemkott.appsandroidmobiletebingtinggi.R;
-import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraXTAcitivty;
-import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraxActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dinasluarkantor.tugaslapangan.TugasLapanganActivity;
 

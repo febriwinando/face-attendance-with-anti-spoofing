@@ -31,11 +31,19 @@ import com.google.gson.Gson;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.ConnectException;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import android.app.Dialog;
+
+import org.json.JSONObject;
+
+import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
+import go.pemkott.appsandroidmobiletebingtinggi.utils.NetworkUtils;
 import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.api.HttpService;
 import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
@@ -201,6 +209,24 @@ public class AjukanAduanActivity extends AppCompatActivity {
         actvPrioritas.setText("normal", false);
     }
 
+    private final DialogView dialogView = new DialogView(this);
+    private Dialog progressDialog;
+
+    private void showProsesDialog() {
+        if (progressDialog == null) {
+            progressDialog = new Dialog(this, R.style.DialogStyle);
+            progressDialog.setContentView(R.layout.view_proses);
+            progressDialog.setCancelable(false);
+        }
+        progressDialog.show();
+    }
+
+    private void dismissProsesDialog() {
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
+    }
+
     private void kirimAduan() {
         String judul = etJudul.getText().toString().trim();
         String deskripsi = etDeskripsi.getText().toString().trim();
@@ -209,17 +235,19 @@ public class AjukanAduanActivity extends AppCompatActivity {
         String lokasi_aduan = etLokasi.getText().toString().trim();
 
         if (judul.isEmpty() || deskripsi.isEmpty() || kategoriLabel.isEmpty()) {
-            Toast.makeText(this, "Mohon lengkapi judul, deskripsi, dan kategori.", Toast.LENGTH_SHORT).show();
+            dialogView.viewNotifKosong(this, "Mohon lengkapi judul, deskripsi, dan kategori aduan terlebih dahulu.", "");
             return;
         }
+
+        showProsesDialog();
 
         String kategoriKey = kategoriMap.get(kategoriLabel);
         if (kategoriKey == null) kategoriKey = "lainnya";
 
-        RequestBody rbEmployee_id = RequestBody.create(MediaType.parse("text/plain"), sEmployee_id);
-        RequestBody rbNama = RequestBody.create(MediaType.parse("text/plain"), varNama);
-        RequestBody rbNip = RequestBody.create(MediaType.parse("text/plain"), varNip);
-        RequestBody rbOpdid = RequestBody.create(MediaType.parse("text/plain"), varOpdid);
+        RequestBody rbEmployee_id = RequestBody.create(MediaType.parse("text/plain"), sEmployee_id != null ? sEmployee_id : "");
+        RequestBody rbNama = RequestBody.create(MediaType.parse("text/plain"), varNama != null ? varNama : "");
+        RequestBody rbNip = RequestBody.create(MediaType.parse("text/plain"), varNip != null ? varNip : "");
+        RequestBody rbOpdid = RequestBody.create(MediaType.parse("text/plain"), varOpdid != null ? varOpdid : "");
         RequestBody rbKategori = RequestBody.create(MediaType.parse("text/plain"), kategoriKey);
         RequestBody rbPrioritas = RequestBody.create(MediaType.parse("text/plain"), prioritas);
         RequestBody rbLokasi = RequestBody.create(MediaType.parse("text/plain"), lokasi_aduan);
@@ -242,55 +270,55 @@ public class AjukanAduanActivity extends AppCompatActivity {
         call.enqueue(new Callback<FileModel>() {
             @Override
             public void onResponse(@NonNull Call<FileModel> call, @NonNull Response<FileModel> response) {
+                dismissProsesDialog();
                 if (isFinishing() || isDestroyed()) return;
-                
+
                 if (response.isSuccessful()) {
-
-                    Log.d("API_ADUAN", "SUCCESS");
-                    Log.d("API_ADUAN", "CODE: " + response.code());
-
-                    if (response.body() != null) {
-                        Log.d("API_ADUAN", "BODY: " + new Gson().toJson(response.body()));
-                    }
-
-                    Toast.makeText(
-                            AjukanAduanActivity.this,
-                            "Aduan Anda telah terkirim.",
-                            Toast.LENGTH_LONG
-                    ).show();
-
-                    finish();
-
+                    Log.d("API_ADUAN", "SUCCESS - Code " + response.code());
+                    dialogView.viewSukses(AjukanAduanActivity.this, "Aduan Anda telah berhasil terkirim ke sistem Helpdesk.");
                 } else {
-
-                    Log.e("API_ADUAN", "FAILED");
-                    Log.e("API_ADUAN", "CODE: " + response.code());
-
+                    Log.e("API_ADUAN", "FAILED - Code " + response.code());
+                    String pesanGagal = "Gagal mengirim aduan (HTTP " + response.code() + ").";
                     try {
                         if (response.errorBody() != null) {
                             String errorBody = response.errorBody().string();
-
-                            Log.e("API_ADUAN", "ERROR BODY: " + errorBody);
-
-                            Toast.makeText(
-                                    AjukanAduanActivity.this,
-                                    "Gagal: HTTP " + response.code(),
-                                    Toast.LENGTH_LONG
-                            ).show();
+                            Log.e("API_ADUAN", "Error Body: " + errorBody);
+                            if (errorBody.contains("\"message\":")) {
+                                try {
+                                    JSONObject jsonObject = new JSONObject(errorBody);
+                                    if (jsonObject.has("message")) {
+                                        pesanGagal = jsonObject.getString("message");
+                                    }
+                                } catch (Exception ignored) {}
+                            } else {
+                                pesanGagal = "Server merespons kesalahan HTTP " + response.code() + ". Mohon coba beberapa saat lagi.";
+                            }
                         }
-
                     } catch (IOException e) {
-                        Log.e("API_ADUAN", "ERROR READING BODY", e);
+                        Log.e("API_ADUAN", "Error reading body", e);
                     }
+                    dialogView.pesanErrorDetail(AjukanAduanActivity.this, "Pengiriman Gagal", pesanGagal);
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<FileModel> call, @NonNull Throwable t) {
+                dismissProsesDialog();
                 if (isFinishing() || isDestroyed()) return;
-                
-                Log.e("API_ERROR", "Error: " + t.getMessage());
-                Toast.makeText(AjukanAduanActivity.this, "Terjadi kesalahan jaringan.", Toast.LENGTH_SHORT).show();
+
+                Log.e("API_ERROR", "Error: " + t.getMessage(), t);
+                String pesanError;
+                if (!NetworkUtils.isConnected(AjukanAduanActivity.this)) {
+                    pesanError = "Koneksi internet Anda terputus. Mohon periksa data seluler atau Wi-Fi Anda.";
+                } else if (t instanceof SocketTimeoutException) {
+                    pesanError = "Waktu koneksi habis (Timeout). Server lambat merespons, silakan coba lagi.";
+                } else if (t instanceof ConnectException) {
+                    pesanError = "Gagal terhubung ke server. Periksa jaringan Anda atau server sedang dalam pemeliharaan.";
+                } else {
+                    pesanError = "Terjadi kesalahan jaringan: " + (t.getLocalizedMessage() != null ? t.getLocalizedMessage() : t.toString());
+                }
+
+                dialogView.pesanErrorDetail(AjukanAduanActivity.this, "Koneksi Gagal", pesanError);
             }
         });
     }

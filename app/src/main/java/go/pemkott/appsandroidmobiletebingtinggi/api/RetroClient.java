@@ -1,11 +1,14 @@
 package go.pemkott.appsandroidmobiletebingtinggi.api;
 
+import android.content.Context;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.util.concurrent.TimeUnit;
 
-import okhttp3.CertificatePinner;
+import go.pemkott.appsandroidmobiletebingtinggi.MyApplication;
+import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -18,15 +21,21 @@ public class RetroClient {
 
     private static RetroClient myClient;
     private final Retrofit retrofit;
+    private final boolean isBypassMode;
 
-    private RetroClient() {
+    private RetroClient(boolean enableBypass) {
+        this.isBypassMode = enableBypass;
 
         HttpLoggingInterceptor logging =
                 new HttpLoggingInterceptor();
 
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
 
-        OkHttpClient okHttpClient = SSLHelper.getUnsafeOkHttpClientBuilder()
+        OkHttpClient.Builder builder = enableBypass
+                ? SSLHelper.getUnsafeOkHttpClientBuilder()
+                : new OkHttpClient.Builder();
+
+        OkHttpClient okHttpClient = builder
                         .addInterceptor(logging)
                         .retryOnConnectionFailure(true)
                         .connectTimeout(120, TimeUnit.SECONDS)
@@ -45,11 +54,25 @@ public class RetroClient {
                 .build();
     }
 
-    public static synchronized RetroClient getInstance() {
-        if (myClient == null) {
-            myClient = new RetroClient();
+    public static synchronized RetroClient getInstance(Context context) {
+        Context appContext = context != null ? context.getApplicationContext() : MyApplication.getAppContext();
+        boolean enableBypass = false;
+        if (appContext != null) {
+            SessionManager session = new SessionManager(appContext);
+            enableBypass = session.isSslBypassEnabled();
+        }
+        if (myClient == null || myClient.isBypassMode != enableBypass) {
+            myClient = new RetroClient(enableBypass);
         }
         return myClient;
+    }
+
+    public static synchronized RetroClient getInstance() {
+        return getInstance(null);
+    }
+
+    public static synchronized void resetInstance() {
+        myClient = null;
     }
 
     public ApiAddProduk getApi() {

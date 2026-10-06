@@ -1320,7 +1320,9 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
     private void setupViews() {
         //Maps
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapKehadiranOne);
-        mapFragment.getMapAsync(this);
+        if (mapFragment != null) {
+            mapFragment.getMapAsync(this);
+        }
     }
 
 
@@ -1328,9 +1330,17 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
 
 
     private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId) {
+        if (context == null) return BitmapDescriptorFactory.defaultMarker();
         Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
-        vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
-        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        if (vectorDrawable == null) return BitmapDescriptorFactory.defaultMarker();
+        int width = vectorDrawable.getIntrinsicWidth();
+        int height = vectorDrawable.getIntrinsicHeight();
+        if (width <= 0 || height <= 0) {
+            width = 48;
+            height = 48;
+        }
+        vectorDrawable.setBounds(0, 0, width, height);
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         vectorDrawable.draw(canvas);
         return BitmapDescriptorFactory.fromBitmap(bitmap);
@@ -1340,7 +1350,7 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
 
     private void plotMarkers(Location locationObj) {
 
-        if(map != null){
+        if(map != null && locationObj != null){
             if (rippleAnimator != null) rippleAnimator.cancel();
             map.clear();
             LatLng position = new LatLng(locationObj.getLatitude(), locationObj.getLongitude());
@@ -1383,11 +1393,6 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
                 }
             }
 
-        } else {
-
-            map.moveCamera(CameraUpdateFactory
-                    .newLatLngZoom(defaultLocation, 19f));
-            map.getUiSettings().setMyLocationButtonEnabled(true);
         }
 
         if (!lokasiSiap) {
@@ -1469,6 +1474,9 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
             Log.e(TAG, "Can't find style. Error: ", e);
         }
 
+        if (defaultLocation == null) {
+            defaultLocation = new LatLng(3.3280269543577745, 99.16650143213461);
+        }
         this.map.addMarker(new MarkerOptions().position(defaultLocation).icon(bitmapDescriptorFromVector(this, R.drawable.asn_lk)));
         this.map.moveCamera(CameraUpdateFactory.newLatLngZoom(
                 defaultLocation, 10f));

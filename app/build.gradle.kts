@@ -28,9 +28,13 @@ android {
         applicationId = "go.pemkott.appsandroidmobiletebingtinggi"
         minSdk = 24
         targetSdk = 36
-        versionCode = 233
-        versionName = "3.0.4"
+        versionCode = 237
+        versionName = "3.0.5"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        ndk {
+            abiFilters.addAll(setOf("armeabi-v7a", "arm64-v8a"))
+        }
     }
 
     buildTypes {
@@ -42,14 +46,30 @@ android {
                 "proguard-rules.pro"
             )
         }
+    }
 
-    }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
+
     buildFeatures {
         viewBinding = true
+    }
+
+    androidResources {
+        noCompress += listOf("tflite", "ptl", "pt")
+    }
+
+    lint {
+        abortOnError = false
+        checkReleaseBuilds = false
+    }
+
+    packaging {
+        jniLibs {
+            useLegacyPackaging = false
+        }
     }
 }
 
@@ -64,7 +84,6 @@ dependencies {
     implementation(libs.glide)
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
-//    implementation(libs.logging.interceptor)
     implementation(libs.okhttp3.logging.interceptor)
     implementation(libs.places)
     implementation(libs.circleimageview)
@@ -77,6 +96,7 @@ dependencies {
     implementation(libs.annotations)
     implementation(libs.play.services.location)
     implementation(libs.play.services.maps)
+
     implementation(libs.volley)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.okhttp)
@@ -100,9 +120,4 @@ dependencies {
     implementation(libs.tensorflow.lite)
     implementation(libs.tensorflow.lite.support)
     implementation(libs.work.runtime)
-
-    implementation("org.pytorch:pytorch_android_lite:2.1.0")
-    implementation("org.pytorch:pytorch_android_torchvision_lite:2.1.0")
-
-    implementation("com.google.mlkit:face-detection:16.1.7")
 }

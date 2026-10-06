@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 
+import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.play.core.appupdate.AppUpdateManager;
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
@@ -38,6 +39,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.api.HttpService;
 import go.pemkott.appsandroidmobiletebingtinggi.api.ResponsePOJO;
 import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
+import go.pemkott.appsandroidmobiletebingtinggi.api.SSLHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.SIMPLE_FORMAT_TANGGAL;
@@ -48,6 +50,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.model.LoginResponse;
 import go.pemkott.appsandroidmobiletebingtinggi.model.User;
 import go.pemkott.appsandroidmobiletebingtinggi.policy.PrivacyPolicyActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.resetpassword.ResetPasswprdActivity;
+import go.pemkott.appsandroidmobiletebingtinggi.utils.FcmTokenHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.utils.NetworkUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -115,6 +118,23 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(intentReset);
             }
         });
+
+        SwitchMaterial switchSslBypass = findViewById(R.id.switchSslBypass);
+        if (switchSslBypass != null) {
+            switchSslBypass.setChecked(session.isSslBypassEnabled());
+            switchSslBypass.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                session.saveSslBypass(isChecked);
+                RetroClient.resetInstance();
+                if (isChecked) {
+                    SSLHelper.disableSSLCertificateChecking();
+                } else {
+                    SSLHelper.restoreDefaultSSLCertificateChecking();
+                }
+                String empId = session.getEmployeeId() != null ? session.getEmployeeId() : "-";
+                String logText = isChecked ? "Mengaktifkan Bypass SSL Server" : "Menonaktifkan Bypass SSL Server";
+                databaseHelper.insertLog(empId, "-", SIMPLE_FORMAT_TANGGAL.format(new Date()), logText, "SSL_BYPASS");
+            });
+        }
 
         checkAppUpdate();
     }
@@ -232,7 +252,7 @@ public class LoginActivity extends AppCompatActivity {
                 etPassword.getText()).toString().trim();
 
         RetroClient
-                .getInstance()
+                .getInstance(LoginActivity.this)
                 .getApi2()
                 .login(username, password)
                 .enqueue(new Callback<List<LoginResponse>>() {
@@ -340,6 +360,9 @@ public class LoginActivity extends AppCompatActivity {
                             errorTitle = "Masalah Sertifikat SSL";
                             String detailCause = t.getCause() != null ? t.getCause().getMessage() : t.getLocalizedMessage();
                             errorMsg = "Kegagalan sertifikat SSL: " + (detailCause != null ? detailCause : t.toString());
+                            if (!session.isSslBypassEnabled()) {
+                                errorMsg += "\n\nSilakan aktifkan sakelar 'Bypass Verifikasi SSL Server' di halaman login untuk melanjutkan.";
+                            }
                             Log.e("SSL_ERROR_DETAIL", "Detail SSL: " + detailCause, t);
                         } else if (t.toString().contains("Proxy") || t.toString().contains("proxy")) {
                             errorTitle = "Masalah Proxy";
@@ -359,51 +382,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void fetchFcmTokenAndSend() {
-        FirebaseMessaging.getInstance().getToken()
-                .addOnCompleteListener(task -> {
-                    if (!task.isSuccessful()) {
-                        Log.e("FCM", "Gagal ambil token", task.getException());
-                        openNextPage(); // tetap lanjut
-                        return;
-                    }
-
-                    String token = task.getResult();
-                    SessionManager session = new SessionManager(this);
-                    session.saveFcmToken(token);
-
-                    sendFcmTokenToServer();
-                });
+        FcmTokenHelper.fetchAndSendToken(this, success -> openNextPage());
     }
-    private void sendFcmTokenToServer() {
-
-        SessionManager session = new SessionManager(this);
-
-        String pegawaiId = session.getPegawaiId();
-        String fcmToken  = session.getFcmToken();
-
-        if (pegawaiId == null || fcmToken == null) {
-            Log.w("FCM", "Token belum ada, lanjut tanpa update");
-            openNextPage();
-            return;
-        }
-
-        Call<ResponsePOJO> call = RetroClient.getInstance()
-                .getApi()
-                .updateFcmToken(pegawaiId, fcmToken);
-
-        call.enqueue(new Callback<ResponsePOJO>() {
-            @Override
-            public void onResponse(Call<ResponsePOJO> call, Response<ResponsePOJO> response) {
-                openNextPage();
-            }
-
-            @Override
-            public void onFailure(Call<ResponsePOJO> call, Throwable t) {
-                openNextPage();
-            }
-        });
-    }
-
 
     private void openNextPage() {
         dialogproses.dismiss();

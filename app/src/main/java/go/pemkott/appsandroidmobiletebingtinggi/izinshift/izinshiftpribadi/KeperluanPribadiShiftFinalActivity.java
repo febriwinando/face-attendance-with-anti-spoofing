@@ -358,8 +358,10 @@ public class KeperluanPribadiShiftFinalActivity extends AppCompatActivity  imple
         @Override
         public void onLocationResult(@NonNull LocationResult locationResult) {
             super.onLocationResult(locationResult);
+            Location location = locationResult.getLastLocation();
+            if (location == null) return;
 
-            boolean isMock = mockLocationsEnabled || locationResult.getLastLocation().isFromMockProvider();
+            boolean isMock = mockLocationsEnabled || location.isFromMockProvider();
             if (isMock){
                 mock_location = 1;
                 rbFakeGPS ="1";
@@ -367,19 +369,17 @@ public class KeperluanPribadiShiftFinalActivity extends AppCompatActivity  imple
                 mock_location = 0;
             }
             if (map != null) {
-                plotMarkers(locationResult.getLastLocation());
+                plotMarkers(location);
             }
 
-            if (locationResult.getLastLocation() != null) {
-                if (tvAkurasi != null) {
-                    tvAkurasi.setText(String.format(localeID, "± %.0f m", locationResult.getLastLocation().getAccuracy()));
-                }
+            if (tvAkurasi != null) {
+                tvAkurasi.setText(String.format(localeID, "± %.0f m", location.getAccuracy()));
+            }
 
-                long now = System.currentTimeMillis();
-                if (now - lastWeatherUpdate > 10 * 60 * 1000) {
-                    WeatherUtil.fetchWeather(KeperluanPribadiShiftFinalActivity.this, locationResult.getLastLocation().getLatitude(), locationResult.getLastLocation().getLongitude(), tvTemperature, tvCondition, ivWeatherIcon);
-                    lastWeatherUpdate = now;
-                }
+            long now = System.currentTimeMillis();
+            if (now - lastWeatherUpdate > 10 * 60 * 1000) {
+                WeatherUtil.fetchWeather(KeperluanPribadiShiftFinalActivity.this, location.getLatitude(), location.getLongitude(), tvTemperature, tvCondition, ivWeatherIcon);
+                lastWeatherUpdate = now;
             }
         }
     };
@@ -1052,7 +1052,9 @@ public class KeperluanPribadiShiftFinalActivity extends AppCompatActivity  imple
 
         //Maps
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        if (mapFragment != null) {
+            mapFragment.getMapAsync(this);
+        }
 
     }
 
@@ -1060,6 +1062,7 @@ public class KeperluanPribadiShiftFinalActivity extends AppCompatActivity  imple
     private void subscribeToLocationUpdate() {
         locationViewModel.getLocationHelper(mContext).observe(this, location -> {
 //                Toast.makeText(mContext, "on changed called", Toast.LENGTH_SHORT).show();
+            if (location == null) return;
             locationObj = location;
 
             boolean isMock = mockLocationsEnabled || location.isFromMockProvider();
@@ -1075,9 +1078,17 @@ public class KeperluanPribadiShiftFinalActivity extends AppCompatActivity  imple
         });
     }
     private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId) {
+        if (context == null) return BitmapDescriptorFactory.defaultMarker();
         Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
-        vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
-        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        if (vectorDrawable == null) return BitmapDescriptorFactory.defaultMarker();
+        int width = vectorDrawable.getIntrinsicWidth();
+        int height = vectorDrawable.getIntrinsicHeight();
+        if (width <= 0 || height <= 0) {
+            width = 48;
+            height = 48;
+        }
+        vectorDrawable.setBounds(0, 0, width, height);
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         vectorDrawable.draw(canvas);
         return BitmapDescriptorFactory.fromBitmap(bitmap);
@@ -1085,30 +1096,26 @@ public class KeperluanPribadiShiftFinalActivity extends AppCompatActivity  imple
 
     ArrayList<Location> locationArrayList = new ArrayList<>();
     private void plotMarkers(Location locationObj) {
+        if (locationObj == null) return;
 
+        if (map != null){
+            try {
+                if (rippleAnimator != null) rippleAnimator.cancel();
+                map.clear();
+                LatLng position = new LatLng(locationObj.getLatitude(), locationObj.getLongitude());
+                String addr = lokasi.getAddress(KeperluanPribadiShiftFinalActivity.this, locationObj.getLatitude(), locationObj.getLongitude());
+                map.addMarker(new MarkerOptions().position(position).icon(bitmapDescriptorFromVector(this, R.drawable.asn_lk)).title(addr != null ? addr : "Lokasi Saya"));
+                rippleAnimator = MapUtils.showRippleEffect(map, position);
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                        new LatLng(locationObj.getLatitude(), locationObj.getLongitude()), 19f));
+                map.getUiSettings().setMyLocationButtonEnabled(true);
+                latGMap = locationObj.getLatitude();
+                lngGMap = locationObj.getLongitude();
 
-        if(map != null){
-
-            if (rippleAnimator != null) rippleAnimator.cancel();
-            map.clear();
-            LatLng position = new LatLng(locationObj.getLatitude(), locationObj.getLongitude());
-            map.addMarker(new MarkerOptions().position(position).icon(bitmapDescriptorFromVector(this, R.drawable.asn_lk)).title(lokasi.getAddress(KeperluanPribadiShiftFinalActivity.this, locationObj.getLatitude(), locationObj.getLongitude())));
-            rippleAnimator = MapUtils.showRippleEffect(map, position);
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                    new LatLng(locationObj.getLatitude(), locationObj.getLongitude()), 19f));
-            map.getUiSettings().setMyLocationButtonEnabled(true);
-            latGMap = locationObj.getLatitude();
-            lngGMap = locationObj.getLongitude();
-
-
-            locationArrayList.add(locationObj);
-
-
-        }else{
-
-            map.moveCamera(CameraUpdateFactory
-                    .newLatLngZoom(defaultLocation, 19f));
-            map.getUiSettings().setMyLocationButtonEnabled(true);
+                locationArrayList.add(locationObj);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -1170,6 +1177,9 @@ public class KeperluanPribadiShiftFinalActivity extends AppCompatActivity  imple
         } catch (Resources.NotFoundException e) {
             Log.e(TAG, "Can't find style. Error: ", e);
         }
+        if (defaultLocation == null) {
+            defaultLocation = new LatLng(3.3280269543577745, 99.16650143213461);
+        }
         this.map.addMarker(new MarkerOptions().position(defaultLocation).icon(bitmapDescriptorFromVector(this, R.drawable.asn_lk)));
         this.map.moveCamera(CameraUpdateFactory.newLatLngZoom(
                 defaultLocation, 10));
@@ -1225,9 +1235,49 @@ public class KeperluanPribadiShiftFinalActivity extends AppCompatActivity  imple
         finish();
     }
 
+    private boolean statusAbsenMode = false;
+
+    public void handlerTutupActivity() {
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.postDelayed(() -> {
+            if (!statusAbsenMode && !isFinishing() && !isDestroyed()) {
+                cobarekamkembali();
+            }
+        }, 3 * 60 * 1000);
+    }
+
+    public void cobarekamkembali() {
+        if (isFinishing() || isDestroyed()) return;
+        Dialog dataKosong = new Dialog(this, R.style.DialogStyle);
+        dataKosong.setContentView(R.layout.view_warning_kosong);
+        TextView tvWarning1 = dataKosong.findViewById(R.id.tvWarning1);
+        ImageView tvTutupDialog = dataKosong.findViewById(R.id.tvTutupDialog);
+        TextView tvCobaKembali = dataKosong.findViewById(R.id.tvCobaKembali);
+
+        if (tvWarning1 != null) {
+            tvWarning1.setText("Proses terlalu lama, coba ulang kembali!");
+        }
+        dataKosong.setCancelable(false);
+        if (tvTutupDialog != null) {
+            tvTutupDialog.setOnClickListener(v -> {
+                dataKosong.dismiss();
+                finish();
+            });
+        }
+        if (tvCobaKembali != null) {
+            tvCobaKembali.setVisibility(View.VISIBLE);
+            tvCobaKembali.setOnClickListener(v -> {
+                dataKosong.dismiss();
+                finish();
+            });
+        }
+        dataKosong.show();
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
+        handlerTutupActivity();
         startLocationUpdates();
     }
 
@@ -1257,6 +1307,7 @@ public class KeperluanPribadiShiftFinalActivity extends AppCompatActivity  imple
 
 
     public void viewSukses(Context context, String info1, String info2){
+        statusAbsenMode = true;
         Dialog dialogSukes = new Dialog(context, R.style.DialogStyle);
         dialogSukes.setContentView(R.layout.view_sukses);
         dialogSukes.setCancelable(false);

@@ -38,6 +38,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.api.ResponsePOJO;
 import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
+import go.pemkott.appsandroidmobiletebingtinggi.utils.FcmTokenHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.model.DataEmployee;
 import go.pemkott.appsandroidmobiletebingtinggi.model.KegiatanIzin;
 import go.pemkott.appsandroidmobiletebingtinggi.model.Koordinat;
@@ -410,54 +411,7 @@ public class DownloadDataActivity extends AppCompatActivity {
 //    }
 
     private void sendFcmTokenToServer() {
-
-        SessionManager session = new SessionManager(this);
-        String pegawaiId = session.getPegawaiId();
-
-        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
-
-                    if (!task.isSuccessful()) {
-                        Log.e("FCM", "Gagal mendapatkan token");
-                        return;
-                    }
-
-                    String token = task.getResult();
-
-                    Log.d("FCM", "pegawaiId = " + pegawaiId);
-                    Log.d("FCM", "token = " + token);
-
-                    if (pegawaiId == null ||
-                            pegawaiId.equals("0") ||
-                            token == null ||
-                            token.isEmpty()) {
-
-                        return;
-                    }
-
-                    RetroClient.getInstance()
-                            .getApi()
-                            .updateFcmToken(pegawaiId, token)
-                            .enqueue(new Callback<ResponsePOJO>() {
-
-                                @Override
-                                public void onResponse(
-                                        Call<ResponsePOJO> call,
-                                        Response<ResponsePOJO> response) {
-
-                                    finishFlow();
-                                }
-
-                                @Override
-                                public void onFailure(
-                                        Call<ResponsePOJO> call,
-                                        Throwable t) {
-
-                                    Log.e("FCM",
-                                            "Update gagal : "
-                                                    + t.getMessage());
-                                }
-                            });
-                });
+        FcmTokenHelper.fetchAndSendToken(this, success -> finishFlow());
     }
 
     /* =============================

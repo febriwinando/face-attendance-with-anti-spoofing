@@ -1,18 +1,3 @@
-/*
- * Copyright 2019 The TensorFlow Authors. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
 package go.pemkott.appsandroidmobiletebingtinggi.deteksidir.DeteksiWajah;
 
@@ -23,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCharacteristics;
@@ -33,7 +17,6 @@ import android.media.Image;
 import android.media.Image.Plane;
 import android.media.ImageReader;
 import android.media.ImageReader.OnImageAvailableListener;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -75,6 +58,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.deteksidir.env.ImageUtils;
 import go.pemkott.appsandroidmobiletebingtinggi.deteksidir.env.Logger;
 import go.pemkott.appsandroidmobiletebingtinggi.dinasluarkantor.perjalanandinas.PerjalananDinasFinalActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.dinasluarkantor.tugaslapangan.TugasLapanganFinalActivity;
+
 import go.pemkott.appsandroidmobiletebingtinggi.izin.cuti.IzinCutiFinalActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.izin.keperluanpribadi.KeperluanPribadiFinalActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.izin.sakit.IzinSakitFinalActivity;
@@ -143,33 +127,6 @@ public abstract class CameraActivity extends AppCompatActivity
         Intent intent = getIntent();
         useFacing = intent.getIntExtra(KEY_USE_FACING, CameraCharacteristics.LENS_FACING_FRONT);
 
-        if (intent != null) {
-            if (intent.hasExtra("jenisabsensi")) {
-                jenisabsensi = intent.getIntExtra("jenisabsensi", jenisabsensi);
-            }
-            String aktivitas = intent.getStringExtra("aktivitas");
-            if (aktivitas != null) {
-                if ("kehadiran".equalsIgnoreCase(aktivitas)) {
-                    jenisabsensi = 1;
-                } else if ("tugaslapangan".equalsIgnoreCase(aktivitas)) {
-                    jenisabsensi = 2;
-                } else if ("perjalanandinas".equalsIgnoreCase(aktivitas)) {
-                    jenisabsensi = 3;
-                } else if ("cuti".equalsIgnoreCase(aktivitas)) {
-                    jenisabsensi = 4;
-                } else if ("pribadi".equalsIgnoreCase(aktivitas)) {
-                    jenisabsensi = 5;
-                } else if ("sakit".equalsIgnoreCase(aktivitas)) {
-                    jenisabsensi = 6;
-                } else if ("shift".equalsIgnoreCase(aktivitas)) {
-                    jenisabsensi = 7;
-                }
-            }
-        }
-        if (jenisabsensi <= 0) {
-            jenisabsensi = 1;
-        }
-
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         Window window = this.getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -217,24 +174,13 @@ public abstract class CameraActivity extends AppCompatActivity
         ivTakeFoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 try {
                     ivTakeFoto.setVisibility(View.GONE);
-                    if (pbTakeGambar != null) pbTakeGambar.setVisibility(View.VISIBLE);
-
-                    final Bitmap finalBitmap = gambarHasilDeteksi;
-                    runInBackground(() -> {
-                        try {
-                            if (finalBitmap != null) {
-                                saveBitmapToInternalStorage(finalBitmap);
-                            } else {
-                                Log.e("CameraActivity", "gambarHasilDeteksi is null on manual capture click");
-                            }
-                        } catch (Exception e) {
-                            Log.e("CameraActivity", "Error on manual capture click", e);
-                        }
-                    });
-                } catch (Exception e) {
-                    Log.e("CameraActivity", "Error handling capture button click", e);
+                    pbTakeGambar.setVisibility(View.VISIBLE);
+                    saveBitmapToInternalStorage(gambarHasilDeteksi);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
                 }
             }
         });
@@ -688,8 +634,11 @@ public abstract class CameraActivity extends AppCompatActivity
             ivTakeFoto.setEnabled(false);
         }else if (ambilGambar == 2){
             tvPeringatanWajah.setVisibility(View.VISIBLE);
-            tvPeringatanWajah.setText("Fokuskan Kamera Ke Wajah Anda");
+            tvPeringatanWajah.setText("Wajah Tidak Nyata! Fokuskan Kamera Ke Wajah Anda");
             ivTakeFoto.setEnabled(false);
+        }else {
+            tvPeringatanWajah.setVisibility(View.INVISIBLE);
+            ivTakeFoto.setEnabled(true);
         }
     }
     Bitmap gambarHasilDeteksi;
@@ -723,149 +672,196 @@ public abstract class CameraActivity extends AppCompatActivity
     AmbilFoto ambilFoto = new AmbilFoto(CameraActivity.this);
     String fileName;
     public void saveBitmapToInternalStorage(Bitmap bitmap) throws IOException {
-        if (bitmap == null) return;
-
-        File myDir;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            myDir = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), "eabsensi");
-        } else {
-            String root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
-            myDir = new File(root + "/eabsensi");
-        }
-        if (!myDir.exists()) {
-            myDir.mkdirs();
-        }
+        String root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
+        File myDir = new File(root + "/eabsensi");
+        myDir.mkdirs();
 
         fileName = getFileName();
         File file = new File(myDir, fileName);
 
-        // 1. Simpan bitmap awal
-        try (FileOutputStream out = new FileOutputStream(file)) {
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+
+//        if (file.exists()) file.delete();
+
+        try {
+            FileOutputStream out = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
             out.flush();
+            out.close();
+
         } catch (Exception e) {
-            Log.e("CameraActivity", "Error saving initial bitmap", e);
+            e.printStackTrace();
         }
 
         String currentPhotoPath = file.getAbsolutePath();
+
         Log.d("PathGambar", currentPhotoPath);
 
-        // 2. Kompres ukuran gambar
-        Bitmap selectedBitmap = null;
-        try {
-            selectedBitmap = ambilFoto.fileBitmapCompress(file);
-        } catch (Exception e) {
-            Log.e("CameraActivity", "Error compressing bitmap", e);
-        }
-        if (selectedBitmap == null) {
-            selectedBitmap = bitmap;
-        }
+        Bitmap selectedBitmap = ambilFoto.fileBitmapCompress(file);
+        Bitmap rotationBitmapSurat = Bitmap.createBitmap(selectedBitmap, 0,0, selectedBitmap.getWidth(), selectedBitmap.getHeight(), AmbilFoto.exifInterface(currentPhotoPath, 1), true);
+//
+        File filebaru = new File(myDir, fileName);
+        if (filebaru.exists()) filebaru.delete();
 
-        // 3. Perbaiki rotasi HANYA jika file memiliki tag EXIF resmi (tanpa rotasi paksa 270 deg)
-        Matrix rotationMatrix = AmbilFoto.getExifRotation(currentPhotoPath);
-        Bitmap finalRotatedBitmap;
         try {
-            if (!rotationMatrix.isIdentity()) {
-                finalRotatedBitmap = Bitmap.createBitmap(
-                        selectedBitmap, 0, 0,
-                        selectedBitmap.getWidth(), selectedBitmap.getHeight(),
-                        rotationMatrix, true
-                );
-            } else {
-                finalRotatedBitmap = selectedBitmap;
-            }
-        } catch (Exception e) {
-            finalRotatedBitmap = selectedBitmap;
-        }
-
-        // 4. Simpan file terkompresi final (JPEG ~100KB - 200KB, resolusi max ~800px)
-        File filebaru = new File(myDir, "compressed_" + fileName);
-        try (FileOutputStream out = new FileOutputStream(filebaru)) {
-            finalRotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 85, out);
+            FileOutputStream out = new FileOutputStream(filebaru);
+            rotationBitmapSurat.compress(Bitmap.CompressFormat.PNG, 100, out);
             out.flush();
+            out.close();
         } catch (Exception e) {
-            Log.e("CameraActivity", "Error saving compressed bitmap", e);
-            filebaru = file;
+            e.printStackTrace();
         }
 
-        handlerProgress(filebaru.getAbsolutePath());
+
+        handlerProgress();
+
+
     }
 
-    public void handlerProgress(String path){
-        String fileUri = Uri.fromFile(new File(path)).toString();
 
-        runOnUiThread(() -> {
-            if (jenisabsensi == 2) {
+    public void handlerProgress(){
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
+            if (jenisabsensi == 1){
+                Intent intent = new Intent(CameraActivity.this, AbsensiKehadiranActivity.class);
+                intent.putExtra("fileName", fileName);
+                startActivity(intent);
+                finish();
+            } else if (jenisabsensi == 2) {
                 Intent intent = new Intent(CameraActivity.this, TugasLapanganFinalActivity.class);
-                intent.putExtra("namafile", fileUri);
+                intent.putExtra("fileName", fileName);
                 intent.putExtra("title", "Isi Data Tugas Lapangan");
                 startActivity(intent);
                 finish();
-            } else if (jenisabsensi == 3) {
+            }else if (jenisabsensi == 3) {
                 Intent intent = new Intent(CameraActivity.this, PerjalananDinasFinalActivity.class);
-                intent.putExtra("namafile", fileUri);
+                intent.putExtra("fileName", fileName);
                 intent.putExtra("title", "Isi Data Perjalanan Dinas");
                 startActivity(intent);
                 finish();
-            } else if (jenisabsensi == 4) {
+            }else if (jenisabsensi == 4) {
                 Intent intent = new Intent(CameraActivity.this, IzinCutiFinalActivity.class);
-                intent.putExtra("namafile", fileUri);
+                intent.putExtra("fileName", fileName);
                 intent.putExtra("title", "Isi Data Cuti");
                 startActivity(intent);
                 finish();
-            } else if (jenisabsensi == 5) {
+            }else if (jenisabsensi == 5) {
                 Intent intent = new Intent(CameraActivity.this, KeperluanPribadiFinalActivity.class);
-                intent.putExtra("namafile", fileUri);
+                intent.putExtra("fileName", fileName);
                 intent.putExtra("title", "Isi Data Keperluan Pribadi");
                 startActivity(intent);
                 finish();
-            } else if (jenisabsensi == 6) {
+            }else if (jenisabsensi == 6) {
                 Intent intent = new Intent(CameraActivity.this, IzinSakitFinalActivity.class);
-                intent.putExtra("namafile", fileUri);
+                intent.putExtra("fileName", fileName);
                 intent.putExtra("title", "Isi Data Sakit");
                 startActivity(intent);
                 finish();
-            } else if (jenisabsensi == 7) {
+            }else if (jenisabsensi == 7) {
                 Intent intent = new Intent(CameraActivity.this, AbsenShiftActivity.class);
-                intent.putExtra("namafile", fileUri);
+                intent.putExtra("fileName", fileName);
                 intent.putExtra("title", "KEHADIRAN");
                 startActivity(intent);
                 finish();
-            } else if (jenisabsensi == 8) {
+            }else if (jenisabsensi == 8) {
+
                 int jenisabsenizin = JadwalIzinShiftActivity.jenisabsensi;
+
                 if (jenisabsenizin == 9){
                     Intent intent = new Intent(CameraActivity.this, KeperluanPribadiShiftFinalActivity.class);
-                    intent.putExtra("namafile", fileUri);
+                    intent.putExtra("fileName", fileName);
                     intent.putExtra("title", "Isi Data Keperluan Pribadi");
                     startActivity(intent);
                     finish();
                 } else if (jenisabsenizin == 10) {
                     Intent intent = new Intent(CameraActivity.this, IzinCutiShiftFinalActivity.class);
-                    intent.putExtra("namafile", fileUri);
+                    intent.putExtra("fileName", fileName);
                     intent.putExtra("title", "Isi Data Cuti");
                     startActivity(intent);
                     finish();
                 } else if (jenisabsenizin == 11) {
                     Intent intent = new Intent(CameraActivity.this, IzinSakitShiftFinalActivity.class);
-                    intent.putExtra("namafile", fileUri);
+                    intent.putExtra("fileName", fileName);
                     intent.putExtra("title", "Isi Data Sakit");
                     startActivity(intent);
                     finish();
-                } else {
+                }
+
+            }
+        }else{
+            Handler handler = new Handler();
+            handler.postDelayed(() -> {
+                if (jenisabsensi == 1){
                     Intent intent = new Intent(CameraActivity.this, AbsensiKehadiranActivity.class);
-                    intent.putExtra("namafile", fileUri);
+                    intent.putExtra("fileName", fileName);
                     startActivity(intent);
                     finish();
+                } else if (jenisabsensi == 2) {
+                    Intent intent = new Intent(CameraActivity.this, TugasLapanganFinalActivity.class);
+                    intent.putExtra("fileName", fileName);
+                    intent.putExtra("title", "Isi Data Tugas Lapangan");
+                    startActivity(intent);
+                    finish();
+                }else if (jenisabsensi == 3) {
+                    Intent intent = new Intent(CameraActivity.this, PerjalananDinasFinalActivity.class);
+                    intent.putExtra("fileName", fileName);
+                    intent.putExtra("title", "Isi Data Perjalanan Dinas");
+                    startActivity(intent);
+                    finish();
+                }else if (jenisabsensi == 4) {
+                    Intent intent = new Intent(CameraActivity.this, IzinCutiFinalActivity.class);
+                    intent.putExtra("fileName", fileName);
+                    intent.putExtra("title", "Isi Data Cuti");
+                    startActivity(intent);
+                    finish();
+                }else if (jenisabsensi == 5) {
+                    Intent intent = new Intent(CameraActivity.this, KeperluanPribadiFinalActivity.class);
+                    intent.putExtra("fileName", fileName);
+                    intent.putExtra("title", "Isi Data Keperluan Pribadi");
+                    startActivity(intent);
+                    finish();
+                }else if (jenisabsensi == 6) {
+                    Intent intent = new Intent(CameraActivity.this, IzinSakitFinalActivity.class);
+                    intent.putExtra("fileName", fileName);
+                    intent.putExtra("title", "Isi Data Sakit");
+                    startActivity(intent);
+                    finish();
+                }else if (jenisabsensi == 7) {
+                    Intent intent = new Intent(CameraActivity.this, AbsenShiftActivity.class);
+                    intent.putExtra("fileName", fileName);
+                    intent.putExtra("title", "KEHADIRAN");
+                    startActivity(intent);
+                    finish();
+                }else if (jenisabsensi == 8) {
+
+                    int jenisabsenizin = JadwalIzinShiftActivity.jenisabsensi;
+
+                    if (jenisabsenizin == 9){
+                        Intent intent = new Intent(CameraActivity.this, KeperluanPribadiShiftFinalActivity.class);
+                        intent.putExtra("fileName", fileName);
+                        intent.putExtra("title", "Isi Data Keperluan Pribadi");
+                        startActivity(intent);
+                        finish();
+                    } else if (jenisabsenizin == 10) {
+                        Intent intent = new Intent(CameraActivity.this, IzinCutiShiftFinalActivity.class);
+                        intent.putExtra("fileName", fileName);
+                        intent.putExtra("title", "Isi Data Cuti");
+                        startActivity(intent);
+                        finish();
+                    } else if (jenisabsenizin == 11) {
+                        Intent intent = new Intent(CameraActivity.this, IzinSakitShiftFinalActivity.class);
+                        intent.putExtra("fileName", fileName);
+                        intent.putExtra("title", "Isi Data Sakit");
+                        startActivity(intent);
+                        finish();
+                    }
+
                 }
-            } else {
-                // Default fallback for Absensi Kehadiran (jenisabsensi == 1 or 0 or default)
-                Intent intent = new Intent(CameraActivity.this, AbsensiKehadiranActivity.class);
-                intent.putExtra("namafile", fileUri);
-                startActivity(intent);
-                finish();
-            }
-        });
+
+            }, 4000);
+        }
+
     }
+
 
     public String getFileName() {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());

@@ -30,6 +30,8 @@ import androidx.core.view.WindowInsetsCompat;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.signature.ObjectKey;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.switchmaterial.SwitchMaterial;
+import go.pemkott.appsandroidmobiletebingtinggi.api.SSLHelper;
 
 import java.io.File;
 import java.util.Date;
@@ -87,7 +89,7 @@ public class ProfileActivity extends AppCompatActivity {
         session = new SessionManager(this);
         userId = session.getPegawaiId();
 
-        api = RetrofitBuilder.getClient().create(ApiAddProduk.class);
+        api = RetrofitBuilder.getClient(this).create(ApiAddProduk.class);
 
         civProfilPegawai = findViewById(R.id.civProfilPegawai);
         tvNamaPegawai = findViewById(R.id.tvNamaPegawai);
@@ -105,7 +107,7 @@ public class ProfileActivity extends AppCompatActivity {
         ivBack = findViewById(R.id.ivBack);
         llBukaDaftarPegawai = findViewById(R.id.llBukaDaftarPegawai);
 
-        holderAPI = RetroClient.getInstance().getApi2();
+        holderAPI = RetroClient.getInstance(this).getApi2();
 
         databaseHelper = new DatabaseHelper(this);
 
@@ -128,6 +130,26 @@ public class ProfileActivity extends AppCompatActivity {
 
         LinearLayout trPrivasi = findViewById(R.id.trPrivasi);
         trPrivasi.setOnClickListener(v -> showPrivacyPolicy());
+
+        SwitchMaterial switchSslBypassProfile = findViewById(R.id.switchSslBypassProfile);
+        if (switchSslBypassProfile != null) {
+            switchSslBypassProfile.setChecked(session.isSslBypassEnabled());
+            switchSslBypassProfile.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                session.saveSslBypass(isChecked);
+                RetroClient.resetInstance();
+                if (isChecked) {
+                    SSLHelper.disableSSLCertificateChecking();
+                } else {
+                    SSLHelper.restoreDefaultSSLCertificateChecking();
+                }
+                api = RetrofitBuilder.getClient(ProfileActivity.this).create(ApiAddProduk.class);
+                holderAPI = RetroClient.getInstance(ProfileActivity.this).getApi2();
+
+                String empId = session.getEmployeeId() != null ? session.getEmployeeId() : "-";
+                String logText = isChecked ? "Mengaktifkan Bypass SSL Server" : "Menonaktifkan Bypass SSL Server";
+                databaseHelper.insertLog(empId, "-", SIMPLE_FORMAT_TANGGAL.format(new Date()), logText, "SSL_BYPASS");
+            });
+        }
 
         ivBack.setOnClickListener(v -> {
             finish();

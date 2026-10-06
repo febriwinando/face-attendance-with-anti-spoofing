@@ -19,13 +19,11 @@ package go.pemkott.appsandroidmobiletebingtinggi.deteksidir.DeteksiWajah;
 import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.hardware.Camera;
@@ -37,7 +35,6 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.util.Size;
 import android.util.TypedValue;
-import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -47,19 +44,12 @@ import com.google.mlkit.vision.face.FaceDetection;
 import com.google.mlkit.vision.face.FaceDetector;
 import com.google.mlkit.vision.face.FaceDetectorOptions;
 
-import org.pytorch.LiteModuleLoader;
-import org.pytorch.Module;
-
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
 
 import go.pemkott.appsandroidmobiletebingtinggi.R;
-import go.pemkott.appsandroidmobiletebingtinggi.camerax.FaceRecognizer;
 import go.pemkott.appsandroidmobiletebingtinggi.deteksidir.customview.OverlayView;
-import go.pemkott.appsandroidmobiletebingtinggi.deteksidir.customview.OverlayView.DrawCallback;
 import go.pemkott.appsandroidmobiletebingtinggi.deteksidir.env.BorderedText;
 import go.pemkott.appsandroidmobiletebingtinggi.deteksidir.env.ImageUtils;
 import go.pemkott.appsandroidmobiletebingtinggi.deteksidir.env.Logger;
@@ -80,30 +70,6 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
   private static final String TF_OD_API_MODEL_FILE = "mask_detector.tflite";
   private static final String TF_OD_API_LABELS_FILE = "file:///android_asset/mobile_label.txt";
 
-  private enum CaptureStage {
-    ANTI_SPOOFING_INIT, // Tahap 1: Verifikasi Keaslian Wajah
-    VERIFY_IDENTITY,    // Tahap 2: Face Recognition
-    CAPTURE,            // Tahap 3: Otomatis Capture
-    DONE
-  }
-  private CaptureStage currentStage = CaptureStage.ANTI_SPOOFING_INIT;
-  private int nyataStreak = 0;
-  private boolean isAutoCapturing = false;
-  private static final int REQUIRED_NYATA_STREAK = 2;
-  
-  private FaceRecognizer faceRecognizer;
-  private float[] referenceEmbedding;
-  private float lastSimilarityScore = 0f;
-  private boolean isMatched = false;
-  
-  enum Challenge { BLINK, SMILE, TURN_LEFT, TURN_RIGHT, LOOK_UP }
-  private final List<Challenge> challengeQueue = new ArrayList<>();
-  private int challengeIndex = 0;
-  private float currentChallengeProgress = 0f;
-  
-  private String aktivitas;
-
-  private static final DetectorMode MODE = DetectorMode.TF_OD_API;
   // Minimum detection confidence to track a detection.
   private static final float MINIMUM_CONFIDENCE_TF_OD_API = 0.5f;
   private static final boolean MAINTAIN_ASPECT = false;
@@ -157,70 +123,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
 
 
     FaceDetector detector = FaceDetection.getClient(options);
-
     faceDetector = detector;
-    aktivitas = getIntent().getStringExtra("aktivitas");
-    generateChallengeQueue();
-
-    // Initialize Face Recognition
-    faceRecognizer = new FaceRecognizer(this);
-    loadReferenceEmbedding();
-
-    try{
-      System.out.println("TEST***********************************************************************");
-      System.out.println(Utils.assetFilePath(this, "DeepPixBis_121_v5.ptl"));
-      Module model = LiteModuleLoader.load("/data/user/0/go.pemkott.appsandroidmobiletebingtinggi/files/DeepPixBis_121_v5.ptl");
-      System.out.println("Loaded model *****************************************************************");
-    }  catch (Exception e) {
-      System.out.println(e + "************************************************************************************s");
-    }
-  }
-
-  private void loadReferenceEmbedding() {
-    runInBackground(() -> {
-      try {
-        Bitmap refBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.contohfile);
-        if (refBitmap != null) {
-          // Use a dummy full-rect bounding box if we don't have face detection for the reference yet,
-          // but better to run face detection on it once.
-          InputImage image = InputImage.fromBitmap(refBitmap, 0);
-          faceDetector.process(image).addOnSuccessListener(faces -> {
-            if (!faces.isEmpty()) {
-              Rect bounds = faces.get(0).getBoundingBox();
-              referenceEmbedding = faceRecognizer.getEmbedding(refBitmap, bounds);
-              LOGGER.i("Reference embedding loaded successfully");
-            } else {
-              // Fallback: use the whole image if no face found in reference (not ideal)
-              referenceEmbedding = faceRecognizer.getEmbedding(refBitmap, new Rect(0, 0, refBitmap.getWidth(), refBitmap.getHeight()));
-              LOGGER.w("No face found in reference image, using full image.");
-            }
-          });
-        } else {
-          LOGGER.e("Could not load reference image contohfile.jpeg");
-        }
-      } catch (Exception e) {
-        LOGGER.e(e, "Error loading reference embedding");
-      }
-    });
-  }
-
-  private void generateChallengeQueue() {
-    Challenge[] pool = Challenge.values();
-    Random r = new Random();
-    challengeQueue.clear();
-    challengeQueue.add(pool[r.nextInt(pool.length)]);
-    challengeIndex = 0;
-  }
-
-  private String getChallengeText(Challenge c) {
-    switch (c) {
-      case BLINK: return "Kedipkan mata";
-      case SMILE: return "Senyum";
-      case TURN_LEFT: return "Hadap ke kiri";
-      case TURN_RIGHT: return "Hadap ke kanan";
-      case LOOK_UP: return "Angkat dagu";
-      default: return "";
-    }
   }
 
   ProgressDialog progressDialog;
@@ -246,7 +149,6 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
     try {
       detector =
               TFLiteObjectDetectionAPIModel.create(
-                      this,
                       getAssets(),
                       TF_OD_API_MODEL_FILE,
                       TF_OD_API_LABELS_FILE,
@@ -302,7 +204,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
 
     trackingOverlay = (OverlayView) findViewById(R.id.tracking_overlay);
     trackingOverlay.addCallback(
-            new DrawCallback() {
+            new OverlayView.DrawCallback() {
               @Override
               public void drawCallback(final Canvas canvas) {
                 tracker.draw(canvas);
@@ -335,28 +237,22 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
 
     readyForNextImage();
 
-    // Transform rgbFrameBitmap into upright portraitBmp
-    int sourceW = rgbFrameBitmap.getWidth();
-    int sourceH = rgbFrameBitmap.getHeight();
-    int targetW = portraitBmp.getWidth();
-    int targetH = portraitBmp.getHeight();
-    Matrix transform = createTransform(
-            sourceW,
-            sourceH,
-            targetW,
-            targetH,
-            sensorOrientation);
-    final Canvas cv = new Canvas(portraitBmp);
-    cv.drawBitmap(rgbFrameBitmap, transform, null);
+    final Canvas canvas = new Canvas(croppedBitmap);
+    canvas.drawBitmap(rgbFrameBitmap, frameToCropTransform, null);
+    // For examining the actual TF input.
+    if (SAVE_PREVIEW_BITMAP) {
+      ImageUtils.saveBitmap(croppedBitmap);
+    }
 
-    InputImage image = InputImage.fromBitmap(portraitBmp, 0);
+
+
+    InputImage image = InputImage.fromBitmap(croppedBitmap, 0);
     faceDetector
             .process(image)
             .addOnSuccessListener(new OnSuccessListener<List<Face>>() {
               @Override
               public void onSuccess(List<Face> faces) {
-                if (faces == null || faces.size() == 0) {
-                  nyataStreak = 0;
+                if (faces.size() == 0) {
                   updateResults(currTimestamp, new LinkedList<>(), 0, null);
                   return;
                 }
@@ -372,11 +268,6 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
 
               }
 
-            })
-            .addOnFailureListener(e -> {
-              LOGGER.e(e, "Face detection failed");
-              nyataStreak = 0;
-              updateResults(currTimestamp, new LinkedList<>(), 0, null);
             });
 
 
@@ -544,8 +435,22 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
   private void onFacesDetected(long currTimestamp, List<Face> faces) {
 
     cropCopyBitmap = Bitmap.createBitmap(croppedBitmap);
-    final List<Classifier.Recognition> mappedRecognitions = new LinkedList<Classifier.Recognition>();
+    final Canvas canvas = new Canvas(cropCopyBitmap);
+    final Paint paint = new Paint();
+    paint.setColor(Color.RED);
+    paint.setStyle(Style.STROKE);
+    paint.setStrokeWidth(2.0f);
 
+//    float minimumConfidence = MINIMUM_CONFIDENCE_TF_OD_API;
+
+
+    final List<Classifier.Recognition> mappedRecognitions =
+            new LinkedList<Classifier.Recognition>();
+
+
+    //final List<Classifier.Recognition> results = new ArrayList<>();
+
+    // Note this can be done only once
     int sourceW = rgbFrameBitmap.getWidth();
     int sourceH = rgbFrameBitmap.getHeight();
     int targetW = portraitBmp.getWidth();
@@ -561,213 +466,92 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
     // draws the original image in portrait mode.
     cv.drawBitmap(rgbFrameBitmap, transform, null);
 
-    Matrix transformInverted = new Matrix();
-    transform.invert(transformInverted);
+    final Canvas cvFace = new Canvas(faceBmp);
+
+    boolean saved = false;
 
     for (Face face : faces) {
 
       LOGGER.i("FACE" + face.toString());
 
-      Rect faceRect = face.getBoundingBox();
 
-      int left = Math.max(0, faceRect.left);
-      int top = Math.max(0, faceRect.top);
-      int right = Math.min(portraitBmp.getWidth(), faceRect.right);
-      int bottom = Math.min(portraitBmp.getHeight(), faceRect.bottom);
+      //results = detector.recognizeImage(croppedBitmap);
 
-      int faceW = right - left;
-      int faceH = bottom - top;
 
-      if (faceW <= 10 || faceH <= 10) continue;
+      final RectF boundingBox = new RectF(face.getBoundingBox());
 
-      // Clean, un-distorted face cropping
-      Bitmap croppedFace = Bitmap.createBitmap(portraitBmp, left, top, faceW, faceH);
-      Bitmap scaledFaceBmp = Bitmap.createScaledBitmap(croppedFace, TF_OD_API_INPUT_SIZE, TF_OD_API_INPUT_SIZE, true);
+      //final boolean goodConfidence = result.getConfidence() >= minimumConfidence;
+      final boolean goodConfidence = true; //face.get;
+      // maps crop coordinates to original
+      cropToFrameTransform.mapRect(boundingBox);
+
+      // maps original coordinates to portrait coordinates
+      RectF faceBB = new RectF(boundingBox);
+      transform.mapRect(faceBB);
+
+      // translates portrait to origin and scales to fit input inference size
+      //cv.drawRect(faceBB, paint);
+      float sx = ((float) TF_OD_API_INPUT_SIZE) / faceBB.width();
+      float sy = ((float) TF_OD_API_INPUT_SIZE) / faceBB.height();
+      Matrix matrix = new Matrix();
+      matrix.postTranslate(-faceBB.left, -faceBB.top);
+      matrix.postScale(sx, sy);
+
+      cvFace.drawBitmap(portraitBmp, matrix, null);
+
 
       String label = "";
       float confidence = -1f;
+      Integer color = Color.BLUE;
 
       final long startTime = SystemClock.uptimeMillis();
-
-      boolean isSharp = isImageSharp(scaledFaceBmp);
-      boolean hasMoire = detectMoirePattern(scaledFaceBmp);
-
-      final List<Classifier.Recognition> resultsAux = detector.recognizeImage(scaledFaceBmp);
+      final List<Classifier.Recognition> resultsAux = detector.recognizeImage(faceBmp);
       lastProcessingTimeMs = SystemClock.uptimeMillis() - startTime;
 
-      if (resultsAux != null && resultsAux.size() > 0) {
+      if (resultsAux.size() > 0) {
         Classifier.Recognition result = resultsAux.get(0);
         label = result.getTitle();
-        confidence = result.getConfidence();
-      }
 
-      final float finalConfidence = confidence;
-      final boolean aiNyata = "Nyata".equalsIgnoreCase(label) || finalConfidence >= 0.50f;
-      final boolean securityPassed = isSharp && !hasMoire && aiNyata;
+        float conf = result.getConfidence();
+        confidence = conf;
 
-      // Update Streak
-      if (securityPassed) {
-        nyataStreak++;
-      } else {
-        nyataStreak = 0;
-      }
-
-      // --- UI FEEDBACK & AUTO CAPTURE LOGIC ---
-      runOnUiThread(() -> {
-        if (isAutoCapturing) return;
-
-        if (securityPassed && ivTakeFoto != null) {
-          ivTakeFoto.setEnabled(true);
+        if (conf >= 0.90f && "Nyata".equalsIgnoreCase(label)) {
+          color = Color.GREEN;
+          ambilGambar = 1;
+        }else{
+          ambilGambar = 2;
+          color = Color.RED;
         }
 
-        if (nyataStreak < REQUIRED_NYATA_STREAK) {
-          String status;
-          if (!isSharp) status = "⚠️ Gambar Kabur, Hadap Kamera dengan Jelas";
-          else if (hasMoire) status = "❌ PALSU (Layar Digital)";
-          else if (!aiNyata) status = "❌ PALSU (" + String.format("%.0f%%", finalConfidence * 100) + ")";
-          else status = "✅ WAJAH NYATA TERDETEKSI (" + nyataStreak + "/" + REQUIRED_NYATA_STREAK + ")";
-
-          if (tvPeringatanWajah != null) {
-            tvPeringatanWajah.setVisibility(View.VISIBLE);
-            tvPeringatanWajah.setText(status);
-          }
-        } else {
-          // AUTO CAPTURE TRIGGERED
-          isAutoCapturing = true;
-          if (tvPeringatanWajah != null) {
-            tvPeringatanWajah.setVisibility(View.VISIBLE);
-            tvPeringatanWajah.setText("✅ WAJAH TERVERIFIKASI NYATA!\nMengambil Foto...");
-          }
-          if (ivTakeFoto != null) ivTakeFoto.setEnabled(false);
-
-          Bitmap captureBitmap = Bitmap.createBitmap(portraitBmp);
-
-          runInBackground(() -> {
-            try {
-              saveBitmapToInternalStorage(captureBitmap);
-            } catch (Exception e) {
-              LOGGER.e(e, "Gagal auto-capture foto");
-              runOnUiThread(() -> {
-                isAutoCapturing = false;
-                nyataStreak = 0;
-                if (tvPeringatanWajah != null) {
-                  tvPeringatanWajah.setText("Gagal mengambil foto, silakan coba lagi");
-                }
-              });
-            }
-          });
-        }
-      });
-
-      final Integer color = securityPassed ? Color.GREEN : Color.RED;
-
-      // Map faceRect from portraitBmp coordinates back to raw frame (previewWidth x previewHeight)
-      RectF rawFrameRect = new RectF(left, top, right, bottom);
-      transformInverted.mapRect(rawFrameRect);
+      }
 
       if (getCameraFacing() == CameraCharacteristics.LENS_FACING_FRONT) {
+
         Matrix flip = new Matrix();
         if (sensorOrientation == 90 || sensorOrientation == 270) {
           flip.postScale(1, -1, previewWidth / 2.0f, previewHeight / 2.0f);
-        } else {
+        }
+        else {
           flip.postScale(-1, 1, previewWidth / 2.0f, previewHeight / 2.0f);
         }
-        flip.mapRect(rawFrameRect);
+        //flip.postScale(1, -1, targetW / 2.0f, targetH / 2.0f);
+        flip.mapRect(boundingBox);
+
       }
 
       final Classifier.Recognition result = new Classifier.Recognition(
-              "0", label, confidence, rawFrameRect);
+              "0", label, confidence, boundingBox);
 
       result.setColor(color);
-      result.setLocation(rawFrameRect);
+      result.setLocation(boundingBox);
       mappedRecognitions.add(result);
 
+
     }
 
-    updateResults(currTimestamp, mappedRecognitions, 1, portraitBmp);
+    updateResults(currTimestamp, mappedRecognitions, ambilGambar, rgbFrameBitmap);
 
-  }
 
-  private void detectChallenge(Face face) {
-    if (challengeIndex >= challengeQueue.size()) return;
-    Challenge c = challengeQueue.get(challengeIndex);
-    boolean passed = false;
-    float eulerY = face.getHeadEulerAngleY();
-    float eulerX = face.getHeadEulerAngleX();
-
-    switch (c) {
-      case BLINK:
-        Float l = face.getLeftEyeOpenProbability();
-        Float r = face.getRightEyeOpenProbability();
-        passed = l != null && r != null && l < 0.3f && r < 0.3f;
-        break;
-      case SMILE:
-        Float s = face.getSmilingProbability();
-        passed = s != null && s > 0.6f;
-        break;
-      case TURN_LEFT:
-        passed = eulerY < -1;
-        break;
-      case TURN_RIGHT:
-        passed = eulerY > 1;
-        break;
-      case LOOK_UP:
-        // ML Kit Euler X is positive when looking up
-        passed = eulerX > 10;
-        break;
-    }
-
-    if (passed) {
-      challengeIndex++;
-    }
-  }
-
-  private boolean isImageSharp(Bitmap bitmap) {
-    if (bitmap == null) return true;
-    try {
-      int width = bitmap.getWidth();
-      int height = bitmap.getHeight();
-      int[] pixels = new int[width * height];
-      bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
-      long laplacianSum = 0;
-      for (int y = 1; y < height - 1; y++) {
-        for (int x = 1; x < width - 1; x++) {
-          int center = pixels[y * width + x] & 0xff;
-          int left = pixels[y * width + (x - 1)] & 0xff;
-          int right = pixels[y * width + (x + 1)] & 0xff;
-          int top = pixels[(y - 1) * width + x] & 0xff;
-          int bottom = pixels[(y + 1) * width + x] & 0xff;
-          int laplacian = Math.abs(4 * center - left - right - top - bottom);
-          laplacianSum += laplacian;
-        }
-      }
-      float avgLaplacian = (float) laplacianSum / (width * height);
-      return avgLaplacian > 1.0f;
-    } catch (Exception e) {
-      return true;
-    }
-  }
-
-  private boolean detectMoirePattern(Bitmap bitmap) {
-    if (bitmap == null) return false;
-    try {
-      int width = bitmap.getWidth();
-      int height = bitmap.getHeight();
-      int[] pixels = new int[width * height];
-      bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
-      int moireScore = 0;
-      for (int y = 0; y < height - 1; y++) {
-        for (int x = 0; x < width - 1; x++) {
-          int p1 = pixels[y * width + x] & 0xFF;
-          int p2 = pixels[y * width + (x + 1)] & 0xFF;
-          int p3 = pixels[(y + 1) * width + x] & 0xFF;
-          if (Math.abs(p1 - p2) > 65 && Math.abs(p1 - p3) > 65) moireScore++;
-        }
-      }
-      return moireScore > (width * height * 0.20);
-    } catch (Exception e) {
-      return false;
-    }
   }
 
 }

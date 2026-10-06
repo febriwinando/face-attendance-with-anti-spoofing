@@ -19,6 +19,7 @@ import java.util.List;
 
 import go.pemkott.appsandroidmobiletebingtinggi.deteksidir.tflite.Classifier;
 
+
 public interface ResultsView {
   public void setResults(final List<Classifier.Recognition> results);
 }

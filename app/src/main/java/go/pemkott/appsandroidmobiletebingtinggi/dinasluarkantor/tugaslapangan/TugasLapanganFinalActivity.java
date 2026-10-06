@@ -99,7 +99,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.api.ResponsePOJO;
 import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
 import go.pemkott.appsandroidmobiletebingtinggi.utils.MapUtils;
-import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraXLActivity;
+import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraXTanpaDetectionAcitvity;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import go.pemkott.appsandroidmobiletebingtinggi.geolocation.GetLocation;
@@ -485,8 +485,10 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
         @Override
         public void onLocationResult(@NonNull LocationResult locationResult) {
             super.onLocationResult(locationResult);
+            Location location = locationResult.getLastLocation();
+            if (location == null) return;
 
-            boolean isMock = mockLocationsEnabled || Objects.requireNonNull(locationResult.getLastLocation()).isFromMockProvider();
+            boolean isMock = mockLocationsEnabled || location.isFromMockProvider();
             if (isMock){
                 mock_location = 1;
                 rbFakeGPS ="1";
@@ -494,19 +496,17 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
                 mock_location = 0;
             }
             if (map != null) {
-                plotMarkers(locationResult.getLastLocation());
+                plotMarkers(location);
             }
 
-            if (locationResult.getLastLocation() != null) {
-                if (tvAkurasi != null) {
-                    tvAkurasi.setText(String.format(localeID, "± %.0f m", locationResult.getLastLocation().getAccuracy()));
-                }
+            if (tvAkurasi != null) {
+                tvAkurasi.setText(String.format(localeID, "± %.0f m", location.getAccuracy()));
+            }
 
-                long now = System.currentTimeMillis();
-                if (now - lastWeatherUpdate > 10 * 60 * 1000) {
-                    WeatherUtil.fetchWeather(TugasLapanganFinalActivity.this, locationResult.getLastLocation().getLatitude(), locationResult.getLastLocation().getLongitude(), tvTemperature, tvCondition, ivWeatherIcon);
-                    lastWeatherUpdate = now;
-                }
+            long now = System.currentTimeMillis();
+            if (now - lastWeatherUpdate > 10 * 60 * 1000) {
+                WeatherUtil.fetchWeather(TugasLapanganFinalActivity.this, location.getLatitude(), location.getLongitude(), tvTemperature, tvCondition, ivWeatherIcon);
+                lastWeatherUpdate = now;
             }
         }
     };
@@ -917,8 +917,8 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
         });
 
         llKamera.setOnClickListener(v -> {
-            Intent intent = new Intent(this, CameraXLActivity.class);
-            intent.putExtra("aktivitas", "lampirantl");
+            Intent intent = new Intent(this, CameraXTanpaDetectionAcitvity.class);
+            intent.putExtra("is_lampiran", true);
             cameraLauncher.launch(intent);
 
             dialogLampiran.dismiss();
@@ -1218,9 +1218,49 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
 
 
 
+    private boolean statusAbsenMode = false;
+
+    public void handlerTutupActivity() {
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.postDelayed(() -> {
+            if (!statusAbsenMode && !isFinishing() && !isDestroyed()) {
+                cobarekamkembali();
+            }
+        }, 3 * 60 * 1000);
+    }
+
+    public void cobarekamkembali() {
+        if (isFinishing() || isDestroyed()) return;
+        Dialog dataKosong = new Dialog(this, R.style.DialogStyle);
+        dataKosong.setContentView(R.layout.view_warning_kosong);
+        TextView tvWarning1 = dataKosong.findViewById(R.id.tvWarning1);
+        ImageView tvTutupDialog = dataKosong.findViewById(R.id.tvTutupDialog);
+        TextView tvCobaKembali = dataKosong.findViewById(R.id.tvCobaKembali);
+
+        if (tvWarning1 != null) {
+            tvWarning1.setText("Proses terlalu lama, coba ulang kembali!");
+        }
+        dataKosong.setCancelable(false);
+        if (tvTutupDialog != null) {
+            tvTutupDialog.setOnClickListener(v -> {
+                dataKosong.dismiss();
+                finish();
+            });
+        }
+        if (tvCobaKembali != null) {
+            tvCobaKembali.setVisibility(View.VISIBLE);
+            tvCobaKembali.setOnClickListener(v -> {
+                dataKosong.dismiss();
+                finish();
+            });
+        }
+        dataKosong.show();
+    }
+
     protected void onResume() {
         super.onResume();
         rbTanggal = SIMPLE_FORMAT_TANGGAL.format(new Date());
+        handlerTutupActivity();
         startLocationUpdates();
     }
 
@@ -1232,6 +1272,7 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
 
 
     public void viewSukses(Context context){
+        statusAbsenMode = true;
         Dialog dialogSukes = new Dialog(context, R.style.DialogStyle);
         dialogSukes.setContentView(R.layout.view_sukses);
         dialogSukes.setCancelable(false);
@@ -1270,7 +1311,9 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
 
         //Maps
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        if (mapFragment != null) {
+            mapFragment.getMapAsync(this);
+        }
     }
 
     private void startLocationUpdates() {
@@ -1287,9 +1330,17 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
 
 
     private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId) {
+        if (context == null) return BitmapDescriptorFactory.defaultMarker();
         Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
-        vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
-        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        if (vectorDrawable == null) return BitmapDescriptorFactory.defaultMarker();
+        int width = vectorDrawable.getIntrinsicWidth();
+        int height = vectorDrawable.getIntrinsicHeight();
+        if (width <= 0 || height <= 0) {
+            width = 48;
+            height = 48;
+        }
+        vectorDrawable.setBounds(0, 0, width, height);
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         vectorDrawable.draw(canvas);
         return BitmapDescriptorFactory.fromBitmap(bitmap);
@@ -1299,7 +1350,7 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
     ArrayList<Location> locationArrayList = new ArrayList<>();
     private void plotMarkers(Location locationObj) {
 
-        if(map != null){
+        if(map != null && locationObj != null){
 
             if (rippleAnimator != null) rippleAnimator.cancel();
             map.clear();
@@ -1315,11 +1366,6 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
 
             locationArrayList.add(locationObj);
 
-
-        }else{
-            map.moveCamera(CameraUpdateFactory
-                    .newLatLngZoom(defaultLocation, 19));
-            map.getUiSettings().setMyLocationButtonEnabled(true);
         }
 
     }
@@ -1385,6 +1431,9 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
             Log.e(TAG, "Can't find style. Error: ", e);
         }
 
+        if (defaultLocation == null) {
+            defaultLocation = new LatLng(3.3280269543577745, 99.16650143213461);
+        }
         this.map.addMarker(new MarkerOptions().position(defaultLocation).icon(bitmapDescriptorFromVector(this, R.drawable.asn_lk)));
         this.map.moveCamera(CameraUpdateFactory.newLatLngZoom(
                 defaultLocation, 10));

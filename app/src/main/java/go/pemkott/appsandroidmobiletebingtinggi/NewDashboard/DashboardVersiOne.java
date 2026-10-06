@@ -77,6 +77,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.rekap.RekapAbsensActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.singkronjadwal.SettingAdapter;
 import go.pemkott.appsandroidmobiletebingtinggi.singkronjadwal.TimeTebleSetting;
 import go.pemkott.appsandroidmobiletebingtinggi.singkronjadwalsift.CalendarJadwalShiftActivity;
+import go.pemkott.appsandroidmobiletebingtinggi.utils.FcmTokenHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.utils.NetworkUtil;
 import go.pemkott.appsandroidmobiletebingtinggi.verifikasi.ValidasiNewActivity;
 import retrofit2.Call;
@@ -724,6 +725,8 @@ public class DashboardVersiOne extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
+        FcmTokenHelper.fetchAndSendToken(this, null);
 
         if (sVerifikator != null && sEmployee_id != null){
             dataValidasi(sVerifikator, sEmployee_id);

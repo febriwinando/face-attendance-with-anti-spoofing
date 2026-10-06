@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -26,7 +25,6 @@ import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageCapture;
 import androidx.camera.core.ImageCaptureException;
 import androidx.camera.core.Preview;
-import androidx.camera.core.TorchState;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
 import androidx.core.content.ContextCompat;
@@ -51,7 +49,7 @@ public class CameraXTanpaDetectionAcitvity extends AppCompatActivity {
 
     private PreviewView previewView;
     private ImageButton capture;
-    private ImageView flipCamera, toggleFlash;
+    private ImageView flipCamera;
     private TextView txtChallenge;
     private ImageCapture imageCapture;
     private Camera camera;
@@ -74,14 +72,12 @@ public class CameraXTanpaDetectionAcitvity extends AppCompatActivity {
         capture = findViewById(R.id.capture);
         txtChallenge = findViewById(R.id.txtChallenge);
         flipCamera = findViewById(R.id.flipCamera);
-        toggleFlash = findViewById(R.id.toggleFlash);
         findViewById(R.id.ivBackCamera).setOnClickListener(v -> finish());
 
         aktivitas = getIntent().getStringExtra("aktivitas");
 
         capture.setOnClickListener(v -> takePicture());
         flipCamera.setOnClickListener(v -> toggleCamera());
-        toggleFlash.setOnClickListener(v -> toggleFlashMode());
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             permissionLauncher.launch(Manifest.permission.CAMERA);
@@ -114,19 +110,13 @@ public class CameraXTanpaDetectionAcitvity extends AppCompatActivity {
                         new CameraSelector.Builder().requireLensFacing(lensFacing).build(),
                         preview, imageCapture);
 
-                updateFlashButtonVisibility();
-
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e("CameraX", "Error starting camera", e);
             }
         }, ContextCompat.getMainExecutor(this));
     }
 
     private void takePicture() {
-        if (camera != null && camera.getCameraInfo().hasFlashUnit()) {
-            camera.getCameraControl().enableTorch(true);
-        }
-
         Dialog dialogproses = new Dialog(this, R.style.DialogStyle);
         dialogproses.setContentView(R.layout.view_proses);
         dialogproses.setCancelable(false);
@@ -144,7 +134,6 @@ public class CameraXTanpaDetectionAcitvity extends AppCompatActivity {
         imageCapture.takePicture(options, ContextCompat.getMainExecutor(this), new ImageCapture.OnImageSavedCallback() {
             @Override
             public void onImageSaved(@NonNull ImageCapture.OutputFileResults output) {
-                if (camera != null) camera.getCameraControl().enableTorch(false);
                 dialogproses.dismiss();
                 if (output.getSavedUri() != null) kirimHasil(output.getSavedUri().toString());
                 else kirimHasil(fileName);
@@ -158,6 +147,18 @@ public class CameraXTanpaDetectionAcitvity extends AppCompatActivity {
     }
 
     private void kirimHasil(String fileName) {
+        boolean isLampiran = getIntent().getBooleanExtra("is_lampiran", false)
+                || (aktivitas != null && aktivitas.startsWith("lampiran"))
+                || getCallingActivity() != null;
+
+        if (isLampiran) {
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra("namafile", fileName);
+            setResult(RESULT_OK, resultIntent);
+            finish();
+            return;
+        }
+
         Intent i;
         if ("kehadiran".equals(aktivitas)) i = new Intent(this, AbsensiKehadiranActivity.class);
         else if ("tugaslapangan".equals(aktivitas)) i = new Intent(this, TugasLapanganFinalActivity.class);
@@ -185,36 +186,23 @@ public class CameraXTanpaDetectionAcitvity extends AppCompatActivity {
     }
 
     private void toggleCamera() {
-        lensFacing = (lensFacing == CameraSelector.LENS_FACING_FRONT)
+        int targetLens = (lensFacing == CameraSelector.LENS_FACING_FRONT)
                 ? CameraSelector.LENS_FACING_BACK : CameraSelector.LENS_FACING_FRONT;
-        startCamera();
-    }
 
-    private void toggleFlashMode() {
-        if (camera != null && camera.getCameraInfo().hasFlashUnit()) {
-            Integer torchState = camera.getCameraInfo().getTorchState().getValue();
-            boolean isTorchOn = torchState != null && torchState == TorchState.ON;
-            camera.getCameraControl().enableTorch(!isTorchOn);
-
-            if (toggleFlash != null) {
-                toggleFlash.setImageResource(!isTorchOn ? R.drawable.flashof : R.drawable.flash);
-            }
-        }
-    }
-
-    private void updateFlashButtonVisibility() {
-        if (toggleFlash != null) {
-            if (camera != null && camera.getCameraInfo().hasFlashUnit()) {
-                toggleFlash.setVisibility(View.VISIBLE);
-                if (findViewById(R.id.vControlDivider) != null) {
-                    findViewById(R.id.vControlDivider).setVisibility(View.VISIBLE);
+        ListenableFuture<ProcessCameraProvider> future = ProcessCameraProvider.getInstance(this);
+        future.addListener(() -> {
+            try {
+                ProcessCameraProvider provider = future.get();
+                CameraSelector selector = new CameraSelector.Builder().requireLensFacing(targetLens).build();
+                if (provider.hasCamera(selector)) {
+                    lensFacing = targetLens;
+                    startCamera();
+                } else {
+                    Toast.makeText(this, "Kamera tidak tersedia", Toast.LENGTH_SHORT).show();
                 }
-            } else {
-                toggleFlash.setVisibility(View.GONE);
-                if (findViewById(R.id.vControlDivider) != null) {
-                    findViewById(R.id.vControlDivider).setVisibility(View.GONE);
-                }
+            } catch (Exception e) {
+                Log.e("CameraX", "Error toggling camera", e);
             }
-        }
+        }, ContextCompat.getMainExecutor(this));
     }
 }

@@ -40,10 +40,7 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import java.util.List;
 
-import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraXDetectionOnlyActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraXTanpaDetectionAcitvity;
-import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraxActivity;
-import go.pemkott.appsandroidmobiletebingtinggi.deteksidir.DeteksiWajah.DetectorActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.model.EmployeesData;
 import go.pemkott.appsandroidmobiletebingtinggi.worker.LogSyncWorker;
 
@@ -493,41 +490,51 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public Class<?> getCameraActivityClass() {
-        String nip = getCurrentEmployeeNip();
-        if ("199402092020121005".equals(nip)) {
-            return DetectorActivity.class;
-        } else {
-            return CameraXTanpaDetectionAcitvity.class;
+        return CameraXTanpaDetectionAcitvity.class;
+    }
+
+    public static void addColumnIfNotExists(SQLiteDatabase db, String tableName, String columnName, String columnType) {
+        try {
+            Cursor cursor = db.rawQuery("PRAGMA table_info(" + tableName + ")", null);
+            boolean columnExists = false;
+            if (cursor != null) {
+                int nameIndex = cursor.getColumnIndex("name");
+                while (cursor.moveToNext()) {
+                    if (nameIndex != -1 && columnName.equalsIgnoreCase(cursor.getString(nameIndex))) {
+                        columnExists = true;
+                        break;
+                    }
+                }
+                cursor.close();
+            }
+            if (!columnExists) {
+                db.execSQL("ALTER TABLE " + tableName + " ADD COLUMN " + columnName + " " + columnType);
+                Log.d("DATABASE_HELPER", "Added column " + columnName + " to table " + tableName);
+            }
+        } catch (Exception e) {
+            Log.e("DATABASE_HELPER", "Error adding column " + columnName + " to table " + tableName, e);
         }
     }
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (newVersion > oldVersion) {
-            Log.d("DATABASE_HELPER", "Upgrading from " + oldVersion + " to " + newVersion);
+        Log.d("DATABASE_HELPER", "Upgrading database from " + oldVersion + " to " + newVersion);
+        try {
+            // 1. Pastikan seluruh struktur tabel dibuat jika belum ada
+            onCreate(db);
 
-            // 1. Incremental Migrations (Preserve data)
-            for (int i = oldVersion; i < newVersion; i++) {
-                int nextVersion = i + 1;
-                switch (nextVersion) {
-                    case 105:
-                        try {
-                            db.execSQL("ALTER TABLE " + TABLE_LOG + " ADD COLUMN " + LOG_STATUS + " INTEGER DEFAULT 0");
-                        } catch (Exception e) {
-                            Log.e("DB_UPGRADE", "Column LOG_STATUS might already exist", e);
-                        }
-                        break;
-                    case 108:
-                        try {
-                            db.execSQL("ALTER TABLE " + TABLE_LOG + " ADD COLUMN " + LOG_NAMA_PEGAWAI + " TEXT");
-                            db.execSQL("ALTER TABLE " + TABLE_LOG + " ADD COLUMN " + LOG_NAMA_OPD + " TEXT");
-                        } catch (Exception e) {
-                            Log.e("DB_UPGRADE", "Columns LOG_NAMA_PEGAWAI / LOG_NAMA_OPD might already exist", e);
-                        }
-                        break;
-                }
-            }
+            // 2. Tambahkan kolom baru pada tabel tersimpan (persistent) secara aman
+            addColumnIfNotExists(db, TABLE_LOG, LOG_STATUS, "INTEGER DEFAULT 0");
+            addColumnIfNotExists(db, TABLE_LOG, LOG_NAMA_PEGAWAI, "TEXT");
+            addColumnIfNotExists(db, TABLE_LOG, LOG_NAMA_OPD, "TEXT");
+            addColumnIfNotExists(db, TABLE_CAMERA_DETECTION, CD_NIP, "TEXT");
+            addColumnIfNotExists(db, TABLE_CAMERA_DETECTION, CD_STATUS, "INTEGER NOT NULL DEFAULT 0");
+            addColumnIfNotExists(db, TABLE_USER, COL_7, "TEXT");
 
+            // 3. Re-create tabel cache agar struktur data terbaru selalu sinkron
             refreshCacheTables(db);
+        } catch (Exception e) {
+            Log.e("DATABASE_HELPER", "Error in onUpgrade", e);
         }
     }
 
@@ -891,10 +898,43 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // =========================
     public void insertLog(String employeeId, String opdId, String tanggal, String kegiatan, String jenisAbsen) {
         SQLiteDatabase db = this.getWritableDatabase();
+
+        long now = System.currentTimeMillis();
+        String safeEmpId = employeeId != null ? employeeId : "-";
+        String safeKegiatan = kegiatan != null ? kegiatan : "-";
+
+        // De-duplication check: Cegah entri ganda untuk kegiatan & employeeId yang sama dalam rentang 5 detik
+        try {
+            Cursor cursor = db.rawQuery(
+                "SELECT " + LOG_TIMESTAMP + " FROM " + TABLE_LOG +
+                " WHERE " + LOG_EMPLOYEE_ID + " = ? AND " + LOG_KEGIATAN + " = ?" +
+                " ORDER BY " + LOG_ID + " DESC LIMIT 1",
+                new String[]{safeEmpId, safeKegiatan}
+            );
+            if (cursor != null) {
+                if (cursor.moveToFirst()) {
+                    String lastTimeStr = cursor.getString(0);
+                    if (lastTimeStr != null) {
+                        try {
+                            long lastTime = Long.parseLong(lastTimeStr);
+                            if (now - lastTime < 5000) { // Kurang dari 5 detik
+                                cursor.close();
+                                Log.w("DATABASE_HELPER", "Mencegah duplikasi log: " + safeKegiatan);
+                                return;
+                            }
+                        } catch (Exception ignored) {}
+                    }
+                }
+                cursor.close();
+            }
+        } catch (Exception e) {
+            Log.e("DATABASE_HELPER", "Error checking duplicate log", e);
+        }
+
         ContentValues cv = new ContentValues();
-        
+
         String androidId = Settings.Secure.getString(
-                mContext.getContentResolver(), 
+                mContext.getContentResolver(),
                 Settings.Secure.ANDROID_ID
         );
 
@@ -902,23 +942,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String namaOpd = "-";
 
         try {
-            Cursor cursor = db.rawQuery("SELECT NAMA, NAMA_OPD FROM " + EMPLOYEE + " WHERE ID = ?", new String[]{employeeId});
+            Cursor cursor = db.rawQuery("SELECT NAMA, NAMA_OPD FROM " + EMPLOYEE + " WHERE ID = ?", new String[]{safeEmpId});
             if (cursor != null && cursor.moveToFirst()) {
-                namaPegawai = cursor.getString(0);
-                namaOpd = cursor.getString(1);
+                namaPegawai = cursor.getString(0) != null ? cursor.getString(0) : "-";
+                namaOpd = cursor.getString(1) != null ? cursor.getString(1) : "-";
                 cursor.close();
             }
         } catch (Exception e) {
             Log.e("DATABASE_HELPER", "Error fetching employee/opd name for log", e);
         }
 
-        cv.put(LOG_EMPLOYEE_ID, employeeId);
-        cv.put(LOG_OPD_ID, opdId);
-        cv.put(LOG_TANGGAL, tanggal);
-        cv.put(LOG_KEGIATAN, kegiatan);
-        cv.put(LOG_JENIS, jenisAbsen);
-        cv.put(LOG_DEVICE_ID, androidId);
-        cv.put(LOG_TIMESTAMP, String.valueOf(System.currentTimeMillis()));
+        cv.put(LOG_EMPLOYEE_ID, safeEmpId);
+        cv.put(LOG_OPD_ID, opdId != null ? opdId : "-");
+        cv.put(LOG_TANGGAL, tanggal != null ? tanggal : "-");
+        cv.put(LOG_KEGIATAN, safeKegiatan);
+        cv.put(LOG_JENIS, jenisAbsen != null ? jenisAbsen : "-");
+        cv.put(LOG_DEVICE_ID, androidId != null ? androidId : "-");
+        cv.put(LOG_TIMESTAMP, String.valueOf(now));
         cv.put(LOG_STATUS, 0);
         cv.put(LOG_NAMA_PEGAWAI, namaPegawai);
         cv.put(LOG_NAMA_OPD, namaOpd);
