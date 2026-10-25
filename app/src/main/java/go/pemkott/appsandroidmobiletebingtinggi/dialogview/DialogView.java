@@ -69,6 +69,24 @@ public class DialogView {
         dialogSukes.show();
     }
 
+    public void viewSuksesNonFinish(Context context, String info) {
+        Dialog dialogSukes = new Dialog(context, R.style.DialogStyle);
+        dialogSukes.setContentView(R.layout.view_sukses);
+        dialogSukes.setCancelable(true);
+        ImageView tvTutupDialog = dialogSukes.findViewById(R.id.ivTutupDialogBerhasil);
+        TextView tvSukseKeterangan = dialogSukes.findViewById(R.id.tvSukseKeterangan);
+
+        if (tvSukseKeterangan != null) {
+            tvSukseKeterangan.setText(info);
+        }
+
+        if (tvTutupDialog != null) {
+            tvTutupDialog.setOnClickListener(v -> dialogSukes.dismiss());
+        }
+
+        dialogSukes.show();
+    }
+
     public void viewFoto(Bitmap data){
         Dialog dialogFoto = new Dialog(context, R.style.DialogStyle);
         dialogFoto.setContentView(R.layout.item_view_photo);

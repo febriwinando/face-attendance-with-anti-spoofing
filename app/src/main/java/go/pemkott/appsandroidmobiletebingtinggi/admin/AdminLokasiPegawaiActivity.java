@@ -76,7 +76,7 @@ public class AdminLokasiPegawaiActivity extends AppCompatActivity {
                         if (response.isSuccessful() && response.body() != null) {
                             ResponsePOJO pojo = response.body();
                             if (pojo.isStatus()) {
-                                dialogView.viewSukses(AdminLokasiPegawaiActivity.this, pojo.getRemarks() != null ? pojo.getRemarks() : "Lokasi pegawai berhasil disimpan!");
+                                dialogView.viewSuksesNonFinish(AdminLokasiPegawaiActivity.this, pojo.getRemarks() != null ? pojo.getRemarks() : "Lokasi pegawai berhasil disimpan!");
                             } else {
                                 dialogView.viewNotifKosong(AdminLokasiPegawaiActivity.this, "Gagal Simpan", pojo.getRemarks() != null ? pojo.getRemarks() : "Gagal menyimpan lokasi.");
                             }

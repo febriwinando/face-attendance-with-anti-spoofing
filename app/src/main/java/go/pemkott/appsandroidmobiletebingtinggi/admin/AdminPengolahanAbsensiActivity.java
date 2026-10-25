@@ -396,7 +396,7 @@ public class AdminPengolahanAbsensiActivity extends AppCompatActivity {
                             }
                         }
 
-                        dialogView.viewSukses(AdminPengolahanAbsensiActivity.this, "Data presensi ditemukan (ID #" + p.getId() + ")");
+                        dialogView.viewSuksesNonFinish(AdminPengolahanAbsensiActivity.this, "Data presensi ditemukan (ID #" + p.getId() + ")");
                     }
                 } else {
                     dialogView.viewNotifKosong(AdminPengolahanAbsensiActivity.this, "Informasi", "Belum ada record presensi pada tanggal tersebut.");
@@ -601,7 +601,7 @@ public class AdminPengolahanAbsensiActivity extends AppCompatActivity {
         if (response.isSuccessful() && response.body() != null) {
             ResponsePOJO pojo = response.body();
             if (pojo.isStatus()) {
-                dialogView.viewSukses(AdminPengolahanAbsensiActivity.this, pojo.getRemarks() != null ? pojo.getRemarks() : "Data pengolahan absensi berhasil diubah!");
+                dialogView.viewSuksesNonFinish(AdminPengolahanAbsensiActivity.this, pojo.getRemarks() != null ? pojo.getRemarks() : "Data pengolahan absensi berhasil diubah!");
             } else {
                 dialogView.viewNotifKosong(AdminPengolahanAbsensiActivity.this, "Gagal Ubah", pojo.getRemarks() != null ? pojo.getRemarks() : "Gagal mengubah data absensi.");
             }

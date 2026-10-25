@@ -138,7 +138,7 @@ public class AdminInsertMassalActivity extends AppCompatActivity {
                         if (response.isSuccessful() && response.body() != null) {
                             ResponsePOJO pojo = response.body();
                             if (pojo.isStatus()) {
-                                dialogView.viewSukses(AdminInsertMassalActivity.this, pojo.getRemarks() != null ? pojo.getRemarks() : "Eksekusi absensi massal berhasil!");
+                                dialogView.viewSuksesNonFinish(AdminInsertMassalActivity.this, pojo.getRemarks() != null ? pojo.getRemarks() : "Eksekusi absensi massal berhasil!");
                             } else {
                                 dialogView.viewNotifKosong(AdminInsertMassalActivity.this, "Gagal Eksekusi", pojo.getRemarks() != null ? pojo.getRemarks() : "Proses eksekusi gagal.");
                             }

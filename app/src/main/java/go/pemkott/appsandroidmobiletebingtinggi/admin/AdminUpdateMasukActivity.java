@@ -313,7 +313,7 @@ public class AdminUpdateMasukActivity extends AppCompatActivity {
         if (response.isSuccessful() && response.body() != null) {
             ResponsePOJO pojo = response.body();
             if (pojo.isStatus()) {
-                dialogView.viewSukses(AdminUpdateMasukActivity.this, pojo.getRemarks() != null ? pojo.getRemarks() : "Update data masuk berhasil!");
+                dialogView.viewSuksesNonFinish(AdminUpdateMasukActivity.this, pojo.getRemarks() != null ? pojo.getRemarks() : "Update data masuk berhasil!");
             } else {
                 dialogView.viewNotifKosong(AdminUpdateMasukActivity.this, "Gagal Update", pojo.getRemarks() != null ? pojo.getRemarks() : "Proses gagal dilakukan.");
             }
