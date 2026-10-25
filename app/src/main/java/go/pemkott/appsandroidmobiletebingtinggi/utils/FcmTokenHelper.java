@@ -26,9 +26,11 @@ public class FcmTokenHelper {
 
         SessionManager session = new SessionManager(context);
         String pegawaiId = session.getPegawaiId();
+        String employeeId = session.getEmployeeId();
+        String idToSend = (employeeId != null && !employeeId.isEmpty() && !"0".equals(employeeId)) ? employeeId : pegawaiId;
 
-        if (pegawaiId == null || "0".equals(pegawaiId)) {
-            Log.w("FCM_HELPER", "Pegawai ID belum ada, skip update FCM token");
+        if (idToSend == null || "0".equals(idToSend)) {
+            Log.w("FCM_HELPER", "Pegawai/Employee ID belum ada, skip update FCM token");
             if (callback != null) callback.onComplete(false);
             return;
         }
@@ -43,7 +45,7 @@ public class FcmTokenHelper {
 
                     String token = task.getResult();
                     session.saveFcmToken(token);
-                    sendTokenToServer(context, pegawaiId, token, callback);
+                    sendTokenToServer(context, idToSend, token, callback);
                 });
     }
 

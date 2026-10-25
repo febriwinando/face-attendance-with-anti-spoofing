@@ -31,6 +31,7 @@ import java.util.List;
 import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.api.HttpService;
 import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
+import go.pemkott.appsandroidmobiletebingtinggi.api.ServerConfig;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat;
 import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
 import go.pemkott.appsandroidmobiletebingtinggi.model.AduanDetailResponse;
@@ -205,7 +206,7 @@ public class AduanDetailActivity extends AppCompatActivity {
         }
 
         LayoutInflater inflater = LayoutInflater.from(this);
-        String baseUrl = "https://absensi.tebingtinggikota.go.id/storage/";
+        String baseUrl = ServerConfig.getStorageUrl();
 
         for (String path : gambar) {
             View itemView = inflater.inflate(R.layout.item_image_detail, llMediaContainer, false);

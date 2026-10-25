@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background_main"
+    tools:context=".admin.AdminInsertMassalActivity">
+
+    <!-- Header Toolbar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/biru"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp">
+
+        <ImageView
+            android:id="@+id/ivAdminInsertBack"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Kembali"
+            android:padding="4dp"
+            android:src="@drawable/ic_masuk_kanan"
+            app:tint="@color/white" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_weight="1"
+            android:fontFamily="sans-serif-medium"
+            android:text="Input Absensi Massal"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tanggal Absensi Massal"
+                android:textColor="@color/text_primary"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etAdminInsertTanggal"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/backgroundborderabuabu"
+                android:clickable="true"
+                android:focusable="false"
+                android:paddingHorizontal="12dp"
+                android:textColor="@color/text_primary" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Daftar NIP Pegawai (Baris Baru/Koma)"
+                android:textColor="@color/text_primary"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etAdminInsertNips"
+                android:layout_width="match_parent"
+                android:layout_height="140dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/backgroundborderabuabu"
+                android:gravity="top|start"
+                android:hint="Masukkan NIP pegawai..."
+                android:padding="12dp"
+                android:textColor="@color/text_primary" />
+
+            <CheckBox
+                android:id="@+id/cbAdminUpdateAl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:text="Update data jika posisi 'AL' (Alpha)"
+                android:textColor="@color/text_primary" />
+
+            <TextView
+                android:id="@+id/tvAdminInsertSummary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:textColor="@color/text_secondary"
+                android:textSize="14sp"
+                tools:text="Hasil preview akan ditampilkan di sini." />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnAdminPreviewMassal"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="56dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:text="Preview"
+                    android:textColor="@color/biru"
+                    app:cornerRadius="12dp"
+                    app:strokeColor="@color/biru" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnAdminStoreMassal"
+                    android:layout_width="0dp"
+                    android:layout_height="56dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="@color/biru"
+                    android:text="Eksekusi Massal"
+                    android:textColor="@color/white"
+                    app:cornerRadius="12dp" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

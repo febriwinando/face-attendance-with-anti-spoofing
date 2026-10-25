@@ -16,9 +16,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetroClient {
 
-    private static final String BASE_URL =
-            "https://absensi.tebingtinggikota.go.id/api/";
-
     private static RetroClient myClient;
     private final Retrofit retrofit;
     private final boolean isBypassMode;
@@ -35,6 +32,40 @@ public class RetroClient {
                 ? SSLHelper.getUnsafeOkHttpClientBuilder()
                 : new OkHttpClient.Builder();
 
+        builder.addInterceptor(chain -> {
+            okhttp3.Request original = chain.request();
+            okhttp3.Request.Builder requestBuilder = original.newBuilder();
+
+            if (original.header("Accept") == null) {
+                requestBuilder.header("Accept", "application/json");
+            }
+
+            if (original.header("Authorization") == null) {
+                Context appContext = MyApplication.getAppContext();
+                if (appContext != null) {
+                    SessionManager session = new SessionManager(appContext);
+                    String token = session.getToken();
+                    if (token != null && !token.trim().isEmpty()) {
+                        requestBuilder.header("Authorization", token.startsWith("Bearer ") ? token : "Bearer " + token);
+                    }
+                }
+            }
+
+            okhttp3.Response response = chain.proceed(requestBuilder.build());
+
+            // Proteksi Sisi Klien: Jika server mengembalikan 401 (Unauthenticated / Token Expired),
+            // hapus token di SessionManager agar pengguna harus re-login secara aman.
+            if (response.code() == 401) {
+                Context appContext = MyApplication.getAppContext();
+                if (appContext != null) {
+                    SessionManager session = new SessionManager(appContext);
+                    session.saveToken(null);
+                }
+            }
+
+            return response;
+        });
+
         OkHttpClient okHttpClient = builder
                         .addInterceptor(logging)
                         .retryOnConnectionFailure(true)
@@ -44,11 +75,12 @@ public class RetroClient {
                         .build();
 
         Gson gson = new GsonBuilder()
+                .registerTypeAdapterFactory(new AlwaysListTypeAdapterFactory())
                 .setLenient()
                 .create();
 
         retrofit = new Retrofit.Builder()
-                .baseUrl(BASE_URL)
+                .baseUrl(ServerConfig.getApiUrl())
                 .client(okHttpClient)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();

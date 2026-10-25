@@ -20,6 +20,7 @@ import java.util.Map;
 import go.pemkott.appsandroidmobiletebingtinggi.NewDashboard.DashboardVersiOne;
 import go.pemkott.appsandroidmobiletebingtinggi.api.HttpService;
 import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
+import go.pemkott.appsandroidmobiletebingtinggi.api.ServerConfig;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.database.ModelDataPagawai;
 import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
@@ -54,34 +55,63 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
         Log.d("FCM_SERVICE", "Message Received from: " + remoteMessage.getFrom());
 
+        SessionManager session = new SessionManager(this);
+        String currentPegawaiId = session.getPegawaiId();
+        String currentEmployeeId = session.getEmployeeId();
+
+        // 1. Validasi: Jika tidak ada user yang sedang login di perangkat ini, abaikan notifikasi
+        if (currentPegawaiId == null || "0".equals(currentPegawaiId)) {
+            Log.w("FCM_SERVICE", "Abaikan notifikasi: Tidak ada user aktif yang login di perangkat ini.");
+            return;
+        }
+
+        Map<String, String> dataMap = remoteMessage.getData();
+
+        // 2. Validasi Penerima: Mencegah salah kirim jika perangkat pernah dipakai akun lain
+        if (dataMap != null && !dataMap.isEmpty()) {
+            String targetEmpId = dataMap.get("target_employee_id");
+            if (targetEmpId == null) targetEmpId = dataMap.get("employee_id");
+            if (targetEmpId == null) targetEmpId = dataMap.get("pegawai_id");
+
+            if (targetEmpId != null && !targetEmpId.trim().isEmpty()) {
+                boolean isEmployeeMatch = currentEmployeeId != null && targetEmpId.trim().equals(currentEmployeeId.trim());
+                boolean isPegawaiMatch = currentPegawaiId != null && targetEmpId.trim().equals(currentPegawaiId.trim());
+                if (!isEmployeeMatch && !isPegawaiMatch) {
+                    Log.w("FCM_SERVICE", "Abaikan notifikasi: Pesan ditujukan untuk ID " + targetEmpId + 
+                          ", tetapi user yang login adalah " + currentEmployeeId + "/" + currentPegawaiId);
+                    return;
+                }
+            }
+        }
+
         String title = null;
         String body = null;
 
-        // 1. Check Notification Payload (Sangat penting jika dikirim bersamaan)
+        // 3. Check Notification Payload
         if (remoteMessage.getNotification() != null) {
             title = remoteMessage.getNotification().getTitle();
             body = remoteMessage.getNotification().getBody();
             Log.d("FCM_SERVICE", "Notification Payload - Title: " + title + ", Body: " + body);
         }
 
-        // 2. Check Data Payload
-        if (remoteMessage.getData().size() > 0) {
-            Log.d("FCM_SERVICE", "Data Payload: " + remoteMessage.getData().toString());
-            String dataTitle = remoteMessage.getData().get("title");
-            String dataBody = remoteMessage.getData().get("body");
+        // 4. Check Data Payload
+        if (dataMap != null && !dataMap.isEmpty()) {
+            Log.d("FCM_SERVICE", "Data Payload: " + dataMap.toString());
+            String dataTitle = dataMap.get("title");
+            String dataBody = dataMap.get("body");
 
             if (title == null) title = dataTitle;
             if (body == null) body = dataBody;
         }
 
-        // 3. Ambil keputusan perintah sinkronisasi dari data payload atau judul notifikasi visual
+        // 5. Ambil keputusan perintah sinkronisasi
         String finalCommand = null;
-        if (remoteMessage.getData().size() > 0) {
-            finalCommand = remoteMessage.getData().get("title");
-            if (finalCommand == null) finalCommand = remoteMessage.getData().get("body");
+        if (dataMap != null && !dataMap.isEmpty()) {
+            finalCommand = dataMap.get("title");
+            if (finalCommand == null) finalCommand = dataMap.get("body");
+            if (finalCommand == null) finalCommand = dataMap.get("command");
         }
         
-        // Jika di dalam data payload tidak ada command, gunakan title/body dari objek notifikasi Laravel
         if (finalCommand == null) {
             finalCommand = title;
         }
@@ -92,7 +122,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             executeSyncLogic(finalCommand);
         }
 
-        // 4. Show visual notification if title exists
+        // 6. Tampilkan notifikasi visual jika judul ada
         if (title != null) {
             showNotification(title, body != null ? body : "");
         }
@@ -199,7 +229,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         String token = session.getToken();
 
-        String url = "https://absensi.tebingtinggikota.go.id/api/timetable?employee_id=" + finalEmployeeId;
+        String url = ServerConfig.getApiUrl() + "timetable?employee_id=" + finalEmployeeId;
 
         api.getUrlTimeTable(url, "Bearer " + token,
                         RequestBody.create("", MediaType.parse("application/json")))
@@ -257,7 +287,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         final String finalEmployeeId = tempEmployeeId;
         String token = session.getToken();
 
-        String url = "https://absensi.tebingtinggikota.go.id/api/koordinatemployee?id=" + finalEmployeeId;
+        String url = ServerConfig.getApiUrl() + "koordinatemployee?id=" + finalEmployeeId;
         api.getUrlKoordinat(url, "Bearer " + token,
                         RequestBody.create("", MediaType.parse("application/json")))
                 .enqueue(new Callback<List<Koordinat>>() {
@@ -304,7 +334,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         if (opdId.isEmpty()) return;
 
-        String url = "https://absensi.tebingtinggikota.go.id/api/kegiatannew?opd=" + opdId;
+        String url = ServerConfig.getApiUrl() + "kegiatannew?opd=" + opdId;
         api.getUrlKegiatan(url, "Bearer " + token,
                         RequestBody.create("", MediaType.parse("application/json")))
                 .enqueue(new Callback<List<KegiatanIzin>>() {

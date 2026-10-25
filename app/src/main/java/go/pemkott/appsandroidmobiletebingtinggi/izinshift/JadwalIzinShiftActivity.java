@@ -37,6 +37,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.NewDashboard.DashboardVersiOne;
 import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.api.HttpService;
 import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
+import go.pemkott.appsandroidmobiletebingtinggi.api.ServerConfig;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import go.pemkott.appsandroidmobiletebingtinggi.izinshift.izinshiftcuti.CutiShiftActivity;
@@ -135,7 +136,7 @@ public class JadwalIzinShiftActivity extends AppCompatActivity {
 
     public void unduhDataSiftOPD(){
         databaseHelper.deleteJamShift();
-        Call<List<WaktuSift>> jadwalSiftPegawai = holderAPI.getTestSift("https://absensi.tebingtinggikota.go.id/api/testsift?eOPD="+eOPD);
+        Call<List<WaktuSift>> jadwalSiftPegawai = holderAPI.getTestSift(ServerConfig.getApiUrl() + "testsift?eOPD="+eOPD);
         jadwalSiftPegawai.enqueue(new Callback<List<WaktuSift>>() {
             @Override
             public void onResponse(@NonNull Call<List<WaktuSift>> call, @NonNull Response<List<WaktuSift>> response) {

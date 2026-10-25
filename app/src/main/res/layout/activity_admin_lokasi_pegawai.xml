@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background_main"
+    tools:context=".admin.AdminLokasiPegawaiActivity">
+
+    <!-- Header Toolbar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/biru"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp">
+
+        <ImageView
+            android:id="@+id/ivAdminLokasiBack"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Kembali"
+            android:padding="4dp"
+            android:src="@drawable/ic_masuk_kanan"
+            app:tint="@color/white" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_weight="1"
+            android:fontFamily="sans-serif-medium"
+            android:text="Kelola Lokasi Pegawai"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ID / NIP Pegawai"
+                android:textColor="@color/text_primary"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etAdminLokasiEmployeeId"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/backgroundborderabuabu"
+                android:hint="Masukkan ID/NIP Pegawai"
+                android:paddingHorizontal="12dp"
+                android:textColor="@color/text_primary" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nama Lokasi / Alamat"
+                android:textColor="@color/text_primary"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etAdminLokasiAlamat"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/backgroundborderabuabu"
+                android:hint="Contoh: Kantor Utama / Dinas"
+                android:paddingHorizontal="12dp"
+                android:textColor="@color/text_primary" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Latitude"
+                android:textColor="@color/text_primary"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etAdminLokasiLat"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/backgroundborderabuabu"
+                android:hint="Contoh: 3.3280661"
+                android:inputType="numberDecimal|numberSigned"
+                android:paddingHorizontal="12dp"
+                android:textColor="@color/text_primary" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Longitude"
+                android:textColor="@color/text_primary"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etAdminLokasiLng"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="24dp"
+                android:background="@drawable/backgroundborderabuabu"
+                android:hint="Contoh: 99.1129267"
+                android:inputType="numberDecimal|numberSigned"
+                android:paddingHorizontal="12dp"
+                android:textColor="@color/text_primary" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAdminLokasiSubmit"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:backgroundTint="@color/biru"
+                android:text="Simpan Lokasi Pegawai"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                app:cornerRadius="12dp" />
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

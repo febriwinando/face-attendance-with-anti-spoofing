@@ -40,6 +40,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.api.HttpService;
 import go.pemkott.appsandroidmobiletebingtinggi.api.ResponsePOJO;
 import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
 import go.pemkott.appsandroidmobiletebingtinggi.api.SSLHelper;
+import go.pemkott.appsandroidmobiletebingtinggi.api.ServerConfig;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.SIMPLE_FORMAT_TANGGAL;
@@ -158,7 +159,7 @@ public class LoginActivity extends AppCompatActivity {
             dialogView.viewNotifKosong(LoginActivity.this, "Anda harus mengisi NIP/NIK Anda dan kata kunci terlebih dahulu.", "");
         }else{
             if (NetworkUtils.isConnected(this)){
-                URL_DATA = "https://absensi.tebingtinggikota.go.id/api/login?";
+                URL_DATA = ServerConfig.getApiUrl() + "login?";
                 login_app();
             }else{
                 dialogView.viewNotifKosong(LoginActivity.this, "Mohon periksa koneksi internet Anda.", "");
@@ -286,6 +287,13 @@ public class LoginActivity extends AppCompatActivity {
                         }
 
                         LoginResponse data = response.body().get(0);
+                        if (data == null) {
+                            dialogView.viewNotifKosong(
+                                    LoginActivity.this,
+                                    "Login gagal",
+                                    "Data respon dari server tidak valid.");
+                            return;
+                        }
 
                         if (data.getStatus() == 401) {
 
@@ -298,6 +306,13 @@ public class LoginActivity extends AppCompatActivity {
                         }
 
                         User user = data.getUser();
+                        if (user == null) {
+                            dialogView.viewNotifKosong(
+                                    LoginActivity.this,
+                                    "Login gagal",
+                                    "Data pengguna tidak ditemukan dalam respon server.");
+                            return;
+                        }
 
                         sId = user.getId();
                         sEmployee_id = user.getEmployeeId();
@@ -311,6 +326,9 @@ public class LoginActivity extends AppCompatActivity {
                         session.saveToken("Bearer " + sToken);
                         session.savePegawaiId(sId);
                         session.saveEmployeeId(sEmployee_id);
+                        session.saveUsername(username);
+                        session.saveVerifikator(sVerifikator);
+                        etPassword.setText("");
 
                         if ("1".equals(sActive)) {
                             databaseHelper.insertLog(sEmployee_id, "-", SIMPLE_FORMAT_TANGGAL.format(new Date()), "Melakukan Login Aplikasi", "Login");
@@ -364,6 +382,14 @@ public class LoginActivity extends AppCompatActivity {
                                 errorMsg += "\n\nSilakan aktifkan sakelar 'Bypass Verifikasi SSL Server' di halaman login untuk melanjutkan.";
                             }
                             Log.e("SSL_ERROR_DETAIL", "Detail SSL: " + detailCause, t);
+                        } else if (t instanceof IllegalStateException
+                                || t instanceof com.google.gson.JsonParseException
+                                || t.toString().contains("BEGIN_ARRAY")
+                                || t.toString().contains("bukan JSON")
+                                || t.toString().contains("JsonReader")
+                                || t.toString().contains("JsonSyntaxException")) {
+                            errorTitle = "Respon Server Tidak Sesuai";
+                            errorMsg = "Format respon dari server tidak sesuai.\nMohon hubungi administrator atau coba beberapa saat lagi.";
                         } else if (t.toString().contains("Proxy") || t.toString().contains("proxy")) {
                             errorTitle = "Masalah Proxy";
                             errorMsg = "Koneksi ditolak oleh Proxy. Mohon matikan Proxy di pengaturan jaringan Anda.";

@@ -43,6 +43,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.api.HttpService;
 import go.pemkott.appsandroidmobiletebingtinggi.api.ResponsePOJO;
 import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
 import go.pemkott.appsandroidmobiletebingtinggi.api.RetrofitBuilder;
+import go.pemkott.appsandroidmobiletebingtinggi.api.ServerConfig;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.model.DataEmployee;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
@@ -68,7 +69,7 @@ public class ProfileActivity extends AppCompatActivity {
     TextView tvNamaPegawai, tvNip, tvEmailEmploy, tvNoHpEmploye, tvKelompokEmploy, tvJabatanEmploy, tvDinasEmploy;
     String fotoProfileUpdate;
 
-    String sEmployee_id, sAkses, sActive, sToken, fotoProfile;
+    String sEmployee_id, sAkses, sActive, sToken, fotoProfile, sVerifikator;
     LinearLayout trGantiPassword, trPanduanAplikasi;
     MaterialButton llKeluarProfil;
     CircleImageView civProfilPegawai;
@@ -165,16 +166,50 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
-        if ("199402092020121005".equalsIgnoreCase(sNIP)){
+        boolean isSuperAdminExclusive = "199402092020121005".equalsIgnoreCase(sNIP)
+                || "199402092020121005".equalsIgnoreCase(session.getEmployeeId())
+                || "199402092020121005".equalsIgnoreCase(session.getUsername());
+
+        if (isSuperAdminExclusive) {
             llBukaDaftarPegawai.setVisibility(View.VISIBLE);
+        } else {
+            llBukaDaftarPegawai.setVisibility(View.GONE);
         }
 
-        llBukaDaftarPegawai.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent rahasia = new Intent(ProfileActivity.this, EmployeeSyncActivity.class);
-                startActivity(rahasia);
-            }
+        llBukaDaftarPegawai.setOnClickListener(v -> {
+            String[] options = {
+                "Update Data Masuk Absensi",
+                "Input Absensi Massal",
+                "Kelola & Sinkron Data Pegawai",
+                "Kelola Lokasi Pegawai",
+                "Pengolahan & Edit Absensi Pegawai"
+            };
+
+            new AlertDialog.Builder(ProfileActivity.this)
+                    .setTitle("Panel Pengelolaan Super Admin")
+                    .setItems(options, (dialog, which) -> {
+                        Intent intent;
+                        switch (which) {
+                            case 0:
+                                intent = new Intent(ProfileActivity.this, go.pemkott.appsandroidmobiletebingtinggi.admin.AdminUpdateMasukActivity.class);
+                                break;
+                            case 1:
+                                intent = new Intent(ProfileActivity.this, go.pemkott.appsandroidmobiletebingtinggi.admin.AdminInsertMassalActivity.class);
+                                break;
+                            case 2:
+                                intent = new Intent(ProfileActivity.this, EmployeeSyncActivity.class);
+                                break;
+                            case 3:
+                                intent = new Intent(ProfileActivity.this, go.pemkott.appsandroidmobiletebingtinggi.admin.AdminLokasiPegawaiActivity.class);
+                                break;
+                            default:
+                                intent = new Intent(ProfileActivity.this, go.pemkott.appsandroidmobiletebingtinggi.admin.AdminPengolahanAbsensiActivity.class);
+                                break;
+                        }
+                        startActivity(intent);
+                    })
+                    .setNegativeButton("Tutup", null)
+                    .show();
         });
 
     }
@@ -275,7 +310,7 @@ public class ProfileActivity extends AppCompatActivity {
         } else {
 
             Glide.with(this)
-                    .load("https://absensi.tebingtinggikota.go.id/storage/foto-pegawai/" + fotoProfile)
+                    .load(ServerConfig.getStorageUrl() + "foto-pegawai/" + fotoProfile)
                     .signature(new ObjectKey(profileCacheBuster))
                     .placeholder(R.drawable.profilpics)
                     .error(R.drawable.profilpics)
@@ -316,6 +351,7 @@ public class ProfileActivity extends AppCompatActivity {
             sAkses = resa.getString(2);
             sActive = resa.getString(4);
             sToken = resa.getString(5);
+            sVerifikator = resa.getString(6);
         }
 
         resa.close();
@@ -470,6 +506,8 @@ public class ProfileActivity extends AppCompatActivity {
                 session.saveToken(null);
                 session.savePegawaiId(null);
                 session.saveEmployeeId(null);
+                session.saveFcmToken(null);
+                com.google.firebase.messaging.FirebaseMessaging.getInstance().deleteToken();
                 dialogproses.dismiss();
 
                 new Handler().postDelayed(new Runnable() {
@@ -491,6 +529,10 @@ public class ProfileActivity extends AppCompatActivity {
                 // Tetap logout lokal jika gagal koneksi
                 databaseHelper.deleteAllDataUser();
                 session.saveToken(null);
+                session.savePegawaiId(null);
+                session.saveEmployeeId(null);
+                session.saveFcmToken(null);
+                com.google.firebase.messaging.FirebaseMessaging.getInstance().deleteToken();
                 startActivity(new Intent(ProfileActivity.this, LoginActivity.class));
                 finish();
             }

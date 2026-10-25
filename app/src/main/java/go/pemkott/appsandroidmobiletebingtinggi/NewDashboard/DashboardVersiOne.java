@@ -57,6 +57,7 @@ import java.util.List;
 import de.hdodenhof.circleimageview.CircleImageView;
 import go.pemkott.appsandroidmobiletebingtinggi.ProfileActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
+import go.pemkott.appsandroidmobiletebingtinggi.api.ServerConfig;
 import go.pemkott.appsandroidmobiletebingtinggi.helpdesk.HelpdeskActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.api.HttpService;
@@ -119,7 +120,7 @@ public class DashboardVersiOne extends AppCompatActivity {
     CardView cvSyncStatusToast;
     ImageView ivSyncStatusIcon;
     TextView tvSyncStatusMessage;
-    MaterialCardView clVerifikasi;
+    MaterialCardView clVerifikasi, cvSuperAdminHub;
     public static DashboardVersiOne dashboardVersiOne;
     SwipeRefreshLayout swipeRefreshLayout;
 
@@ -181,9 +182,6 @@ public class DashboardVersiOne extends AppCompatActivity {
         dashboardVersiOne = this;
         manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         databaseHelper = new DatabaseHelper(this);
-
-        datauser();
-
         httpService = RetroClient.getInstance().getApi2();
 
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
@@ -197,6 +195,7 @@ public class DashboardVersiOne extends AppCompatActivity {
         cvMenuIzin = findViewById(R.id.cvMenuIzin);
         cvMenuPerjalananDinas = findViewById(R.id.cvMenuPerjalananDinas);
         clVerifikasi = findViewById(R.id.clVerifikasi);
+        cvSuperAdminHub = findViewById(R.id.cvSuperAdminHub);
         clCariRekap = findViewById(R.id.clCariRekap);
         tvTanggalHariIni = findViewById(R.id.tvTanggalHariIni);
         tvJamBerjalan = findViewById(R.id.tvJamBerjalan);
@@ -210,6 +209,8 @@ public class DashboardVersiOne extends AppCompatActivity {
         cvSyncStatusToast = findViewById(R.id.cvSyncStatusToast);
         ivSyncStatusIcon = findViewById(R.id.ivSyncStatusIcon);
         tvSyncStatusMessage = findViewById(R.id.tvSyncStatusMessage);
+
+        datauser();
 
         clCariRekap.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -362,6 +363,10 @@ public class DashboardVersiOne extends AppCompatActivity {
                 startActivity(new Intent(DashboardVersiOne.this, ValidasiNewActivity.class));
             }
         });
+
+        if (cvSuperAdminHub != null) {
+            cvSuperAdminHub.setOnClickListener(v -> showSuperAdminMenuDialog());
+        }
 
         ImageView fabHelpdesk = findViewById(R.id.fabHelpdesk);
         fabHelpdesk.setOnClickListener(new View.OnClickListener() {
@@ -728,6 +733,8 @@ public class DashboardVersiOne extends AppCompatActivity {
 
         FcmTokenHelper.fetchAndSendToken(this, null);
 
+        datauser();
+
         if (sVerifikator != null && sEmployee_id != null){
             dataValidasi(sVerifikator, sEmployee_id);
         }
@@ -745,9 +752,45 @@ public class DashboardVersiOne extends AppCompatActivity {
         }
     }
 
+    private void showSuperAdminMenuDialog() {
+        String[] options = {
+            "Update Data Masuk Absensi",
+            "Input Absensi Massal",
+            "Kelola & Sinkron Data Pegawai",
+            "Kelola Lokasi Pegawai",
+            "Pengolahan & Edit Absensi Pegawai"
+        };
+
+        new AlertDialog.Builder(this)
+                .setTitle("Panel Pengelolaan Super Admin")
+                .setItems(options, (dialog, which) -> {
+                    Intent intent;
+                    switch (which) {
+                        case 0:
+                            intent = new Intent(DashboardVersiOne.this, go.pemkott.appsandroidmobiletebingtinggi.admin.AdminUpdateMasukActivity.class);
+                            break;
+                        case 1:
+                            intent = new Intent(DashboardVersiOne.this, go.pemkott.appsandroidmobiletebingtinggi.admin.AdminInsertMassalActivity.class);
+                            break;
+                        case 2:
+                            intent = new Intent(DashboardVersiOne.this, go.pemkott.appsandroidmobiletebingtinggi.EmployeeSyncActivity.class);
+                            break;
+                        case 3:
+                            intent = new Intent(DashboardVersiOne.this, go.pemkott.appsandroidmobiletebingtinggi.admin.AdminLokasiPegawaiActivity.class);
+                            break;
+                        default:
+                            intent = new Intent(DashboardVersiOne.this, go.pemkott.appsandroidmobiletebingtinggi.admin.AdminPengolahanAbsensiActivity.class);
+                            break;
+                    }
+                    startActivity(intent);
+                })
+                .setNegativeButton("Tutup", null)
+                .show();
+    }
+
     public void dataValidasi(String verifikator, String idE){
-        if ("verifikator1".equals(verifikator) || "verifikator2".equals(verifikator)){
-            Call<List<ValidasiData>> callKegiatan = httpService.getUrlListValidasi("https://absensi.tebingtinggikota.go.id/api/newVeriFragment?verifikator="+verifikator+"&id="+idE);
+        if ("verifikator1".equalsIgnoreCase(verifikator) || "verifikator2".equalsIgnoreCase(verifikator)){
+            Call<List<ValidasiData>> callKegiatan = httpService.getUrlListValidasi(ServerConfig.getApiUrl() + "newVeriFragment?verifikator="+verifikator+"&id="+idE);
             callKegiatan.enqueue(new Callback<List<ValidasiData>>() {
                 @Override
                 public void onResponse(@NonNull Call<List<ValidasiData>> call, @NonNull Response<List<ValidasiData>> response) {
@@ -813,15 +856,18 @@ public class DashboardVersiOne extends AppCompatActivity {
             return;
         }
 
+        String loginUser = "";
         try {
             if (res.moveToFirst()){
                 int empIdIdx = res.getColumnIndex(DatabaseHelper.COL_2);
+                int nameIdx = res.getColumnIndex(DatabaseHelper.COL_3);
                 int aksesIdx = res.getColumnIndex(DatabaseHelper.COL_4);
                 int activeIdx = res.getColumnIndex(DatabaseHelper.COL_5);
                 int tokenIdx = res.getColumnIndex(DatabaseHelper.COL_6);
                 int verifIdx = res.getColumnIndex(DatabaseHelper.COL_7);
 
                 sEmployee_id = (empIdIdx != -1) ? res.getString(empIdIdx) : res.getString(1);
+                loginUser = (nameIdx != -1) ? res.getString(nameIdx) : res.getString(2);
                 sAkses = (aksesIdx != -1) ? res.getString(aksesIdx) : res.getString(3);
                 sActive = (activeIdx != -1) ? res.getString(activeIdx) : res.getString(4);
                 sToken = (tokenIdx != -1) ? res.getString(tokenIdx) : res.getString(5);
@@ -843,10 +889,24 @@ public class DashboardVersiOne extends AppCompatActivity {
                 statusSift = dataPegawai.getString(19);
 
             }
-
         } finally {
             dataPegawai.close();
+        }
 
+        boolean isSuperAdminExclusive = "199402092020121005".equalsIgnoreCase(sNip)
+                || "199402092020121005".equalsIgnoreCase(sUsername)
+                || "199402092020121005".equalsIgnoreCase(loginUser)
+                || "199402092020121005".equalsIgnoreCase(session.getUsername())
+                || "199402092020121005".equalsIgnoreCase(session.getEmployeeId());
+
+        if (isSuperAdminExclusive) {
+            if (cvSuperAdminHub != null) {
+                cvSuperAdminHub.setVisibility(View.VISIBLE);
+            }
+        } else {
+            if (cvSuperAdminHub != null) {
+                cvSuperAdminHub.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -906,7 +966,7 @@ public class DashboardVersiOne extends AppCompatActivity {
                 progressBarSingkron.setVisibility(View.VISIBLE);
                 btnSingkronJadwalKerja.setVisibility(View.GONE);
 
-                Call<List<TimeTebleSetting>> callKegiatan = httpService.getUrlTimeTableSetting("https://absensi.tebingtinggikota.go.id/api/timetable?employee_id="+sEmployee_id, "Bearer "+sToken);
+                Call<List<TimeTebleSetting>> callKegiatan = httpService.getUrlTimeTableSetting(ServerConfig.getApiUrl() + "timetable?employee_id="+sEmployee_id, "Bearer "+sToken);
                 ivStatusJadwal.setVisibility(View.GONE);
                 pgSingkronJadwal.setVisibility(View.VISIBLE);
 
@@ -967,7 +1027,7 @@ public class DashboardVersiOne extends AppCompatActivity {
         ivStatusLokasi.setVisibility(View.GONE);
         pgSingkronLokasi.setVisibility(View.VISIBLE);
 
-        Call<List<Koordinat>> calllokasi = httpService.getUrlKoordinat("https://absensi.tebingtinggikota.go.id/api/koordinat?opdid="+sOPD);
+        Call<List<Koordinat>> calllokasi = httpService.getUrlKoordinat(ServerConfig.getApiUrl() + "koordinat?opdid="+sOPD);
         calllokasi.enqueue(new Callback<List<Koordinat>>() {
             @Override
             public void onResponse(@NonNull Call<List<Koordinat>> call, @NonNull Response<List<Koordinat>> response) {
@@ -1003,7 +1063,7 @@ public class DashboardVersiOne extends AppCompatActivity {
 
     public void koordintaEmployee(){
 
-        Call<List<Koordinat>> callKegiatan = httpService.getUrlKoordinat("https://absensi.tebingtinggikota.go.id/api/koordinatemployee?id="+sEmployee_id);
+        Call<List<Koordinat>> callKegiatan = httpService.getUrlKoordinat(ServerConfig.getApiUrl() + "koordinatemployee?id="+sEmployee_id);
         callKegiatan.enqueue(new Callback<List<Koordinat>>() {
             @Override
             public void onResponse(@NonNull Call<List<Koordinat>> call, @NonNull Response<List<Koordinat>> response) {
@@ -1066,7 +1126,7 @@ public class DashboardVersiOne extends AppCompatActivity {
         ivStatusKegiatan.setVisibility(View.GONE);
         pgSingkronKegiatan.setVisibility(View.VISIBLE);
 
-        Call<List<KegiatanIzin>> callKegiatan = httpService.getUrlKegiatanNew("https://absensi.tebingtinggikota.go.id/api/kegiatannew?opd="+sOPD);
+        Call<List<KegiatanIzin>> callKegiatan = httpService.getUrlKegiatanNew(ServerConfig.getApiUrl() + "kegiatannew?opd="+sOPD);
         callKegiatan.enqueue(new Callback<List<KegiatanIzin>>() {
 
             @Override
@@ -1141,7 +1201,7 @@ public class DashboardVersiOne extends AppCompatActivity {
             }
 
             Glide.with(this)
-                    .load("https://absensi.tebingtinggikota.go.id/storage/foto-pegawai/" + fotoProfile)
+                    .load(ServerConfig.getStorageUrl() + "foto-pegawai/" + fotoProfile)
                     .placeholder(R.drawable.profil_pic)
                     .error(R.drawable.profil_pic)
                     .signature(new ObjectKey(System.currentTimeMillis()))
@@ -1171,7 +1231,7 @@ public class DashboardVersiOne extends AppCompatActivity {
         }
 
         Glide.with(this)
-                .load("https://absensi.tebingtinggikota.go.id/storage/foto-pegawai/" + fotoProfile)
+                .load(ServerConfig.getStorageUrl() + "foto-pegawai/" + fotoProfile)
                 .placeholder(R.drawable.profil_pic)
                 .error(R.drawable.profil_pic)
                 .into(ciUser);

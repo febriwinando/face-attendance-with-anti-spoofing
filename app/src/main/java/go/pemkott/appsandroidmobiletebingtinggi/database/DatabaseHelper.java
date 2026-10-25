@@ -614,6 +614,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public boolean insertDataUserLogin(String id, String name, String username, String marks, String active, String token, String verifikator){
         SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_USER, null, null);
         ContentValues contentValues = new ContentValues();
         contentValues.put(COL_1, id);
         contentValues.put(COL_2, name);
@@ -622,7 +623,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(COL_5, active);
         contentValues.put(COL_6, token);
         contentValues.put(COL_7, verifikator);
-        long result = db.insert(TABLE_USER, null, contentValues);
+        long result = db.insertWithOnConflict(TABLE_USER, null, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
         if (result == -1 )
             return false;
         else

@@ -1,57 +1,100 @@
 package go.pemkott.appsandroidmobiletebingtinggi.model;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Employee {
-        String id;
-        String atasan_id1;
-        String atasan_id2;
-        String position_id;
-        String opd_id;
-        String nip;
-        String nama;
-        String email;
-        String no_hp;
-        String kelompok;
-        String s_jabatan;
-        String eselon;
-        String foto;
+    @SerializedName("id")
+    private Object id;
+
+    @SerializedName("atasan_id1")
+    private Object atasan_id1;
+
+    @SerializedName("atasan_id2")
+    private Object atasan_id2;
+
+    @SerializedName("position_id")
+    private Object position_id;
+
+    @SerializedName("opd_id")
+    private Object opd_id;
+
+    @SerializedName("nip")
+    private String nip;
+
+    @SerializedName("nama")
+    private String nama;
+
+    @SerializedName("email")
+    private String email;
+
+    @SerializedName("no_hp")
+    private String no_hp;
+
+    @SerializedName("kelompok")
+    private String kelompok;
+
+    @SerializedName("s_jabatan")
+    private String s_jabatan;
+
+    @SerializedName("eselon")
+    private Object eselon;
+
+    @SerializedName("foto")
+    private String foto;
 
     public String getId() {
-        return id;
+        if (id == null) return "";
+        if (id instanceof Number) {
+            return String.valueOf(((Number) id).longValue());
+        }
+        String str = String.valueOf(id);
+        if (str.endsWith(".0")) {
+            return str.substring(0, str.length() - 2);
+        }
+        return str;
     }
 
-    public void setId(String id) {
+    public void setId(Object id) {
         this.id = id;
     }
 
     public String getAtasan_id1() {
-        return atasan_id1;
+        return atasan_id1 != null ? String.valueOf(atasan_id1) : null;
     }
 
-    public void setAtasan_id1(String atasan_id1) {
+    public void setAtasan_id1(Object atasan_id1) {
         this.atasan_id1 = atasan_id1;
     }
 
     public String getAtasan_id2() {
-        return atasan_id2;
+        return atasan_id2 != null ? String.valueOf(atasan_id2) : null;
     }
 
-    public void setAtasan_id2(String atasan_id2) {
+    public void setAtasan_id2(Object atasan_id2) {
         this.atasan_id2 = atasan_id2;
     }
 
     public String getPosition_id() {
-        return position_id;
+        return position_id != null ? String.valueOf(position_id) : null;
     }
 
-    public void setPosition_id(String position_id) {
+    public void setPosition_id(Object position_id) {
         this.position_id = position_id;
     }
 
     public String getOpd_id() {
-        return opd_id;
+        if (opd_id == null) return null;
+        if (opd_id instanceof Number) {
+            return String.valueOf(((Number) opd_id).longValue());
+        }
+        String str = String.valueOf(opd_id);
+        if (str.endsWith(".0")) {
+            return str.substring(0, str.length() - 2);
+        }
+        return str;
     }
 
-    public void setOpd_id(String opd_id) {
+    public void setOpd_id(Object opd_id) {
         this.opd_id = opd_id;
     }
 
@@ -104,10 +147,10 @@ public class Employee {
     }
 
     public String getEselon() {
-        return eselon;
+        return eselon != null ? String.valueOf(eselon) : "0";
     }
 
-    public void setEselon(String eselon) {
+    public void setEselon(Object eselon) {
         this.eselon = eselon;
     }
 
@@ -117,5 +160,16 @@ public class Employee {
 
     public void setFoto(String foto) {
         this.foto = foto;
+    }
+
+    @Override
+    public String toString() {
+        if (nama != null && !nama.trim().isEmpty()) {
+            if (nip != null && !nip.trim().isEmpty()) {
+                return nama + " (" + nip + ")";
+            }
+            return nama;
+        }
+        return "Pegawai ID " + getId();
     }
 }

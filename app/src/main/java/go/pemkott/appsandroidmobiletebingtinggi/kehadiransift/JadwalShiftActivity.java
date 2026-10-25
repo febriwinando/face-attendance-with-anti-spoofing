@@ -37,6 +37,7 @@ import java.util.Locale;
 import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.api.HttpService;
 import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
+import go.pemkott.appsandroidmobiletebingtinggi.api.ServerConfig;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import go.pemkott.appsandroidmobiletebingtinggi.dinasluarkantor.tugaslapangan.TugasLapanganActivity;
@@ -138,7 +139,7 @@ String userId;
 
     public void unduhDataShiftOPD(){
         databaseHelper.deleteJamShift();
-        Call<List<WaktuSift>> jadwalShiftPegawai = holderAPI.getTestSift("https://absensi.tebingtinggikota.go.id/api/testsift?eOPD="+eOPD);
+        Call<List<WaktuSift>> jadwalShiftPegawai = holderAPI.getTestSift(ServerConfig.getApiUrl() + "testsift?eOPD="+eOPD);
         jadwalShiftPegawai.enqueue(new Callback<List<WaktuSift>>() {
             @Override
             public void onResponse(@NonNull Call<List<WaktuSift>> call, @NonNull Response<List<WaktuSift>> response) {

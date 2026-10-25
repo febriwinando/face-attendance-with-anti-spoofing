@@ -18,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import go.pemkott.appsandroidmobiletebingtinggi.R;
+import go.pemkott.appsandroidmobiletebingtinggi.api.ServerConfig;
 
 public class ResetPasswprdActivity extends AppCompatActivity {
 
@@ -62,7 +63,7 @@ public class ResetPasswprdActivity extends AppCompatActivity {
             DownloadManager dm = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
             dm.enqueue(request);
         });
-        mWebView.loadUrl("https://absensi.tebingtinggikota.go.id/password/forget");
+        mWebView.loadUrl(ServerConfig.getBaseUrl() + "password/forget");
 
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override

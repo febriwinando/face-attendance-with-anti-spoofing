@@ -378,6 +378,109 @@ public interface HttpService {
     @POST
     Call<List<CheckUpdate>> getCheckUpdate(@Url String url, @Body RequestBody empty);
 
+    // NATIVE SUPER ADMIN APIS
+    @FormUrlEncoded
+    @POST("admin/update-masuk")
+    Call<ResponsePOJO> updateDataMasukAdmin(
+            @Field("tanggal") String tanggal,
+            @Field("masuk") String masuk,
+            @Field("keterlambatan") int keterlambatan,
+            @Field("ket_masuk") String ket_masuk,
+            @Field("pegawai[]") List<String> pegawai
+    );
+
+    @FormUrlEncoded
+    @POST("admin/insert-massal/preview")
+    Call<ResponsePOJO> previewInsertMassal(
+            @Field("tanggal") String tanggal,
+            @Field("nips") String nips,
+            @Field("update_posisi_al") boolean updatePosisiAl
+    );
+
+    @FormUrlEncoded
+    @POST("admin/insert-massal/store")
+    Call<ResponsePOJO> storeInsertMassal(
+            @Field("tanggal") String tanggal,
+            @Field("nips") String nips,
+            @Field("update_posisi_al") boolean updatePosisiAl
+    );
+
+    @FormUrlEncoded
+    @POST("admin/pegawai/status")
+    Call<ResponsePOJO> updateStatusPegawaiAdmin(
+            @Field("id") String id,
+            @Field("active") int active
+    );
+
+    @FormUrlEncoded
+    @POST("admin/lokasi-pegawai/store")
+    Call<ResponsePOJO> storeLokasiPegawaiAdmin(
+            @Field("employee_id") String employee_id,
+            @Field("alamat") String alamat,
+            @Field("let") String let,
+            @Field("lng") String lng
+    );
+
+    @FormUrlEncoded
+    @POST("admin/pengolahan/store")
+    Call<ResponsePOJO> storePengolahanAbsensiAdmin(
+            @Field("id_absensi") String id_absensi,
+            @Field("jam_masuk") String jam_masuk,
+            @Field("keterlambatan") int keterlambatan,
+            @Field("posisi_masuk") String posisi_masuk,
+            @Field("status_masuk") String status_masuk,
+            @Field("validasi_masuk") String validasi_masuk,
+            @Field("ket_masuk") String ket_masuk,
+            @Field("jam_pulang") String jam_pulang,
+            @Field("posisi_pulang") String posisi_pulang,
+            @Field("status_pulang") String status_pulang,
+            @Field("validasi_pulang") String validasi_pulang
+    );
+
+    @Multipart
+    @POST("admin/update-masuk")
+    Call<ResponsePOJO> updateDataMasukAdminMultipart(
+            @Part("tanggal") RequestBody tanggal,
+            @Part("masuk") RequestBody masuk,
+            @Part("keterlambatan") RequestBody keterlambatan,
+            @Part("ket_masuk") RequestBody ket_masuk,
+            @Part("posisi_masuk") RequestBody posisi_masuk,
+            @Part("status_masuk") RequestBody status_masuk,
+            @Part("validasi_masuk") RequestBody validasi_masuk,
+            @Part("pegawai[]") List<RequestBody> pegawai,
+            @Part MultipartBody.Part fototaging_masuk,
+            @Part MultipartBody.Part lampiran_masuk
+    );
+
+    @Multipart
+    @POST("admin/pengolahan/store")
+    Call<ResponsePOJO> storePengolahanAbsensiAdminMultipart(
+            @Part("id_absensi") RequestBody id_absensi,
+            @Part("jam_masuk") RequestBody jam_masuk,
+            @Part("keterlambatan") RequestBody keterlambatan,
+            @Part("posisi_masuk") RequestBody posisi_masuk,
+            @Part("status_masuk") RequestBody status_masuk,
+            @Part("validasi_masuk") RequestBody validasi_masuk,
+            @Part("ket_masuk") RequestBody ket_masuk,
+            @Part("jam_pulang") RequestBody jam_pulang,
+            @Part("posisi_pulang") RequestBody posisi_pulang,
+            @Part("status_pulang") RequestBody status_pulang,
+            @Part("validasi_pulang") RequestBody validasi_pulang,
+            @Part MultipartBody.Part fototaging_masuk,
+            @Part MultipartBody.Part fototaging_pulang,
+            @Part MultipartBody.Part lampiran_masuk,
+            @Part MultipartBody.Part lampiran_pulang
+    );
+
+    @GET("admin/opd/list")
+    Call<go.pemkott.appsandroidmobiletebingtinggi.model.AdminOpdListResponse> getAdminOpdList();
+
+    @GET("admin/pegawai/list")
+    Call<go.pemkott.appsandroidmobiletebingtinggi.model.AdminEmployeeListResponse> getAdminPegawaiList(@Query("opd_id") String opdId);
+
+    @GET("admin/pengolahan/find-presence")
+    Call<go.pemkott.appsandroidmobiletebingtinggi.model.AdminPresenceFindResponse> findPresenceAdmin(@Query("employee_id") String employeeId, @Query("tanggal") String tanggal);
+
 }
 
 //package go.pemkott.appsandroidmobiletebingtinggi.api;

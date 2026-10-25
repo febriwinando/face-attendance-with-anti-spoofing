@@ -95,4 +95,23 @@ public class SessionManager {
     public boolean isSslBypassEnabled() {
         return prefs.getBoolean(KEY_SSL_BYPASS, false);
     }
+
+    // -------------------------
+    // USERNAME & ROLE VERIFIKATOR
+    // -------------------------
+    public void saveUsername(String username) {
+        prefs.edit().putString("KEY_USERNAME", username).apply();
+    }
+
+    public String getUsername() {
+        return prefs.getString("KEY_USERNAME", "");
+    }
+
+    public void saveVerifikator(String verifikator) {
+        prefs.edit().putString("KEY_VERIFIKATOR", verifikator).apply();
+    }
+
+    public String getVerifikator() {
+        return prefs.getString("KEY_VERIFIKATOR", "");
+    }
 }

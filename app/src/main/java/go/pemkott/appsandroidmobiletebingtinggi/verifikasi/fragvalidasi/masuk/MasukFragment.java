@@ -34,6 +34,7 @@ import java.util.Locale;
 import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.api.HttpService;
 import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
+import go.pemkott.appsandroidmobiletebingtinggi.api.ServerConfig;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
@@ -111,7 +112,7 @@ public class MasukFragment extends Fragment {
 
     public void dataRekapServerV1(String idE){
 
-        Call<List<RekapMasukFragment>> callKegiatan = holderAPI.getRekapMasukFragment("https://absensi.tebingtinggikota.go.id/api/verifikatorpertama?id="+idE);
+        Call<List<RekapMasukFragment>> callKegiatan = holderAPI.getRekapMasukFragment(ServerConfig.getApiUrl() + "verifikatorpertama?id="+idE);
         callKegiatan.enqueue(new Callback<List<RekapMasukFragment>>() {
             @Override
             public void onResponse(Call<List<RekapMasukFragment>> call, Response<List<RekapMasukFragment>> response) {
@@ -151,7 +152,7 @@ public class MasukFragment extends Fragment {
         dialogproses.setContentView(R.layout.view_proses);
         dialogproses.setCancelable(false);
 
-        Call<List<RekapMasukKeduaFragment>> callKegiatanKedua = holderAPI.getRekapMasukKeduaFragment("https://absensi.tebingtinggikota.go.id/api/verifikatorkedua?id="+idE);
+        Call<List<RekapMasukKeduaFragment>> callKegiatanKedua = holderAPI.getRekapMasukKeduaFragment(ServerConfig.getApiUrl() + "verifikatorkedua?id="+idE);
         callKegiatanKedua.enqueue(new Callback<List<RekapMasukKeduaFragment>>() {
             @Override
             public void onResponse(Call<List<RekapMasukKeduaFragment>> call, Response<List<RekapMasukKeduaFragment>> response) {
@@ -248,7 +249,7 @@ public class MasukFragment extends Fragment {
             tagFotoTaging.setVisibility(View.GONE);
         }else {
             Glide.with(this)
-                    .load("https://absensi.tebingtinggikota.go.id/uploads-img-absensi/" + data.getPhoto_tagging_masuk())
+                    .load(ServerConfig.getUploadsAbsensiUrl() + data.getPhoto_tagging_masuk())
                     .into(fototaging);
 
             tagFotoTaging.setText("Foto Aktivitas Masuk");
@@ -261,7 +262,7 @@ public class MasukFragment extends Fragment {
 
                 if (data.getEkstensi_masuk().equals("img")){
                 Glide.with(this)
-                        .load( "https://absensi.tebingtinggikota.go.id/uploads-img-lampiran/" + data.getLampiran_masuk())
+                        .load( ServerConfig.getUploadsLampiranUrl() + data.getLampiran_masuk())
                         .into( fotolampiran );
                 fotolampiran.setVisibility(View.VISIBLE);
 
@@ -272,7 +273,7 @@ public class MasukFragment extends Fragment {
                         @Override
                         public void onClick(View v) {
                             Intent intent = new Intent(getActivity(), ReadPdfActivity.class);
-                            intent.putExtra("PDF_URL", "https://absensi.tebingtinggikota.go.id/uploads-img-lampiran/"+data.getLampiran_masuk());
+                            intent.putExtra("PDF_URL", ServerConfig.getUploadsLampiranUrl()+data.getLampiran_masuk());
                             startActivity(intent);
                         }
                     });
@@ -372,7 +373,7 @@ public class MasukFragment extends Fragment {
             tagFotoTaging.setVisibility(View.GONE);
         }else {
             Glide.with(this)
-                    .load("https://absensi.tebingtinggikota.go.id/uploads-img-absensi/" + data.getPhoto_tagging_masuk())
+                    .load(ServerConfig.getUploadsAbsensiUrl() + data.getPhoto_tagging_masuk())
                     .into(fototaging);
 
             tagFotoTaging.setText("Foto Aktivitas Masuk");
@@ -386,7 +387,7 @@ public class MasukFragment extends Fragment {
 
                 if (data.getEkstensi_masuk().equals("img")){
                 Glide.with(this)
-                        .load( "https://absensi.tebingtinggikota.go.id/uploads-img-lampiran/" + data.getLampiran_masuk())
+                        .load( ServerConfig.getUploadsLampiranUrl() + data.getLampiran_masuk())
                         .into( fotolampiran );
                 fotolampiran.setVisibility(View.VISIBLE);
 
@@ -397,7 +398,7 @@ public class MasukFragment extends Fragment {
                         @Override
                         public void onClick(View v) {
                             Intent intent = new Intent(getActivity(), ReadPdfActivity.class);
-                            intent.putExtra("PDF_URL", "https://absensi.tebingtinggikota.go.id/uploads-img-lampiran/"+data.getLampiran_masuk());
+                            intent.putExtra("PDF_URL", ServerConfig.getUploadsLampiranUrl()+data.getLampiran_masuk());
                             startActivity(intent);
                         }
                     });

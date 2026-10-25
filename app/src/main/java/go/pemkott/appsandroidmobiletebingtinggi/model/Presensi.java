@@ -15,6 +15,7 @@ public class Presensi {
     byte[] phototaging_masuk;
     byte[] lampiran_masuk;
     String valid_masuk;
+    String keterlambatan;
     String jam_pulang;
     String posisi_pulang;
     String status_pulang;
@@ -138,6 +139,14 @@ public class Presensi {
 
     public void setValid_masuk(String valid_masuk) {
         this.valid_masuk = valid_masuk;
+    }
+
+    public String getKeterlambatan() {
+        return keterlambatan;
+    }
+
+    public void setKeterlambatan(String keterlambatan) {
+        this.keterlambatan = keterlambatan;
     }
 
     public String getJam_pulang() {

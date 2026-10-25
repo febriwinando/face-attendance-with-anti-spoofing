@@ -36,6 +36,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.api.HttpService;
 import go.pemkott.appsandroidmobiletebingtinggi.api.ResponsePOJO;
 import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
+import go.pemkott.appsandroidmobiletebingtinggi.api.ServerConfig;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import go.pemkott.appsandroidmobiletebingtinggi.utils.FcmTokenHelper;
@@ -199,7 +200,7 @@ public class DownloadDataActivity extends AppCompatActivity {
     private void stepKoordinatOPD() {
         updateUI("Mengunduh koordinat OPD...");
         api.getUrlKoordinat(
-                "https://absensi.tebingtinggikota.go.id/api/koordinat",
+                ServerConfig.getApiUrl() + "koordinat",
                 RequestBody.create("", MediaType.parse("application/json"))
         ).enqueue(new Callback<List<Koordinat>>() {
 
@@ -232,7 +233,7 @@ public class DownloadDataActivity extends AppCompatActivity {
         private void koordinat_e() {
 
             updateUI("Mengunduh koordinat pegawai ...");
-            String url = "https://absensi.tebingtinggikota.go.id/api/koordinatemployee?id=" + employeeId;
+            String url = ServerConfig.getApiUrl() + "koordinatemployee?id=" + employeeId;
 
             api.getUrlKoordinat(url, "Bearer " + token,
                             RequestBody.create("", MediaType.parse("application/json")))
@@ -266,7 +267,7 @@ public class DownloadDataActivity extends AppCompatActivity {
        ============================= */
     private void stepTimetable() {
         updateUI("Mengunduh timetable...");
-        String url = "https://absensi.tebingtinggikota.go.id/api/timetable?employee_id=" + employeeId;
+        String url = ServerConfig.getApiUrl() + "timetable?employee_id=" + employeeId;
 
         api.getUrlTimeTable(url, "Bearer " + token,
                         RequestBody.create("", MediaType.parse("application/json")))
@@ -307,7 +308,7 @@ public class DownloadDataActivity extends AppCompatActivity {
        ============================= */
     private void stepKegiatan() {
         updateUI("Mengunduh kegiatan...");
-        String url = "https://absensi.tebingtinggikota.go.id/api/kegiatannew?opd=" + opd;
+        String url = ServerConfig.getApiUrl() + "kegiatannew?opd=" + opd;
 
         api.getUrlKegiatan(url, "Bearer " + token,
                         RequestBody.create("", MediaType.parse("application/json")))
@@ -344,7 +345,7 @@ public class DownloadDataActivity extends AppCompatActivity {
        ============================= */
     private void stepSift() {
         updateUI("Mengunduh jam sift...");
-        String url = "https://absensi.tebingtinggikota.go.id/api/testsift?eOPD=" + opd;
+        String url = ServerConfig.getApiUrl() + "testsift?eOPD=" + opd;
 
         api.getTestSift(url,
                         RequestBody.create("", MediaType.parse("application/json")))

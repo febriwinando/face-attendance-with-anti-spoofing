@@ -45,6 +45,7 @@ import java.util.Locale;
 import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.api.HttpService;
 import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
+import go.pemkott.appsandroidmobiletebingtinggi.api.ServerConfig;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
@@ -224,7 +225,7 @@ public class RekapAbsensActivity extends AppCompatActivity {
         Dialog dialogproses = new Dialog(RekapAbsensActivity.this, R.style.DialogStyle);
         dialogproses.setContentView(R.layout.view_proses);
         dialogproses.setCancelable(false);
-        Call<List<RekapServer>> callRekapAbsensi = holderAPI.getUrlRekapServer("https://absensi.tebingtinggikota.go.id/api/rekapserver?id="+idE+"&dtgl="+dariTanggal+"&stgl="+sampaiTanggal);
+        Call<List<RekapServer>> callRekapAbsensi = holderAPI.getUrlRekapServer(ServerConfig.getApiUrl() + "rekapserver?id="+idE+"&dtgl="+dariTanggal+"&stgl="+sampaiTanggal);
         callRekapAbsensi.enqueue(new Callback<List<RekapServer>>() {
             @Override
             public void onResponse(Call<List<RekapServer>> call, Response<List<RekapServer>> response) {
@@ -403,7 +404,7 @@ public class RekapAbsensActivity extends AppCompatActivity {
             tvTagFotoRekapMasuk.setVisibility(View.GONE);
         }else{
             Glide.with(this)
-                    .load( "https://absensi.tebingtinggikota.go.id/uploads-img-absensi/" + data.getPhoto_tagging_masuk())
+                    .load( ServerConfig.getUploadsAbsensiUrl() + data.getPhoto_tagging_masuk())
                     .into( ivValidasiRekapMasuk );
         }
 
@@ -414,7 +415,7 @@ public class RekapAbsensActivity extends AppCompatActivity {
             if ("img".equals(data.getEkstensi_masuk())){
 
                 Glide.with(this)
-                        .load( "https://absensi.tebingtinggikota.go.id/uploads-img-lampiran/" + data.getLampiran_masuk())
+                        .load( ServerConfig.getUploadsLampiranUrl() + data.getLampiran_masuk())
                         .into( ivLampiranValidasiRekapMasuk );
 
                 ivLampiranValidasiRekapMasuk.setVisibility(View.VISIBLE);
@@ -423,7 +424,7 @@ public class RekapAbsensActivity extends AppCompatActivity {
                 txtOpenPdfMasuk.setVisibility(View.VISIBLE);
                 txtOpenPdfMasuk.setOnClickListener(v -> {
                     Intent intent = new Intent(RekapAbsensActivity.this, ReadPdfActivity.class);
-                    intent.putExtra("PDF_URL", "https://absensi.tebingtinggikota.go.id/uploads-img-lampiran/"+data.getLampiran_masuk());
+                    intent.putExtra("PDF_URL", ServerConfig.getUploadsLampiranUrl()+data.getLampiran_masuk());
                     startActivity(intent);
                 });
             }
@@ -435,7 +436,7 @@ public class RekapAbsensActivity extends AppCompatActivity {
 
         }else{
             Glide.with(this)
-                    .load( "https://absensi.tebingtinggikota.go.id/uploads-img-absensi/" + data.getPhoto_tagging_pulang())
+                    .load( ServerConfig.getUploadsAbsensiUrl() + data.getPhoto_tagging_pulang())
                     .into( ivAktivitasRekapPulang );
         }
 
@@ -447,7 +448,7 @@ public class RekapAbsensActivity extends AppCompatActivity {
         }else{
             if ("img".equals(data.getEkstensi_pulang())){
                 Glide.with(this)
-                        .load( "https://absensi.tebingtinggikota.go.id/uploads-img-lampiran/" + data.getLampiran_pulang())
+                        .load( ServerConfig.getUploadsLampiranUrl() + data.getLampiran_pulang())
                         .into( ivLampiranRekapPulang );
                 ivLampiranRekapPulang.setVisibility(View.VISIBLE);
             }else{
@@ -455,7 +456,7 @@ public class RekapAbsensActivity extends AppCompatActivity {
                 txtOpenPdfPulang.setVisibility(View.VISIBLE);
                 txtOpenPdfPulang.setOnClickListener(v -> {
                     Intent intent = new Intent(RekapAbsensActivity.this, ReadPdfActivity.class);
-                    intent.putExtra("PDF_URL", "https://absensi.tebingtinggikota.go.id/uploads-img-lampiran/"+data.getLampiran_pulang());
+                    intent.putExtra("PDF_URL", ServerConfig.getUploadsLampiranUrl()+data.getLampiran_pulang());
                     startActivity(intent);
                 });
 
