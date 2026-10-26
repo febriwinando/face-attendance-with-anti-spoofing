@@ -490,6 +490,9 @@ public interface HttpService {
     @GET("admin/pengolahan/find-presence")
     Call<go.pemkott.appsandroidmobiletebingtinggi.model.AdminPresenceFindResponse> findPresenceAdmin(@Query("employee_id") String employeeId, @Query("tanggal") String tanggal);
 
+    @GET
+    Call<go.pemkott.appsandroidmobiletebingtinggi.model.berita.BeritaResponse> getBeritaDiskominfo(@Url String url);
+
 }
 
 //package go.pemkott.appsandroidmobiletebingtinggi.api;

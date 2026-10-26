@@ -81,6 +81,14 @@ import go.pemkott.appsandroidmobiletebingtinggi.singkronjadwalsift.CalendarJadwa
 import go.pemkott.appsandroidmobiletebingtinggi.utils.FcmTokenHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.utils.NetworkUtil;
 import go.pemkott.appsandroidmobiletebingtinggi.verifikasi.ValidasiNewActivity;
+import go.pemkott.appsandroidmobiletebingtinggi.adapter.berita.BeritaCardAdapter;
+import go.pemkott.appsandroidmobiletebingtinggi.adapter.berita.BeritaUtamaAdapter;
+import go.pemkott.appsandroidmobiletebingtinggi.model.berita.BeritaData;
+import go.pemkott.appsandroidmobiletebingtinggi.model.berita.BeritaItem;
+import go.pemkott.appsandroidmobiletebingtinggi.model.berita.BeritaResponse;
+import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import android.net.Uri;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -103,6 +111,14 @@ public class DashboardVersiOne extends AppCompatActivity {
     LocationManager manager;
     DatabaseHelper databaseHelper;
     HttpService httpService;
+
+    ConstraintLayout clSectionBeritaDiskominfo;
+    RecyclerView rvBeritaUtama, rvBeritaTerbaru, rvBeritaTrending;
+    TextView tvLihatSemuaBerita;
+    BeritaUtamaAdapter beritaUtamaAdapter;
+    BeritaCardAdapter beritaTerbaruAdapter;
+    BeritaCardAdapter beritaTrendingAdapter;
+    private static boolean hasShownHeadlineModal = false;
 
     public static String statusSift, fotoProfile, jam_masuk, jam_pulang, sOPD, sNip, sJabatan, sKantor, sEmployee_id, sUsername, sAkses, sActive,  sToken, sVerifikator;
 
@@ -209,6 +225,39 @@ public class DashboardVersiOne extends AppCompatActivity {
         cvSyncStatusToast = findViewById(R.id.cvSyncStatusToast);
         ivSyncStatusIcon = findViewById(R.id.ivSyncStatusIcon);
         tvSyncStatusMessage = findViewById(R.id.tvSyncStatusMessage);
+
+        clSectionBeritaDiskominfo = findViewById(R.id.clSectionBeritaDiskominfo);
+        rvBeritaUtama = findViewById(R.id.rvBeritaUtama);
+        rvBeritaTerbaru = findViewById(R.id.rvBeritaTerbaru);
+        rvBeritaTrending = findViewById(R.id.rvBeritaTrending);
+        tvLihatSemuaBerita = findViewById(R.id.tvLihatSemuaBerita);
+
+        if (rvBeritaUtama != null) {
+            rvBeritaUtama.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+            beritaUtamaAdapter = new BeritaUtamaAdapter(this);
+            rvBeritaUtama.setAdapter(beritaUtamaAdapter);
+        }
+
+        if (rvBeritaTerbaru != null) {
+            rvBeritaTerbaru.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+            beritaTerbaruAdapter = new BeritaCardAdapter(this);
+            rvBeritaTerbaru.setAdapter(beritaTerbaruAdapter);
+        }
+
+        if (rvBeritaTrending != null) {
+            rvBeritaTrending.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+            beritaTrendingAdapter = new BeritaCardAdapter(this);
+            rvBeritaTrending.setAdapter(beritaTrendingAdapter);
+        }
+
+        if (tvLihatSemuaBerita != null) {
+            tvLihatSemuaBerita.setOnClickListener(v -> {
+                Intent intent = new Intent(DashboardVersiOne.this, go.pemkott.appsandroidmobiletebingtinggi.berita.ListBeritaActivity.class);
+                startActivity(intent);
+            });
+        }
+
+        loadBeritaDiskominfo();
 
         datauser();
 
@@ -406,11 +455,71 @@ public class DashboardVersiOne extends AppCompatActivity {
             @Override
             public void onRefresh() {
                 onResume();
+                loadBeritaDiskominfo();
                 swipeRefreshLayout.setRefreshing(false);
             }
         });
 
         initLiveClock();
+    }
+
+    private void loadBeritaDiskominfo() {
+        if (httpService == null) return;
+        String localUrl = "http://172.15.1.13:4321/api/berita";
+        String publicUrl = "https://diskominfo.tebingtinggikota.go.id/api/berita";
+
+        fetchBeritaFromUrl(localUrl, () -> fetchBeritaFromUrl(publicUrl, null));
+    }
+
+    private void fetchBeritaFromUrl(String url, Runnable onFailureFallback) {
+        httpService.getBeritaDiskominfo(url).enqueue(new Callback<BeritaResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<BeritaResponse> call, @NonNull Response<BeritaResponse> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    BeritaData data = response.body().getData();
+                    if (data != null) {
+                        boolean hasData = false;
+                        if (data.getBeritaUtama() != null && !data.getBeritaUtama().isEmpty()) {
+                            if (beritaUtamaAdapter != null) {
+                                beritaUtamaAdapter.setList(data.getBeritaUtama());
+                            }
+                            hasData = true;
+                        }
+                        if (data.getBeritaTerbaru() != null && !data.getBeritaTerbaru().isEmpty()) {
+                            if (beritaTerbaruAdapter != null) {
+                                beritaTerbaruAdapter.setList(data.getBeritaTerbaru());
+                            }
+                            hasData = true;
+                        }
+                        if (data.getBeritaTrending() != null && !data.getBeritaTrending().isEmpty()) {
+                            if (beritaTrendingAdapter != null) {
+                                beritaTrendingAdapter.setList(data.getBeritaTrending());
+                            }
+                            hasData = true;
+                        }
+                        if (hasData && clSectionBeritaDiskominfo != null) {
+                            clSectionBeritaDiskominfo.setVisibility(View.VISIBLE);
+                        }
+
+                        if (!hasShownHeadlineModal && data.getBeritaUtama() != null && !data.getBeritaUtama().isEmpty()) {
+                            hasShownHeadlineModal = true;
+                            BeritaItem headline = data.getBeritaUtama().get(0);
+                            go.pemkott.appsandroidmobiletebingtinggi.berita.DialogBeritaKhusus.showModal(DashboardVersiOne.this, headline);
+                        }
+                    }
+                } else if (onFailureFallback != null) {
+                    onFailureFallback.run();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<BeritaResponse> call, @NonNull Throwable t) {
+                Log.w("BeritaDiskominfo", "Gagal load dari " + url + ": " + t.getMessage());
+                if (onFailureFallback != null) {
+                    onFailureFallback.run();
+                }
+            }
+        });
     }
 
     private void initLiveClock() {

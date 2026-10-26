@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardBackgroundColor="@color/surface_main"
+    app:cardCornerRadius="28dp"
+    app:cardElevation="8dp"
+    app:cardUseCompatPadding="true"
+    app:strokeWidth="0dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <!-- Top Banner Image with Integrated Badges & Floating Close Button -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="190dp"
+            app:cardCornerRadius="22dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/ivHeadlineImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:contentDescription="Gambar Pengumuman"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/one_person" />
+
+                <!-- Gradient Overlay -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/gradient_news_overlay" />
+
+                <!-- Top Left Badge Tag -->
+                <TextView
+                    android:id="@+id/tvHeadlineBadge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="12dp"
+                    android:background="@drawable/background_category_badge"
+                    android:backgroundTint="@color/primary_brand"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="5dp"
+                    android:text="📢 INFORMASI PENTING"
+                    android:textColor="@color/white"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+
+                <!-- Top Right Floating Circular Close Button -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cvCloseDialog"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_margin="12dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:cardBackgroundColor="#80000000"
+                    app:cardCornerRadius="18dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="0dp">
+
+                    <ImageView
+                        android:id="@+id/btnCloseDialog"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_gravity="center"
+                        android:contentDescription="Tutup"
+                        android:src="@drawable/ic_close"
+                        app:tint="@color/white" />
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Bottom Date & Publisher inside Banner -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="12dp">
+
+                    <TextView
+                        android:id="@+id/tvHeadlineDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-medium"
+                        android:textColor="#E0E0E0"
+                        android:textSize="11sp"
+                        tools:text="10 Februari 2026" />
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_weight="1" />
+
+                    <TextView
+                        android:id="@+id/tvHeadlineViews"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-medium"
+                        android:textColor="#E0E0E0"
+                        android:textSize="11sp"
+                        tools:text="👁️ 240x" />
+                </LinearLayout>
+
+            </RelativeLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Title -->
+        <TextView
+            android:id="@+id/tvHeadlineTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:fontFamily="sans-serif-black"
+            android:lineSpacingExtra="3dp"
+            android:maxLines="3"
+            android:textColor="@color/text_primary"
+            android:textSize="18sp"
+            tools:text="Pengumuman Penting Pemerintah Kota Tebing Tinggi Mengenai Kebijakan Layanan Terbaru" />
+
+        <!-- Summary Tinted Highlight Box -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cvSummaryBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            app:cardBackgroundColor="@color/surface_variant"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp">
+
+            <TextView
+                android:id="@+id/tvHeadlineSummary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif-medium"
+                android:lineSpacingExtra="3dp"
+                android:maxLines="3"
+                android:padding="14dp"
+                android:textColor="@color/text_primary"
+                android:textSize="13sp"
+                tools:text="Himbauan resmi dari Diskominfo Kota Tebing Tinggi kepada seluruh jajaran ASN dan masyarakat..." />
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Primary Read Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnReadHeadline"
+            style="@style/Widget.Material3.Button"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="20dp"
+            android:fontFamily="sans-serif-black"
+            android:letterSpacing="0.03"
+            android:text="📖  BACA SELENGKAPNYA"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            app:backgroundTint="@color/primary_brand"
+            app:cornerRadius="18dp"
+            app:elevation="3dp" />
+
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>
