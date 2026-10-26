@@ -53,6 +53,15 @@ public class RetroClient {
 
             okhttp3.Response response = chain.proceed(requestBuilder.build());
 
+            // Auto-fallback V2 -> V1: Jika V2 endpoint mengembalikan 404 (Server belum daftarkan v2),
+            // secara transparan alihkan request ke endpoint V1 legacy.
+            if (response.code() == 404 && original.url().encodedPath().contains("/api/v2/")) {
+                response.close();
+                String fallbackUrl = original.url().toString().replace("/api/v2/", "/api/");
+                okhttp3.Request fallbackRequest = requestBuilder.url(fallbackUrl).build();
+                return chain.proceed(fallbackRequest);
+            }
+
             // Proteksi Sisi Klien: Jika server mengembalikan 401 (Unauthenticated / Token Expired),
             // hapus token di SessionManager agar pengguna harus re-login secara aman.
             if (response.code() == 401) {

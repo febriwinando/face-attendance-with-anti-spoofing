@@ -1,6 +1,9 @@
 package go.pemkott.appsandroidmobiletebingtinggi.api;
 
+import android.content.Context;
 import android.os.Build;
+import go.pemkott.appsandroidmobiletebingtinggi.MyApplication;
+import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
 
 public class ServerConfig {
 
@@ -18,15 +21,31 @@ public class ServerConfig {
     }
 
     public static String getBaseUrl() {
-        if (BASE_HOST == null || BASE_HOST.isEmpty()) {
-            return isEmulator() ? "http://10.0.2.2:8000/" : "http://127.0.0.1:8000/";
+        Context context = MyApplication.getAppContext();
+        if (context != null) {
+            SessionManager session = new SessionManager(context);
+            String savedHost = session.getServerHost();
+            if (savedHost != null && !savedHost.trim().isEmpty()) {
+                String url = savedHost.trim();
+                if (!url.startsWith("http://") && !url.startsWith("https://")) {
+                    url = "http://" + url;
+                }
+                if (!url.endsWith("/")) {
+                    url = url + "/";
+                }
+                return url;
+            }
         }
 
-        String url = BASE_HOST;
-        if (isEmulator() && url.contains("127.0.0.1")) {
-            url = url.replace("127.0.0.1", "10.0.2.2");
+        if (isEmulator()) {
+            return "http://10.0.2.2:8000/";
         }
 
+        if (BASE_HOST == null || BASE_HOST.trim().isEmpty()) {
+            return "http://127.0.0.1:8000/";
+        }
+
+        String url = BASE_HOST.trim();
         if (!url.endsWith("/")) {
             return url + "/";
         }
@@ -35,6 +54,10 @@ public class ServerConfig {
 
     public static String getApiUrl() {
         return getBaseUrl() + "api/";
+    }
+
+    public static String getApiV2Url() {
+        return getBaseUrl() + "api/v2/";
     }
 
     public static String getStorageUrl() {

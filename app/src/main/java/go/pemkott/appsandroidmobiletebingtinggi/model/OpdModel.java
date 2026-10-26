@@ -21,8 +21,16 @@ public class OpdModel {
         return str;
     }
 
+    public void setId(Object id) {
+        this.id = id;
+    }
+
     public String getOpd() {
         return opd != null ? opd : "";
+    }
+
+    public void setOpd(String opd) {
+        this.opd = opd;
     }
 
     @Override

@@ -83,7 +83,7 @@ public interface HttpService {
             @Query("employee_id") int employeeId
     );
 
-    @GET("employees")
+    @GET("v2/employees")
     Call<EmployeeResponse> getEmployees();
     @FormUrlEncoded
     @POST("validasipulangpertamaterbaru")
@@ -380,7 +380,7 @@ public interface HttpService {
 
     // NATIVE SUPER ADMIN APIS
     @FormUrlEncoded
-    @POST("admin/update-masuk")
+    @POST("v2/admin/update-masuk")
     Call<ResponsePOJO> updateDataMasukAdmin(
             @Field("tanggal") String tanggal,
             @Field("masuk") String masuk,
@@ -390,7 +390,7 @@ public interface HttpService {
     );
 
     @FormUrlEncoded
-    @POST("admin/insert-massal/preview")
+    @POST("v2/admin/insert-massal/preview")
     Call<ResponsePOJO> previewInsertMassal(
             @Field("tanggal") String tanggal,
             @Field("nips") String nips,
@@ -398,7 +398,7 @@ public interface HttpService {
     );
 
     @FormUrlEncoded
-    @POST("admin/insert-massal/store")
+    @POST("v2/admin/insert-massal/store")
     Call<ResponsePOJO> storeInsertMassal(
             @Field("tanggal") String tanggal,
             @Field("nips") String nips,
@@ -406,23 +406,32 @@ public interface HttpService {
     );
 
     @FormUrlEncoded
-    @POST("admin/pegawai/status")
+    @POST("v2/admin/pegawai/status")
     Call<ResponsePOJO> updateStatusPegawaiAdmin(
             @Field("id") String id,
             @Field("active") int active
     );
 
     @FormUrlEncoded
-    @POST("admin/lokasi-pegawai/store")
+    @POST("v2/admin/lokasi-pegawai/store")
     Call<ResponsePOJO> storeLokasiPegawaiAdmin(
             @Field("employee_id") String employee_id,
+            @Field("nip") String nip,
+            @Field("pegawai_id") String pegawai_id,
+            @Field("id_pegawai") String id_pegawai,
+            @Field("opd_id") String opd_id,
+            @Field("eOPD") String eOPD,
             @Field("alamat") String alamat,
             @Field("let") String let,
-            @Field("lng") String lng
+            @Field("lat") String lat,
+            @Field("latitude") String latitude,
+            @Field("lng") String lng,
+            @Field("longitude") String longitude,
+            @Field("status") String status
     );
 
     @FormUrlEncoded
-    @POST("admin/pengolahan/store")
+    @POST("v2/admin/pengolahan/store")
     Call<ResponsePOJO> storePengolahanAbsensiAdmin(
             @Field("id_absensi") String id_absensi,
             @Field("jam_masuk") String jam_masuk,
@@ -472,7 +481,7 @@ public interface HttpService {
             @Part MultipartBody.Part lampiran_pulang
     );
 
-    @GET("admin/opd/list")
+    @GET("v2/admin/opd-list")
     Call<go.pemkott.appsandroidmobiletebingtinggi.model.AdminOpdListResponse> getAdminOpdList();
 
     @GET("admin/pegawai/list")

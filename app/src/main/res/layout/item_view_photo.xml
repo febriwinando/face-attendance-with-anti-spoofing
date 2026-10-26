@@ -1,31 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:background="#DD000000"
+    android:padding="20dp">
 
-    <com.google.android.material.imageview.ShapeableImageView
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingStart="5dp"
-        android:paddingEnd="5dp"
-        android:id="@+id/ivFoto"
         android:layout_centerInParent="true"
-        app:shapeAppearance="@style/ImageStyle2"
+        app:cardBackgroundColor="@color/surface_main"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="8dp"
+        app:strokeWidth="0dp">
 
-        />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:padding="20dp">
 
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/ivFoto"
+                android:layout_width="match_parent"
+                android:layout_height="360dp"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                android:src="@drawable/profil_pic"
+                app:shapeAppearanceOverlay="@style/ShapeAppearance.App.MediumComponent" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="x"
-        android:layout_centerHorizontal="true"
-        android:textSize="30sp"
-
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="80dp"
-        android:textColor="@color/putih"
-        android:textAlignment="center"
-        android:id="@+id/tvCloseViewFoto"/>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/tvCloseViewFoto"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:layout_marginTop="16dp"
+                android:backgroundTint="#171717"
+                android:fontFamily="sans-serif-medium"
+                android:paddingHorizontal="28dp"
+                android:text="✕ Tutup Preview"
+                android:textColor="@color/white"
+                android:textSize="13sp"
+                app:cornerRadius="24dp" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 </RelativeLayout>

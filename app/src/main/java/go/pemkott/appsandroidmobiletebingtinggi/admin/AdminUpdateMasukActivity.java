@@ -1,11 +1,18 @@
 package go.pemkott.appsandroidmobiletebingtinggi.admin;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.OpenableColumns;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -13,18 +20,23 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.card.MaterialCardView;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -35,7 +47,10 @@ import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.api.HttpService;
 import go.pemkott.appsandroidmobiletebingtinggi.api.ResponsePOJO;
 import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
+import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraXTanpaDetectionAcitvity;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
+import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFoto;
+import go.pemkott.appsandroidmobiletebingtinggi.utils.FileUtil;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -47,15 +62,19 @@ public class AdminUpdateMasukActivity extends AppCompatActivity {
 
     private EditText etTanggal, etJamMasuk, etKeterlambatan, etKetMasuk, etPegawaiId;
     private Spinner spPosisiMasuk;
-    private ImageView ivPreviewFoto;
-    private TextView tvNameLampiran;
+
+    private ImageView iconFotoMasuk, iconLampiranMasuk;
+    private ImageView ivFotoMasukFinal, ivLampiranMasukFinal;
+    private View llPdfMasuk;
+    private TextView tvPdfMasukName;
 
     private Calendar calendar = Calendar.getInstance();
     private DialogView dialogView;
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 
-    private Uri uriFoto = null;
-    private Uri uriLampiran = null;
+    private File fileFotoMasuk = null;
+    private File fileLampiranMasuk = null;
+    private AmbilFoto ambilFoto;
 
     private final String[] POSISI_TEXTS = {
             "Kehadiran Normal (masuk)",
@@ -74,8 +93,9 @@ public class AdminUpdateMasukActivity extends AppCompatActivity {
             "hadir", "dinas", "dinas", "sakit", "pribadi", "ijin"
     };
 
-    private ActivityResultLauncher<Intent> photoLauncher;
-    private ActivityResultLauncher<Intent> fileLauncher;
+    private ActivityResultLauncher<Intent> cameraFotoMasukLauncher;
+    private ActivityResultLauncher<Intent> cameraLampiranMasukLauncher;
+    private ActivityResultLauncher<Intent> pdfMasukLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,7 +103,9 @@ public class AdminUpdateMasukActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_admin_update_masuk);
 
+        ambilFoto = new AmbilFoto(this);
         dialogView = new DialogView(this);
+
         ImageView ivBack = findViewById(R.id.ivAdminBack);
         spPosisiMasuk = findViewById(R.id.spAdminPosisiMasuk);
         etTanggal = findViewById(R.id.etAdminTanggal);
@@ -92,10 +114,16 @@ public class AdminUpdateMasukActivity extends AppCompatActivity {
         etKetMasuk = findViewById(R.id.etAdminKetMasuk);
         etPegawaiId = findViewById(R.id.etAdminPegawaiId);
 
-        MaterialButton btnPickFoto = findViewById(R.id.btnPickFotoMasuk);
-        ivPreviewFoto = findViewById(R.id.ivPreviewFotoMasuk);
-        MaterialButton btnPickLampiran = findViewById(R.id.btnPickLampiranMasuk);
-        tvNameLampiran = findViewById(R.id.tvNameLampiranMasuk);
+        MaterialCardView cardFotoMasuk = findViewById(R.id.cardPickFotoMasuk);
+        MaterialCardView cardLampiranMasuk = findViewById(R.id.cardPickLampiranMasuk);
+
+        iconFotoMasuk = findViewById(R.id.iconFotoMasuk);
+        ivFotoMasukFinal = findViewById(R.id.ivFotoMasukFinal);
+        iconLampiranMasuk = findViewById(R.id.iconLampiranMasuk);
+        ivLampiranMasukFinal = findViewById(R.id.ivLampiranMasukFinal);
+        llPdfMasuk = findViewById(R.id.llPdfMasuk);
+        tvPdfMasukName = findViewById(R.id.tvPdfMasukName);
+
         MaterialButton btnSubmit = findViewById(R.id.btnAdminSubmitMasuk);
 
         ivBack.setOnClickListener(v -> finish());
@@ -107,12 +135,12 @@ public class AdminUpdateMasukActivity extends AppCompatActivity {
             }
         });
 
-        // Setup Spinner Posisi
+        // Spinner Posisi
         ArrayAdapter<String> adapterPosisi = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, POSISI_TEXTS);
         adapterPosisi.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spPosisiMasuk.setAdapter(adapterPosisi);
 
-        // Set default values
+        // Defaults
         etTanggal.setText(dateFormat.format(calendar.getTime()));
         etJamMasuk.setText("07:30");
         etKeterlambatan.setText("0");
@@ -121,45 +149,226 @@ public class AdminUpdateMasukActivity extends AppCompatActivity {
         etTanggal.setOnClickListener(v -> showDatePicker());
         etJamMasuk.setOnClickListener(v -> showTimePicker());
 
-        // File pickers
-        photoLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
-                        uriFoto = result.getData().getData();
-                        if (uriFoto != null) {
-                            ivPreviewFoto.setImageURI(uriFoto);
-                            ivPreviewFoto.setVisibility(View.VISIBLE);
-                        }
-                    }
-                }
-        );
+        setupMediaLaunchers();
 
-        fileLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
-                        uriLampiran = result.getData().getData();
-                        if (uriLampiran != null) {
-                            tvNameLampiran.setText(uriLampiran.getLastPathSegment());
-                        }
-                    }
-                }
-        );
-
-        btnPickFoto.setOnClickListener(v -> {
-            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-            intent.setType("image/*");
-            photoLauncher.launch(intent);
-        });
-
-        btnPickLampiran.setOnClickListener(v -> {
-            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-            intent.setType("*/*");
-            fileLauncher.launch(intent);
-        });
+        cardFotoMasuk.setOnClickListener(v -> viewLampiran(1));
+        cardLampiranMasuk.setOnClickListener(v -> viewLampiran(2));
 
         btnSubmit.setOnClickListener(v -> submitUpdateMasuk());
+    }
+
+    public void viewLampiran(int targetType) {
+        Dialog dialogLampiran = new Dialog(AdminUpdateMasukActivity.this, R.style.DialogStyle);
+        dialogLampiran.setContentView(R.layout.view_add_lampiran);
+        View llFileManager = dialogLampiran.findViewById(R.id.llFileManager);
+        View llKamera = dialogLampiran.findViewById(R.id.llKamera);
+        View llDokumen = dialogLampiran.findViewById(R.id.llDokumen);
+        View ivTutupViewLampiran = dialogLampiran.findViewById(R.id.ivTutupViewLampiran);
+
+        llFileManager.setOnClickListener(v -> {
+            Intent i = new Intent();
+            i.setType("image/*");
+            i.setAction(Intent.ACTION_GET_CONTENT);
+            startActivityForResult(Intent.createChooser(i, "Pilih Gambar"), 100 + targetType);
+            dialogLampiran.dismiss();
+        });
+
+        llDokumen.setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+            intent.setType("application/pdf");
+            intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            pdfMasukLauncher.launch(intent);
+            dialogLampiran.dismiss();
+        });
+
+        llKamera.setOnClickListener(v -> {
+            Intent intent = new Intent(this, CameraXTanpaDetectionAcitvity.class);
+            intent.putExtra("is_lampiran", true);
+            if (targetType == 1) {
+                cameraFotoMasukLauncher.launch(intent);
+            } else {
+                cameraLampiranMasukLauncher.launch(intent);
+            }
+            dialogLampiran.dismiss();
+        });
+
+        ivTutupViewLampiran.setOnClickListener(v -> dialogLampiran.dismiss());
+        dialogLampiran.show();
+    }
+
+    private void setupMediaLaunchers() {
+        cameraFotoMasukLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> handleCameraResult(result, 1)
+        );
+
+        cameraLampiranMasukLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> handleCameraResult(result, 2)
+        );
+
+        pdfMasukLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                        try {
+                            Uri pdfUri = result.getData().getData();
+                            fileLampiranMasuk = getPDFPath(pdfUri);
+                            String displayName = getFileNameFromUri(pdfUri);
+
+                            llPdfMasuk.setVisibility(View.VISIBLE);
+                            tvPdfMasukName.setText(displayName);
+                            ivLampiranMasukFinal.setVisibility(View.GONE);
+                            iconLampiranMasuk.setVisibility(View.GONE);
+                        } catch (Exception e) {
+                            Log.e("UPDATE_MASUK_ADMIN", "Error pdfMasukLauncher", e);
+                        }
+                    }
+                }
+        );
+    }
+
+    private void handleCameraResult(androidx.activity.result.ActivityResult result, int targetType) {
+        if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+            String fileName = result.getData().getStringExtra("namafile");
+            File targetFile = null;
+
+            if (fileName != null && (fileName.startsWith("content://") || fileName.startsWith("file://"))) {
+                try {
+                    targetFile = createTempFileFromUri(Uri.parse(fileName));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Toast.makeText(this, "Gagal memproses foto", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            } else if (fileName != null) {
+                String myDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString() + "/eabsensi";
+                targetFile = new File(myDir, fileName);
+            }
+
+            if (targetFile != null && targetFile.exists()) {
+                byte[] imageBytes = ambilFoto.compressToMax80KB(targetFile);
+                Bitmap previewBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+
+                if (targetType == 1) {
+                    fileFotoMasuk = targetFile;
+                    ivFotoMasukFinal.setImageBitmap(previewBitmap);
+                    ivFotoMasukFinal.setVisibility(View.VISIBLE);
+                    iconFotoMasuk.setVisibility(View.GONE);
+                } else {
+                    fileLampiranMasuk = targetFile;
+                    ivLampiranMasukFinal.setImageBitmap(previewBitmap);
+                    ivLampiranMasukFinal.setVisibility(View.VISIBLE);
+                    iconLampiranMasuk.setVisibility(View.GONE);
+                    llPdfMasuk.setVisibility(View.GONE);
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK && data != null) {
+            int targetType = requestCode - 100;
+            try {
+                Uri selectedImageUri = data.getData();
+                String FilePath2 = FileUtil.getDriveFilePath(selectedImageUri, this);
+                File originalLampiran = new File(FilePath2);
+                File filelampiran = ambilFoto.compressToFile(this, originalLampiran);
+
+                BitmapFactory.Options optsLampiran = new BitmapFactory.Options();
+                optsLampiran.inSampleSize = 4;
+                optsLampiran.inPreferredConfig = Bitmap.Config.RGB_565;
+                Bitmap preview = BitmapFactory.decodeFile(filelampiran.getAbsolutePath(), optsLampiran);
+
+                if (targetType == 1) {
+                    fileFotoMasuk = filelampiran;
+                    ivFotoMasukFinal.setImageBitmap(preview);
+                    ivFotoMasukFinal.setVisibility(View.VISIBLE);
+                    iconFotoMasuk.setVisibility(View.GONE);
+                } else {
+                    fileLampiranMasuk = filelampiran;
+                    ivLampiranMasukFinal.setImageBitmap(preview);
+                    ivLampiranMasukFinal.setVisibility(View.VISIBLE);
+                    iconLampiranMasuk.setVisibility(View.GONE);
+                    llPdfMasuk.setVisibility(View.GONE);
+                }
+            } catch (Exception e) {
+                Log.e("UPDATE_MASUK_ADMIN", "Error onActivityResult gallery image", e);
+            }
+        }
+    }
+
+    private File createTempFileFromUri(Uri uri) throws IOException {
+        InputStream is = getContentResolver().openInputStream(uri);
+        File tempFile = new File(getCacheDir(), "IMG_" + System.currentTimeMillis() + ".jpg");
+        FileOutputStream fos = new FileOutputStream(tempFile);
+        byte[] buffer = new byte[8192];
+        int len;
+        if (is != null) {
+            while ((len = is.read(buffer)) > 0) {
+                fos.write(buffer, 0, len);
+            }
+            fos.close();
+            is.close();
+        }
+        return tempFile;
+    }
+
+    private File getPDFPath(Uri uri) {
+        try {
+            InputStream inputStream = getContentResolver().openInputStream(uri);
+            if (inputStream == null) return null;
+
+            byte[] pdfInBytes = new byte[inputStream.available()];
+            int readBytes = inputStream.read(pdfInBytes);
+
+            String mPath;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD_MR1) {
+                mPath = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS) + "/admin_lampiran_" + System.currentTimeMillis() + ".pdf";
+            } else {
+                mPath = Environment.getExternalStorageDirectory().toString() + "/admin_lampiran_" + System.currentTimeMillis() + ".pdf";
+            }
+
+            File filelampiran = new File(mPath);
+            OutputStream op = new FileOutputStream(filelampiran);
+            op.write(pdfInBytes, 0, readBytes > 0 ? readBytes : pdfInBytes.length);
+            op.close();
+            inputStream.close();
+
+            return filelampiran;
+        } catch (Exception ae) {
+            Log.e("UPDATE_MASUK_ADMIN", "Error getPDFPath", ae);
+            return null;
+        }
+    }
+
+    private String getFileNameFromUri(Uri uri) {
+        String result = null;
+        if (uri != null && uri.getScheme() != null && uri.getScheme().equals("content")) {
+            try (Cursor cursor = getContentResolver().query(uri, null, null, null, null)) {
+                if (cursor != null && cursor.moveToFirst()) {
+                    int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                    if (nameIndex != -1) {
+                        result = cursor.getString(nameIndex);
+                    }
+                }
+            } catch (Exception e) {
+                Log.e("UPDATE_MASUK_ADMIN", "Error getting file name", e);
+            }
+        }
+        if (result == null && uri != null) {
+            result = uri.getPath();
+            if (result != null) {
+                int cut = result.lastIndexOf('/');
+                if (cut != -1) {
+                    result = result.substring(cut + 1);
+                }
+            }
+        }
+        return result != null ? result : ("file_temp_" + System.currentTimeMillis() + ".pdf");
     }
 
     private void showDatePicker() {
@@ -190,7 +399,7 @@ public class AdminUpdateMasukActivity extends AppCompatActivity {
         int selectedIdx = spPosisiMasuk.getSelectedItemPosition();
         String posisiMasuk = POSISI_VALUES[selectedIdx];
         String statusMasuk = STATUS_VALUES[selectedIdx];
-        String validasiMasuk = "2"; // Terverifikasi
+        String validasiMasuk = "2";
 
         if (tanggal.isEmpty() || jamMasuk.isEmpty() || pegawaiInput.isEmpty()) {
             dialogView.viewNotifKosong(this, "Peringatan", "Tanggal, Jam Masuk, dan ID/NIP Pegawai wajib diisi.");
@@ -217,8 +426,7 @@ public class AdminUpdateMasukActivity extends AppCompatActivity {
 
         HttpService api = RetroClient.getInstance(this).getApi2();
 
-        if (uriFoto == null && uriLampiran == null) {
-            // Mode normal tanpa file
+        if (fileFotoMasuk == null && fileLampiranMasuk == null) {
             int keterlambatan = 0;
             try { keterlambatan = Integer.parseInt(keterlambatanStr); } catch (Exception ignored) {}
 
@@ -237,7 +445,6 @@ public class AdminUpdateMasukActivity extends AppCompatActivity {
                         }
                     });
         } else {
-            // Mode Multipart dengan Foto / Lampiran
             RequestBody bodyTanggal = RequestBody.create(MediaType.parse("text/plain"), tanggal);
             RequestBody bodyMasuk = RequestBody.create(MediaType.parse("text/plain"), jamMasuk);
             RequestBody bodyKeterlambatan = RequestBody.create(MediaType.parse("text/plain"), keterlambatanStr);
@@ -251,8 +458,8 @@ public class AdminUpdateMasukActivity extends AppCompatActivity {
                 bodyPegawaiList.add(RequestBody.create(MediaType.parse("text/plain"), p));
             }
 
-            MultipartBody.Part partFoto = prepareFilePart("fototaging_masuk", uriFoto);
-            MultipartBody.Part partLampiran = prepareFilePart("lampiran_masuk", uriLampiran);
+            MultipartBody.Part partFoto = prepareFilePart("fototaging_masuk", fileFotoMasuk, false);
+            MultipartBody.Part partLampiran = prepareFilePart("lampiran_masuk", fileLampiranMasuk, fileLampiranMasuk != null && fileLampiranMasuk.getName().endsWith(".pdf"));
 
             api.updateDataMasukAdminMultipart(
                     bodyTanggal, bodyMasuk, bodyKeterlambatan, bodyKetMasuk,
@@ -274,37 +481,14 @@ public class AdminUpdateMasukActivity extends AppCompatActivity {
         }
     }
 
-    private MultipartBody.Part prepareFilePart(String partName, Uri fileUri) {
-        if (fileUri == null) return null;
+    private MultipartBody.Part prepareFilePart(String partName, File file, boolean isPdf) {
+        if (file == null || !file.exists()) return null;
         try {
-            File file = getFileFromUri(fileUri);
-            if (file != null && file.exists()) {
-                RequestBody requestFile = RequestBody.create(MediaType.parse(getContentResolver().getType(fileUri) != null ? getContentResolver().getType(fileUri) : "*/*"), file);
-                return MultipartBody.Part.createFormData(partName, file.getName(), requestFile);
-            }
+            String mimeType = isPdf ? "application/pdf" : "image/*";
+            RequestBody requestFile = RequestBody.create(MediaType.parse(mimeType), file);
+            return MultipartBody.Part.createFormData(partName, file.getName(), requestFile);
         } catch (Exception e) {
-            Log.e("ADMIN_UPDATE", "Error prepareFilePart", e);
-        }
-        return null;
-    }
-
-    private File getFileFromUri(Uri uri) {
-        try {
-            InputStream inputStream = getContentResolver().openInputStream(uri);
-            File file = new File(getCacheDir(), "upload_temp_" + System.currentTimeMillis());
-            FileOutputStream outputStream = new FileOutputStream(file);
-            byte[] buffer = new byte[4096];
-            int read;
-            if (inputStream != null) {
-                while ((read = inputStream.read(buffer)) != -1) {
-                    outputStream.write(buffer, 0, read);
-                }
-                inputStream.close();
-            }
-            outputStream.close();
-            return file;
-        } catch (Exception e) {
-            Log.e("ADMIN_UPDATE", "Error getFileFromUri", e);
+            Log.e("UPDATE_MASUK_ADMIN", "Error prepareFilePart", e);
             return null;
         }
     }

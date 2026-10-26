@@ -114,4 +114,15 @@ public class SessionManager {
     public String getVerifikator() {
         return prefs.getString("KEY_VERIFIKATOR", "");
     }
+
+    // -------------------------
+    // SERVER HOST CONFIG
+    // -------------------------
+    public void saveServerHost(String host) {
+        prefs.edit().putString("KEY_SERVER_HOST", host).apply();
+    }
+
+    public String getServerHost() {
+        return prefs.getString("KEY_SERVER_HOST", null);
+    }
 }

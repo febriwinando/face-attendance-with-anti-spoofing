@@ -93,7 +93,7 @@ public class DialogView {
         dialogFoto.setCancelable(true);
 
         ShapeableImageView imageView = dialogFoto.findViewById(R.id.ivFoto);
-        ImageView tvTutupDialog = dialogFoto.findViewById(R.id.tvCloseViewFoto);
+        TextView tvTutupDialog = dialogFoto.findViewById(R.id.tvCloseViewFoto);
 
         if (imageView != null) {
             imageView.setImageBitmap(data);
