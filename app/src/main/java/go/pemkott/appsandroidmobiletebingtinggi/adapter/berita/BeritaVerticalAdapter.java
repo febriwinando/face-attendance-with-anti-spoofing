@@ -34,6 +34,14 @@ public class BeritaVerticalAdapter extends RecyclerView.Adapter<BeritaVerticalAd
         notifyDataSetChanged();
     }
 
+    public void addList(List<BeritaItem> newItems) {
+        if (newItems != null && !newItems.isEmpty()) {
+            int startPosition = this.list.size();
+            this.list.addAll(newItems);
+            notifyItemRangeInserted(startPosition, newItems.size());
+        }
+    }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

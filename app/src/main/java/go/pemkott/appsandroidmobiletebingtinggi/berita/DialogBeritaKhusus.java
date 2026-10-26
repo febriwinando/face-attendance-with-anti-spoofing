@@ -34,7 +34,7 @@ public class DialogBeritaKhusus {
 
         if (dialog.getWindow() != null) {
             ColorDrawable back = new ColorDrawable(Color.TRANSPARENT);
-            int insetPx = (int) (20 * context.getResources().getDisplayMetrics().density);
+            int insetPx = (int) (6 * context.getResources().getDisplayMetrics().density);
             InsetDrawable inset = new InsetDrawable(back, insetPx, 0, insetPx, 0);
             dialog.getWindow().setBackgroundDrawable(inset);
             dialog.getWindow().setLayout(

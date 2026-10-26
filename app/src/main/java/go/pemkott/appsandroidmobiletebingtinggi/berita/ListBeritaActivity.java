@@ -51,6 +51,12 @@ public class ListBeritaActivity extends AppCompatActivity {
     private final Handler searchHandler = new Handler(Looper.getMainLooper());
     private Runnable searchRunnable;
 
+    private int currentPage = 1;
+    private final int limit = 15;
+    private boolean isLoading = false;
+    private boolean hasNextPage = true;
+    private String currentQuery = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,9 +93,29 @@ public class ListBeritaActivity extends AppCompatActivity {
 
         cvListBack.setOnClickListener(v -> finish());
 
-        rvListBerita.setLayoutManager(new LinearLayoutManager(this));
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        rvListBerita.setLayoutManager(layoutManager);
         adapter = new BeritaVerticalAdapter(this);
         rvListBerita.setAdapter(adapter);
+
+        rvListBerita.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (dy > 0) { // scrolling down
+                    int visibleItemCount = layoutManager.getChildCount();
+                    int totalItemCount = layoutManager.getItemCount();
+                    int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
+
+                    if (!isLoading && hasNextPage) {
+                        if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount - 3
+                                && firstVisibleItemPosition >= 0) {
+                            loadMoreNews();
+                        }
+                    }
+                }
+            }
+        });
 
         etSearchQuery.addTextChangedListener(new TextWatcher() {
             @Override
@@ -100,7 +126,7 @@ public class ListBeritaActivity extends AppCompatActivity {
                 if (searchRunnable != null) {
                     searchHandler.removeCallbacks(searchRunnable);
                 }
-                searchRunnable = () -> performSearch(s.toString().trim());
+                searchRunnable = () -> loadInitialNews(s.toString().trim());
                 searchHandler.postDelayed(searchRunnable, 400);
             }
 
@@ -108,33 +134,51 @@ public class ListBeritaActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {}
         });
 
-        loadAllNews();
+        loadInitialNews("");
     }
 
-    private void loadAllNews() {
+    private void loadInitialNews(String query) {
+        currentQuery = query;
+        currentPage = 1;
+        hasNextPage = true;
+        isLoading = true;
+
         if (pbLoadingList != null) pbLoadingList.setVisibility(View.VISIBLE);
         if (llEmptyState != null) llEmptyState.setVisibility(View.GONE);
 
-        String localUrl = "http://172.15.1.13:4321/api/berita?type=lainnya&limit=30";
-        String publicUrl = "https://diskominfo.tebingtinggikota.go.id/api/berita?type=lainnya&limit=30";
+        String localUrl = buildNewsUrl(currentPage, query, true);
+        String publicUrl = buildNewsUrl(currentPage, query, false);
 
-        fetchListFromUrl(localUrl, () -> fetchListFromUrl(publicUrl, null));
+        fetchPageFromUrl(localUrl, true, () -> fetchPageFromUrl(publicUrl, true, null));
     }
 
-    private void performSearch(String query) {
+    private void loadMoreNews() {
+        if (isLoading || !hasNextPage) return;
+        isLoading = true;
+        int nextPage = currentPage + 1;
+
         if (pbLoadingList != null) pbLoadingList.setVisibility(View.VISIBLE);
-        if (llEmptyState != null) llEmptyState.setVisibility(View.GONE);
 
-        String localUrl = "http://172.15.1.13:4321/api/berita?type=lainnya&q=" + query + "&limit=30";
-        String publicUrl = "https://diskominfo.tebingtinggikota.go.id/api/berita?type=lainnya&q=" + query + "&limit=30";
+        String localUrl = buildNewsUrl(nextPage, currentQuery, true);
+        String publicUrl = buildNewsUrl(nextPage, currentQuery, false);
 
-        fetchListFromUrl(localUrl, () -> fetchListFromUrl(publicUrl, null));
+        fetchPageFromUrl(localUrl, false, () -> fetchPageFromUrl(publicUrl, false, null));
     }
 
-    private void fetchListFromUrl(String url, Runnable onFailureFallback) {
+    private String buildNewsUrl(int page, String query, boolean isLocal) {
+        String baseUrl = isLocal ? "http://172.15.1.13:4321/api/berita" : "https://diskominfo.tebingtinggikota.go.id/api/berita";
+        if (query != null && !query.trim().isEmpty()) {
+            return baseUrl + "?type=lainnya&q=" + query.trim() + "&page=" + page + "&limit=" + limit;
+        } else {
+            return baseUrl + "?type=lainnya&page=" + page + "&limit=" + limit;
+        }
+    }
+
+    private void fetchPageFromUrl(String url, boolean isInitial, Runnable onFailureFallback) {
         httpService.getBeritaDiskominfo(url).enqueue(new Callback<BeritaResponse>() {
             @Override
             public void onResponse(@NonNull Call<BeritaResponse> call, @NonNull Response<BeritaResponse> response) {
+                isLoading = false;
                 if (pbLoadingList != null) pbLoadingList.setVisibility(View.GONE);
 
                 if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
@@ -147,26 +191,37 @@ public class ListBeritaActivity extends AppCompatActivity {
                     }
 
                     if (items != null && !items.isEmpty()) {
-                        adapter.setList(items);
+                        if (isInitial) {
+                            currentPage = 1;
+                            adapter.setList(items);
+                        } else {
+                            currentPage++;
+                            adapter.addList(items);
+                        }
+                        hasNextPage = items.size() >= limit;
                         if (llEmptyState != null) llEmptyState.setVisibility(View.GONE);
                     } else {
-                        adapter.setList(null);
-                        if (llEmptyState != null) llEmptyState.setVisibility(View.VISIBLE);
+                        if (isInitial) {
+                            adapter.setList(null);
+                            if (llEmptyState != null) llEmptyState.setVisibility(View.VISIBLE);
+                        }
+                        hasNextPage = false;
                     }
                 } else if (onFailureFallback != null) {
                     onFailureFallback.run();
                 } else {
-                    if (llEmptyState != null) llEmptyState.setVisibility(View.VISIBLE);
+                    if (isInitial && llEmptyState != null) llEmptyState.setVisibility(View.VISIBLE);
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<BeritaResponse> call, @NonNull Throwable t) {
+                isLoading = false;
                 if (onFailureFallback != null) {
                     onFailureFallback.run();
                 } else {
                     if (pbLoadingList != null) pbLoadingList.setVisibility(View.GONE);
-                    if (llEmptyState != null) llEmptyState.setVisibility(View.VISIBLE);
+                    if (isInitial && llEmptyState != null) llEmptyState.setVisibility(View.VISIBLE);
                 }
             }
         });
