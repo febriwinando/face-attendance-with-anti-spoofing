@@ -7,7 +7,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
 
 public class ServerConfig {
 
-    public static String BASE_HOST = "http://127.0.0.1:8000/";
+    public static String BASE_HOST = "https://svr-absensi.tebingtinggikota.go.id/";
 
     public static boolean isEmulator() {
         return (Build.FINGERPRINT.startsWith("generic")
@@ -38,11 +38,11 @@ public class ServerConfig {
         }
 
         if (isEmulator()) {
-            return "http://10.0.2.2:8000/";
+            return "https://svr-absensi.tebingtinggikota.go.id/";
         }
 
         if (BASE_HOST == null || BASE_HOST.trim().isEmpty()) {
-            return "http://127.0.0.1:8000/";
+            return "https://svr-absensi.tebingtinggikota.go.id/";
         }
 
         String url = BASE_HOST.trim();

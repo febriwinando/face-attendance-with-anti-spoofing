@@ -52,8 +52,6 @@ navigationUi = "2.8.5"
 workRuntime = "2.10.0"
 #loggingInterceptorVersion = "4.12.0"
 
-pytorch_android_lite = "2.1.0"
-pytorch_android_torchvision_lite = "2.1.0"
 tensorflowLite = "2.16.1"
 
 [libraries]
@@ -64,8 +62,6 @@ appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "a
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
-pytorch_android_lite = { group = "org.pytorch", name = "pytorch_android_lite", version.ref = "pytorch_android_lite" }
-pytorch_android_torchvision_lite = { group = "org.pytorch", name = "pytorch_android_torchvision_lite", version.ref = "pytorch_android_torchvision_lite" }
 app-update = { group = "com.google.android.play", name = "app-update", version.ref = "appUpdate" }
 face-detection = { group = "com.google.mlkit", name = "face-detection", version.ref = "faceDetection" }
 glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }

@@ -107,12 +107,18 @@ xmlns:dist="http://schemas.android.com/apk/distribution">
         android:exported="false" />
     <activity
         android:name=".izinshift.izinshiftsakit.IzinSakitShiftFinalActivity"
+        android:windowSoftInputMode="adjustResize"
+        android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
         android:exported="false" />
     <activity
         android:name=".izinshift.izinshiftcuti.IzinCutiShiftFinalActivity"
+        android:windowSoftInputMode="adjustResize"
+        android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
         android:exported="false" />
     <activity
         android:name=".izinshift.izinshiftpribadi.KeperluanPribadiShiftFinalActivity"
+        android:windowSoftInputMode="adjustResize"
+        android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
         android:exported="false" />
     <activity
         android:name=".rekap.RekapAbsensActivity"
@@ -120,6 +126,7 @@ xmlns:dist="http://schemas.android.com/apk/distribution">
     <activity
         android:name=".berita.DetailBeritaActivity"
         android:exported="false"
+        android:windowSoftInputMode="adjustResize"
         android:configChanges="orientation|screenSize|screenLayout|keyboardHidden" />
     <activity
         android:name=".berita.ListBeritaActivity"
@@ -127,12 +134,18 @@ xmlns:dist="http://schemas.android.com/apk/distribution">
         android:configChanges="orientation|screenSize|screenLayout|keyboardHidden" />
     <activity
         android:name=".izinshift.izinshiftsakit.SakitShiftActivity"
+        android:windowSoftInputMode="adjustResize"
+        android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
         android:exported="false" />
     <activity
         android:name=".izinshift.izinshiftcuti.CutiShiftActivity"
+        android:windowSoftInputMode="adjustResize"
+        android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
         android:exported="false" />
     <activity
         android:name=".izinshift.izinshiftpribadi.KeperluanPribadiShiftActivity"
+        android:windowSoftInputMode="adjustResize"
+        android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
         android:exported="false" />
     <activity
         android:name=".izinshift.JadwalIzinShiftActivity"
@@ -154,51 +167,75 @@ xmlns:dist="http://schemas.android.com/apk/distribution">
         android:exported="false" />
     <activity
         android:name=".izin.sakit.IzinSakitFinalActivity"
+        android:windowSoftInputMode="adjustResize"
+        android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
         android:exported="false" />
     <activity
         android:name=".izin.keperluanpribadi.KeperluanPribadiFinalActivity"
+        android:windowSoftInputMode="adjustResize"
+        android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
         android:exported="false" />
     <activity
         android:name=".izin.sakit.SakitActivity"
+        android:windowSoftInputMode="adjustResize"
+        android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
         android:exported="false" />
     <activity
         android:name=".izin.keperluanpribadi.KeperluanPribadiActivity"
+        android:windowSoftInputMode="adjustResize"
+        android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
         android:exported="false" />
     <activity
         android:name=".izin.cuti.IzinCutiFinalActivity"
+        android:windowSoftInputMode="adjustResize"
+        android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
         android:exported="false" />
     <activity
         android:name=".izin.cuti.CutiActivity"
+        android:windowSoftInputMode="adjustResize"
+        android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
         android:exported="false" />
     <activity
         android:name=".dinasluarkantor.perjalanandinas.JadwalPerjalananDinasShiftActivity"
         android:exported="false" />
     <activity
         android:name=".dinasluarkantor.perjalanandinas.SppdShiftActivity"
+        android:windowSoftInputMode="adjustResize"
+        android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
         android:exported="false" />
     <activity
         android:name=".dinasluarkantor.perjalanandinas.PerjalananDinasFinalActivity"
+        android:windowSoftInputMode="adjustResize"
+        android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
         android:exported="false" />
     <activity
         android:name=".dinasluarkantor.perjalanandinas.PerjalananDinasShiftFinalActivity"
+        android:windowSoftInputMode="adjustResize"
+        android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
         android:exported="false" />
     <activity
         android:name=".dinasluarkantor.perjalanandinas.SppdActivity"
+        android:windowSoftInputMode="adjustResize"
+        android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
         android:exported="false" />
     <activity
         android:name=".dinasluarkantor.tugaslapangan.TugasLapanganShiftActivity"
+        android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
         android:exported="false"
         android:windowSoftInputMode="adjustResize" />
     <activity
         android:name=".dinasluarkantor.tugaslapangan.TugasLapanganShiftFinalActivity"
+        android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
         android:exported="false"
         android:windowSoftInputMode="adjustResize" />
     <activity
         android:name=".dinasluarkantor.tugaslapangan.TugasLapanganFinalActivity"
+        android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
+        android:windowSoftInputMode="adjustResize"
         android:exported="false" />
     <activity
         android:name=".dinasluarkantor.tugaslapangan.TugasLapanganActivity"
-        android:configChanges="orientation|screenSize|screenLayout"
+        android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
         android:exported="false"
         android:windowSoftInputMode="adjustResize" />
     <activity

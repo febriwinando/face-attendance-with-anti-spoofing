@@ -54,7 +54,7 @@ public class BeritaVerticalAdapter extends RecyclerView.Adapter<BeritaVerticalAd
         BeritaItem item = list.get(position);
         holder.tvTitle.setText(item.getTitle());
         holder.tvDate.setText(item.getDateFormatted());
-        holder.tvViews.setText("👁️ " + item.getViews() + "x");
+        holder.tvViews.setText(item.getViews() + "x");
         if (item.getCategory() != null && !item.getCategory().isEmpty()) {
             holder.tvCategory.setText(item.getCategory().toUpperCase());
         } else {

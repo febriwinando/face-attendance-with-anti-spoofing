@@ -314,18 +314,24 @@ public class RekapAbsensActivity extends AppCompatActivity {
             tvJamRekapPulang.setText(data.getJam_pulang());
         }
 
-        if (data.getLat_masuk() == null || data.getLat_masuk().isEmpty()){
+        try {
+            if (data.getLat_masuk() == null || data.getLat_masuk().trim().isEmpty() || data.getLat_masuk().trim().equals("-")) {
+                tvLokasiAlamatLuarKantor.setText("-");
+            } else {
+                tvLokasiAlamatLuarKantor.setText(getAddress(RekapAbsensActivity.this, Double.parseDouble(data.getLat_masuk().trim()), Double.parseDouble(data.getLng_masuk().trim())));
+            }
+        } catch (Exception e) {
             tvLokasiAlamatLuarKantor.setText("-");
         }
-        else{
-            tvLokasiAlamatLuarKantor.setText(getAddress(RekapAbsensActivity.this, Double.parseDouble( data.getLat_masuk()), Double.parseDouble(data.getLng_masuk())));
-        }
 
-        if (data.getLat_pulang() == null || data.getLat_pulang().isEmpty()){
+        try {
+            if (data.getLat_pulang() == null || data.getLat_pulang().trim().isEmpty() || data.getLat_pulang().trim().equals("-")) {
+                tvLokasiAlamatLuarKantorPulang.setText("-");
+            } else {
+                tvLokasiAlamatLuarKantorPulang.setText(getAddress(RekapAbsensActivity.this, Double.parseDouble(data.getLat_pulang().trim()), Double.parseDouble(data.getLng_pulang().trim())));
+            }
+        } catch (Exception e) {
             tvLokasiAlamatLuarKantorPulang.setText("-");
-        }
-        else{
-            tvLokasiAlamatLuarKantorPulang.setText(getAddress(RekapAbsensActivity.this, Double.parseDouble( data.getLat_pulang()), Double.parseDouble(data.getLng_pulang())));
         }
 
         if (data.getValidasi_masuk() == 0){

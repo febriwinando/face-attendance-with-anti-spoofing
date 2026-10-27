@@ -73,16 +73,38 @@ public class BeritaItem {
     }
 
     public String getThumbnailUrl() {
-        if (thumbnailUrl != null && !thumbnailUrl.trim().isEmpty()) {
-            return thumbnailUrl;
+        String urlToUse = thumbnailUrl;
+        if (urlToUse == null || urlToUse.trim().isEmpty()) {
+            urlToUse = thumbnail;
         }
-        if (thumbnail != null && (thumbnail.startsWith("http://") || thumbnail.startsWith("https://"))) {
-            return thumbnail;
+
+        if (urlToUse == null || urlToUse.trim().isEmpty()) {
+            return null;
         }
-        if (thumbnail != null && !thumbnail.trim().isEmpty()) {
-            return "https://diskominfo.tebingtinggikota.go.id" + (thumbnail.startsWith("/") ? "" : "/") + thumbnail;
+
+        urlToUse = urlToUse.trim();
+
+        // Convert local IP addresses / HTTP to production HTTPS domain
+        if (urlToUse.contains("172.15.1.13") || urlToUse.contains("localhost") || urlToUse.contains("10.0.2.2")) {
+            urlToUse = urlToUse.replace("http://172.15.1.13:4321", "https://diskominfo.tebingtinggikota.go.id")
+                              .replace("http://172.15.1.13", "https://diskominfo.tebingtinggikota.go.id")
+                              .replace("http://localhost:4321", "https://diskominfo.tebingtinggikota.go.id")
+                              .replace("http://10.0.2.2:4321", "https://diskominfo.tebingtinggikota.go.id");
         }
-        return null;
+
+        if (urlToUse.startsWith("http://diskominfo.tebingtinggikota.go.id")) {
+            urlToUse = urlToUse.replace("http://diskominfo.tebingtinggikota.go.id", "https://diskominfo.tebingtinggikota.go.id");
+        }
+
+        if (urlToUse.startsWith("http://") || urlToUse.startsWith("https://")) {
+            return urlToUse;
+        }
+
+        if (urlToUse.startsWith("/")) {
+            return "https://diskominfo.tebingtinggikota.go.id" + urlToUse;
+        }
+
+        return "https://diskominfo.tebingtinggikota.go.id/" + urlToUse;
     }
 
     public String getCategory() {

@@ -283,10 +283,14 @@ public class MasukFragment extends Fragment {
 
         }
 
-        if (data.getLat_masuk() == null ){
+        try {
+            if (data.getLat_masuk() == null || data.getLat_masuk().trim().isEmpty() || data.getLat_masuk().trim().equals("-")) {
+                alamat.setText("-");
+            } else {
+                alamat.setText(getAddress(getActivity(), Double.parseDouble(data.getLat_masuk().trim()), Double.parseDouble(data.getLng_masuk().trim())));
+            }
+        } catch (Exception e) {
             alamat.setText("-");
-        }else{
-            alamat.setText(getAddress(getActivity(), Double.parseDouble( data.getLat_masuk()), Double.parseDouble(data.getLng_masuk())));
         }
 
         tolak.setOnClickListener(new View.OnClickListener() {
@@ -407,10 +411,14 @@ public class MasukFragment extends Fragment {
 
         }
 
-        if (data.getLat_masuk() == null ){
+        try {
+            if (data.getLat_masuk() == null || data.getLat_masuk().trim().isEmpty() || data.getLat_masuk().trim().equals("-")) {
+                alamat.setText("-");
+            } else {
+                alamat.setText(getAddress(getActivity(), Double.parseDouble(data.getLat_masuk().trim()), Double.parseDouble(data.getLng_masuk().trim())));
+            }
+        } catch (Exception e) {
             alamat.setText("-");
-        }else{
-            alamat.setText(getAddress(getActivity(), Double.parseDouble( data.getLat_masuk()), Double.parseDouble(data.getLng_masuk())));
         }
 
         tolak.setOnClickListener(new View.OnClickListener() {

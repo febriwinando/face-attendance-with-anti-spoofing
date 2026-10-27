@@ -8,6 +8,7 @@ import android.text.Html;
 import android.text.Spanned;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -22,15 +23,29 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
+import androidx.core.widget.NestedScrollView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 
+import org.json.JSONObject;
+
+import java.util.List;
+
+import go.pemkott.appsandroidmobiletebingtinggi.NewDashboard.DashboardVersiOne;
 import go.pemkott.appsandroidmobiletebingtinggi.R;
+import go.pemkott.appsandroidmobiletebingtinggi.adapter.berita.KomentarAdapter;
 import go.pemkott.appsandroidmobiletebingtinggi.api.HttpService;
 import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
 import go.pemkott.appsandroidmobiletebingtinggi.model.berita.BeritaItem;
 import go.pemkott.appsandroidmobiletebingtinggi.model.berita.BeritaResponse;
+import go.pemkott.appsandroidmobiletebingtinggi.model.berita.KomentarItem;
+import go.pemkott.appsandroidmobiletebingtinggi.model.berita.KomentarResponse;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -45,11 +60,19 @@ public class DetailBeritaActivity extends AppCompatActivity {
     private MaterialCardView cvBack, cvShare;
     private RelativeLayout rlDetailHeader;
     private TextView tvDetailCategory, tvDetailViews, tvDetailTitle, tvDetailAuthor, tvDetailDate, tvDetailSummary, tvDetailContent;
+    private TextView tvHeaderKomentar, tvEmptyKomentar;
+    private EditText etKomentarBaru;
+    private MaterialButton btnKirimKomentar;
+    private RecyclerView rvKomentar;
+    private KomentarAdapter komentarAdapter;
+
     private CardView cvSummary;
     private ProgressBar pbLoadingDetail;
+    private NestedScrollView nsvDetailContent;
 
     private HttpService httpService;
     private String slug, title, thumbnailUrl, webUrl;
+    private long beritaId = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,13 +104,48 @@ public class DetailBeritaActivity extends AppCompatActivity {
         cvSummary = findViewById(R.id.cvSummary);
         pbLoadingDetail = findViewById(R.id.pbLoadingDetail);
 
+        nsvDetailContent = findViewById(R.id.nsvDetailContent);
+        tvHeaderKomentar = findViewById(R.id.tvHeaderKomentar);
+        tvEmptyKomentar = findViewById(R.id.tvEmptyKomentar);
+        etKomentarBaru = findViewById(R.id.etKomentarBaru);
+        btnKirimKomentar = findViewById(R.id.btnKirimKomentar);
+        rvKomentar = findViewById(R.id.rvKomentar);
+
+        if (rvKomentar != null) {
+            rvKomentar.setLayoutManager(new LinearLayoutManager(this));
+            komentarAdapter = new KomentarAdapter();
+            rvKomentar.setAdapter(komentarAdapter);
+        }
+
+        if (btnKirimKomentar != null) {
+            btnKirimKomentar.setOnClickListener(v -> kirimKomentar());
+        }
+
+        if (etKomentarBaru != null) {
+            etKomentarBaru.setOnFocusChangeListener((v, hasFocus) -> {
+                if (hasFocus && nsvDetailContent != null) {
+                    nsvDetailContent.postDelayed(() -> nsvDetailContent.fullScroll(View.FOCUS_DOWN), 300);
+                }
+            });
+            etKomentarBaru.setOnClickListener(v -> {
+                if (nsvDetailContent != null) {
+                    nsvDetailContent.postDelayed(() -> nsvDetailContent.fullScroll(View.FOCUS_DOWN), 300);
+                }
+            });
+        }
+
         View clMainDetail = findViewById(R.id.clMainDetail);
         if (clMainDetail != null && rlDetailHeader != null) {
             ViewCompat.setOnApplyWindowInsetsListener(clMainDetail, (v, insets) -> {
                 int statusBarHeight = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
+                int bottomInsets = insets.getInsets(WindowInsetsCompat.Type.ime() | WindowInsetsCompat.Type.navigationBars()).bottom;
+
                 ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) rlDetailHeader.getLayoutParams();
                 params.topMargin = statusBarHeight;
                 rlDetailHeader.setLayoutParams(params);
+
+                clMainDetail.setPadding(0, 0, 0, bottomInsets);
+
                 return insets;
             });
         }
@@ -130,14 +188,11 @@ public class DetailBeritaActivity extends AppCompatActivity {
 
     private void loadBeritaDetail(String slug) {
         if (pbLoadingDetail != null) pbLoadingDetail.setVisibility(View.VISIBLE);
-
-        String localUrl = "http://172.15.1.13:4321/api/berita?slug=" + slug;
-        String publicUrl = "https://diskominfo.tebingtinggikota.go.id/api/berita?slug=" + slug;
-
-        fetchDetailFromUrl(localUrl, () -> fetchDetailFromUrl(publicUrl, null));
+        String newsUrl = "https://diskominfo.tebingtinggikota.go.id/api/berita?slug=" + slug;
+        fetchDetailFromUrl(newsUrl);
     }
 
-    private void fetchDetailFromUrl(String url, Runnable onFailureFallback) {
+    private void fetchDetailFromUrl(String url) {
         httpService.getBeritaDiskominfo(url).enqueue(new Callback<BeritaResponse>() {
             @Override
             public void onResponse(@NonNull Call<BeritaResponse> call, @NonNull Response<BeritaResponse> response) {
@@ -147,31 +202,29 @@ public class DetailBeritaActivity extends AppCompatActivity {
                     BeritaItem detail = response.body().getDetailItem();
                     if (detail != null) {
                         displayDetailData(detail);
-                    } else if (onFailureFallback != null) {
-                        onFailureFallback.run();
+                    } else {
+                        Toast.makeText(DetailBeritaActivity.this, "Gagal memuat detail berita", Toast.LENGTH_SHORT).show();
                     }
-                } else if (onFailureFallback != null) {
-                    onFailureFallback.run();
+                } else {
+                    Toast.makeText(DetailBeritaActivity.this, "Gagal memuat detail berita", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<BeritaResponse> call, @NonNull Throwable t) {
-                if (onFailureFallback != null) {
-                    onFailureFallback.run();
-                } else {
-                    if (pbLoadingDetail != null) pbLoadingDetail.setVisibility(View.GONE);
-                }
+                if (pbLoadingDetail != null) pbLoadingDetail.setVisibility(View.GONE);
+                Toast.makeText(DetailBeritaActivity.this, "Kendala koneksi ke server berita", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void displayDetailData(BeritaItem item) {
+        beritaId = item.getId();
         webUrl = item.getWebUrl();
         tvDetailTitle.setText(item.getTitle());
         tvDetailAuthor.setText(item.getAuthor());
         tvDetailDate.setText(item.getDateFormatted());
-        tvDetailViews.setText("👁️ " + item.getViews() + "x dilihat");
+        tvDetailViews.setText(item.getViews() + "x dilihat");
 
         if (item.getCategory() != null && !item.getCategory().isEmpty()) {
             tvDetailCategory.setText(item.getCategory().toUpperCase());
@@ -205,5 +258,109 @@ public class DetailBeritaActivity extends AppCompatActivity {
         } else {
             tvDetailContent.setText(item.getSummary());
         }
+
+        if (beritaId > 0) {
+            loadKomentar(beritaId);
+        }
+    }
+
+    private void loadKomentar(long bId) {
+        if (bId <= 0) return;
+        String commentsUrl = "https://diskominfo.tebingtinggikota.go.id/api/berita/komentar?beritaId=" + bId;
+        fetchKomentarFromUrl(commentsUrl);
+    }
+
+    private void fetchKomentarFromUrl(String url) {
+        httpService.getKomentarBerita(url).enqueue(new Callback<KomentarResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<KomentarResponse> call, @NonNull Response<KomentarResponse> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    List<KomentarItem> comments = response.body().getData();
+                    int total = response.body().getTotal();
+                    if (tvHeaderKomentar != null) {
+                        tvHeaderKomentar.setText("Komentar (" + total + ")");
+                    }
+                    if (comments != null && !comments.isEmpty()) {
+                        if (tvEmptyKomentar != null) tvEmptyKomentar.setVisibility(View.GONE);
+                        if (rvKomentar != null) rvKomentar.setVisibility(View.VISIBLE);
+                        if (komentarAdapter != null) komentarAdapter.setList(comments);
+                    } else {
+                        if (tvEmptyKomentar != null) tvEmptyKomentar.setVisibility(View.VISIBLE);
+                        if (rvKomentar != null) rvKomentar.setVisibility(View.GONE);
+                    }
+                } else {
+                    if (tvEmptyKomentar != null) tvEmptyKomentar.setVisibility(View.VISIBLE);
+                    if (rvKomentar != null) rvKomentar.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<KomentarResponse> call, @NonNull Throwable t) {
+                if (tvEmptyKomentar != null) tvEmptyKomentar.setVisibility(View.VISIBLE);
+                if (rvKomentar != null) rvKomentar.setVisibility(View.GONE);
+            }
+        });
+    }
+
+    private void kirimKomentar() {
+        if (beritaId <= 0) {
+            Toast.makeText(this, "ID Berita tidak valid", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String text = etKomentarBaru != null ? etKomentarBaru.getText().toString().trim() : "";
+        if (text.isEmpty()) {
+            Toast.makeText(this, "Isi komentar tidak boleh kosong", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String namaPegawai = DashboardVersiOne.sUsername != null && !DashboardVersiOne.sUsername.trim().isEmpty() ? DashboardVersiOne.sUsername : "Pegawai Pemko Tebing Tinggi";
+        String nipPegawai = DashboardVersiOne.sNip != null && !DashboardVersiOne.sNip.trim().isEmpty() ? DashboardVersiOne.sNip : "pegawai";
+        String emailPegawai = nipPegawai + "@tebingtinggikota.go.id";
+
+        try {
+            JSONObject json = new JSONObject();
+            json.put("beritaId", beritaId);
+            json.put("nama", namaPegawai);
+            json.put("email", emailPegawai);
+            json.put("kontak", "08123456789");
+            json.put("isi", text);
+
+            RequestBody body = RequestBody.create(
+                    json.toString(),
+                    MediaType.parse("application/json; charset=utf-8")
+            );
+
+            if (btnKirimKomentar != null) btnKirimKomentar.setEnabled(false);
+
+            String postCommentUrl = "https://diskominfo.tebingtinggikota.go.id/api/berita/komentar";
+            postKomentarFromUrl(postCommentUrl, body);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void postKomentarFromUrl(String url, RequestBody body) {
+        httpService.postKomentarBerita(url, body).enqueue(new Callback<KomentarResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<KomentarResponse> call, @NonNull Response<KomentarResponse> response) {
+                if (btnKirimKomentar != null) btnKirimKomentar.setEnabled(true);
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    Toast.makeText(DetailBeritaActivity.this, "Komentar berhasil dikirim!", Toast.LENGTH_SHORT).show();
+                    if (etKomentarBaru != null) etKomentarBaru.setText("");
+                    loadKomentar(beritaId);
+                    if (nsvDetailContent != null) {
+                        nsvDetailContent.postDelayed(() -> nsvDetailContent.fullScroll(View.FOCUS_DOWN), 400);
+                    }
+                } else {
+                    Toast.makeText(DetailBeritaActivity.this, "Gagal mengirim komentar", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<KomentarResponse> call, @NonNull Throwable t) {
+                if (btnKirimKomentar != null) btnKirimKomentar.setEnabled(true);
+                Toast.makeText(DetailBeritaActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

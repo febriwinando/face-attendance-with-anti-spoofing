@@ -93,6 +93,7 @@
 
     <!-- 3. Scrolling Content Area -->
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/nsvDetailContent"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:clipChildren="false"
@@ -201,10 +202,14 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignParentEnd="true"
+                            app:drawableStartCompat="@drawable/see"
+                            android:drawablePadding="4dp"
+                            app:drawableTint="@color/primary_brand"
+                            android:gravity="center_vertical"
                             android:fontFamily="sans-serif-bold"
                             android:textColor="@color/primary_brand"
                             android:textSize="12sp"
-                            tools:text="👁️ 152x dilihat" />
+                            tools:text="152x dilihat" />
                     </RelativeLayout>
 
                     <!-- Judul Berita -->
@@ -301,6 +306,99 @@
                         android:textColor="@color/text_primary"
                         android:textSize="15sp"
                         tools:text="Isi artikel berita lengkap disajikan secara native tanpa webview..." />
+
+                    <!-- Divider Komentar -->
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginVertical="20dp"
+                        android:background="@color/surface_variant" />
+
+                    <!-- Section Komentar Header -->
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:id="@+id/tvHeaderKomentar"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentStart="true"
+                            app:drawableStartCompat="@drawable/message_text"
+                            android:drawablePadding="8dp"
+                            app:drawableTint="@color/primary_brand"
+                            android:gravity="center_vertical"
+                            android:fontFamily="sans-serif-black"
+                            android:textColor="@color/text_primary"
+                            android:textSize="16sp"
+                            tools:text="Komentar (0)" />
+                    </RelativeLayout>
+
+                    <!-- RecyclerView Komentar -->
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvKomentar"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:nestedScrollingEnabled="false"
+                        tools:listitem="@layout/item_komentar_berita" />
+
+                    <!-- Empty Komentar Message -->
+                    <TextView
+                        android:id="@+id/tvEmptyKomentar"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:fontFamily="sans-serif"
+                        android:text="Belum ada komentar. Jadilah yang pertama memberikan komentar!"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="13sp"
+                        android:visibility="gone" />
+
+                    <!-- Input Komentar Baru -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        app:cardBackgroundColor="@color/surface_variant"
+                        app:cardCornerRadius="20dp"
+                        app:cardElevation="0dp"
+                        app:strokeWidth="0dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="12dp">
+
+                            <EditText
+                                android:id="@+id/etKomentarBaru"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@null"
+                                android:fontFamily="sans-serif"
+                                android:hint="Tulis komentar Anda di sini..."
+                                android:inputType="textMultiLine"
+                                android:maxLines="4"
+                                android:minLines="2"
+                                android:textColor="@color/text_primary"
+                                android:textColorHint="@color/text_hint"
+                                android:textSize="13sp" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnKirimKomentar"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="end"
+                                android:layout_marginTop="8dp"
+                                android:fontFamily="sans-serif-bold"
+                                android:text="Kirim Komentar"
+                                android:textColor="@color/white"
+                                android:textSize="12sp"
+                                app:backgroundTint="@color/primary_brand"
+                                app:cornerRadius="16dp" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
 
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>

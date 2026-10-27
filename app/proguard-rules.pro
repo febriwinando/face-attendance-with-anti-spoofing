@@ -56,10 +56,6 @@
 -keepattributes RuntimeVisibleAnnotations
 -keepattributes RuntimeVisibleParameterAnnotations
 
-# PyTorch & ML
--keep class org.pytorch.** { *; }
--dontwarn org.pytorch.**
-
 # TensorFlow Lite
 -keep class org.tensorflow.lite.** { *; }
 -dontwarn org.tensorflow.lite.**

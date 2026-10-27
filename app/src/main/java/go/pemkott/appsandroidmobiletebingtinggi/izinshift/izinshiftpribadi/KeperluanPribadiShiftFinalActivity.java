@@ -933,7 +933,11 @@ public class KeperluanPribadiShiftFinalActivity extends AppCompatActivity  imple
             SimpleDateFormat df = new SimpleDateFormat("HH:mm", localeID);
             Date d = df.parse(masuksift);
             cal.setTime(d);
-            cal.add(Calendar.MINUTE, -(Integer.parseInt(batasWaktu)));
+            int minutesToSubtract = 0;
+            if (batasWaktu != null && !batasWaktu.trim().isEmpty()) {
+                try { minutesToSubtract = Integer.parseInt(batasWaktu.trim()); } catch (NumberFormatException ignored) {}
+            }
+            cal.add(Calendar.MINUTE, -minutesToSubtract);
             String newTime = df.format(cal.getTime());
 
             tagingTime = SIMPLE_FORMAT_JAM_TAGING.parse(jamTaging);

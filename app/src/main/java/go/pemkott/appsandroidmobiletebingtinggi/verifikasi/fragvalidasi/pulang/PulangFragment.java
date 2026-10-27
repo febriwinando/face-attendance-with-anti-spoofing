@@ -295,10 +295,14 @@ public class PulangFragment extends Fragment {
             }
         }
 
-        if (data.getLat_pulang() == null ){
+        try {
+            if (data.getLat_pulang() == null || data.getLat_pulang().trim().isEmpty() || data.getLat_pulang().trim().equals("-")) {
+                alamat.setText("-");
+            } else {
+                alamat.setText(getAddress(getActivity(), Double.parseDouble(data.getLat_pulang().trim()), Double.parseDouble(data.getLng_pulang().trim())));
+            }
+        } catch (Exception e) {
             alamat.setText("-");
-        }else{
-            alamat.setText(getAddress(getActivity(), Double.parseDouble( data.getLat_pulang()), Double.parseDouble(data.getLng_pulang())));
         }
 
         tolak.setOnClickListener(new View.OnClickListener() {
@@ -417,10 +421,14 @@ public class PulangFragment extends Fragment {
             }
         }
 
-        if (data.getLat_pulang() == null ){
+        try {
+            if (data.getLat_pulang() == null || data.getLat_pulang().trim().isEmpty() || data.getLat_pulang().trim().equals("-")) {
+                alamat.setText("-");
+            } else {
+                alamat.setText(getAddress(getActivity(), Double.parseDouble(data.getLat_pulang().trim()), Double.parseDouble(data.getLng_pulang().trim())));
+            }
+        } catch (Exception e) {
             alamat.setText("-");
-        }else{
-            alamat.setText(getAddress(getActivity(), Double.parseDouble( data.getLat_pulang()), Double.parseDouble(data.getLng_pulang())));
         }
 
         tolak.setOnClickListener(new View.OnClickListener() {

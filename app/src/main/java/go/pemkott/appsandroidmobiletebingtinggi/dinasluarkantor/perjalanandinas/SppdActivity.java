@@ -48,6 +48,16 @@ public class SppdActivity extends AppCompatActivity {
         etkegiatanPdLainnya = findViewById(R.id.etKegiatanPdLainnya);
         etkegiatanPdLainnya.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
 
+        androidx.core.widget.NestedScrollView nsvSppd = findViewById(R.id.nsvSppd);
+        if (etkegiatanPdLainnya != null && nsvSppd != null) {
+            etkegiatanPdLainnya.setOnFocusChangeListener((v, hasFocus) -> {
+                if (hasFocus) {
+                    nsvSppd.postDelayed(() -> nsvSppd.fullScroll(android.view.View.FOCUS_DOWN), 300);
+                }
+            });
+            etkegiatanPdLainnya.setOnClickListener(v -> nsvSppd.postDelayed(() -> nsvSppd.fullScroll(android.view.View.FOCUS_DOWN), 300));
+        }
+
         findViewById(R.id.rlBackSppd).setOnClickListener(v -> finish());
 
         setupRecyclerData();

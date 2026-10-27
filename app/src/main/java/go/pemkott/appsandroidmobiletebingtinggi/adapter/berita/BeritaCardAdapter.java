@@ -47,7 +47,7 @@ public class BeritaCardAdapter extends RecyclerView.Adapter<BeritaCardAdapter.Vi
         BeritaItem item = list.get(position);
         holder.tvTitle.setText(item.getTitle());
         holder.tvDate.setText(item.getDateFormatted());
-        holder.tvViews.setText("👁️ " + item.getViews());
+        holder.tvViews.setText(String.valueOf(item.getViews()));
         if (item.getCategory() != null && !item.getCategory().isEmpty()) {
             holder.tvCategory.setText(item.getCategory().toUpperCase());
         } else {

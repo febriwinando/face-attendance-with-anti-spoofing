@@ -53,6 +53,16 @@ public class CutiShiftActivity extends AppCompatActivity {
         etkegiatanCutiLainnya = findViewById(R.id.etKegiatanCutiLainnya);
         etkegiatanCutiLainnya.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
 
+        androidx.core.widget.NestedScrollView nsvCutiShift = findViewById(R.id.nsvCutiShift);
+        if (etkegiatanCutiLainnya != null && nsvCutiShift != null) {
+            etkegiatanCutiLainnya.setOnFocusChangeListener((v, hasFocus) -> {
+                if (hasFocus) {
+                    nsvCutiShift.postDelayed(() -> nsvCutiShift.fullScroll(android.view.View.FOCUS_DOWN), 300);
+                }
+            });
+            etkegiatanCutiLainnya.setOnClickListener(v -> nsvCutiShift.postDelayed(() -> nsvCutiShift.fullScroll(android.view.View.FOCUS_DOWN), 300));
+        }
+
         findViewById(R.id.ivBack).setOnClickListener(v -> finish());
 
         listCuti.clear();

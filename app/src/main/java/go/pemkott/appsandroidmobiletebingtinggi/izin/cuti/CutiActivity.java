@@ -50,6 +50,16 @@ public class CutiActivity extends AppCompatActivity {
         etkegiatanCutiLainnya = findViewById(R.id.etKegiatanCutiLainnya);
         etkegiatanCutiLainnya.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
 
+        androidx.core.widget.NestedScrollView nsvCuti = findViewById(R.id.nsvCuti);
+        if (etkegiatanCutiLainnya != null && nsvCuti != null) {
+            etkegiatanCutiLainnya.setOnFocusChangeListener((v, hasFocus) -> {
+                if (hasFocus) {
+                    nsvCuti.postDelayed(() -> nsvCuti.fullScroll(android.view.View.FOCUS_DOWN), 300);
+                }
+            });
+            etkegiatanCutiLainnya.setOnClickListener(v -> nsvCuti.postDelayed(() -> nsvCuti.fullScroll(android.view.View.FOCUS_DOWN), 300));
+        }
+
         setupRecyclerData();
         showRecyclerList();
 

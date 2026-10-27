@@ -49,6 +49,16 @@ public class KeperluanPribadiActivity extends AppCompatActivity {
         rvKegiatanKp = findViewById(R.id.rvKegiatanKp);
         etkegiatanKpLainnya = findViewById(R.id.etKegiatanKpLainnya);
 
+        androidx.core.widget.NestedScrollView nsvKeperluanPribadi = findViewById(R.id.nsvKeperluanPribadi);
+        if (etkegiatanKpLainnya != null && nsvKeperluanPribadi != null) {
+            etkegiatanKpLainnya.setOnFocusChangeListener((v, hasFocus) -> {
+                if (hasFocus) {
+                    nsvKeperluanPribadi.postDelayed(() -> nsvKeperluanPribadi.fullScroll(android.view.View.FOCUS_DOWN), 300);
+                }
+            });
+            etkegiatanKpLainnya.setOnClickListener(v -> nsvKeperluanPribadi.postDelayed(() -> nsvKeperluanPribadi.fullScroll(android.view.View.FOCUS_DOWN), 300));
+        }
+
         findViewById(R.id.rlBackKP).setOnClickListener(v -> finish());
         
         setupRecyclerData();

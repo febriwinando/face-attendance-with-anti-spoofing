@@ -73,7 +73,7 @@ public class DialogBeritaKhusus {
         }
 
         if (tvHeadlineViews != null) {
-            tvHeadlineViews.setText("👁️ " + headlineItem.getViews() + "x");
+            tvHeadlineViews.setText(headlineItem.getViews() + "x");
         }
 
         String imgUrl = headlineItem.getThumbnailUrl();

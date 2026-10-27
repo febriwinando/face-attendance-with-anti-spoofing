@@ -107,10 +107,14 @@
                         android:id="@+id/tvHeadlineViews"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        app:drawableStartCompat="@drawable/see"
+                        android:drawablePadding="4dp"
+                        app:drawableTint="#E0E0E0"
+                        android:gravity="center_vertical"
                         android:fontFamily="sans-serif-medium"
                         android:textColor="#E0E0E0"
                         android:textSize="11sp"
-                        tools:text="👁️ 240x" />
+                        tools:text="240x" />
                 </LinearLayout>
 
             </RelativeLayout>

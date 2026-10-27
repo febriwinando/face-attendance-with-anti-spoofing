@@ -481,7 +481,7 @@ public interface HttpService {
             @Part MultipartBody.Part lampiran_pulang
     );
 
-    @GET("v2/admin/opd-list")
+    @GET("admin/opd-list")
     Call<go.pemkott.appsandroidmobiletebingtinggi.model.AdminOpdListResponse> getAdminOpdList();
 
     @GET("admin/pegawai/list")
@@ -492,6 +492,12 @@ public interface HttpService {
 
     @GET
     Call<go.pemkott.appsandroidmobiletebingtinggi.model.berita.BeritaResponse> getBeritaDiskominfo(@Url String url);
+
+    @GET
+    Call<go.pemkott.appsandroidmobiletebingtinggi.model.berita.KomentarResponse> getKomentarBerita(@Url String url);
+
+    @POST
+    Call<go.pemkott.appsandroidmobiletebingtinggi.model.berita.KomentarResponse> postKomentarBerita(@Url String url, @Body RequestBody body);
 
 }
 

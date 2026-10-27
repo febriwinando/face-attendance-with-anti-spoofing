@@ -46,6 +46,16 @@ public class TugasLapanganActivity extends AppCompatActivity {
         rvKegiatanPd = findViewById(R.id.rvKegiatanPd);
         etkegiatanLainnya = findViewById(R.id.etKegiatanLainnya);
 
+        androidx.core.widget.NestedScrollView nsvTugasLapangan = findViewById(R.id.nsvTugasLapangan);
+        if (etkegiatanLainnya != null && nsvTugasLapangan != null) {
+            etkegiatanLainnya.setOnFocusChangeListener((v, hasFocus) -> {
+                if (hasFocus) {
+                    nsvTugasLapangan.postDelayed(() -> nsvTugasLapangan.fullScroll(android.view.View.FOCUS_DOWN), 300);
+                }
+            });
+            etkegiatanLainnya.setOnClickListener(v -> nsvTugasLapangan.postDelayed(() -> nsvTugasLapangan.fullScroll(android.view.View.FOCUS_DOWN), 300));
+        }
+
         findViewById(R.id.rlBackTl).setOnClickListener(v -> finish());
         
         setupRecyclerData();

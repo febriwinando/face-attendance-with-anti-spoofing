@@ -820,7 +820,7 @@ public class AbsenShiftActivity extends AppCompatActivity implements OnMapReadyC
                             Date newDate = calendar.getTime();
                             String tanggalAbsenShiftMalam = SIMPLE_FORMAT_TANGGAL.format(newDate);
 
-                            if (tanggal.equals(tanggalAbsenShiftMalam)) {
+                            if (tanggal.equals(tanggalAbsenShiftMalam) || tanggal.equals(rbTanggal)) {
                                 if (tagingTime.getTime() > jamPulangDate.getTime()) {
                                     kirimdataPulangMalam("pulang", eselon, sEmployId, timetableid, rbTanggal, rbJam, rbPosisi, "hadir", rbLat, rbLng, rbKet, 0, pulangshift, rbValid);
                                 } else {

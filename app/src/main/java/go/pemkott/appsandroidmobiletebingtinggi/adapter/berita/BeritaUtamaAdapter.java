@@ -47,7 +47,7 @@ public class BeritaUtamaAdapter extends RecyclerView.Adapter<BeritaUtamaAdapter.
         BeritaItem item = list.get(position);
         holder.tvJudul.setText(item.getTitle());
         holder.tvTanggal.setText(item.getDateFormatted());
-        holder.tvViews.setText("👁️ " + item.getViews() + "x");
+        holder.tvViews.setText(item.getViews() + "x");
         if (item.getCategory() != null && !item.getCategory().isEmpty()) {
             holder.tvBadge.setText("⭐ " + item.getCategory().toUpperCase());
         } else {

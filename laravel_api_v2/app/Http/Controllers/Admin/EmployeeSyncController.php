@@ -65,7 +65,7 @@ class EmployeeSyncController extends Controller
     {
         try {
             $opds = DB::table('opds')
-                ->select('id', 'opd', 'singkatan')
+                ->select('id', 'opd', DB::raw("opd as singkatan"))
                 ->orderBy('opd', 'asc')
                 ->get();
 

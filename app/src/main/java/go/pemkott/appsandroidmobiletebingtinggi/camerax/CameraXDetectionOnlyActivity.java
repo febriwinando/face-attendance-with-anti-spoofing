@@ -169,7 +169,6 @@ public class CameraXDetectionOnlyActivity extends AppCompatActivity {
         generateChallengeQueue();
 
         try {
-            Utils.assetFilePath(this, "DeepPixBis_121_v5.ptl");
             antispofingDetector = TFLiteObjectDetectionAPIModel.create(
                     getAssets(),
                     TF_OD_API_MODEL_FILE,

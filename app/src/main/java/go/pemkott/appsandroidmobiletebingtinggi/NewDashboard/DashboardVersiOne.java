@@ -37,10 +37,12 @@ import androidx.core.content.ContextCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.bumptech.glide.signature.ObjectKey;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.bumptech.glide.Glide;
 import com.google.android.play.core.appupdate.AppUpdateManager;
@@ -115,6 +117,9 @@ public class DashboardVersiOne extends AppCompatActivity {
     ConstraintLayout clSectionBeritaDiskominfo;
     RecyclerView rvBeritaUtama, rvBeritaTerbaru, rvBeritaTrending;
     TextView tvLihatSemuaBerita;
+    MaterialCardView cvErrorBerita;
+    MaterialButton btnCobaLagiBerita;
+    View llBeritaUtamaHeader, llBeritaTerbaruHeader, llBeritaTrendingHeader;
     BeritaUtamaAdapter beritaUtamaAdapter;
     BeritaCardAdapter beritaTerbaruAdapter;
     BeritaCardAdapter beritaTrendingAdapter;
@@ -128,6 +133,9 @@ public class DashboardVersiOne extends AppCompatActivity {
 
     private final Handler clockHandler = new Handler(Looper.getMainLooper());
     private Runnable clockRunnable;
+
+    private final Handler beritaSliderHandler = new Handler(Looper.getMainLooper());
+    private Runnable beritaSliderRunnable;
 
     ProgressBar pgSingkronLokasi, pgSingkronKegiatan, pgSingkronJadwal;
     ImageView ivStatusJadwal, ivStatusLokasi, ivStatusKegiatan;
@@ -231,11 +239,22 @@ public class DashboardVersiOne extends AppCompatActivity {
         rvBeritaTerbaru = findViewById(R.id.rvBeritaTerbaru);
         rvBeritaTrending = findViewById(R.id.rvBeritaTrending);
         tvLihatSemuaBerita = findViewById(R.id.tvLihatSemuaBerita);
+        cvErrorBerita = findViewById(R.id.cvErrorBerita);
+        btnCobaLagiBerita = findViewById(R.id.btnCobaLagiBerita);
+        llBeritaUtamaHeader = findViewById(R.id.llBeritaUtamaHeader);
+        llBeritaTerbaruHeader = findViewById(R.id.llBeritaTerbaruHeader);
+        llBeritaTrendingHeader = findViewById(R.id.llBeritaTrendingHeader);
+
+        if (btnCobaLagiBerita != null) {
+            btnCobaLagiBerita.setOnClickListener(v -> loadBeritaDiskominfo());
+        }
 
         if (rvBeritaUtama != null) {
             rvBeritaUtama.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
             beritaUtamaAdapter = new BeritaUtamaAdapter(this);
             rvBeritaUtama.setAdapter(beritaUtamaAdapter);
+            PagerSnapHelper snapHelper = new PagerSnapHelper();
+            snapHelper.attachToRecyclerView(rvBeritaUtama);
         }
 
         if (rvBeritaTerbaru != null) {
@@ -451,13 +470,9 @@ public class DashboardVersiOne extends AppCompatActivity {
         breathingAnim.setDuration(1200);
         breathingAnim.start();
 
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                onResume();
-                loadBeritaDiskominfo();
-                swipeRefreshLayout.setRefreshing(false);
-            }
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            onResume();
+            loadBeritaDiskominfo();
         });
 
         initLiveClock();
@@ -465,16 +480,33 @@ public class DashboardVersiOne extends AppCompatActivity {
 
     private void loadBeritaDiskominfo() {
         if (httpService == null) return;
-        String localUrl = "http://172.15.1.13:4321/api/berita";
-        String publicUrl = "https://diskominfo.tebingtinggikota.go.id/api/berita";
-
-        fetchBeritaFromUrl(localUrl, () -> fetchBeritaFromUrl(publicUrl, null));
+        String newsUrl = "https://diskominfo.tebingtinggikota.go.id/api/berita";
+        fetchBeritaFromUrl(newsUrl);
     }
 
-    private void fetchBeritaFromUrl(String url, Runnable onFailureFallback) {
+    private void showBeritaContent(boolean showContent) {
+        if (clSectionBeritaDiskominfo != null) {
+            clSectionBeritaDiskominfo.setVisibility(View.VISIBLE);
+        }
+        if (cvErrorBerita != null) {
+            cvErrorBerita.setVisibility(showContent ? View.GONE : View.VISIBLE);
+        }
+        int contentVisibility = showContent ? View.VISIBLE : View.GONE;
+        if (llBeritaUtamaHeader != null) llBeritaUtamaHeader.setVisibility(contentVisibility);
+        if (rvBeritaUtama != null) rvBeritaUtama.setVisibility(contentVisibility);
+        if (llBeritaTerbaruHeader != null) llBeritaTerbaruHeader.setVisibility(contentVisibility);
+        if (rvBeritaTerbaru != null) rvBeritaTerbaru.setVisibility(contentVisibility);
+        if (llBeritaTrendingHeader != null) llBeritaTrendingHeader.setVisibility(contentVisibility);
+        if (rvBeritaTrending != null) rvBeritaTrending.setVisibility(contentVisibility);
+    }
+
+    private void fetchBeritaFromUrl(String url) {
         httpService.getBeritaDiskominfo(url).enqueue(new Callback<BeritaResponse>() {
             @Override
             public void onResponse(@NonNull Call<BeritaResponse> call, @NonNull Response<BeritaResponse> response) {
+                if (swipeRefreshLayout != null && swipeRefreshLayout.isRefreshing()) {
+                    swipeRefreshLayout.setRefreshing(false);
+                }
                 if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
                     BeritaData data = response.body().getData();
                     if (data != null) {
@@ -482,6 +514,9 @@ public class DashboardVersiOne extends AppCompatActivity {
                         if (data.getBeritaUtama() != null && !data.getBeritaUtama().isEmpty()) {
                             if (beritaUtamaAdapter != null) {
                                 beritaUtamaAdapter.setList(data.getBeritaUtama());
+                                if (data.getBeritaUtama().size() > 1) {
+                                    startBeritaAutoSlide();
+                                }
                             }
                             hasData = true;
                         }
@@ -497,8 +532,11 @@ public class DashboardVersiOne extends AppCompatActivity {
                             }
                             hasData = true;
                         }
-                        if (hasData && clSectionBeritaDiskominfo != null) {
-                            clSectionBeritaDiskominfo.setVisibility(View.VISIBLE);
+
+                        if (hasData) {
+                            showBeritaContent(true);
+                        } else {
+                            showBeritaContent(false);
                         }
 
                         if (!hasShownHeadlineModal && data.getBeritaUtama() != null && !data.getBeritaUtama().isEmpty()) {
@@ -506,18 +544,21 @@ public class DashboardVersiOne extends AppCompatActivity {
                             BeritaItem headline = data.getBeritaUtama().get(0);
                             go.pemkott.appsandroidmobiletebingtinggi.berita.DialogBeritaKhusus.showModal(DashboardVersiOne.this, headline);
                         }
+                    } else {
+                        showBeritaContent(false);
                     }
-                } else if (onFailureFallback != null) {
-                    onFailureFallback.run();
+                } else {
+                    showBeritaContent(false);
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<BeritaResponse> call, @NonNull Throwable t) {
                 Log.w("BeritaDiskominfo", "Gagal load dari " + url + ": " + t.getMessage());
-                if (onFailureFallback != null) {
-                    onFailureFallback.run();
+                if (swipeRefreshLayout != null && swipeRefreshLayout.isRefreshing()) {
+                    swipeRefreshLayout.setRefreshing(false);
                 }
+                showBeritaContent(false);
             }
         });
     }
@@ -836,6 +877,34 @@ public class DashboardVersiOne extends AppCompatActivity {
 
         // HAPUS else
     }
+    private void startBeritaAutoSlide() {
+        stopBeritaAutoSlide();
+        beritaSliderRunnable = new Runnable() {
+            @Override
+            public void run() {
+                if (rvBeritaUtama != null && beritaUtamaAdapter != null && beritaUtamaAdapter.getItemCount() > 1) {
+                    LinearLayoutManager lm = (LinearLayoutManager) rvBeritaUtama.getLayoutManager();
+                    if (lm != null) {
+                        int currentPos = lm.findFirstCompletelyVisibleItemPosition();
+                        if (currentPos == RecyclerView.NO_POSITION) {
+                            currentPos = lm.findFirstVisibleItemPosition();
+                        }
+                        int nextPos = (currentPos + 1) % beritaUtamaAdapter.getItemCount();
+                        rvBeritaUtama.smoothScrollToPosition(nextPos);
+                    }
+                    beritaSliderHandler.postDelayed(this, 4000);
+                }
+            }
+        };
+        beritaSliderHandler.postDelayed(beritaSliderRunnable, 4000);
+    }
+
+    private void stopBeritaAutoSlide() {
+        if (beritaSliderRunnable != null) {
+            beritaSliderHandler.removeCallbacks(beritaSliderRunnable);
+        }
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -848,8 +917,14 @@ public class DashboardVersiOne extends AppCompatActivity {
             dataValidasi(sVerifikator, sEmployee_id);
         }
 
+        loadBeritaDiskominfo();
+
         if (clockRunnable != null) {
             clockHandler.post(clockRunnable);
+        }
+
+        if (beritaUtamaAdapter != null && beritaUtamaAdapter.getItemCount() > 1) {
+            startBeritaAutoSlide();
         }
     }
 
@@ -859,6 +934,7 @@ public class DashboardVersiOne extends AppCompatActivity {
         if (clockRunnable != null) {
             clockHandler.removeCallbacks(clockRunnable);
         }
+        stopBeritaAutoSlide();
     }
 
     private void showSuperAdminMenuDialog() {

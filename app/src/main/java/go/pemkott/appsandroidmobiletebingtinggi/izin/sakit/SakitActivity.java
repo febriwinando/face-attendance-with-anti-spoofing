@@ -48,6 +48,16 @@ public class SakitActivity extends AppCompatActivity {
 
         rvKegiatanSakit = findViewById(R.id.rvKegiatanSakit);
         etkegiatanSakitLainnya = findViewById(R.id.etKegiatanSakitLainmya);
+
+        androidx.core.widget.NestedScrollView nsvSakit = findViewById(R.id.nsvSakit);
+        if (etkegiatanSakitLainnya != null && nsvSakit != null) {
+            etkegiatanSakitLainnya.setOnFocusChangeListener((v, hasFocus) -> {
+                if (hasFocus) {
+                    nsvSakit.postDelayed(() -> nsvSakit.fullScroll(android.view.View.FOCUS_DOWN), 300);
+                }
+            });
+            etkegiatanSakitLainnya.setOnClickListener(v -> nsvSakit.postDelayed(() -> nsvSakit.fullScroll(android.view.View.FOCUS_DOWN), 300));
+        }
         
         setupRecyclerData();
         

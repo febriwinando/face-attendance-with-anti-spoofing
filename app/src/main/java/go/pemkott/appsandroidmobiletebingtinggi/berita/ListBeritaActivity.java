@@ -146,10 +146,8 @@ public class ListBeritaActivity extends AppCompatActivity {
         if (pbLoadingList != null) pbLoadingList.setVisibility(View.VISIBLE);
         if (llEmptyState != null) llEmptyState.setVisibility(View.GONE);
 
-        String localUrl = buildNewsUrl(currentPage, query, true);
-        String publicUrl = buildNewsUrl(currentPage, query, false);
-
-        fetchPageFromUrl(localUrl, true, () -> fetchPageFromUrl(publicUrl, true, null));
+        String newsUrl = buildNewsUrl(currentPage, query);
+        fetchPageFromUrl(newsUrl, true);
     }
 
     private void loadMoreNews() {
@@ -159,14 +157,12 @@ public class ListBeritaActivity extends AppCompatActivity {
 
         if (pbLoadingList != null) pbLoadingList.setVisibility(View.VISIBLE);
 
-        String localUrl = buildNewsUrl(nextPage, currentQuery, true);
-        String publicUrl = buildNewsUrl(nextPage, currentQuery, false);
-
-        fetchPageFromUrl(localUrl, false, () -> fetchPageFromUrl(publicUrl, false, null));
+        String newsUrl = buildNewsUrl(nextPage, currentQuery);
+        fetchPageFromUrl(newsUrl, false);
     }
 
-    private String buildNewsUrl(int page, String query, boolean isLocal) {
-        String baseUrl = isLocal ? "http://172.15.1.13:4321/api/berita" : "https://diskominfo.tebingtinggikota.go.id/api/berita";
+    private String buildNewsUrl(int page, String query) {
+        String baseUrl = "https://diskominfo.tebingtinggikota.go.id/api/berita";
         if (query != null && !query.trim().isEmpty()) {
             return baseUrl + "?type=lainnya&q=" + query.trim() + "&page=" + page + "&limit=" + limit;
         } else {
@@ -174,7 +170,7 @@ public class ListBeritaActivity extends AppCompatActivity {
         }
     }
 
-    private void fetchPageFromUrl(String url, boolean isInitial, Runnable onFailureFallback) {
+    private void fetchPageFromUrl(String url, boolean isInitial) {
         httpService.getBeritaDiskominfo(url).enqueue(new Callback<BeritaResponse>() {
             @Override
             public void onResponse(@NonNull Call<BeritaResponse> call, @NonNull Response<BeritaResponse> response) {
@@ -207,8 +203,6 @@ public class ListBeritaActivity extends AppCompatActivity {
                         }
                         hasNextPage = false;
                     }
-                } else if (onFailureFallback != null) {
-                    onFailureFallback.run();
                 } else {
                     if (isInitial && llEmptyState != null) llEmptyState.setVisibility(View.VISIBLE);
                 }
@@ -217,12 +211,8 @@ public class ListBeritaActivity extends AppCompatActivity {
             @Override
             public void onFailure(@NonNull Call<BeritaResponse> call, @NonNull Throwable t) {
                 isLoading = false;
-                if (onFailureFallback != null) {
-                    onFailureFallback.run();
-                } else {
-                    if (pbLoadingList != null) pbLoadingList.setVisibility(View.GONE);
-                    if (isInitial && llEmptyState != null) llEmptyState.setVisibility(View.VISIBLE);
-                }
+                if (pbLoadingList != null) pbLoadingList.setVisibility(View.GONE);
+                if (isInitial && llEmptyState != null) llEmptyState.setVisibility(View.VISIBLE);
             }
         });
     }

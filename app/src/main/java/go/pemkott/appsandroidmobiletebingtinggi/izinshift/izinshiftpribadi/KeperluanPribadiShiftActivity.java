@@ -50,6 +50,16 @@ public class KeperluanPribadiShiftActivity extends AppCompatActivity {
 
         rvKegiatanKp = findViewById(R.id.rvKegiatanKp);
         etkegiatanKpLainnya = findViewById(R.id.etKegiatanKpLainnya);
+
+        androidx.core.widget.NestedScrollView nsvKeperluanPribadiShift = findViewById(R.id.nsvKeperluanPribadiShift);
+        if (etkegiatanKpLainnya != null && nsvKeperluanPribadiShift != null) {
+            etkegiatanKpLainnya.setOnFocusChangeListener((v, hasFocus) -> {
+                if (hasFocus) {
+                    nsvKeperluanPribadiShift.postDelayed(() -> nsvKeperluanPribadiShift.fullScroll(android.view.View.FOCUS_DOWN), 300);
+                }
+            });
+            etkegiatanKpLainnya.setOnClickListener(v -> nsvKeperluanPribadiShift.postDelayed(() -> nsvKeperluanPribadiShift.fullScroll(android.view.View.FOCUS_DOWN), 300));
+        }
         tvlistCheckedKp = findViewById(R.id.tvlistCheckedKp);
 
         findViewById(R.id.ivBack).setOnClickListener(v -> finish());

@@ -84,9 +84,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
+                    app:drawableStartCompat="@drawable/see"
+                    android:drawablePadding="4dp"
+                    app:drawableTint="@color/text_secondary"
+                    android:gravity="center_vertical"
                     android:textColor="@color/text_secondary"
                     android:textSize="11sp"
-                    tools:text="👁️ 89" />
+                    tools:text="89" />
             </RelativeLayout>
         </LinearLayout>
     </LinearLayout>
