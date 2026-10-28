@@ -499,6 +499,34 @@ public interface HttpService {
     @POST
     Call<go.pemkott.appsandroidmobiletebingtinggi.model.berita.KomentarResponse> postKomentarBerita(@Url String url, @Body RequestBody body);
 
+    @GET("chat/contacts")
+    Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatContactResponse> getChatContacts(
+            @Query("search") String search,
+            @Query("opd_id") String opdId
+    );
+
+    @GET("chat/messages")
+    Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatMessageResponse> getChatMessages(@Query("chat_type") String chatType, @Query("target_id") long targetId);
+
+    @FormUrlEncoded
+    @POST("chat/send")
+    Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.SendMessageResponse> sendChatMessage(
+            @Field("chat_type") String chatType,
+            @Field("target_id") long targetId,
+            @Field("message") String message
+    );
+
+    @GET("chat/privacy")
+    Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatPrivacyResponse> getChatPrivacySettings();
+
+    @FormUrlEncoded
+    @POST("chat/privacy")
+    Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatPrivacyResponse> saveChatPrivacySettings(
+            @Field("privacy_mode") String privacyMode,
+            @Field("allowed_employee_ids") String allowedEmployeeIdsJson,
+            @Field("allowed_opd_ids") String allowedOpdIdsJson
+    );
+
 }
 
 //package go.pemkott.appsandroidmobiletebingtinggi.api;

@@ -55,6 +55,21 @@
                         tools:text="Febri Winando" />
                 </LinearLayout>
 
+                <ImageView
+                    android:id="@+id/ivChatDashboard"
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
+                    android:layout_toStartOf="@id/ciUser"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="12dp"
+                    android:padding="9dp"
+                    android:src="@drawable/message_text"
+                    app:tint="#2563EB"
+                    android:background="@drawable/chat_input_bg"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:contentDescription="Chat"/>
+
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/ciUser"
                     android:layout_width="52dp"

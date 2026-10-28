@@ -133,6 +133,21 @@ xmlns:dist="http://schemas.android.com/apk/distribution">
         android:exported="false"
         android:configChanges="orientation|screenSize|screenLayout|keyboardHidden" />
     <activity
+        android:name=".chat.ChatListActivity"
+        android:exported="false"
+        android:windowSoftInputMode="adjustResize"
+        android:configChanges="orientation|screenSize|screenLayout|keyboardHidden" />
+    <activity
+        android:name=".chat.ChatRoomActivity"
+        android:exported="false"
+        android:windowSoftInputMode="adjustResize"
+        android:configChanges="orientation|screenSize|screenLayout|keyboardHidden" />
+    <activity
+        android:name=".chat.ChatPrivacyActivity"
+        android:exported="false"
+        android:windowSoftInputMode="adjustResize"
+        android:configChanges="orientation|screenSize|screenLayout|keyboardHidden" />
+    <activity
         android:name=".izinshift.izinshiftsakit.SakitShiftActivity"
         android:windowSoftInputMode="adjustResize"
         android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"

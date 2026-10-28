@@ -294,6 +294,13 @@ public class DashboardVersiOne extends AppCompatActivity {
             }
         });
 
+        ImageView ivChatDashboard = findViewById(R.id.ivChatDashboard);
+        if (ivChatDashboard != null) {
+            ivChatDashboard.setOnClickListener(v -> {
+                startActivity(new Intent(DashboardVersiOne.this, go.pemkott.appsandroidmobiletebingtinggi.chat.ChatListActivity.class));
+            });
+        }
+
         cvKehadiran.setOnClickListener(new View.OnClickListener() {
             private long lastClickTime = 0;
             @Override
