@@ -124,7 +124,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         // 6. Tampilkan notifikasi visual jika judul ada
         if (title != null) {
-            showNotification(title, body != null ? body : "");
+            showNotification(title, body != null ? body : "", dataMap);
         }
     }
 
@@ -364,10 +364,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
 
 
-    private void showNotification(String title, String body) {
-        // Sync logic is now handled in executeSyncLogic called from onMessageReceived
-        // We only use this method for visual notification to avoid duplicate sync calls
-        
+    private void showNotification(String title, String body, Map<String, String> dataMap) {
         String channelId = "default_channel";
         NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -380,10 +377,42 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             manager.createNotificationChannel(channel);
         }
 
+        android.content.Intent intent;
+        String type = dataMap != null ? dataMap.get("type") : null;
+        if ("chat".equals(type) || (title != null && title.toLowerCase().contains("pesan"))) {
+            String targetIdStr = dataMap != null ? dataMap.get("target_id") : null;
+            String chatType = dataMap != null ? dataMap.get("chat_type") : "personal";
+            long targetId = 0;
+            try {
+                if (targetIdStr != null) targetId = Long.parseLong(targetIdStr);
+            } catch (Exception ignored) {}
+
+            if (targetId > 0) {
+                intent = new android.content.Intent(this, go.pemkott.appsandroidmobiletebingtinggi.chat.ChatRoomActivity.class);
+                intent.putExtra("target_id", targetId);
+                intent.putExtra("chat_type", chatType != null ? chatType : "personal");
+                intent.putExtra("title", title != null ? title : "Pesan Baru");
+            } else {
+                intent = new android.content.Intent(this, go.pemkott.appsandroidmobiletebingtinggi.chat.ChatListActivity.class);
+            }
+        } else {
+            intent = new android.content.Intent(this, DashboardVersiOne.class);
+        }
+
+        intent.addFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP | android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        int flags = android.app.PendingIntent.FLAG_UPDATE_CURRENT;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            flags |= android.app.PendingIntent.FLAG_IMMUTABLE;
+        }
+
+        android.app.PendingIntent pendingIntent = android.app.PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent, flags);
+
         Notification notification = new NotificationCompat.Builder(this, channelId)
                 .setContentTitle(title)
                 .setContentText(body)
                 .setSmallIcon(R.drawable.logoabsensilogin)
+                .setContentIntent(pendingIntent)
                 .setAutoCancel(true)
                 .build();
 

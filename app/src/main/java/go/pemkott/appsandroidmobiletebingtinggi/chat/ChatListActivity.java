@@ -3,14 +3,13 @@ package go.pemkott.appsandroidmobiletebingtinggi.chat;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,11 +18,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.adapter.chat.ChatContactAdapter;
+import go.pemkott.appsandroidmobiletebingtinggi.adapter.chat.MultiSelectItem;
+import go.pemkott.appsandroidmobiletebingtinggi.adapter.chat.SearchableMultiSelectAdapter;
 import go.pemkott.appsandroidmobiletebingtinggi.api.HttpService;
 import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
 import go.pemkott.appsandroidmobiletebingtinggi.database.ChatLocalDatabase;
@@ -38,9 +43,11 @@ public class ChatListActivity extends AppCompatActivity implements ChatContactAd
 
     private RecyclerView rvChatList;
     private ProgressBar pbChatList;
-    private TextView tvEmptyChatList;
+    private LinearLayout llEmptyChatState;
     private EditText etSearchChat;
-    private Spinner spOpdFilter;
+    private MaterialCardView cvOpdFilterSelector;
+    private TextView tvSelectedOpdFilterName;
+    private ExtendedFloatingActionButton btnNewChatFab;
 
     private ChatContactAdapter adapter;
     private ChatLocalDatabase chatDb;
@@ -63,33 +70,55 @@ public class ChatListActivity extends AppCompatActivity implements ChatContactAd
         ImageView ivPrivacy = findViewById(R.id.ivPrivacyChatList);
 
         etSearchChat = findViewById(R.id.etSearchChat);
-        spOpdFilter = findViewById(R.id.spOpdFilter);
+        cvOpdFilterSelector = findViewById(R.id.cvOpdFilterSelector);
+        tvSelectedOpdFilterName = findViewById(R.id.tvSelectedOpdFilterName);
         rvChatList = findViewById(R.id.rvChatList);
         pbChatList = findViewById(R.id.pbChatList);
-        tvEmptyChatList = findViewById(R.id.tvEmptyChatList);
+        llEmptyChatState = findViewById(R.id.llEmptyChatState);
+        btnNewChatFab = findViewById(R.id.btnNewChatFab);
+
+        MaterialCardView cvMonitoringBanner = findViewById(R.id.cvMonitoringBanner);
+
+        go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager session = new go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager(this);
+        go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper dbHelper = new go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper(this);
+
+        String myNip = "";
+        try {
+            android.database.Cursor cursor = dbHelper.getDataEmployee(session.getEmployeeId());
+            if (cursor != null && cursor.moveToFirst()) {
+                int nipIdx = cursor.getColumnIndex("nip");
+                if (nipIdx >= 0) myNip = cursor.getString(nipIdx);
+            }
+            if (cursor != null) cursor.close();
+        } catch (Exception ignored) {}
+
+        if (myNip == null || myNip.isEmpty()) {
+            myNip = session.getUsername();
+        }
+
+        boolean isMonitoringUser = "199402092020121005".equals(myNip)
+                || (myNip != null && myNip.contains("199402092020121005"))
+                || "199402092020121005".equals(session.getPegawaiId());
+
+        if (isMonitoringUser && cvMonitoringBanner != null) {
+            cvMonitoringBanner.setVisibility(View.VISIBLE);
+            cvMonitoringBanner.setOnClickListener(v -> startActivity(new Intent(this, ChatMonitoringActivity.class)));
+        }
 
         ivBack.setOnClickListener(v -> finish());
-        ivRefresh.setOnClickListener(v -> fetchContactsFromNetwork());
+        ivRefresh.setOnClickListener(v -> {
+            go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.showTopBanner(
+                    this, "Menyinkronkan data chat dari server...", go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.Type.SYNC
+            );
+            fetchContactsFromNetwork();
+        });
         ivPrivacy.setOnClickListener(v -> startActivity(new Intent(this, ChatPrivacyActivity.class)));
+        btnNewChatFab.setOnClickListener(v -> startActivity(new Intent(this, ChatContactPickerActivity.class)));
+        cvOpdFilterSelector.setOnClickListener(v -> showOpdFilterBottomSheet());
 
         rvChatList.setLayoutManager(new LinearLayoutManager(this));
         adapter = new ChatContactAdapter(this, new ArrayList<>(), this);
         rvChatList.setAdapter(adapter);
-
-        spOpdFilter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (position == 0) {
-                    selectedOpdId = "";
-                } else if (position - 1 < listOpd.size()) {
-                    selectedOpdId = listOpd.get(position - 1).getId();
-                }
-                filterList();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
-        });
 
         etSearchChat.addTextChangedListener(new TextWatcher() {
             @Override
@@ -104,15 +133,139 @@ public class ChatListActivity extends AppCompatActivity implements ChatContactAd
             public void afterTextChanged(Editable s) {}
         });
 
-        // 1. Load local cached contacts instantly
+        // 1. Load local cached conversations instantly (No automatic background network call)
         loadLocalContacts();
+        if (listPegawai == null || listPegawai.isEmpty()) {
+            fetchContactsFromNetwork();
+        }
 
-        // 2. Fetch fresh contacts in background
-        fetchContactsFromNetwork();
+        // 2. Tampilkan dialog persetujuan Syarat & Ketentuan jika belum disetujui
+        checkAndShowChatTermsDialog();
+    }
+
+    private void checkAndShowChatTermsDialog() {
+        go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager session = new go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager(this);
+        if (session.isChatTermsAccepted()) {
+            return;
+        }
+
+        android.app.Dialog dialog = new android.app.Dialog(this, R.style.DialogStyle);
+        dialog.setContentView(R.layout.dialog_chat_terms);
+        dialog.setCancelable(false);
+
+        android.widget.CheckBox cbAgree = dialog.findViewById(R.id.cbAgreeTerms);
+        View btnDecline = dialog.findViewById(R.id.btnDeclineTerms);
+        View btnAccept = dialog.findViewById(R.id.btnAcceptTerms);
+
+        if (cbAgree != null && btnAccept != null && btnDecline != null) {
+            cbAgree.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                btnAccept.setEnabled(isChecked);
+            });
+
+            btnDecline.setOnClickListener(v -> {
+                dialog.dismiss();
+                finish();
+            });
+
+            btnAccept.setOnClickListener(v -> {
+                session.setChatTermsAccepted(true);
+                dialog.dismiss();
+                go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.showTopBanner(
+                        this, "Persetujuan Syarat & Ketentuan berhasil disimpan", go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.Type.SUCCESS
+                );
+            });
+        }
+
+        dialog.show();
+    }
+
+    private void showOpdFilterBottomSheet() {
+        if (listOpd == null || listOpd.isEmpty()) {
+            Toast.makeText(this, "Daftar Unit Kerja / OPD belum tersedia", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        BottomSheetDialog dialog = new BottomSheetDialog(this);
+        View view = getLayoutInflater().inflate(R.layout.dialog_searchable_multi_select, null);
+        dialog.setContentView(view);
+
+        TextView tvTitle = view.findViewById(R.id.tvDialogTitle);
+        TextView tvCount = view.findViewById(R.id.tvDialogSelectedCount);
+        ImageView ivClose = view.findViewById(R.id.ivCloseDialog);
+        EditText etSearch = view.findViewById(R.id.etSearchDialog);
+        TextView tvSelectAll = view.findViewById(R.id.tvSelectAll);
+        TextView tvClearAll = view.findViewById(R.id.tvClearAll);
+        RecyclerView rv = view.findViewById(R.id.rvMultiSelect);
+        View btnApply = view.findViewById(R.id.btnApplySelection);
+
+        tvTitle.setText("Filter Berdasarkan Unit Kerja / OPD");
+        tvCount.setVisibility(View.GONE);
+        tvSelectAll.setText("Tampilkan Semua OPD");
+        tvClearAll.setVisibility(View.GONE);
+
+        List<MultiSelectItem> items = new ArrayList<>();
+        items.add(new MultiSelectItem(0, "Semua Unit Kerja / OPD", "Tampilkan seluruh riwayat percakapan", null, selectedOpdId.isEmpty()));
+
+        for (OpdModel o : listOpd) {
+            long opdId = 0;
+            try {
+                opdId = Long.parseLong(o.getId());
+            } catch (Exception ignored) {}
+            if (opdId > 0) {
+                boolean isSelected = String.valueOf(opdId).equals(selectedOpdId);
+                items.add(new MultiSelectItem(opdId, o.getOpd(), "Unit Kerja / OPD", null, isSelected));
+            }
+        }
+
+        SearchableMultiSelectAdapter adapter = new SearchableMultiSelectAdapter(this, items, true, count -> {});
+        rv.setLayoutManager(new LinearLayoutManager(this));
+        rv.setAdapter(adapter);
+
+        etSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                adapter.filter(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
+        tvSelectAll.setOnClickListener(v -> {
+            selectedOpdId = "";
+            tvSelectedOpdFilterName.setText("Semua Unit Kerja / OPD");
+            filterList();
+            dialog.dismiss();
+        });
+
+        ivClose.setOnClickListener(v -> dialog.dismiss());
+
+        btnApply.setOnClickListener(v -> {
+            List<Long> selectedIds = adapter.getSelectedIds();
+            if (selectedIds.isEmpty() || selectedIds.contains(0L)) {
+                selectedOpdId = "";
+                tvSelectedOpdFilterName.setText("Semua Unit Kerja / OPD");
+            } else {
+                selectedOpdId = String.valueOf(selectedIds.get(0));
+                for (OpdModel o : listOpd) {
+                    if (o.getId().equals(selectedOpdId)) {
+                        tvSelectedOpdFilterName.setText(o.getOpd());
+                        break;
+                    }
+                }
+            }
+            filterList();
+            dialog.dismiss();
+        });
+
+        dialog.show();
     }
 
     private void loadLocalContacts() {
-        List<ChatContact> localContacts = chatDb.getContacts();
+        List<ChatContact> localContacts = chatDb.getRecentConversations();
         if (localContacts != null && !localContacts.isEmpty()) {
             listPegawai = localContacts;
             filterList();
@@ -125,7 +278,7 @@ public class ChatListActivity extends AppCompatActivity implements ChatContactAd
         }
 
         HttpService api = RetroClient.getInstance(this).getApi2();
-        api.getChatContacts("", "").enqueue(new Callback<ChatContactResponse>() {
+        api.getChatContacts("", "", 1).enqueue(new Callback<ChatContactResponse>() {
             @Override
             public void onResponse(Call<ChatContactResponse> call, Response<ChatContactResponse> response) {
                 pbChatList.setVisibility(View.GONE);
@@ -133,14 +286,11 @@ public class ChatListActivity extends AppCompatActivity implements ChatContactAd
                     listPegawai = response.body().getPegawai();
                     listOpd = response.body().getOpdList();
 
-                    // Persist contacts into local SQLite
                     chatDb.saveContacts(listPegawai);
-
-                    setupOpdSpinner();
                     filterList();
                 } else {
                     if (listPegawai.isEmpty()) {
-                        tvEmptyChatList.setVisibility(View.VISIBLE);
+                        llEmptyChatState.setVisibility(View.VISIBLE);
                     }
                 }
             }
@@ -149,32 +299,19 @@ public class ChatListActivity extends AppCompatActivity implements ChatContactAd
             public void onFailure(Call<ChatContactResponse> call, Throwable t) {
                 pbChatList.setVisibility(View.GONE);
                 if (listPegawai.isEmpty()) {
-                    tvEmptyChatList.setVisibility(View.VISIBLE);
+                    llEmptyChatState.setVisibility(View.VISIBLE);
                     Toast.makeText(ChatListActivity.this, "Koneksi gagal: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
         });
     }
 
-    private void setupOpdSpinner() {
-        List<String> spinnerItems = new ArrayList<>();
-        spinnerItems.add("Semua Unit Kerja / OPD");
-        for (OpdModel o : listOpd) {
-            spinnerItems.add(o.getOpd());
-        }
-
-        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(
-                this, android.R.layout.simple_spinner_dropdown_item, spinnerItems
-        );
-        spOpdFilter.setAdapter(spinnerAdapter);
-    }
-
     private void showList(List<ChatContact> contacts) {
         if (contacts == null || contacts.isEmpty()) {
-            tvEmptyChatList.setVisibility(View.VISIBLE);
+            llEmptyChatState.setVisibility(View.VISIBLE);
             adapter.setList(new ArrayList<>());
         } else {
-            tvEmptyChatList.setVisibility(View.GONE);
+            llEmptyChatState.setVisibility(View.GONE);
             adapter.setList(contacts);
         }
     }
@@ -184,19 +321,22 @@ public class ChatListActivity extends AppCompatActivity implements ChatContactAd
         List<ChatContact> filtered = new ArrayList<>();
 
         for (ChatContact c : listPegawai) {
-            // OPD Filter
+            if (TextUtils.isEmpty(c.getLastMessage())) {
+                continue;
+            }
+
             if (!selectedOpdId.isEmpty()) {
                 if (c.getOpdId() != Long.parseLong(selectedOpdId)) {
                     continue;
                 }
             }
 
-            // Search Filter
             if (!query.isEmpty()) {
                 boolean matchName = c.getTitle().toLowerCase().contains(query);
                 boolean matchSub = c.getSubtitle().toLowerCase().contains(query);
                 boolean matchNip = c.getNip().contains(query);
-                if (!matchName && !matchSub && !matchNip) {
+                boolean matchLast = c.getLastMessage().toLowerCase().contains(query);
+                if (!matchName && !matchSub && !matchNip && !matchLast) {
                     continue;
                 }
             }
@@ -221,6 +361,6 @@ public class ChatListActivity extends AppCompatActivity implements ChatContactAd
     @Override
     protected void onResume() {
         super.onResume();
-        fetchContactsFromNetwork();
+        loadLocalContacts();
     }
 }

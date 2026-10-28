@@ -851,6 +851,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public Integer deleteAllDataUser(){
+        try {
+            new ChatLocalDatabase(mContext).clearAllLocalChatData();
+        } catch (Exception ignored) {}
         SQLiteDatabase db = this.getWritableDatabase();
         return db.delete( TABLE_USER, null, null );
     }

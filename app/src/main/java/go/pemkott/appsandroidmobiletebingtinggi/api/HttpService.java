@@ -502,7 +502,8 @@ public interface HttpService {
     @GET("chat/contacts")
     Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatContactResponse> getChatContacts(
             @Query("search") String search,
-            @Query("opd_id") String opdId
+            @Query("opd_id") String opdId,
+            @Query("active_only") int activeOnly
     );
 
     @GET("chat/messages")
@@ -513,7 +514,20 @@ public interface HttpService {
     Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.SendMessageResponse> sendChatMessage(
             @Field("chat_type") String chatType,
             @Field("target_id") long targetId,
-            @Field("message") String message
+            @Field("message") String message,
+            @Field("msg_type") String msgType,
+            @Field("reply_to_id") String replyToId
+    );
+
+    @Multipart
+    @POST("chat/send")
+    Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.SendMessageResponse> sendChatMessageMultipart(
+            @Part("chat_type") RequestBody chatType,
+            @Part("target_id") RequestBody targetId,
+            @Part("message") RequestBody message,
+            @Part("msg_type") RequestBody msgType,
+            @Part("reply_to_id") RequestBody replyToId,
+            @Part MultipartBody.Part file
     );
 
     @GET("chat/privacy")
@@ -525,6 +539,12 @@ public interface HttpService {
             @Field("privacy_mode") String privacyMode,
             @Field("allowed_employee_ids") String allowedEmployeeIdsJson,
             @Field("allowed_opd_ids") String allowedOpdIdsJson
+    );
+
+    @GET("chat/monitoring-conversations")
+    Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatMonitoringResponse> getMonitoringConversations(
+            @Query("search") String search,
+            @Query("opd_id") String opdId
     );
 
 }

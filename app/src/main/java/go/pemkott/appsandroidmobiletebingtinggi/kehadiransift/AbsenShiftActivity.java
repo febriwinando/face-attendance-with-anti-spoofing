@@ -1531,23 +1531,29 @@ statusAbsen = true;
         public void onLocationResult(@NonNull LocationResult locationResult) {
             super.onLocationResult(locationResult);
 
-            boolean isMock = mockLocationsEnabled || locationResult.getLastLocation().isFromMockProvider();
+            Location location = locationResult.getLastLocation();
+            if (location == null) return;
+
+            latGMap = location.getLatitude();
+            lngGMap = location.getLongitude();
+
+            boolean isMock = mockLocationsEnabled || go.pemkott.appsandroidmobiletebingtinggi.utils.FakeGpsDetector.isFakeGps(AbsenShiftActivity.this, location);
             if (isMock){
                 mock_location = 1;
                 rbFakeGPS ="1";
             }else{
                 mock_location = 0;
+                rbFakeGPS ="0";
             }
+
+            if (tvAkurasi != null) {
+                tvAkurasi.setText(String.format(localeID, "± %.0f m", location.getAccuracy()));
+            }
+
+            updateRealtimeInfo(location);
+
             if (map != null) {
-                plotMarkers(locationResult.getLastLocation());
-            }
-
-            if (locationResult.getLastLocation() != null) {
-                if (tvAkurasi != null) {
-                    tvAkurasi.setText(String.format(localeID, "± %.0f m", locationResult.getLastLocation().getAccuracy()));
-                }
-
-                updateRealtimeInfo(locationResult.getLastLocation());
+                plotMarkers(location);
             }
         }
     };

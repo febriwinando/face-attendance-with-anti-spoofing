@@ -330,6 +330,11 @@ public class LoginActivity extends AppCompatActivity {
                         session.saveVerifikator(sVerifikator);
                         etPassword.setText("");
 
+                        // Hapus sisa cache chat dari akun sebelumnya agar data bersih & privat
+                        try {
+                            new go.pemkott.appsandroidmobiletebingtinggi.database.ChatLocalDatabase(LoginActivity.this).clearAllLocalChatData();
+                        } catch (Exception ignored) {}
+
                         if ("1".equals(sActive)) {
                             databaseHelper.insertLog(sEmployee_id, "-", SIMPLE_FORMAT_TANGGAL.format(new Date()), "Melakukan Login Aplikasi", "Login");
 

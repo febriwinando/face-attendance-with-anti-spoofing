@@ -26,10 +26,6 @@ public class SessionManager {
         return prefs.getString(KEY_TOKEN, null);
     }
 
-//    public void clearSession() {
-//        prefs.edit().remove(KEY_TOKEN).apply();
-//    }
-
     // -------------------------
     // PEGAWAI ID
     // -------------------------
@@ -57,8 +53,8 @@ public class SessionManager {
     }
 
     // -------------------------
-// FCM TOKEN
-// -------------------------
+    // FCM TOKEN
+    // -------------------------
     public void saveFcmToken(String token) {
         prefs.edit().putString(KEY_FCM_TOKEN, token).apply();
     }
@@ -66,6 +62,7 @@ public class SessionManager {
     public String getFcmToken() {
         return prefs.getString(KEY_FCM_TOKEN, null);
     }
+
     public void saveEmployeeId(String token) {
         prefs.edit().putString(KEY_EMPLOYEE_ID, token).apply();
     }
@@ -113,6 +110,17 @@ public class SessionManager {
 
     public String getVerifikator() {
         return prefs.getString("KEY_VERIFIKATOR", "");
+    }
+
+    // -------------------------
+    // CHAT TERMS AGREEMENT
+    // -------------------------
+    public void setChatTermsAccepted(boolean accepted) {
+        prefs.edit().putBoolean("KEY_CHAT_TERMS_ACCEPTED", accepted).apply();
+    }
+
+    public boolean isChatTermsAccepted() {
+        return prefs.getBoolean("KEY_CHAT_TERMS_ACCEPTED", false);
     }
 
     // -------------------------

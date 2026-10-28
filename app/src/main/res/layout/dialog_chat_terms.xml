@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="20dp"
+    app:cardBackgroundColor="@color/surface_main"
+    app:cardCornerRadius="24dp"
+    app:cardElevation="8dp"
+    app:strokeWidth="0dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <!-- Header Title & Icon -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp">
+
+            <ImageView
+                android:id="@+id/ivTermsIcon"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="12dp"
+                android:background="@drawable/backgoundovalabuabu"
+                android:backgroundTint="#12008DDA"
+                android:padding="8dp"
+                app:srcCompat="@drawable/ic_document_scanner"
+                app:tint="@color/biru"
+                android:contentDescription="Ikon Persyaratan" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@+id/ivTermsIcon"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Syarat &amp; Ketentuan"
+                    android:textColor="@color/text_primary"
+                    android:textSize="18sp"
+                    android:fontFamily="sans-serif-black" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="Layanan Chat Kedinasan Pemko Tebing Tinggi"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="12sp"
+                    android:fontFamily="sans-serif" />
+            </LinearLayout>
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#E2E8F0"
+            android:layout_marginBottom="14dp" />
+
+        <!-- Scrollable Terms Content -->
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
+            android:scrollbars="vertical"
+            android:fadeScrollbars="false">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_secondary"
+                android:textSize="13sp"
+                android:lineSpacingExtra="4dp"
+                android:fontFamily="sans-serif"
+                android:text="1. TUJUAN PENGGUNAAN:\nLayanan Chat ini disediakan secara resmi sebagai sarana komunikasi, koordinasi tugas, dan konsultasi pekerjaan antar pegawai di lingkungan Pemerintah Kota Tebing Tinggi.\n\n2. LARANGAN KONTEN:\nDilarang keras mengirimkan pesan, foto, dokumen, atau konten yang mengandung SARA, pornografi, ujaran kebencian, informasi rahasia tanpa wewenang, atau materi komersial pribadi.\n\n3. MONITORY &amp; PENGAWASAN KEDINASAN:\nDemi menjaga ketertiban, keamanan data, dan integritas Aparatur Sipil Negara (ASN/Non-ASN), seluruh riwayat komunikasi pada sistem ini berada dalam pengawasan Petugas Monitoring Resmi Pemko Tebing Tinggi.\n\n4. ENKRIPSI &amp; KEAMANAN DATA:\nData pesan disimpan secara terenkripsi dan terlindungi sesuai dengan ketentuan kerahasiaan informasi publik dan peraturan kepegawaian yang berlaku." />
+        </ScrollView>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#E2E8F0"
+            android:layout_marginTop="14dp"
+            android:layout_marginBottom="12dp" />
+
+        <!-- Agreement Checkbox -->
+        <CheckBox
+            android:id="@+id/cbAgreeTerms"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Saya telah membaca, memahami, dan menyetujui seluruh Syarat &amp; Ketentuan Layanan Chat Kedinasan ini."
+            android:textColor="@color/text_primary"
+            android:textSize="12sp"
+            android:fontFamily="sans-serif-medium" />
+
+        <!-- Action Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal"
+            android:gravity="end">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDeclineTerms"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tolak &amp; Keluar"
+                android:textColor="@color/merah"
+                android:textSize="13sp"
+                android:fontFamily="sans-serif-bold"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAcceptTerms"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:enabled="false"
+                android:text="Setuju &amp; Lanjutkan"
+                android:textColor="@color/putih"
+                android:textSize="13sp"
+                android:fontFamily="sans-serif-bold"
+                app:cornerRadius="12dp"
+                android:backgroundTint="@color/biru"/>
+        </LinearLayout>
+
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

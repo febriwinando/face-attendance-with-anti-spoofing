@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="12dp">
+
+    <!-- Circular Badge Frame -->
+    <FrameLayout
+        android:id="@+id/flBannerBadge"
+        android:layout_width="38dp"
+        android:layout_height="38dp"
+        android:background="@drawable/backgoundovalputih"
+        android:backgroundTint="#DBEAFE">
+
+        <ImageView
+            android:id="@+id/ivBannerIcon"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_sync2"
+            app:tint="@color/biru"
+            android:visibility="gone"
+            android:contentDescription="Ikon Notifikasi"/>
+
+        <ProgressBar
+            android:id="@+id/pbBannerSync"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_gravity="center"
+            android:indeterminate="true"
+            android:indeterminateTint="@color/biru"/>
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginStart="12dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvBannerMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Penyinkronan Data Chat..."
+            android:textColor="@color/text_primary"
+            android:textSize="13sp"
+            android:fontFamily="sans-serif-black"
+            android:letterSpacing="0.01"/>
+
+        <TextView
+            android:id="@+id/tvBannerSubtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="Layanan Chat Absensi Tebing Tinggi"
+            android:textColor="@color/text_secondary"
+            android:textSize="11sp"
+            android:fontFamily="sans-serif"/>
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/ivCloseBanner"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="8dp"
+        android:src="@drawable/one_close"
+        app:tint="@color/text_hint"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        android:contentDescription="Tutup Notifikasi"/>
+
+</LinearLayout>

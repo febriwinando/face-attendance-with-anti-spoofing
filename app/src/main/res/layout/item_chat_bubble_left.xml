@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -15,8 +16,7 @@
         android:textSize="11sp"
         android:textStyle="bold"
         android:layout_marginBottom="2dp"
-        android:visibility="gone"
-        android:text="Pengirim"/>
+        android:visibility="gone"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -24,25 +24,122 @@
         android:maxWidth="280dp"
         android:background="@drawable/chat_bubble_left_bg"
         android:orientation="vertical"
-        android:paddingHorizontal="14dp"
-        android:paddingVertical="10dp">
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="8dp">
 
+        <!-- Quote / Reply Container -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cvReplyContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="6dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="0dp"
+            app:strokeColor="#CBD5E1"
+            app:strokeWidth="1dp"
+            app:cardBackgroundColor="#F1F5F9"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="8dp">
+
+                <TextView
+                    android:id="@+id/tvReplySender"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#2563EB"
+                    android:textSize="11sp"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/tvReplyMessage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#475569"
+                    android:textSize="11sp"
+                    android:maxLines="2"
+                    android:ellipsize="end"/>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Image / Media Attachment Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cvImageContainer"
+            android:layout_width="230dp"
+            android:layout_height="180dp"
+            android:layout_marginBottom="6dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="1dp"
+            app:strokeWidth="0dp"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/ivMessageImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:contentDescription="Foto Media"/>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Document Attachment Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cvDocumentContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="6dp"
+            app:cardCornerRadius="10dp"
+            app:cardElevation="0dp"
+            app:strokeColor="#CBD5E1"
+            app:strokeWidth="1dp"
+            app:cardBackgroundColor="#F8FAFC"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:id="@+id/llDocumentContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="10dp">
+
+                <ImageView
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:src="@drawable/ic_document_scanner"
+                    app:tint="#DC2626"
+                    android:contentDescription="Dokumen"/>
+
+                <TextView
+                    android:id="@+id/tvDocumentName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:textColor="#1E293B"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:maxLines="1"
+                    android:ellipsize="middle"/>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Text Message -->
         <TextView
             android:id="@+id/tvMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="#0F172A"
-            android:textSize="14sp"
-            android:text="Pesan masuk..."/>
+            android:textSize="14sp"/>
 
         <TextView
             android:id="@+id/tvTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="2dp"
             android:textColor="#94A3B8"
-            android:textSize="10sp"
-            android:text="10:45"/>
+            android:textSize="10sp"/>
     </LinearLayout>
 </LinearLayout>

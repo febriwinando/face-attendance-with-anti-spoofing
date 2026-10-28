@@ -3,14 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F8FAFC"
+    android:background="@color/background_main"
     android:orientation="vertical">
 
-    <!-- Top Header Bar -->
+    <!-- Top Header Bar (Absensi Brand Color) -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#2563EB"
+        android:background="@color/biru"
         android:orientation="horizontal"
         android:paddingHorizontal="16dp"
         android:paddingTop="36dp"
@@ -22,7 +22,7 @@
             android:layout_width="28dp"
             android:layout_height="28dp"
             android:src="@drawable/ic_arrow_back"
-            app:tint="#FFFFFF"
+            app:tint="@color/putih"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
@@ -34,9 +34,9 @@
             android:layout_weight="1"
             android:layout_marginStart="16dp"
             android:text="Pesan &amp; Diskusi"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/putih"
             android:textSize="18sp"
-            android:textStyle="bold"/>
+            android:fontFamily="sans-serif-black"/>
 
         <ImageView
             android:id="@+id/ivPrivacyChatList"
@@ -44,7 +44,7 @@
             android:layout_height="24dp"
             android:layout_marginEnd="12dp"
             android:src="@drawable/ic_privasi"
-            app:tint="#FFFFFF"
+            app:tint="@color/putih"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
@@ -55,12 +55,77 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/ic_sync2"
-            app:tint="#FFFFFF"
+            app:tint="@color/putih"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
             android:contentDescription="Refresh"/>
     </LinearLayout>
+
+    <!-- Special Monitoring Banner Button (Visible only for Monitoring NIP 199402092020121005) -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cvMonitoringBanner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="12dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="2dp"
+        app:strokeWidth="1dp"
+        app:strokeColor="#C7D2FE"
+        app:cardBackgroundColor="#EEF2FF"
+        android:visibility="gone"
+        android:clickable="true"
+        android:focusable="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="12dp">
+
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/ic_document_scanner"
+                app:tint="#3730A3"
+                android:contentDescription="Monitoring"/>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="12dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Halaman Monitoring Sistem"
+                    android:textColor="#3730A3"
+                    android:textSize="14sp"
+                    android:fontFamily="sans-serif-black"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="Pantau seluruh riwayat obrolan pegawai Pemko"
+                    android:textColor="#4338CA"
+                    android:textSize="12sp"
+                    android:fontFamily="sans-serif"/>
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_arrow_back"
+                android:rotation="180"
+                app:tint="#3730A3"
+                android:contentDescription="Buka Monitoring"/>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
     <!-- Search Box -->
     <com.google.android.material.card.MaterialCardView
@@ -84,7 +149,8 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:src="@drawable/ic_search_location"
-                app:tint="#94A3B8"/>
+                app:tint="@color/text_hint"
+                android:contentDescription="Cari"/>
 
             <EditText
                 android:id="@+id/etSearchChat"
@@ -92,23 +158,27 @@
                 android:layout_height="match_parent"
                 android:layout_marginStart="10dp"
                 android:background="@null"
-                android:hint="Cari pegawai atau unit kerja..."
-                android:textColor="#1E293B"
-                android:textColorHint="#94A3B8"
+                android:hint="Cari riwayat percakapan..."
+                android:textColor="@color/text_primary"
+                android:textColorHint="@color/text_hint"
                 android:textSize="14sp"
+                android:fontFamily="sans-serif"
                 android:inputType="text"/>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- OPD Filter Dropdown Container -->
+    <!-- OPD Filter Selector Card -->
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cvOpdFilterSelector"
         android:layout_width="match_parent"
         android:layout_height="44dp"
         android:layout_marginHorizontal="16dp"
         android:layout_marginBottom="8dp"
         app:cardCornerRadius="22dp"
         app:cardElevation="1dp"
-        app:strokeWidth="0dp">
+        app:strokeWidth="0dp"
+        android:clickable="true"
+        android:focusable="true">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -121,15 +191,28 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:src="@drawable/ic_locasi_office"
-                app:tint="#2563EB"
+                app:tint="@color/biru"
                 android:contentDescription="Unit Kerja / OPD"/>
 
-            <Spinner
-                android:id="@+id/spOpdFilter"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+            <TextView
+                android:id="@+id/tvSelectedOpdFilterName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:layout_marginStart="8dp"
-                android:spinnerMode="dropdown"/>
+                android:text="Semua Unit Kerja / OPD"
+                android:textColor="@color/text_primary"
+                android:textSize="13sp"
+                android:fontFamily="sans-serif-medium"
+                android:maxLines="1"
+                android:ellipsize="end"/>
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:src="@drawable/ic_arrow_down"
+                app:tint="@color/text_hint"
+                android:contentDescription="Pilih OPD"/>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
@@ -150,14 +233,58 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"/>
 
-        <TextView
-            android:id="@+id/tvEmptyChatList"
-            android:layout_width="wrap_content"
+        <!-- Formal Empty State -->
+        <LinearLayout
+            android:id="@+id/llEmptyChatState"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:textColor="#94A3B8"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingHorizontal="32dp"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:src="@drawable/ic_mail"
+                app:tint="@color/text_hint"
+                android:contentDescription="Pesan Kosong"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Belum Ada Riwayat Percakapan"
+                android:textColor="@color/text_primary"
+                android:textSize="16sp"
+                android:fontFamily="sans-serif-black"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:gravity="center"
+                android:text="Anda belum pernah melakukan komunikasi. Tekan tombol 'Mulai Chat Baru' di bawah untuk mengirim pesan ke rekan kerja."
+                android:textColor="@color/text_secondary"
+                android:textSize="13sp"
+                android:fontFamily="sans-serif"/>
+        </LinearLayout>
+
+        <!-- Start New Chat FAB Button -->
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/btnNewChatFab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="20dp"
+            android:text="Mulai Chat Baru"
+            android:textColor="@color/putih"
             android:textSize="14sp"
-            android:visibility="gone"
-            android:text="Tidak ada kontak ditemukan"/>
+            android:fontFamily="sans-serif-bold"
+            app:icon="@drawable/ic_baseline_add"
+            app:iconTint="@color/putih"
+            android:backgroundTint="@color/biru"/>
+
     </FrameLayout>
 </LinearLayout>

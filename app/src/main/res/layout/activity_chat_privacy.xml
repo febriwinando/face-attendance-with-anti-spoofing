@@ -37,6 +37,17 @@
             android:textColor="#FFFFFF"
             android:textSize="18sp"
             android:textStyle="bold"/>
+
+        <ImageView
+            android:id="@+id/ivSyncPrivacy"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_sync2"
+            app:tint="#FFFFFF"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="Sinkronkan Privasi"/>
     </LinearLayout>
 
     <ScrollView

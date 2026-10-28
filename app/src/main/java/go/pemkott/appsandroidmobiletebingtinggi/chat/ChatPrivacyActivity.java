@@ -63,7 +63,14 @@ public class ChatPrivacyActivity extends AppCompatActivity {
         chatDb = new ChatLocalDatabase(this);
 
         ImageView ivBack = findViewById(R.id.ivBackChatPrivacy);
+        ImageView ivSyncPrivacy = findViewById(R.id.ivSyncPrivacy);
         ivBack.setOnClickListener(v -> finish());
+        ivSyncPrivacy.setOnClickListener(v -> {
+            go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.showTopBanner(
+                    this, "Menyinkronkan privasi dari server...", go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.Type.SYNC
+            );
+            fetchPrivacyFromNetwork();
+        });
 
         rgPrivacyMode = findViewById(R.id.rgPrivacyMode);
         rbPublic = findViewById(R.id.rbPublic);
@@ -94,7 +101,7 @@ public class ChatPrivacyActivity extends AppCompatActivity {
 
     private void loadContactsList() {
         HttpService api = RetroClient.getInstance(this).getApi2();
-        api.getChatContacts("", "").enqueue(new Callback<ChatContactResponse>() {
+        api.getChatContacts("", "", 0).enqueue(new Callback<ChatContactResponse>() {
             @Override
             public void onResponse(Call<ChatContactResponse> call, Response<ChatContactResponse> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().isStatus()) {
@@ -344,17 +351,23 @@ public class ChatPrivacyActivity extends AppCompatActivity {
                                 gson.toJson(updated.getAllowedOpdIds())
                         );
                     }
-                    Toast.makeText(ChatPrivacyActivity.this, "Pengaturan privasi kontak berhasil disimpan!", Toast.LENGTH_SHORT).show();
+                    go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.showTopBanner(
+                            ChatPrivacyActivity.this, "Pengaturan privasi kontak berhasil disimpan!", go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.Type.SUCCESS
+                    );
                     finish();
                 } else {
-                    Toast.makeText(ChatPrivacyActivity.this, "Gagal menyimpan pengaturan privasi ke server", Toast.LENGTH_SHORT).show();
+                    go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.showTopBanner(
+                            ChatPrivacyActivity.this, "Gagal menyimpan pengaturan privasi ke server", go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.Type.ERROR
+                    );
                 }
             }
 
             @Override
             public void onFailure(Call<ChatPrivacyResponse> call, Throwable t) {
                 btnSavePrivacy.setEnabled(true);
-                Toast.makeText(ChatPrivacyActivity.this, "Tersimpan secara lokal. Koneksi gagal: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.showTopBanner(
+                        ChatPrivacyActivity.this, "Tersimpan lokal (Offline)", go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.Type.SYNC
+                );
                 finish();
             }
         });

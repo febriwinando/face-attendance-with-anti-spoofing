@@ -503,6 +503,7 @@ public class ProfileActivity extends AppCompatActivity {
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 databaseHelper.deleteAllDataUser();
                 databaseHelper.deleteDataTableInfoClearUser(sEmployee_id);
+                new go.pemkott.appsandroidmobiletebingtinggi.database.ChatLocalDatabase(ProfileActivity.this).clearAllLocalChatData();
                 session.saveToken(null);
                 session.savePegawaiId(null);
                 session.saveEmployeeId(null);
@@ -528,6 +529,7 @@ public class ProfileActivity extends AppCompatActivity {
                 Toast.makeText(ProfileActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                 // Tetap logout lokal jika gagal koneksi
                 databaseHelper.deleteAllDataUser();
+                new go.pemkott.appsandroidmobiletebingtinggi.database.ChatLocalDatabase(ProfileActivity.this).clearAllLocalChatData();
                 session.saveToken(null);
                 session.savePegawaiId(null);
                 session.saveEmployeeId(null);

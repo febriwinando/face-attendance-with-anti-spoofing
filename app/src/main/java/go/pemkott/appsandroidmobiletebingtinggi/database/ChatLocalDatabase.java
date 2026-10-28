@@ -20,7 +20,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatPrivacyResponse;
 public class ChatLocalDatabase extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "chat_local.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 
     // Contacts Table
     private static final String TABLE_CONTACTS = "chat_contacts";
@@ -44,6 +44,12 @@ public class ChatLocalDatabase extends SQLiteOpenHelper {
     private static final String COL_MSG_OPD_ID = "opd_id";
     private static final String COL_MSG_CHAT_TYPE = "chat_type";
     private static final String COL_MESSAGE = "message";
+    private static final String COL_MSG_TYPE = "msg_type";
+    private static final String COL_FILE_URL = "file_url";
+    private static final String COL_FILE_NAME = "file_name";
+    private static final String COL_REPLY_TO_ID = "reply_to_id";
+    private static final String COL_REPLY_SENDER_NAME = "reply_to_sender_name";
+    private static final String COL_REPLY_MESSAGE = "reply_to_message";
     private static final String COL_IS_ME = "is_me";
     private static final String COL_IS_READ = "is_read";
     private static final String COL_CREATED_AT = "created_at_formatted";
@@ -82,6 +88,12 @@ public class ChatLocalDatabase extends SQLiteOpenHelper {
                 COL_MSG_OPD_ID + " INTEGER, " +
                 COL_MSG_CHAT_TYPE + " TEXT, " +
                 COL_MESSAGE + " TEXT, " +
+                COL_MSG_TYPE + " TEXT, " +
+                COL_FILE_URL + " TEXT, " +
+                COL_FILE_NAME + " TEXT, " +
+                COL_REPLY_TO_ID + " INTEGER, " +
+                COL_REPLY_SENDER_NAME + " TEXT, " +
+                COL_REPLY_MESSAGE + " TEXT, " +
                 COL_IS_ME + " INTEGER, " +
                 COL_IS_READ + " INTEGER, " +
                 COL_CREATED_AT + " TEXT)";
@@ -104,6 +116,13 @@ public class ChatLocalDatabase extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_MESSAGES);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PRIVACY);
         onCreate(db);
+    }
+
+    public void clearAllLocalChatData() {
+        SQLiteDatabase db = getWritableDatabase();
+        db.execSQL("DELETE FROM " + TABLE_CONTACTS);
+        db.execSQL("DELETE FROM " + TABLE_MESSAGES);
+        db.execSQL("DELETE FROM " + TABLE_PRIVACY);
     }
 
     // ==========================================
@@ -202,6 +221,34 @@ public class ChatLocalDatabase extends SQLiteOpenHelper {
         return list;
     }
 
+    public List<ChatContact> getRecentConversations() {
+        List<ChatContact> list = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery(
+                "SELECT * FROM " + TABLE_CONTACTS +
+                " WHERE " + COL_LAST_MESSAGE + " IS NOT NULL AND " + COL_LAST_MESSAGE + " != ''" +
+                " ORDER BY " + COL_TARGET_ID + " DESC", null);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                ChatContact c = new ChatContact();
+                c.setTargetId(cursor.getLong(cursor.getColumnIndexOrThrow(COL_TARGET_ID)));
+                c.setOpdId(cursor.getLong(cursor.getColumnIndexOrThrow(COL_OPD_ID)));
+                c.setChatType(cursor.getString(cursor.getColumnIndexOrThrow(COL_CHAT_TYPE)));
+                c.setTitle(cursor.getString(cursor.getColumnIndexOrThrow(COL_TITLE)));
+                c.setSubtitle(cursor.getString(cursor.getColumnIndexOrThrow(COL_SUBTITLE)));
+                c.setNip(cursor.getString(cursor.getColumnIndexOrThrow(COL_NIP)));
+                c.setAvatarUrl(cursor.getString(cursor.getColumnIndexOrThrow(COL_AVATAR_URL)));
+                c.setLastMessage(cursor.getString(cursor.getColumnIndexOrThrow(COL_LAST_MESSAGE)));
+                c.setLastTime(cursor.getString(cursor.getColumnIndexOrThrow(COL_LAST_TIME)));
+                c.setUnreadCount(cursor.getInt(cursor.getColumnIndexOrThrow(COL_UNREAD_COUNT)));
+                list.add(c);
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+        return list;
+    }
+
     // ==========================================
     // MESSAGES LOCAL OPERATIONS
     // ==========================================
@@ -219,6 +266,12 @@ public class ChatLocalDatabase extends SQLiteOpenHelper {
                 cv.put(COL_MSG_OPD_ID, m.getOpdId());
                 cv.put(COL_MSG_CHAT_TYPE, m.getChatType());
                 cv.put(COL_MESSAGE, m.getMessage());
+                cv.put(COL_MSG_TYPE, m.getMsgType());
+                cv.put(COL_FILE_URL, m.getFileUrl());
+                cv.put(COL_FILE_NAME, m.getFileName());
+                cv.put(COL_REPLY_TO_ID, m.getReplyToId());
+                cv.put(COL_REPLY_SENDER_NAME, m.getReplyToSenderName());
+                cv.put(COL_REPLY_MESSAGE, m.getReplyToMessage());
                 cv.put(COL_IS_ME, m.isMe() ? 1 : 0);
                 cv.put(COL_IS_READ, m.isRead() ? 1 : 0);
                 cv.put(COL_CREATED_AT, m.getCreatedAtFormatted());
@@ -242,6 +295,12 @@ public class ChatLocalDatabase extends SQLiteOpenHelper {
         cv.put(COL_MSG_OPD_ID, m.getOpdId());
         cv.put(COL_MSG_CHAT_TYPE, m.getChatType());
         cv.put(COL_MESSAGE, m.getMessage());
+        cv.put(COL_MSG_TYPE, m.getMsgType());
+        cv.put(COL_FILE_URL, m.getFileUrl());
+        cv.put(COL_FILE_NAME, m.getFileName());
+        cv.put(COL_REPLY_TO_ID, m.getReplyToId());
+        cv.put(COL_REPLY_SENDER_NAME, m.getReplyToSenderName());
+        cv.put(COL_REPLY_MESSAGE, m.getReplyToMessage());
         cv.put(COL_IS_ME, m.isMe() ? 1 : 0);
         cv.put(COL_IS_READ, m.isRead() ? 1 : 0);
         cv.put(COL_CREATED_AT, m.getCreatedAtFormatted());
@@ -275,6 +334,12 @@ public class ChatLocalDatabase extends SQLiteOpenHelper {
                 m.setOpdId(cursor.getLong(cursor.getColumnIndexOrThrow(COL_MSG_OPD_ID)));
                 m.setChatType(cursor.getString(cursor.getColumnIndexOrThrow(COL_MSG_CHAT_TYPE)));
                 m.setMessage(cursor.getString(cursor.getColumnIndexOrThrow(COL_MESSAGE)));
+                m.setMsgType(cursor.getString(cursor.getColumnIndexOrThrow(COL_MSG_TYPE)));
+                m.setFileUrl(cursor.getString(cursor.getColumnIndexOrThrow(COL_FILE_URL)));
+                m.setFileName(cursor.getString(cursor.getColumnIndexOrThrow(COL_FILE_NAME)));
+                m.setReplyToId(cursor.getLong(cursor.getColumnIndexOrThrow(COL_REPLY_TO_ID)));
+                m.setReplyToSenderName(cursor.getString(cursor.getColumnIndexOrThrow(COL_REPLY_SENDER_NAME)));
+                m.setReplyToMessage(cursor.getString(cursor.getColumnIndexOrThrow(COL_REPLY_MESSAGE)));
                 m.setMe(cursor.getInt(cursor.getColumnIndexOrThrow(COL_IS_ME)) == 1);
                 m.setRead(cursor.getInt(cursor.getColumnIndexOrThrow(COL_IS_READ)) == 1);
                 m.setCreatedAtFormatted(cursor.getString(cursor.getColumnIndexOrThrow(COL_CREATED_AT)));

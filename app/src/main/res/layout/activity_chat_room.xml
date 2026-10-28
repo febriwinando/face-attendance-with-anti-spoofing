@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/llChatRoomRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F8FAFC"
+    android:background="@color/background_main"
     android:orientation="vertical">
 
     <!-- Header Bar -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#2563EB"
+        android:background="@color/biru"
         android:orientation="horizontal"
         android:paddingHorizontal="16dp"
         android:paddingTop="36dp"
@@ -22,7 +23,7 @@
             android:layout_width="28dp"
             android:layout_height="28dp"
             android:src="@drawable/ic_arrow_back"
-            app:tint="#FFFFFF"
+            app:tint="@color/putih"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
@@ -46,22 +47,21 @@
                 android:id="@+id/tvRoomTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/putih"
                 android:textSize="16sp"
-                android:textStyle="bold"
+                android:fontFamily="sans-serif-black"
                 android:maxLines="1"
-                android:ellipsize="end"
-                android:text="Nama Pegawai / OPD"/>
+                android:ellipsize="end"/>
 
             <TextView
                 android:id="@+id/tvRoomSubtitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="#93C5FD"
+                android:textColor="#DDF2FD"
                 android:textSize="12sp"
+                android:fontFamily="sans-serif"
                 android:maxLines="1"
-                android:ellipsize="end"
-                android:text="Sub Keterangan"/>
+                android:ellipsize="end"/>
         </LinearLayout>
 
         <ImageView
@@ -69,7 +69,7 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/ic_sync2"
-            app:tint="#FFFFFF"
+            app:tint="@color/putih"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
@@ -96,16 +96,78 @@
             android:layout_gravity="center"/>
     </FrameLayout>
 
-    <!-- Input Bar -->
+    <!-- Reply Preview Container -->
     <LinearLayout
+        android:id="@+id/llReplyPreview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#FFFFFF"
-        android:elevation="4dp"
+        android:orientation="horizontal"
         android:gravity="center_vertical"
+        android:background="#E2E8F0"
+        android:paddingHorizontal="14dp"
+        android:paddingVertical="8dp"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvReplyPreviewSender"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/biru"
+                android:textSize="12sp"
+                android:fontFamily="sans-serif-bold"/>
+
+            <TextView
+                android:id="@+id/tvReplyPreviewText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                android:maxLines="1"
+                android:ellipsize="end"/>
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/ivCancelReply"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_close"
+            app:tint="@color/text_secondary"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="Batal Balas"/>
+    </LinearLayout>
+
+    <!-- Input Bar -->
+    <LinearLayout
+        android:id="@+id/llInputContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/surface_main"
+        android:elevation="4dp"
+        android:gravity="bottom"
         android:orientation="horizontal"
         android:paddingHorizontal="12dp"
         android:paddingVertical="8dp">
+
+        <ImageView
+            android:id="@+id/ivAttachFile"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/ic_attachment"
+            app:tint="@color/text_secondary"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="Lampirkan File"/>
 
         <EditText
             android:id="@+id/etMessageInput"
@@ -116,23 +178,27 @@
             android:hint="Tulis pesan..."
             android:paddingHorizontal="16dp"
             android:paddingVertical="10dp"
-            android:textColor="#1E293B"
-            android:textColorHint="#94A3B8"
+            android:textColor="@color/text_primary"
+            android:textColorHint="@color/text_hint"
             android:textSize="14sp"
-            android:maxLines="4"
-            android:inputType="textMultiLine"/>
+            android:minLines="1"
+            android:maxLines="5"
+            android:scrollbars="vertical"
+            android:gravity="start|center_vertical"
+            android:inputType="textMultiLine|textCapSentences"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSendMessage"
             android:layout_width="44dp"
             android:layout_height="44dp"
             android:layout_marginStart="8dp"
+            android:enabled="false"
             app:icon="@drawable/ic_send_line"
             app:iconGravity="textStart"
             app:iconPadding="0dp"
-            app:iconTint="#FFFFFF"
+            app:iconTint="@color/putih"
             app:cornerRadius="22dp"
-            android:backgroundTint="#2563EB"/>
+            android:backgroundTint="#CBD5E1"/>
     </LinearLayout>
 
 </LinearLayout>

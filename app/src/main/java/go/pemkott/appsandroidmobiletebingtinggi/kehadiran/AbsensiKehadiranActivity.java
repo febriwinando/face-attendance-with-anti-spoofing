@@ -252,19 +252,18 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
         Uri imageUri = Uri.parse(uriString);
         capturedImageUri = Uri.parse(uriString);
         try {
-
             File originalFile = createTempFileFromUri(imageUri);
-            file = ambilFoto.compressToFile(
-                    this,
-                    originalFile
-            );
-            if (file == null || !file.exists()) {
-                Toast.makeText(
-                        this,
-                        "Gagal memproses foto",
-                        Toast.LENGTH_SHORT
-                ).show();
+            if (originalFile != null && originalFile.exists() && originalFile.length() > 0) {
+                file = ambilFoto.compressToFile(this, originalFile);
+                if (file == null || !file.exists() || file.length() == 0) {
+                    file = originalFile; // Fallback ke file awal jika hasil kompresi null/kosong
+                }
+            } else if ("file".equals(imageUri.getScheme()) && imageUri.getPath() != null) {
+                file = new File(imageUri.getPath());
+            }
 
+            if (file == null || !file.exists() || file.length() == 0) {
+                Toast.makeText(this, "Gagal memproses foto", Toast.LENGTH_SHORT).show();
                 finish();
                 return;
             }
@@ -272,7 +271,7 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
             Bitmap preview = null;
             try {
                 BitmapFactory.Options opts = new BitmapFactory.Options();
-                opts.inSampleSize = 4; // Decode preview 4x lebih kecil untuk hemat RAM
+                opts.inSampleSize = 2; // Decode preview hemat RAM
                 preview = BitmapFactory.decodeFile(file.getAbsolutePath(), opts);
             } catch (OutOfMemoryError e) {
                 e.printStackTrace();
@@ -281,29 +280,14 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
             if (preview != null) {
                 ivTaging.setImageBitmap(preview);
             } else {
-                Toast.makeText(
-                        this,
-                        "Gagal membaca foto",
-                        Toast.LENGTH_SHORT
-                ).show();
-
+                Toast.makeText(this, "Gagal membaca foto preview", Toast.LENGTH_SHORT).show();
                 finish();
                 return;
             }
-            // hapus file sementara hasil copy dari Uri
-            if (originalFile.exists()) {
-                originalFile.delete();
-            }
 
         } catch (Exception e) {
-            Log.e("FOTO_ERROR",
-                    "Gagal memproses foto", e);
-            Toast.makeText(
-                    this,
-                    "Gagal memproses foto",
-                    Toast.LENGTH_SHORT
-            ).show();
-
+            Log.e("FOTO_ERROR", "Gagal memproses foto", e);
+            Toast.makeText(this, "Gagal memproses foto", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
@@ -451,13 +435,16 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
             Location location = locationResult.getLastLocation();
             if (location == null) return;
 
-            // Deteksi lokasi palsu (Mock Location)
-            boolean isMock = mockLocationsEnabled || location.isFromMockProvider();
+            // Simpan koordinat user secara langsung agar latGMap & lngGMap selalu valid
+            latGMap = location.getLatitude();
+            lngGMap = location.getLongitude();
+            lokasiSiap = true;
+
+            // Deteksi lokasi palsu (Mock Location) secara akurat
+            boolean isMock = mockLocationsEnabled || go.pemkott.appsandroidmobiletebingtinggi.utils.FakeGpsDetector.isFakeGps(AbsensiKehadiranActivity.this, location);
             if (isMock) {
                 mock_location = 1;
                 rbFakeGPS = "1";
-                // Kita tidak melakukan 'return' agar data tetap bisa dikirim ke server 
-                // dengan flag 'fakegps = 1' untuk keperluan audit/log.
             } else {
                 mock_location = 0;
                 rbFakeGPS = "0";

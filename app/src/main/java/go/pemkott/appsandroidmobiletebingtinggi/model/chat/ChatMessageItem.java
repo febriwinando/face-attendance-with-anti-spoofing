@@ -24,6 +24,24 @@ public class ChatMessageItem {
     @SerializedName("message")
     private String message;
 
+    @SerializedName("msg_type")
+    private String msgType; // "text", "image", "document"
+
+    @SerializedName("file_url")
+    private String fileUrl;
+
+    @SerializedName("file_name")
+    private String fileName;
+
+    @SerializedName("reply_to_id")
+    private Long replyToId;
+
+    @SerializedName("reply_to_sender_name")
+    private String replyToSenderName;
+
+    @SerializedName("reply_to_message")
+    private String replyToMessage;
+
     @SerializedName("is_me")
     private boolean isMe;
 
@@ -87,6 +105,54 @@ public class ChatMessageItem {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public String getMsgType() {
+        return msgType != null ? msgType : "text";
+    }
+
+    public void setMsgType(String msgType) {
+        this.msgType = msgType;
+    }
+
+    public String getFileUrl() {
+        return fileUrl;
+    }
+
+    public void setFileUrl(String fileUrl) {
+        this.fileUrl = fileUrl;
+    }
+
+    public String getFileName() {
+        return fileName != null ? fileName : "Dokumen";
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public Long getReplyToId() {
+        return replyToId;
+    }
+
+    public void setReplyToId(Long replyToId) {
+        this.replyToId = replyToId;
+    }
+
+    public String getReplyToSenderName() {
+        return replyToSenderName != null ? replyToSenderName : "";
+    }
+
+    public void setReplyToSenderName(String replyToSenderName) {
+        this.replyToSenderName = replyToSenderName;
+    }
+
+    public String getReplyToMessage() {
+        return replyToMessage != null ? replyToMessage : "";
+    }
+
+    public void setReplyToMessage(String replyToMessage) {
+        this.replyToMessage = replyToMessage;
     }
 
     public boolean isMe() {
