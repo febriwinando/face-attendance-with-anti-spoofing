@@ -94,7 +94,60 @@ public class ChatMonitoringActivity extends AppCompatActivity implements ChatMon
             public void afterTextChanged(Editable s) {}
         });
 
+        checkAndSetupMasterSwitch();
         fetchMonitoringData();
+    }
+
+    private void checkAndSetupMasterSwitch() {
+        com.google.android.material.switchmaterial.SwitchMaterial switchMaster = findViewById(R.id.switchGlobalChatMaster);
+        TextView tvDesc = findViewById(R.id.tvMasterToggleDesc);
+        if (switchMaster == null) return;
+
+        HttpService api = RetroClient.getInstance(this).getApi2();
+        api.getChatGlobalStatus().enqueue(new Callback<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatGlobalStatusResponse>() {
+            @Override
+            public void onResponse(Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatGlobalStatusResponse> call, Response<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatGlobalStatusResponse> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isStatus()) {
+                    boolean enabled = response.body().isChatEnabled();
+                    switchMaster.setChecked(enabled);
+                    if (tvDesc != null) {
+                        tvDesc.setText(enabled 
+                                ? "Status: Menu Chat TAMPIL di seluruh perangkat pegawai" 
+                                : "Status: Menu Chat TERSEMBUNYI dari seluruh perangkat pegawai");
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatGlobalStatusResponse> call, Throwable t) {}
+        });
+
+        switchMaster.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            api.toggleChatGlobalStatus(isChecked ? "1" : "0").enqueue(new Callback<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatGlobalStatusResponse>() {
+                @Override
+                public void onResponse(Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatGlobalStatusResponse> call, Response<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatGlobalStatusResponse> response) {
+                    if (response.isSuccessful() && response.body() != null && response.body().isStatus()) {
+                        boolean nowEnabled = response.body().isChatEnabled();
+                        switchMaster.setChecked(nowEnabled);
+                        if (tvDesc != null) {
+                            tvDesc.setText(nowEnabled 
+                                    ? "Status: Menu Chat TAMPIL di seluruh perangkat pegawai" 
+                                    : "Status: Menu Chat TERSEMBUNYI dari seluruh perangkat pegawai");
+                        }
+                        go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.showTopBanner(
+                                ChatMonitoringActivity.this, response.body().getMessage(), go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.Type.SUCCESS
+                        );
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatGlobalStatusResponse> call, Throwable t) {
+                    go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.showTopBanner(
+                            ChatMonitoringActivity.this, "Gagal mengubah status global: " + t.getMessage(), go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.Type.ERROR
+                    );
+                }
+            });
+        });
     }
 
     private void showOpdFilterBottomSheet() {

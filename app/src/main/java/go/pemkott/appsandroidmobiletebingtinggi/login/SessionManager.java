@@ -124,6 +124,17 @@ public class SessionManager {
     }
 
     // -------------------------
+    // CHAT GLOBAL FEATURE TOGGLE
+    // -------------------------
+    public void saveChatGlobalEnabled(boolean enabled) {
+        prefs.edit().putBoolean("KEY_CHAT_GLOBAL_ENABLED", enabled).apply();
+    }
+
+    public boolean isChatGlobalEnabled() {
+        return prefs.getBoolean("KEY_CHAT_GLOBAL_ENABLED", false);
+    }
+
+    // -------------------------
     // SERVER HOST CONFIG
     // -------------------------
     public void saveServerHost(String host) {

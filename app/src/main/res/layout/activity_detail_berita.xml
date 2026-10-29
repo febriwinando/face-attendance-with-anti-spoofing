@@ -195,6 +195,7 @@
                             android:fontFamily="sans-serif-medium"
                             android:textColor="@color/text_secondary"
                             android:textSize="12sp"
+                            android:visibility="gone"
                             tools:text="Senin, 10 Februari 2026" />
 
                         <TextView
@@ -224,19 +225,13 @@
                         android:textSize="20sp"
                         tools:text="Pemko Tebing Tinggi Terus Tingkatkan Kualitas Layanan Digital Publik" />
 
-                    <!-- Divider -->
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginVertical="16dp"
-                        android:background="@color/surface_variant" />
-
-                    <!-- Penulis / Redaksi Box -->
+                    <!-- Penulis / Redaksi Box (Sembunyikan Informasi Publikasi) -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center_vertical"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:visibility="gone">
 
                         <de.hdodenhof.circleimageview.CircleImageView
                             android:id="@+id/ciAuthor"

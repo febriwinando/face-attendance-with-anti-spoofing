@@ -14,20 +14,25 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:clipChildren="false"
         android:fillViewport="true">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingHorizontal="32dp"
-            android:paddingBottom="40dp">
+            android:clipToPadding="false"
+            android:clipChildren="false"
+            android:paddingHorizontal="12dp"
+            android:paddingBottom="24dp"
+            >
 
             <!-- App Logo -->
             <ImageView
                 android:id="@+id/ivLogo"
-                android:layout_width="96dp"
-                android:layout_height="96dp"
-                android:layout_marginTop="80dp"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_marginTop="70dp"
                 android:contentDescription="@string/app_name"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -38,11 +43,11 @@
                 android:id="@+id/tvAppName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="6dp"
                 android:fontFamily="sans-serif-black"
                 android:text="@string/eabsensi"
                 android:textColor="@color/primary_brand"
-                android:textSize="34sp"
+                android:textSize="22sp"
                 android:letterSpacing="0.05"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -52,24 +57,25 @@
                 android:id="@+id/tvGreeting"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="4dp"
                 android:fontFamily="sans-serif-medium"
                 android:text="@string/silahkan_masuk_ke_akun_anda"
                 android:textColor="@color/text_secondary"
-                android:textSize="15sp"
+                android:textSize="13sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvAppName" />
 
-            <!-- Clean Centered Login Card -->
+            <!-- Clean Centered Login Card with Ultra-Compact Margins -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cvLogin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="48dp"
+                android:layout_marginTop="35dp"
                 app:cardBackgroundColor="@color/surface_main"
-                app:cardCornerRadius="32dp"
+                app:cardCornerRadius="24dp"
                 app:cardElevation="6dp"
+                app:cardUseCompatPadding="true"
                 app:layout_constraintTop_toBottomOf="@id/tvGreeting"
                 app:strokeWidth="0dp">
 
@@ -77,7 +83,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="28dp">
+                    android:padding="16dp">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -85,9 +91,9 @@
                         android:fontFamily="sans-serif-black"
                         android:text="LOG IN"
                         android:textColor="@color/text_primary"
-                        android:textSize="20sp"
+                        android:textSize="16sp"
                         android:letterSpacing="0.1"
-                        android:layout_marginBottom="28dp"
+                        android:layout_marginBottom="16dp"
                         tools:ignore="HardcodedText" />
 
                     <!-- User ID Input -->
@@ -99,10 +105,10 @@
                         android:hint="@string/nip_nik"
                         app:startIconDrawable="@drawable/ic_card"
                         app:startIconTint="@color/primary_brand"
-                        app:boxCornerRadiusTopStart="16dp"
-                        app:boxCornerRadiusTopEnd="16dp"
-                        app:boxCornerRadiusBottomStart="16dp"
-                        app:boxCornerRadiusBottomEnd="16dp">
+                        app:boxCornerRadiusTopStart="14dp"
+                        app:boxCornerRadiusTopEnd="14dp"
+                        app:boxCornerRadiusBottomStart="14dp"
+                        app:boxCornerRadiusBottomEnd="14dp">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/etUsername"
@@ -112,7 +118,7 @@
                             android:imeOptions="actionNext"
                             android:inputType="numberSigned"
                             android:textColor="@color/text_primary"
-                            android:textSize="16sp" />
+                            android:textSize="15sp" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <!-- Password Input -->
@@ -121,16 +127,16 @@
                         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
+                        android:layout_marginTop="12dp"
                         android:hint="@string/password"
                         app:endIconMode="password_toggle"
                         app:endIconTint="@color/text_hint"
                         app:startIconDrawable="@drawable/one_lock"
                         app:startIconTint="@color/brand_secondary"
-                        app:boxCornerRadiusTopStart="16dp"
-                        app:boxCornerRadiusTopEnd="16dp"
-                        app:boxCornerRadiusBottomStart="16dp"
-                        app:boxCornerRadiusBottomEnd="16dp">
+                        app:boxCornerRadiusTopStart="14dp"
+                        app:boxCornerRadiusTopEnd="14dp"
+                        app:boxCornerRadiusBottomStart="14dp"
+                        app:boxCornerRadiusBottomEnd="14dp">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/etPassword"
@@ -140,7 +146,7 @@
                             android:imeOptions="actionDone"
                             android:inputType="textPassword"
                             android:textColor="@color/text_primary"
-                            android:textSize="16sp" />
+                            android:textSize="15sp" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <!-- Reset Password Action -->
@@ -149,23 +155,23 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="end"
-                        android:layout_marginTop="12dp"
+                        android:layout_marginTop="8dp"
                         android:fontFamily="sans-serif-bold"
-                        android:padding="8dp"
+                        android:padding="4dp"
                         android:text="@string/reset_password"
                         android:textColor="@color/brand_secondary"
-                        android:textSize="13sp" />
+                        android:textSize="12sp" />
 
                     <!-- SSL Bypass Toggle Switch -->
                     <com.google.android.material.switchmaterial.SwitchMaterial
                         android:id="@+id/switchSslBypass"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
+                        android:layout_marginTop="4dp"
                         android:fontFamily="sans-serif-medium"
                         android:text="@string/bypass_ssl_server"
                         android:textColor="@color/text_secondary"
-                        android:textSize="13sp"
+                        android:textSize="12sp"
                         app:useMaterialThemeColors="true" />
 
                     <!-- Primary Action Button -->
@@ -173,15 +179,15 @@
                         android:id="@+id/btnLogin"
                         style="@style/Widget.Material3.Button"
                         android:layout_width="match_parent"
-                        android:layout_height="60dp"
-                        android:layout_marginTop="20dp"
+                        android:layout_height="52dp"
+                        android:layout_marginTop="14dp"
                         android:fontFamily="sans-serif-black"
                         android:onClick="loginUser"
                         android:text="@string/masuk"
-                        android:textSize="16sp"
+                        android:textSize="15sp"
                         android:letterSpacing="0.05"
                         app:backgroundTint="@color/primary_brand"
-                        app:cornerRadius="16dp"
+                        app:cornerRadius="14dp"
                         app:elevation="4dp"
                         tools:ignore="UsingOnClickInXml" />
 
@@ -193,12 +199,12 @@
                 android:id="@+id/tvPrivacyPolicy"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="14dp"
                 android:fontFamily="sans-serif-bold"
-                android:padding="8dp"
+                android:padding="4dp"
                 android:text="@string/privacy_policy"
                 android:textColor="@color/primary_brand"
-                android:textSize="14sp"
+                android:textSize="12sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/cvLogin" />
@@ -208,13 +214,13 @@
                 android:id="@+id/textdb"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:paddingHorizontal="24dp"
+                android:layout_marginTop="10dp"
+                android:paddingHorizontal="12dp"
                 android:text="@string/cttan"
                 android:textAlignment="center"
                 android:textColor="@color/text_hint"
-                android:textSize="12sp"
-                android:lineSpacingExtra="4dp"
+                android:textSize="11sp"
+                android:lineSpacingExtra="2dp"
                 app:layout_constraintTop_toBottomOf="@id/tvPrivacyPolicy" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -224,7 +230,7 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="12dp"
         android:gravity="center"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -238,7 +244,7 @@
             android:fontFamily="sans-serif-bold"
             android:text="@string/versiapp"
             android:textColor="@color/text_hint"
-            android:textSize="12sp" />
+            android:textSize="11sp" />
 
     </LinearLayout>
 

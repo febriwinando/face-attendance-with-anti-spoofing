@@ -83,6 +83,7 @@
                     android:layout_alignParentStart="true"
                     android:textColor="@color/text_secondary"
                     android:textSize="11sp"
+                    android:visibility="gone"
                     tools:text="10 Feb 2026" />
 
                 <TextView

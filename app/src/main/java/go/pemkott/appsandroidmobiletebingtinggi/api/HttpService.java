@@ -547,6 +547,15 @@ public interface HttpService {
             @Query("opd_id") String opdId
     );
 
+    @GET("chat/global-status")
+    Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatGlobalStatusResponse> getChatGlobalStatus();
+
+    @FormUrlEncoded
+    @POST("chat/global-status")
+    Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatGlobalStatusResponse> toggleChatGlobalStatus(
+            @Field("chat_enabled") String chatEnabled
+    );
+
 }
 
 //package go.pemkott.appsandroidmobiletebingtinggi.api;

@@ -632,6 +632,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public boolean insertDataKoordinat(String id, String id_opd, String alamat, String lat, String lng){
         SQLiteDatabase db = this.getWritableDatabase();
+        if (id != null && !id.isEmpty()) {
+            db.delete(KOORDINAT, K_ID + " = ?", new String[]{id});
+        }
         ContentValues contentValues = new ContentValues();
         contentValues.put(K_ID, id);
         contentValues.put(K_OPD_ID, id_opd);
@@ -640,14 +643,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(K_LNG, lng);
 
         long result = db.insert(KOORDINAT, null, contentValues);
-        if (result == -1 )
-            return false;
-        else
-            return true;
+        return result != -1;
     }
 
     public boolean insertDataKoordinatEmployee(String id, String ide, String alamat, String lat, String lng){
         SQLiteDatabase db = this.getWritableDatabase();
+        if (id != null && !id.isEmpty()) {
+            db.delete(KOORDINAT_E, KE_ID + " = ?", new String[]{id});
+        }
         ContentValues contentValues = new ContentValues();
         contentValues.put(KE_ID, id);
         contentValues.put(KE_EMP_ID, ide);
@@ -656,15 +659,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(KE_LNG, lng);
 
         long result = db.insert(KOORDINAT_E, null, contentValues);
-        if (result == -1 )
-            return false;
-        else
-            return true;
+        return result != -1;
     }
 
 
     public boolean insertDataTimeTable(String id, String employee_id, String timetable_id, String inisial, String hari, String masuk, String pulang){
         SQLiteDatabase db = this.getWritableDatabase();
+        if (id != null && !id.isEmpty()) {
+            db.delete(TIMETABLE, TT_ID + " = ?", new String[]{id});
+        }
         ContentValues contentValues = new ContentValues();
         contentValues.put(TT_ID, id);
         contentValues.put(TT_EMPLOYEE_ID, employee_id);
@@ -675,10 +678,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(TT_PULANG, pulang);
 
         long result = db.insert(TIMETABLE, null, contentValues);
-        if (result == -1 )
-            return false;
-        else
-            return true;
+        return result != -1;
     }
 
     public boolean insertJamShift(String id, String opd_id, String tipe, String inisial, String masuk, String pulang){
@@ -719,6 +719,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public boolean insertResourceKegiatan(String id, String tipe, String ket){
         SQLiteDatabase db = this.getWritableDatabase();
+        if (id != null && !id.isEmpty()) {
+            db.delete(RESOURCE_KEGIATAN, R_ID + " = ?", new String[]{id});
+        }
         ContentValues contentValues = new ContentValues();
 
         contentValues.put(R_ID, id);
@@ -726,11 +729,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(R_KET, ket);
 
         long result = db.insert(RESOURCE_KEGIATAN, null, contentValues);
-        if (result == -1)
-            return  false;
-        else
-            return true;
-
+        return result != -1;
     }
 
 
@@ -742,27 +741,32 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public Cursor getDataKoordinat(String idOPD){
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor res = db.rawQuery("select * from "+KOORDINAT+" where "+K_OPD_ID+" = '"+idOPD+"'", null);
-        return res;
+        if (idOPD != null && !idOPD.trim().isEmpty()) {
+            Cursor res = db.rawQuery("SELECT * FROM " + KOORDINAT + " WHERE " + K_OPD_ID + " = '" + idOPD + "'", null);
+            if (res.getCount() > 0) return res;
+            res.close();
+        }
+        return db.rawQuery("SELECT * FROM " + KOORDINAT, null);
     }
 
     public Cursor getDataKoordinatEmp(String idE){
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor res = db.rawQuery("select * from "+KOORDINAT_E+" where EMPLOYEID = '"+idE+"'", null);
-
-        return res;
+        if (idE != null && !idE.trim().isEmpty()) {
+            Cursor res = db.rawQuery("SELECT * FROM " + KOORDINAT_E + " WHERE EMPLOYEID = '" + idE + "'", null);
+            if (res.getCount() > 0) return res;
+            res.close();
+        }
+        return db.rawQuery("SELECT * FROM " + KOORDINAT_E, null);
     }
 
     public Cursor getKegiatanIzin(){
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor res = db.rawQuery("select * from "+RESOURCE_KEGIATAN, null);
-        return res;
+        return db.rawQuery("SELECT * FROM " + RESOURCE_KEGIATAN, null);
     }
 
     public Cursor getKegiatanTimeTable(String idE, String hari){
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor res = db.rawQuery("select * from "+TIMETABLE+" where EMPLOYEEID = '"+idE+"' AND HARI = '"+ hari +"'" , null);
-        return res;
+        return db.rawQuery("SELECT * FROM " + TIMETABLE + " WHERE EMPLOYEEID = '" + idE + "' AND HARI = '" + hari + "'", null);
     }
 
     public Cursor getJamShift(String opd_id){

@@ -20,6 +20,11 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.EditText;
+import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.text.Editable;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -362,15 +367,7 @@ public class DashboardVersiOne extends AppCompatActivity {
             }
         });
 
-        cvLokasi.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                pgSingkronLokasi.setVisibility(View.VISIBLE);
-                koordinatOPD();
-//                koordintaEmployee();
-            }
-        });
+        cvLokasi.setOnClickListener(v -> viewLokasiKerja());
 
         cvKegiatan.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -920,6 +917,8 @@ public class DashboardVersiOne extends AppCompatActivity {
 
         datauser();
 
+        checkGlobalChatVisibility();
+
         if (sVerifikator != null && sEmployee_id != null){
             dataValidasi(sVerifikator, sEmployee_id);
         }
@@ -933,6 +932,54 @@ public class DashboardVersiOne extends AppCompatActivity {
         if (beritaUtamaAdapter != null && beritaUtamaAdapter.getItemCount() > 1) {
             startBeritaAutoSlide();
         }
+    }
+
+    private void checkGlobalChatVisibility() {
+        ImageView ivChatDashboard = findViewById(R.id.ivChatDashboard);
+        if (ivChatDashboard == null) return;
+
+        go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper dbHelper = new go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper(this);
+        String myNip = "";
+        try {
+            android.database.Cursor cursor = dbHelper.getDataEmployee(sEmployee_id);
+            if (cursor != null && cursor.moveToFirst()) {
+                int nipIdx = cursor.getColumnIndex("nip");
+                if (nipIdx >= 0) myNip = cursor.getString(nipIdx);
+            }
+            if (cursor != null) cursor.close();
+        } catch (Exception ignored) {}
+
+        if (myNip == null || myNip.isEmpty()) {
+            myNip = session.getUsername();
+        }
+
+        boolean isMasterUser = "199402092020121005".equals(myNip)
+                || (myNip != null && myNip.contains("199402092020121005"))
+                || "199402092020121005".equals(session.getPegawaiId());
+
+        if (isMasterUser) {
+            ivChatDashboard.setVisibility(View.VISIBLE);
+            return;
+        }
+
+        // 1. Instant local cache check (Zero Lag)
+        boolean cachedEnabled = session.isChatGlobalEnabled();
+        ivChatDashboard.setVisibility(cachedEnabled ? View.VISIBLE : View.GONE);
+
+        // 2. Refresh from network in background
+        httpService.getChatGlobalStatus().enqueue(new Callback<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatGlobalStatusResponse>() {
+            @Override
+            public void onResponse(Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatGlobalStatusResponse> call, Response<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatGlobalStatusResponse> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isStatus()) {
+                    boolean enabled = response.body().isChatEnabled();
+                    session.saveChatGlobalEnabled(enabled);
+                    ivChatDashboard.setVisibility(enabled ? View.VISIBLE : View.GONE);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatGlobalStatusResponse> call, Throwable t) {}
+        });
     }
 
     @Override
@@ -1107,7 +1154,6 @@ public class DashboardVersiOne extends AppCompatActivity {
 
     public void viewJadwalKerja(){
         timeTable.clear();
-        Toast.makeText(dashboardVersiOne, "jadwal", Toast.LENGTH_SHORT).show();
 
         Dialog dialogJadwalKerja = new Dialog(DashboardVersiOne.this, R.style.DialogStyle);
         dialogJadwalKerja.setContentView(R.layout.view_jadwal_kerja);
@@ -1214,6 +1260,86 @@ public class DashboardVersiOne extends AppCompatActivity {
         dialogJadwalKerja.show();
     }
 
+    public void viewLokasiKerja() {
+        Dialog dialogLokasiKerja = new Dialog(DashboardVersiOne.this, R.style.DialogStyle);
+        dialogLokasiKerja.setContentView(R.layout.view_lokasi_kerja);
+        dialogLokasiKerja.setCancelable(true);
+
+        RecyclerView rvLokasiKerja = dialogLokasiKerja.findViewById(R.id.rvLokasiKerja);
+        TextView tvInfoLokasiKerja = dialogLokasiKerja.findViewById(R.id.tvInfoLokasiKerja);
+        LinearLayout btnSingkronLokasiKerja = dialogLokasiKerja.findViewById(R.id.btnSingkronLokasiKerja);
+        ImageView ivCloseDaftarLokasiKerja = dialogLokasiKerja.findViewById(R.id.ivCloseDaftarLokasiKerja);
+        ProgressBar progressBarSingkronLokasi = dialogLokasiKerja.findViewById(R.id.progressBarSingkronLokasi);
+
+        rvLokasiKerja.setHasFixedSize(false);
+
+        List<go.pemkott.appsandroidmobiletebingtinggi.model.LokasiPegawaiModel> lokasiList = new ArrayList<>();
+
+        // 1. Fetch OPD coordinates from SQLite
+        Cursor cursorOpd = databaseHelper.getDataKoordinat(sOPD);
+        if (cursorOpd != null) {
+            int alamatIdx = cursorOpd.getColumnIndex("ALAMAT");
+            int latIdx = cursorOpd.getColumnIndex("LAT");
+            int lngIdx = cursorOpd.getColumnIndex("LNG");
+
+            while (cursorOpd.moveToNext()) {
+                String alamat = (alamatIdx != -1) ? cursorOpd.getString(alamatIdx) : "Lokasi Presensi OPD Utama";
+                String lat = (latIdx != -1) ? cursorOpd.getString(latIdx) : "";
+                String lng = (lngIdx != -1) ? cursorOpd.getString(lngIdx) : "";
+
+                if (!TextUtils.isEmpty(lat) && !TextUtils.isEmpty(lng)) {
+                    lokasiList.add(new go.pemkott.appsandroidmobiletebingtinggi.model.LokasiPegawaiModel("1", alamat, "Lokasi Presensi OPD Utama", lat, lng));
+                }
+            }
+            cursorOpd.close();
+        }
+
+        // 2. Fetch Employee Exception coordinates from SQLite
+        Cursor cursorEmp = databaseHelper.getDataKoordinatEmp(sEmployee_id);
+        if (cursorEmp != null) {
+            int alamatIdx = cursorEmp.getColumnIndex("ALAMAT");
+            int latIdx = cursorEmp.getColumnIndex("LAT");
+            int lngIdx = cursorEmp.getColumnIndex("LNG");
+
+            while (cursorEmp.moveToNext()) {
+                String alamat = (alamatIdx != -1) ? cursorEmp.getString(alamatIdx) : "Lokasi Penugasan Khusus";
+                String lat = (latIdx != -1) ? cursorEmp.getString(latIdx) : "";
+                String lng = (lngIdx != -1) ? cursorEmp.getString(lngIdx) : "";
+
+                if (!TextUtils.isEmpty(lat) && !TextUtils.isEmpty(lng)) {
+                    lokasiList.add(new go.pemkott.appsandroidmobiletebingtinggi.model.LokasiPegawaiModel("2", alamat, "Lokasi Penugasan Khusus", lat, lng));
+                }
+            }
+            cursorEmp.close();
+        }
+
+        if (lokasiList.isEmpty()) {
+            tvInfoLokasiKerja.setVisibility(View.VISIBLE);
+        } else {
+            tvInfoLokasiKerja.setVisibility(View.GONE);
+        }
+
+        rvLokasiKerja.setLayoutManager(new GridLayoutManager(DashboardVersiOne.this, 1));
+        go.pemkott.appsandroidmobiletebingtinggi.adapter.LokasiPegawaiAdapter adapter = new go.pemkott.appsandroidmobiletebingtinggi.adapter.LokasiPegawaiAdapter(this, lokasiList);
+        rvLokasiKerja.setAdapter(adapter);
+
+        ivCloseDaftarLokasiKerja.setOnClickListener(v -> dialogLokasiKerja.dismiss());
+
+        btnSingkronLokasiKerja.setOnClickListener(v -> {
+            progressBarSingkronLokasi.setVisibility(View.VISIBLE);
+            btnSingkronLokasiKerja.setVisibility(View.GONE);
+
+            koordinatOPD();
+
+            btnSingkronLokasiKerja.postDelayed(() -> {
+                progressBarSingkronLokasi.setVisibility(View.GONE);
+                btnSingkronLokasiKerja.setVisibility(View.VISIBLE);
+                dialogLokasiKerja.dismiss();
+            }, 1500);
+        });
+
+        dialogLokasiKerja.show();
+    }
 
     public void koordinatOPD(){
         ivStatusLokasi.setVisibility(View.GONE);
@@ -1231,11 +1357,10 @@ public class DashboardVersiOne extends AppCompatActivity {
                     return;
                 }
 
-                Integer deleteKoordinatOPD = databaseHelper.deleteDataKoordinatOPD(sOPD);
-                if (deleteKoordinatOPD > 0){
+                databaseHelper.deleteDataKoordinatOPD(sOPD);
+                if (koordinats != null) {
                     for (Koordinat koordinat : koordinats){
                         databaseHelper.insertDataKoordinat(koordinat.getId(), koordinat.getOpd_id(), koordinat.getAlamat(), koordinat.getLet(), koordinat.getLng());
-
                     }
                 }
 
@@ -1331,12 +1456,11 @@ public class DashboardVersiOne extends AppCompatActivity {
                     return;
                 }
 
-                Integer deleteKegiatan = databaseHelper.deleteKegiatanIzin();
-                if (deleteKegiatan>0){
+                databaseHelper.deleteKegiatanIzin();
+                if (kegiatanIzins != null) {
                     for (KegiatanIzin kegiatanIzin : kegiatanIzins){
                         databaseHelper.insertResourceKegiatan(String.valueOf(kegiatanIzin.getId()), kegiatanIzin.getTipe(), kegiatanIzin.getKet());
                     }
-
                 }
 
                 pgSingkronKegiatan.setVisibility(View.GONE);
@@ -1363,6 +1487,8 @@ public class DashboardVersiOne extends AppCompatActivity {
 
             ivSyncStatusIcon.setImageResource(R.drawable.ic_check);
             ivSyncStatusIcon.setColorFilter(ContextCompat.getColor(this, R.color.hijau));
+
+            playSyncSuccessTune();
         } else {
             statusIcon.setImageResource(R.drawable.one_warning);
             statusIcon.setColorFilter(ContextCompat.getColor(this, R.color.merah));
@@ -1376,6 +1502,14 @@ public class DashboardVersiOne extends AppCompatActivity {
             statusIcon.setVisibility(View.GONE);
             cvSyncStatusToast.setVisibility(View.GONE);
         }, 5000);
+    }
+
+    private void playSyncSuccessTune() {
+        try {
+            android.media.ToneGenerator toneGen = new android.media.ToneGenerator(android.media.AudioManager.STREAM_NOTIFICATION, 50);
+            toneGen.startTone(android.media.ToneGenerator.TONE_PROP_ACK, 200);
+            new Handler(Looper.getMainLooper()).postDelayed(toneGen::release, 300);
+        } catch (Exception ignored) {}
     }
 
     public void updateProfileUI() {
