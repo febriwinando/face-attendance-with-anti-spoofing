@@ -389,9 +389,10 @@ public interface HttpService {
             @Field("pegawai[]") List<String> pegawai
     );
 
+    // Insert Massal Presensi Endpoints (3 Tab Complete)
     @FormUrlEncoded
     @POST("v2/admin/insert-massal/preview")
-    Call<ResponsePOJO> previewInsertMassal(
+    Call<com.google.gson.JsonObject> previewInsertMassal(
             @Field("tanggal") String tanggal,
             @Field("nips") String nips,
             @Field("update_posisi_al") boolean updatePosisiAl
@@ -403,6 +404,63 @@ public interface HttpService {
             @Field("tanggal") String tanggal,
             @Field("nips") String nips,
             @Field("update_posisi_al") boolean updatePosisiAl
+    );
+
+    @FormUrlEncoded
+    @POST("v2/admin/insert-massal/update-jadwal/preview")
+    Call<com.google.gson.JsonObject> previewUpdateJadwal(
+            @Field("opd_id") String opdId,
+            @Field("tanggal") String tanggal,
+            @Field("filter_shift") String filterShift,
+            @Field("update_target") String updateTarget,
+            @Field("nips") String nips
+    );
+
+    @FormUrlEncoded
+    @POST("v2/admin/insert-massal/update-jadwal/store")
+    Call<ResponsePOJO> storeUpdateJadwal(
+            @Field("opd_id") String opdId,
+            @Field("tanggal") String tanggal,
+            @Field("filter_shift") String filterShift,
+            @Field("update_target") String updateTarget,
+            @Field("nips") String nips
+    );
+
+    @FormUrlEncoded
+    @POST("v2/admin/insert-massal/parsial/preview")
+    Call<com.google.gson.JsonObject> previewParsial(
+            @Field("opd_id") String opdId,
+            @Field("tanggal") String tanggal,
+            @Field("jenis_absen") String jenisAbsen,
+            @Field("filter_shift") String filterShift,
+            @Field("jam_mode") String jamMode,
+            @Field("custom_jam") String customJam,
+            @Field("nips") String nips
+    );
+
+    @FormUrlEncoded
+    @POST("v2/admin/insert-massal/parsial/store")
+    Call<ResponsePOJO> storeParsial(
+            @Field("opd_id") String opdId,
+            @Field("tanggal") String tanggal,
+            @Field("jenis_absen") String jenisAbsen,
+            @Field("filter_shift") String filterShift,
+            @Field("jam_mode") String jamMode,
+            @Field("custom_jam") String customJam,
+            @Field("nips") String nips
+    );
+
+    @GET("v2/admin/insert-massal/pegawai-by-opd")
+    Call<com.google.gson.JsonObject> getPegawaiByOpd(
+            @Query("opd_id") String opdId,
+            @Query("filter_shift") String filterShift
+    );
+
+    @FormUrlEncoded
+    @POST("v2/admin/insert-massal/cocokkan-nama")
+    Call<com.google.gson.JsonObject> cocokkanNama(
+            @Field("opd_id") String opdId,
+            @Field("raw_names") String rawNames
     );
 
     @FormUrlEncoded

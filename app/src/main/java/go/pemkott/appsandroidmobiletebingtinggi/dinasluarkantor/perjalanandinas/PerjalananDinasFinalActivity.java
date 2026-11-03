@@ -38,6 +38,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.provider.OpenableColumns;
 import android.util.Log;
+import java.util.Locale;
 import android.view.View;
 import android.view.ViewOutlineProvider;
 import android.view.Window;
@@ -193,6 +194,7 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
 
     SessionManager session;
     String userId;
+    View llUpload;
 
     @SuppressLint("WrongThread")
     @Override
@@ -215,6 +217,12 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
         kegiatans.clear();
         session = new SessionManager(this);
         userId = session.getPegawaiId();
+        llUpload = findViewById(R.id.llUpload);
+        if (llUpload != null) {
+            llUpload.setEnabled(true);
+            llUpload.setClickable(true);
+            llUpload.setAlpha(1.0f);
+        }
 
 
         databaseHelper = new DatabaseHelper(this);
@@ -771,28 +779,34 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
     }
 
     public void llMulaiDinasLuar(View view){
-        datePickerDialogMulai.show();
+        if (datePickerDialogMulai == null) {
+            datePickerMulai();
+        }
+        if (datePickerDialogMulai != null) {
+            datePickerDialogMulai.show();
+        }
     }
 
     private void datePickerMulai(){
-        DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker datePicker, int tahun, int bulan, int hari) {
-                bulan = bulan + 1;
-                String date = makeDateString(tahun, bulan);
+        DatePickerDialog.OnDateSetListener dateSetListener = (datePicker, tahun, bulan, hari) -> {
+            bulan = bulan + 1;
+            String date = makeDateString(tahun, bulan);
 
-                Date drTgl = null;
-                try {
-                    drTgl = SIMPLE_FORMAT_TANGGAL.parse(tahun+"-"+bulan+"-"+hari);
-                } catch (ParseException e) {
-                    e.printStackTrace();
+            String formattedStr = String.format(Locale.US, "%d-%02d-%02d", tahun, bulan, hari);
+            try {
+                Date drTgl = SIMPLE_FORMAT_TANGGAL.parse(formattedStr);
+                if (drTgl != null) {
+                    dariTanggal = SIMPLE_FORMAT_TANGGAL.format(drTgl);
+                } else {
+                    dariTanggal = formattedStr;
                 }
-                dariTanggal = SIMPLE_FORMAT_TANGGAL.format(drTgl);
-
-                tvHariMulai.setText(String.valueOf(hari));
-                tvBulanTahunMulai.setText(date);
-                sTglMulai = tahun+"-"+bulan+"-"+hari;
+            } catch (Exception e) {
+                dariTanggal = formattedStr;
             }
+
+            tvHariMulai.setText(String.valueOf(hari));
+            tvBulanTahunMulai.setText(date);
+            sTglMulai = formattedStr;
         };
 
         Calendar calendar = Calendar.getInstance();
@@ -800,41 +814,47 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
         int bulan = calendar.get(Calendar.MONTH);
         int hari = calendar.get(Calendar.DAY_OF_MONTH);
 
-        int style = android.R.style.Theme_DeviceDefault_Light_Dialog;
-        Date today = new Date();
-        Calendar c = Calendar.getInstance();
-        c.setTime(today);
-        c.add( Calendar.MONTH, 1);
-        long maxDate = c.getTime().getTime();
+        try {
+            datePickerDialogMulai = new DatePickerDialog(this, dateSetListener, tahun, bulan, hari);
 
-        Calendar d = Calendar.getInstance();
-        d.setTime(today);
-        d.add( Calendar.MONTH, -1);
-        long minDate = d.getTime().getTime();
-        datePickerDialogMulai = new DatePickerDialog(this, style, dateSetListener, tahun, bulan, hari);
-        datePickerDialogMulai.getDatePicker().setMaxDate(maxDate);
-        datePickerDialogMulai.getDatePicker().setMinDate(minDate);
+            Date today = new Date();
+            Calendar c = Calendar.getInstance();
+            c.setTime(today);
+            c.add(Calendar.MONTH, 1);
+            long maxDate = c.getTime().getTime();
+
+            Calendar d = Calendar.getInstance();
+            d.setTime(today);
+            d.add(Calendar.MONTH, -1);
+            long minDate = d.getTime().getTime();
+
+            datePickerDialogMulai.getDatePicker().setMaxDate(maxDate);
+            datePickerDialogMulai.getDatePicker().setMinDate(minDate);
+        } catch (Exception e) {
+            datePickerDialogMulai = new DatePickerDialog(this, dateSetListener, tahun, bulan, hari);
+        }
     }
 
     private void datePickerSampai(){
-        DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker datePicker, int tahun, int bulan, int hari) {
-                bulan = bulan + 1;
-                String date = makeDateString(tahun, bulan);
+        DatePickerDialog.OnDateSetListener dateSetListener = (datePicker, tahun, bulan, hari) -> {
+            bulan = bulan + 1;
+            String date = makeDateString(tahun, bulan);
 
-                Date spTgl = null;
-                try {
-                    spTgl = SIMPLE_FORMAT_TANGGAL.parse(tahun+"-"+bulan+"-"+hari);
-                } catch (ParseException e) {
-                    e.printStackTrace();
+            String formattedStr = String.format(Locale.US, "%d-%02d-%02d", tahun, bulan, hari);
+            try {
+                Date spTgl = SIMPLE_FORMAT_TANGGAL.parse(formattedStr);
+                if (spTgl != null) {
+                    sampaiTanggal = SIMPLE_FORMAT_TANGGAL.format(spTgl);
+                } else {
+                    sampaiTanggal = formattedStr;
                 }
-                sampaiTanggal = SIMPLE_FORMAT_TANGGAL.format(spTgl);
-
-                tvHariSampai.setText(String.valueOf(hari));
-                tvBulanTahunSampai.setText(date);
-                sTglSAmpai = tahun+"-"+bulan+"-"+hari;
+            } catch (Exception e) {
+                sampaiTanggal = formattedStr;
             }
+
+            tvHariSampai.setText(String.valueOf(hari));
+            tvBulanTahunSampai.setText(date);
+            sTglSAmpai = formattedStr;
         };
 
         Calendar calendar = Calendar.getInstance();
@@ -842,24 +862,34 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
         int bulan = calendar.get(Calendar.MONTH);
         int hari = calendar.get(Calendar.DAY_OF_MONTH);
 
-        int style = android.R.style.Theme_DeviceDefault_Light_Dialog;
-        Date today = new Date();
-        Calendar c = Calendar.getInstance();
-        c.setTime(today);
-        c.add( Calendar.MONTH, 1);
-        long maxDate = c.getTime().getTime();
+        try {
+            datePickerDialogSampai = new DatePickerDialog(this, dateSetListener, tahun, bulan, hari);
 
-        Calendar d = Calendar.getInstance();
-        d.setTime(today);
-        d.add( Calendar.MONTH, -1);
-        long minDate = d.getTime().getTime();
-        datePickerDialogSampai = new DatePickerDialog(this, style, dateSetListener, tahun, bulan, hari);
-        datePickerDialogSampai.getDatePicker().setMaxDate(maxDate);
-        datePickerDialogSampai.getDatePicker().setMinDate(minDate);
+            Date today = new Date();
+            Calendar c = Calendar.getInstance();
+            c.setTime(today);
+            c.add(Calendar.MONTH, 1);
+            long maxDate = c.getTime().getTime();
+
+            Calendar d = Calendar.getInstance();
+            d.setTime(today);
+            d.add(Calendar.MONTH, -1);
+            long minDate = d.getTime().getTime();
+
+            datePickerDialogSampai.getDatePicker().setMaxDate(maxDate);
+            datePickerDialogSampai.getDatePicker().setMinDate(minDate);
+        } catch (Exception e) {
+            datePickerDialogSampai = new DatePickerDialog(this, dateSetListener, tahun, bulan, hari);
+        }
     }
 
     public void llSampaiDinasLuar(View view){
-        datePickerDialogSampai.show();
+        if (datePickerDialogSampai == null) {
+            datePickerSampai();
+        }
+        if (datePickerDialogSampai != null) {
+            datePickerDialogSampai.show();
+        }
     }
 
     public void periksaWaktu(){
@@ -900,16 +930,12 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
 
     public void kirimDataDinasLuar(View view){
         requestPermission();
-        if (mock_location == 1){
-            dialogView.viewNotifKosong(PerjalananDinasFinalActivity.this, "Anda terdeteksi menggunakan Fake GPS.", "Jika ditemukan berulang kali, akun anda akan terblokir otomatis dan tercatat Alpa.");
-
-        }else{
-            if (file == null || !file.exists() || file.length() == 0){
-                dialogView.viewNotifKosong(PerjalananDinasFinalActivity.this, "Anda harus melampirkan Foto Kegiatan dan Surat Perintah Perjalanan Dinas.", "");
-            }
-            else {
-                uploadImages();
-            }
+        if (file == null || !file.exists() || file.length() == 0){
+            dialogView.viewNotifKosong(PerjalananDinasFinalActivity.this, "Anda harus melampirkan Foto Kegiatan dan Surat Perintah.", "");
+            if (llUpload != null) llUpload.setEnabled(true);
+        } else {
+            if (llUpload != null) llUpload.setEnabled(false);
+            uploadImages();
         }
     }
 

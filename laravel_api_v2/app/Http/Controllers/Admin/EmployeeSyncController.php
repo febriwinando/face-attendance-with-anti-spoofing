@@ -33,11 +33,11 @@ class EmployeeSyncController extends Controller
                     'employees.atasan_id1',
                     'employees.atasan_id2',
                     'employees.position_id',
-                    'employees.alamat',
-                    'employees.let',
-                    'employees.lng',
-                    'employees.awal_waktu',
-                    'employees.opd_shift',
+                    'opds.alamat',
+                    'opds.let',
+                    'opds.lng',
+                    'opds.awal_waktu',
+                    'opds.opd_shift',
                     'opds.opd as opd'
                 )
                 ->get();

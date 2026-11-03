@@ -33,6 +33,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import java.util.Locale;
 import com.google.android.material.imageview.ShapeableImageView;
 
 import java.io.IOException;
@@ -515,23 +516,25 @@ public class RekapAbsensActivity extends AppCompatActivity {
 
 
     private void datePickerMulai(){
-
         DatePickerDialog.OnDateSetListener dateSetListener = (datePicker, tahun, bulan, hari) -> {
             bulan = bulan + 1;
             String date = makeDateString(tahun, bulan);
 
-            Date drTgl = null;
+            String formattedStr = String.format(Locale.US, "%d-%02d-%02d", tahun, bulan, hari);
             try {
-                drTgl = SIMPLE_FORMAT_TANGGAL.parse(tahun+"-"+bulan+"-"+hari);
-            } catch (ParseException e) {
-                e.printStackTrace();
+                Date drTgl = SIMPLE_FORMAT_TANGGAL.parse(formattedStr);
+                if (drTgl != null) {
+                    dariTanggal = SIMPLE_FORMAT_TANGGAL.format(drTgl);
+                } else {
+                    dariTanggal = formattedStr;
+                }
+            } catch (Exception e) {
+                dariTanggal = formattedStr;
             }
-            assert drTgl != null;
-            dariTanggal = SIMPLE_FORMAT_TANGGAL.format(drTgl);
 
             tvHariMulaiRekap.setText(String.valueOf(hari));
             tvBulanTahunMulaiRekap.setText(date);
-            sTglMulai = tahun+"-"+bulan+"-"+hari;
+            sTglMulai = formattedStr;
         };
 
         Calendar calendar = Calendar.getInstance();
@@ -539,7 +542,11 @@ public class RekapAbsensActivity extends AppCompatActivity {
         int bulan = calendar.get(Calendar.MONTH);
         int hari = calendar.get(Calendar.DAY_OF_MONTH);
 
-        datePickerDialogMulai = new DatePickerDialog(RekapAbsensActivity.this, android.R.style.Theme_DeviceDefault_Light_Dialog, dateSetListener, tahun, bulan, hari);
+        try {
+            datePickerDialogMulai = new DatePickerDialog(RekapAbsensActivity.this, dateSetListener, tahun, bulan, hari);
+        } catch (Exception e) {
+            datePickerDialogMulai = new DatePickerDialog(RekapAbsensActivity.this, dateSetListener, tahun, bulan, hari);
+        }
     }
 
     private void datePickerSampai(){
@@ -547,18 +554,21 @@ public class RekapAbsensActivity extends AppCompatActivity {
             bulan = bulan + 1;
             String date = makeDateString(tahun, bulan);
 
-            Date spTgl = null;
+            String formattedStr = String.format(Locale.US, "%d-%02d-%02d", tahun, bulan, hari);
             try {
-                spTgl = SIMPLE_FORMAT_TANGGAL.parse(tahun+"-"+bulan+"-"+hari);
-            } catch (ParseException e) {
-                e.printStackTrace();
+                Date spTgl = SIMPLE_FORMAT_TANGGAL.parse(formattedStr);
+                if (spTgl != null) {
+                    sampaiTanggal = SIMPLE_FORMAT_TANGGAL.format(spTgl);
+                } else {
+                    sampaiTanggal = formattedStr;
+                }
+            } catch (Exception e) {
+                sampaiTanggal = formattedStr;
             }
-            assert spTgl != null;
-            sampaiTanggal = SIMPLE_FORMAT_TANGGAL.format(spTgl);
 
             tvHariSampaiRekap.setText(String.valueOf(hari));
             tvBulanTahunSampaiRekap.setText(date);
-            sTglSAmpai = tahun+"-"+bulan+"-"+hari;
+            sTglSAmpai = formattedStr;
         };
 
         Calendar calendar = Calendar.getInstance();
@@ -566,9 +576,11 @@ public class RekapAbsensActivity extends AppCompatActivity {
         int bulan = calendar.get(Calendar.MONTH);
         int hari = calendar.get(Calendar.DAY_OF_MONTH);
 
-//        int style = AlertDialog.THEME_HOLO_LIGHT;
-
-        datePickerDialogSampai = new DatePickerDialog(RekapAbsensActivity.this, android.R.style.Theme_DeviceDefault_Light_Dialog, dateSetListener, tahun, bulan, hari);
+        try {
+            datePickerDialogSampai = new DatePickerDialog(RekapAbsensActivity.this, dateSetListener, tahun, bulan, hari);
+        } catch (Exception e) {
+            datePickerDialogSampai = new DatePickerDialog(RekapAbsensActivity.this, dateSetListener, tahun, bulan, hari);
+        }
     }
 
     private String makeDateString(int tahun, int bulan){

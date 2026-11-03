@@ -10,20 +10,23 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:fillViewport="true"
+        android:clipToPadding="false"
+        android:paddingBottom="24dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingHorizontal="10dp">
+            android:paddingHorizontal="10dp"
+            android:paddingTop="8dp">
 
-            <!-- Elegant Page Title -->
+            <!-- Duplicate Header Hidden -->
             <RelativeLayout
                 android:id="@+id/rlHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp">
+                android:visibility="gone">
 
                 <ImageView
                     android:id="@+id/ivBackValidasi"
@@ -47,13 +50,13 @@
                     android:textSize="22sp" />
             </RelativeLayout>
 
-            <!-- Verificator 1 Section -->
+            <!-- Verificator 1 Section Header -->
             <TextView
                 android:id="@+id/tvv1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="12dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="8dp"
                 android:background="@drawable/backgoundovalabuabu"
                 android:backgroundTint="@color/primary_brand"
                 android:fontFamily="sans-serif-black"
@@ -73,13 +76,13 @@
                 android:nestedScrollingEnabled="false"
                 tools:listitem="@layout/item_validasi_new" />
 
-            <!-- Verificator 2 Section -->
+            <!-- Verificator 2 Section Header -->
             <TextView
                 android:id="@+id/tvv2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
-                android:layout_marginBottom="12dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp"
                 android:background="@drawable/backgoundovalabuabu"
                 android:backgroundTint="@color/brand_secondary"
                 android:fontFamily="sans-serif-black"
@@ -97,7 +100,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:nestedScrollingEnabled="false"
-                android:layout_marginBottom="100dp"
                 tools:listitem="@layout/item_validasi_new" />
 
         </LinearLayout>

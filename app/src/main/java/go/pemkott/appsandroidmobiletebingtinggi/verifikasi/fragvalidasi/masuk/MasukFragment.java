@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.imageview.ShapeableImageView;
 
 import java.io.IOException;
@@ -63,7 +64,7 @@ public class MasukFragment extends Fragment {
 
     SessionManager session;
     String userId;
-    String ipPerangkat = NetworkUtil.getDeviceIp(getContext());
+    String ipPerangkat = "-";
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -97,20 +98,45 @@ public class MasukFragment extends Fragment {
     }
 
     private void dataUser() {
-        Cursor res = databaseHelper.getAllData22(userId);
-        if (res.getCount()==0){
-            return;
+        sEmployee_id = session.getEmployeeId();
+        if (sEmployee_id == null || sEmployee_id.trim().isEmpty() || "0".equals(sEmployee_id)) {
+            sEmployee_id = session.getPegawaiId();
         }
 
-        while (res.moveToNext()){
-            sEmployee_id = res.getString(1);
-            sToken = res.getString(5);
-            sVerifikator = res.getString(6);
+        Cursor res = databaseHelper.getAllData22(session.getPegawaiId());
+        if (res == null || res.getCount() == 0) {
+            res = databaseHelper.getAllData22(session.getEmployeeId());
+        }
+
+        if (res != null && res.getCount() > 0) {
+            if (res.moveToFirst()) {
+                int empIdIndex = res.getColumnIndex("EMPLOYEID");
+                int tokenIndex = res.getColumnIndex("TOKEN");
+                int verifIndex = res.getColumnIndex("VERIFIKATOR");
+
+                String empFromDb = (empIdIndex != -1) ? res.getString(empIdIndex) : res.getString(1);
+                if (empFromDb != null && !empFromDb.isEmpty() && !"0".equals(empFromDb)) {
+                    sEmployee_id = empFromDb;
+                }
+                sToken = (tokenIndex != -1) ? res.getString(tokenIndex) : res.getString(5);
+                sVerifikator = (verifIndex != -1) ? res.getString(verifIndex) : res.getString(6);
+            }
+            res.close();
+        }
+
+        if (sEmployee_id == null || sEmployee_id.trim().isEmpty() || "0".equals(sEmployee_id)) {
+            sEmployee_id = session.getEmployeeId();
+        }
+        if (sEmployee_id == null || sEmployee_id.trim().isEmpty() || "0".equals(sEmployee_id)) {
+            sEmployee_id = session.getPegawaiId();
         }
     }
 
 
     public void dataRekapServerV1(String idE){
+        if (idE == null || idE.trim().isEmpty() || "0".equals(idE)) {
+            idE = session.getPegawaiId();
+        }
 
         Call<List<RekapMasukFragment>> callKegiatan = holderAPI.getRekapMasukFragment(ServerConfig.getApiUrl() + "verifikatorpertama?id="+idE);
         callKegiatan.enqueue(new Callback<List<RekapMasukFragment>>() {
@@ -122,7 +148,7 @@ public class MasukFragment extends Fragment {
                 }
 
                 List<RekapMasukFragment> rekapServers = response.body();
-                if (rekapServers.isEmpty()){
+                if (rekapServers == null || rekapServers.isEmpty()){
                     tvv1.setVisibility(View.GONE);
                 }else{
                     tvv1.setVisibility(View.VISIBLE);
@@ -148,6 +174,9 @@ public class MasukFragment extends Fragment {
     }
 
     public void dataRekapServerV2(String idE){
+        if (idE == null || idE.trim().isEmpty() || "0".equals(idE)) {
+            idE = session.getPegawaiId();
+        }
         Dialog dialogproses = new Dialog(getActivity(), R.style.DialogStyle);
         dialogproses.setContentView(R.layout.view_proses);
         dialogproses.setCancelable(false);
@@ -198,274 +227,263 @@ public class MasukFragment extends Fragment {
 
     Dialog viewDataValidasi;
 
-    public void viewDialogValidasi(RekapMasukFragment data){
-
+    public void viewDialogValidasi(RekapMasukFragment data) {
         viewDataValidasi = new Dialog(getActivity(), R.style.DialogStyle);
         viewDataValidasi.setContentView(R.layout.view_rekap_validasi);
         viewDataValidasi.setCancelable(true);
+
         ImageView tutupDialog = viewDataValidasi.findViewById(R.id.ivTutupViewListValidasi);
-        tutupDialog.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                viewDataValidasi.dismiss();
-            }
-        });
+        if (tutupDialog != null) {
+            tutupDialog.setOnClickListener(v -> viewDataValidasi.dismiss());
+        }
 
+        // Profile Info
         TextView nama = viewDataValidasi.findViewById(R.id.tvNamaRekapValid);
-        TextView pukul = viewDataValidasi.findViewById(R.id.tvJamRekapValid);
+        TextView tvNip = viewDataValidasi.findViewById(R.id.tvNipRekapValid);
         TextView tanggal = viewDataValidasi.findViewById(R.id.tvTanggalRekapValid);
-        TextView aktivitas = viewDataValidasi.findViewById(R.id.tvAktivitasRekapValid);
-        TextView kegiatan = viewDataValidasi.findViewById(R.id.tvKegiatanRekapValid);
-        TextView tagFotoTaging = viewDataValidasi.findViewById(R.id.tvTagFotoRekapValid);
-        TextView tagLampiranMasuk = viewDataValidasi.findViewById(R.id.tvTagLampiranRekapValid);
-        TextView alamat = viewDataValidasi.findViewById(R.id.tvLokasiAlamatLuarKantorValid);
-        ShapeableImageView fototaging = viewDataValidasi.findViewById(R.id.ivValidasiRekapValid);
-        ShapeableImageView fotolampiran = viewDataValidasi.findViewById(R.id.ivLampiranValidasiRekapValid);
-        TextView tolak = viewDataValidasi.findViewById(R.id.btnTolak);
-        TextView terima = viewDataValidasi.findViewById(R.id.btnTerima);
 
-        TextView txtOpenPdf = viewDataValidasi.findViewById(R.id.txtOpenPdf);
+        if (nama != null) nama.setText(data.getNama() != null ? data.getNama() : "-");
+        if (tvNip != null) tvNip.setText("NIP: " + (data.getNip() != null && !data.getNip().trim().isEmpty() ? data.getNip().trim() : "-"));
+        if (tanggal != null) tanggal.setText("📅 Tanggal: " + (data.getTanggal() != null ? data.getTanggal() : "-"));
 
-        tanggal.setText(data.getTanggal());
-        nama.setText(data.getNama());
-        pukul.setText(data.getJam_masuk());
-        aktivitas.setText(data.getKet_masuk());
-        if (data.getPosisi_masuk().equals("tl-masuk")){
-            kegiatan.setText("Tugas Lapangan");
-        }else if (data.getPosisi_masuk().equals("tl-pulang")){
-            kegiatan.setText("Tugas Lapangan");
-        }else if (data.getPosisi_masuk().equals("cuti")){
-            kegiatan.setText("Cuti");
-        }else if (data.getPosisi_masuk().equals("kp")){
-            kegiatan.setText("Keperluan Pribadi");
-        }else if (data.getPosisi_masuk().equals("sk")){
-            kegiatan.setText("Sakit");
-        }else if (data.getPosisi_masuk().equals("pd")){
-            kegiatan.setText("Perjalanan Dinas");
-        }
+        // Task 1: Ensure ONLY Absensi Masuk section is visible on MasukFragment
+        View cvSectionMasuk = viewDataValidasi.findViewById(R.id.cvSectionMasuk);
+        View cvSectionPulang = viewDataValidasi.findViewById(R.id.cvSectionPulang);
+        if (cvSectionMasuk != null) cvSectionMasuk.setVisibility(View.VISIBLE);
+        if (cvSectionPulang != null) cvSectionPulang.setVisibility(View.GONE);
 
-        if (data.getPhoto_tagging_masuk() ==  null){
-            fototaging.setVisibility(View.GONE);
-            tagFotoTaging.setVisibility(View.GONE);
-        }else {
-            Glide.with(this)
-                    .load(ServerConfig.getUploadsAbsensiUrl() + data.getPhoto_tagging_masuk())
-                    .into(fototaging);
+        // Masuk Section
+        TextView tvJamMasuk = viewDataValidasi.findViewById(R.id.tvJamRekapMasuk);
+        TextView tvKehadiranMasuk = viewDataValidasi.findViewById(R.id.tvKehadiranRekapMasuk);
+        TextView tvKeteranganMasuk = viewDataValidasi.findViewById(R.id.tvKeteranganRekapMasuk);
+        TextView tvStatusMasuk = viewDataValidasi.findViewById(R.id.tvStatusRekapMasuk);
+        TextView tvLokasiMasuk = viewDataValidasi.findViewById(R.id.tvLokasiAlamatLuarKantor);
+        TextView tvTagFotoMasuk = viewDataValidasi.findViewById(R.id.tvTagFotoRekapMasuk);
+        ShapeableImageView ivFotoMasuk = viewDataValidasi.findViewById(R.id.ivValidasiRekapMasuk);
+        TextView tvTagLampiranMasuk = viewDataValidasi.findViewById(R.id.tvTagLampiranRekapMasuk);
+        ShapeableImageView ivLampiranMasuk = viewDataValidasi.findViewById(R.id.ivLampiranValidasiRekapMasuk);
+        MaterialButton btnPdfMasuk = viewDataValidasi.findViewById(R.id.txtOpenPdfMasuk);
 
-            tagFotoTaging.setText("Foto Aktivitas Masuk");
-        }
+        if (tvJamMasuk != null) tvJamMasuk.setText(data.getJam_masuk() != null ? data.getJam_masuk() : "-");
+        if (tvKehadiranMasuk != null) tvKehadiranMasuk.setText(getKatName(data.getPosisi_masuk()));
+        if (tvKeteranganMasuk != null) tvKeteranganMasuk.setText(data.getKet_masuk() != null && !data.getKet_masuk().trim().isEmpty() ? data.getKet_masuk().trim() : "-");
+        if (tvStatusMasuk != null) tvStatusMasuk.setText(getStatusText(data.getValidasi_masuk()));
 
-        if (data.getLampiran_masuk() == null ){
-            fotolampiran.setVisibility(View.GONE);
-            tagLampiranMasuk.setVisibility(View.GONE);
-        }else{
+        bindMedia(data.getPhoto_tagging_masuk(), tvTagFotoMasuk, ivFotoMasuk, ServerConfig.getUploadsAbsensiUrl());
+        bindLampiran(data.getLampiran_masuk(), data.getEkstensi_masuk(), tvTagLampiranMasuk, ivLampiranMasuk, btnPdfMasuk);
+        bindAddress(data.getLat_masuk(), data.getLng_masuk(), tvLokasiMasuk);
 
-                if (data.getEkstensi_masuk().equals("img")){
-                Glide.with(this)
-                        .load( ServerConfig.getUploadsLampiranUrl() + data.getLampiran_masuk())
-                        .into( fotolampiran );
-                fotolampiran.setVisibility(View.VISIBLE);
+        // Action Buttons
+        View tolak = viewDataValidasi.findViewById(R.id.btnTolak);
+        View terima = viewDataValidasi.findViewById(R.id.btnTerima);
 
-                }else{
-                    fotolampiran.setVisibility(View.GONE);
-                    txtOpenPdf.setVisibility(View.VISIBLE);
-                    txtOpenPdf.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Intent intent = new Intent(getActivity(), ReadPdfActivity.class);
-                            intent.putExtra("PDF_URL", ServerConfig.getUploadsLampiranUrl()+data.getLampiran_masuk());
-                            startActivity(intent);
-                        }
-                    });
-
-                }
-
-
-        }
-
-        try {
-            if (data.getLat_masuk() == null || data.getLat_masuk().trim().isEmpty() || data.getLat_masuk().trim().equals("-")) {
-                alamat.setText("-");
-            } else {
-                alamat.setText(getAddress(getActivity(), Double.parseDouble(data.getLat_masuk().trim()), Double.parseDouble(data.getLng_masuk().trim())));
-            }
-        } catch (Exception e) {
-            alamat.setText("-");
-        }
-
-        tolak.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        if (tolak != null) {
+            tolak.setOnClickListener(v -> {
                 viewDataValidasi.dismiss();
-                validasi("0", data.getId(), "1");
-            }
-        });
-
-
-
-        terima.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+                validasi("3", data.getId(), "1");
+            });
+        }
+        if (terima != null) {
+            terima.setOnClickListener(v -> {
                 viewDataValidasi.dismiss();
-
                 validasi("1", data.getId(), "1");
-
-            }
-        });
-
+            });
+        }
 
         viewDataValidasi.show();
-
     }
-    public void viewDialogValidasiKedua(RekapMasukKeduaFragment data){
 
+    public void viewDialogValidasiKedua(RekapMasukKeduaFragment data) {
         viewDataValidasi = new Dialog(getActivity(), R.style.DialogStyle);
         viewDataValidasi.setContentView(R.layout.view_rekap_validasi_kedua);
         viewDataValidasi.setCancelable(true);
-        ImageView tutupDialog = viewDataValidasi.findViewById(R.id.ivTutupViewListValidasi);
-        tutupDialog.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+
+        ImageView tutupDialog = viewDataValidasi.findViewById(R.id.ivTutupViewListValidasiKedua);
+        if (tutupDialog != null) {
+            tutupDialog.setOnClickListener(v -> viewDataValidasi.dismiss());
+        }
+
+        // Profile Info
+        TextView nama = viewDataValidasi.findViewById(R.id.tvNamaRekapValidKedua);
+        TextView tvNip = viewDataValidasi.findViewById(R.id.tvNipRekapValidKedua);
+        TextView tanggal = viewDataValidasi.findViewById(R.id.tvTanggalRekapValidKedua);
+
+        if (nama != null) nama.setText(data.getNama() != null ? data.getNama() : "-");
+        if (tvNip != null) tvNip.setText("NIP: " + (data.getNip() != null && !data.getNip().trim().isEmpty() ? data.getNip().trim() : "-"));
+        if (tanggal != null) tanggal.setText("📅 Tanggal: " + (data.getTanggal() != null ? data.getTanggal() : "-"));
+
+        // Task 1: Ensure ONLY Absensi Masuk section is visible on MasukFragment
+        View cvSectionMasuk = viewDataValidasi.findViewById(R.id.cvSectionMasukKedua);
+        View cvSectionPulang = viewDataValidasi.findViewById(R.id.cvSectionPulangKedua);
+        if (cvSectionMasuk != null) cvSectionMasuk.setVisibility(View.VISIBLE);
+        if (cvSectionPulang != null) cvSectionPulang.setVisibility(View.GONE);
+
+        // Masuk Section
+        TextView tvJamMasuk = viewDataValidasi.findViewById(R.id.tvJamRekapMasukKedua);
+        TextView tvKehadiranMasuk = viewDataValidasi.findViewById(R.id.tvKehadiranRekapMasukKedua);
+        TextView tvKeteranganMasuk = viewDataValidasi.findViewById(R.id.tvKeteranganRekapMasukKedua);
+        TextView tvStatusMasuk = viewDataValidasi.findViewById(R.id.tvStatusRekapMasukKedua);
+        TextView tvLokasiMasuk = viewDataValidasi.findViewById(R.id.tvLokasiAlamatLuarKantorKedua);
+        TextView tvTagFotoMasuk = viewDataValidasi.findViewById(R.id.tvTagFotoRekapMasukKedua);
+        ShapeableImageView ivFotoMasuk = viewDataValidasi.findViewById(R.id.ivValidasiRekapMasukKedua);
+        TextView tvTagLampiranMasuk = viewDataValidasi.findViewById(R.id.tvTagLampiranRekapMasukKedua);
+        ShapeableImageView ivLampiranMasuk = viewDataValidasi.findViewById(R.id.ivLampiranValidasiRekapMasukKedua);
+        MaterialButton btnPdfMasuk = viewDataValidasi.findViewById(R.id.txtOpenPdfMasukKedua);
+
+        if (tvJamMasuk != null) tvJamMasuk.setText(data.getJam_masuk() != null ? data.getJam_masuk() : "-");
+        if (tvKehadiranMasuk != null) tvKehadiranMasuk.setText(getKatName(data.getPosisi_masuk()));
+        if (tvKeteranganMasuk != null) tvKeteranganMasuk.setText(data.getKet_masuk() != null && !data.getKet_masuk().trim().isEmpty() ? data.getKet_masuk().trim() : "-");
+        if (tvStatusMasuk != null) tvStatusMasuk.setText(getStatusText(data.getValidasi_masuk()));
+
+        bindMedia(data.getPhoto_tagging_masuk(), tvTagFotoMasuk, ivFotoMasuk, ServerConfig.getUploadsAbsensiUrl());
+        bindLampiran(data.getLampiran_masuk(), data.getEkstensi_masuk(), tvTagLampiranMasuk, ivLampiranMasuk, btnPdfMasuk);
+        bindAddress(data.getLat_masuk(), data.getLng_masuk(), tvLokasiMasuk);
+
+        // Action Buttons
+        View tolak = viewDataValidasi.findViewById(R.id.btnTolakKedua);
+        View terima = viewDataValidasi.findViewById(R.id.btnTerimaKedua);
+
+        if (tolak != null) {
+            tolak.setOnClickListener(v -> {
                 viewDataValidasi.dismiss();
-            }
-        });
-
-        TextView nama = viewDataValidasi.findViewById(R.id.tvNamaRekapValid);
-        TextView pukul = viewDataValidasi.findViewById(R.id.tvJamRekapValid);
-        TextView tanggal = viewDataValidasi.findViewById(R.id.tvTanggalRekapValid);
-        TextView aktivitas = viewDataValidasi.findViewById(R.id.tvAktivitasRekapValid);
-        TextView kegiatan = viewDataValidasi.findViewById(R.id.tvKegiatanRekapValid);
-        TextView tagFotoTaging = viewDataValidasi.findViewById(R.id.tvTagFotoRekapValid);
-        TextView tagLampiranMasuk = viewDataValidasi.findViewById(R.id.tvTagLampiranRekapValid);
-        TextView alamat = viewDataValidasi.findViewById(R.id.tvLokasiAlamatLuarKantorValid);
-        ShapeableImageView fototaging = viewDataValidasi.findViewById(R.id.ivValidasiRekapValid);
-        ShapeableImageView fotolampiran = viewDataValidasi.findViewById(R.id.ivLampiranValidasiRekapValid);
-
-        TextView tolak = viewDataValidasi.findViewById(R.id.btnTolak);
-        TextView terima = viewDataValidasi.findViewById(R.id.btnTerima);
-        TextView txtOpenPdf = viewDataValidasi.findViewById(R.id.txtOpenPdf);
-
-        if (data.getValidasi_masuk() == 3 || data.getValidasi_masuk() == 4){
-            tolak.setVisibility(View.GONE);
-        }else{
-            tolak.setVisibility(View.VISIBLE);
+                validasi("4", data.getId(), "2");
+            });
         }
-
-        tanggal.setText(data.getTanggal());
-        nama.setText(data.getNama());
-        pukul.setText(data.getJam_masuk());
-        aktivitas.setText(data.getKet_masuk());
-
-        String posisi = data.getPosisi_masuk();
-
-        if ("tl-masuk".equals(posisi)) {
-            kegiatan.setText("Tugas Lapangan");
-        } else if ("tl-pulang".equals(posisi)) {
-            kegiatan.setText("Tugas Lapangan");
-        } else if ("cuti".equals(posisi)) {
-            kegiatan.setText("Cuti");
-        } else if ("kp".equals(posisi)) {
-            kegiatan.setText("Keperluan Pribadi");
-        } else if ("sk".equals(posisi)) {
-            kegiatan.setText("Sakit");
-        } else if ("pd".equals(posisi)) {
-            kegiatan.setText("Perjalanan Dinas");
-        }
-
-        if (data.getPhoto_tagging_masuk() ==  null){
-            fototaging.setVisibility(View.GONE);
-            tagFotoTaging.setVisibility(View.GONE);
-        }else {
-            Glide.with(this)
-                    .load(ServerConfig.getUploadsAbsensiUrl() + data.getPhoto_tagging_masuk())
-                    .into(fototaging);
-
-            tagFotoTaging.setText("Foto Aktivitas Masuk");
-        }
-
-        if (data.getLampiran_masuk() == null ){
-            fotolampiran.setVisibility(View.GONE);
-            tagLampiranMasuk.setVisibility(View.GONE);
-        }else{
-
-
-                if (data.getEkstensi_masuk().equals("img")){
-                Glide.with(this)
-                        .load( ServerConfig.getUploadsLampiranUrl() + data.getLampiran_masuk())
-                        .into( fotolampiran );
-                fotolampiran.setVisibility(View.VISIBLE);
-
-                }else{
-                    fotolampiran.setVisibility(View.GONE);
-                    txtOpenPdf.setVisibility(View.VISIBLE);
-                    txtOpenPdf.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Intent intent = new Intent(getActivity(), ReadPdfActivity.class);
-                            intent.putExtra("PDF_URL", ServerConfig.getUploadsLampiranUrl()+data.getLampiran_masuk());
-                            startActivity(intent);
-                        }
-                    });
-                }
-
-
-        }
-
-        try {
-            if (data.getLat_masuk() == null || data.getLat_masuk().trim().isEmpty() || data.getLat_masuk().trim().equals("-")) {
-                alamat.setText("-");
-            } else {
-                alamat.setText(getAddress(getActivity(), Double.parseDouble(data.getLat_masuk().trim()), Double.parseDouble(data.getLng_masuk().trim())));
-            }
-        } catch (Exception e) {
-            alamat.setText("-");
-        }
-
-        tolak.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        if (terima != null) {
+            terima.setOnClickListener(v -> {
                 viewDataValidasi.dismiss();
-                validasi("0", data.getId(), "2");
-            }
-        });
-
-
-
-        terima.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                viewDataValidasi.dismiss();
-
-                validasi("1", data.getId(), "2");
-
-            }
-        });
-
+                validasi("2", data.getId(), "2");
+            });
+        }
 
         viewDataValidasi.show();
-
     }
 
-    String add;
-    public String getAddress(Context context, double lat, double lng) {
-        Geocoder geocoder = new Geocoder(context, Locale.getDefault());
-        try {
-            if(lat == 0 || lng == 0){
-                return "-";
+    private String getKatName(String posisi) {
+        if (posisi == null || posisi.trim().isEmpty()) return "-";
+        posisi = posisi.trim();
+        if ("tl-masuk".equals(posisi) || "tl-pulang".equals(posisi) || "tl".equals(posisi) || "luar".equals(posisi)) {
+            return "Tugas Lapangan";
+        } else if ("sk".equals(posisi)) {
+            return "Sakit";
+        } else if ("pd".equals(posisi)) {
+            return "Perjalanan Dinas";
+        } else if ("kp".equals(posisi)) {
+            return "Keperluan Pribadi";
+        } else if ("cuti".equals(posisi) || "ct".equals(posisi)) {
+            return "Cuti";
+        } else if ("masuk".equals(posisi) || "pulang".equals(posisi)) {
+            return "Presensi Kantor";
+        }
+        return posisi;
+    }
+
+    private String getStatusText(int validasi) {
+        switch (validasi) {
+            case 0: return "Butuh Verifikasi Tahap 1 (Verifikator 1)";
+            case 1: return "Butuh Verifikasi Tahap 2 (Verifikator 2)";
+            case 2: return "Sudah Diverifikasi Verifikator 2";
+            case 3: return "Ditolak Verifikator 1";
+            case 4: return "Ditolak Verifikator 2";
+            default: return "Proses Verifikasi";
+        }
+    }
+
+    private void bindMedia(String photoPath, TextView tagView, ShapeableImageView imageView, String baseUrl) {
+        if (imageView == null) return;
+        if (photoPath == null || photoPath.trim().isEmpty() || "-".equals(photoPath.trim())) {
+            imageView.setVisibility(View.GONE);
+            if (tagView != null) tagView.setVisibility(View.GONE);
+        } else {
+            photoPath = photoPath.trim();
+            String fullPhotoUrl;
+            if (photoPath.startsWith("http://") || photoPath.startsWith("https://")) {
+                fullPhotoUrl = photoPath;
+            } else if (photoPath.startsWith("uploads-img-absensi/")) {
+                fullPhotoUrl = ServerConfig.getBaseUrl() + photoPath;
+            } else {
+                fullPhotoUrl = baseUrl + photoPath;
+            }
+            imageView.setVisibility(View.VISIBLE);
+            if (tagView != null) tagView.setVisibility(View.VISIBLE);
+            Glide.with(this).load(fullPhotoUrl).placeholder(R.drawable.profil_pic).error(R.drawable.profil_pic).into(imageView);
+        }
+    }
+
+    private void bindLampiran(String lampiranPath, String ekstensi, TextView tagView, ShapeableImageView imageView, MaterialButton pdfButton) {
+        if (lampiranPath == null || lampiranPath.trim().isEmpty() || "-".equals(lampiranPath.trim())) {
+            if (imageView != null) imageView.setVisibility(View.GONE);
+            if (tagView != null) tagView.setVisibility(View.GONE);
+            if (pdfButton != null) pdfButton.setVisibility(View.GONE);
+        } else {
+            lampiranPath = lampiranPath.trim();
+            String fullLampiranUrl;
+            if (lampiranPath.startsWith("http://") || lampiranPath.startsWith("https://")) {
+                fullLampiranUrl = lampiranPath;
+            } else if (lampiranPath.startsWith("uploads-img-lampiran/")) {
+                fullLampiranUrl = ServerConfig.getBaseUrl() + lampiranPath;
+            } else {
+                fullLampiranUrl = ServerConfig.getUploadsLampiranUrl() + lampiranPath;
             }
 
-            List<Address> addresses = geocoder.getFromLocation(lat, lng, 1);
-            Address obj = addresses.get(0);
+            boolean isPdf = fullLampiranUrl.toLowerCase().endsWith(".pdf") || "pdf".equalsIgnoreCase(ekstensi);
+            if (isPdf) {
+                if (imageView != null) imageView.setVisibility(View.GONE);
+                if (tagView != null) tagView.setVisibility(View.VISIBLE);
+                if (pdfButton != null) {
+                    pdfButton.setVisibility(View.VISIBLE);
+                    String finalPdfUrl = fullLampiranUrl;
+                    pdfButton.setOnClickListener(v -> {
+                        Intent intent = new Intent(getActivity(), ReadPdfActivity.class);
+                        intent.putExtra("PDF_URL", finalPdfUrl);
+                        startActivity(intent);
+                    });
+                }
+            } else {
+                if (pdfButton != null) pdfButton.setVisibility(View.GONE);
+                if (imageView != null) imageView.setVisibility(View.VISIBLE);
+                if (tagView != null) tagView.setVisibility(View.VISIBLE);
+                if (imageView != null) {
+                    Glide.with(this).load(fullLampiranUrl).placeholder(R.drawable.profil_pic).error(R.drawable.profil_pic).into(imageView);
+                }
+            }
+        }
+    }
 
-            add = obj.getAddressLine(0);
+    private void bindAddress(String lat, String lng, TextView addressView) {
+        if (addressView == null) return;
+        if (lat == null || lat.trim().isEmpty() || "-".equals(lat.trim()) || "0".equals(lat.trim())) {
+            addressView.setText("Lokasi Presensi Utama / Dalam Kantor");
+        } else {
+            try {
+                double dLat = Double.parseDouble(lat.trim());
+                double dLng = Double.parseDouble(lng.trim());
+                String addressText = getAddress(getActivity(), dLat, dLng);
+                addressView.setText(addressText);
+            } catch (Exception e) {
+                addressView.setText("Lat: " + lat + ", Lng: " + lng);
+            }
+        }
+    }
 
-            return add;
-
-        } catch (IOException e) {
-            e.printStackTrace();
-
+    public String getAddress(Context context, double lat, double lng) {
+        if (context == null || lat == 0 || lng == 0) {
             return "-";
         }
+        try {
+            Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+            List<Address> addresses = geocoder.getFromLocation(lat, lng, 1);
+            if (addresses != null && !addresses.isEmpty()) {
+                Address obj = addresses.get(0);
+                String fullAddress = obj.getAddressLine(0);
+                if (fullAddress != null && !fullAddress.trim().isEmpty()) {
+                    return fullAddress;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "Lat: " + lat + ", Lng: " + lng;
     }
 
     public void validasi(String hasil, String idabsen, String validator){
@@ -481,7 +499,7 @@ public class MasukFragment extends Fragment {
 
         title.setText("Peringatan!");
 
-        if (hasil.equals("0")){
+        if ("3".equals(hasil) || "4".equals(hasil) || "0".equals(hasil)){
             tvWarning1.setText("Apakah anda yakin tidak akan memvalidasi?");
         }else{
             tvWarning1.setText("Apakah anda yakin akan memvalidasi?");

@@ -347,19 +347,13 @@ public class TugasLapanganShiftFinalActivity extends AppCompatActivity implement
     }
 
     public void kirimDataDinasLuar(View view){
-        if (llUpload != null) llUpload.setEnabled(false);
         requestPermission();
-        if (mock_location == 1){
-            dialogView.viewNotifKosong(TugasLapanganShiftFinalActivity.this, "Anda terdeteksi menggunakan Fake GPS.", "Jika ditemukan berulang kali, akun anda akan terblokir otomatis dan tercatat Alpa.");
+        if (file == null || !file.exists() || file.length() == 0){
+            dialogView.viewNotifKosong(TugasLapanganShiftFinalActivity.this, "Anda harus melampirkan Foto Kegiatan dan Surat Perintah.", "");
             if (llUpload != null) llUpload.setEnabled(true);
-        }else{
-            if (file == null || !file.exists() || file.length() == 0){
-                dialogView.viewNotifKosong(TugasLapanganShiftFinalActivity.this, "Anda harus melampirkan Foto Kegiatan and Surat Perintah Perjalanan Dinas.", "");
-                if (llUpload != null) llUpload.setEnabled(true);
-            }
-            else {
-                uploadImages();
-            }
+        } else {
+            if (llUpload != null) llUpload.setEnabled(false);
+            uploadImages();
         }
     }
 

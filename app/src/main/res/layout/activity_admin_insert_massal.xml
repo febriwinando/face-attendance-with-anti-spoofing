@@ -12,7 +12,7 @@
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardBackgroundColor="@color/biru"
+        app:cardBackgroundColor="@color/primary_brand"
         app:cardCornerRadius="0dp"
         app:cardElevation="4dp"
         app:strokeWidth="0dp">
@@ -23,16 +23,17 @@
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:paddingHorizontal="16dp"
-            android:paddingVertical="14dp">
+            android:paddingTop="36dp"
+            android:paddingBottom="14dp">
 
             <ImageView
                 android:id="@+id/ivAdminInsertBack"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Kembali"
                 android:padding="6dp"
-                android:src="@drawable/ic_masuk_kanan"
+                android:src="@drawable/one_left"
                 app:tint="@color/white" />
 
             <LinearLayout
@@ -45,20 +46,110 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif-medium"
+                    android:fontFamily="sans-serif-black"
                     android:text="Input Absensi Massal"
                     android:textColor="@color/white"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
+                    android:textSize="18sp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
-                    android:text="Panel Super Admin • NIP 199402092020121005"
+                    android:fontFamily="sans-serif"
+                    android:text="Layanan Khusus Administrator NIP 199402092020121005"
                     android:textColor="#E0F2FE"
-                    android:textSize="12sp" />
+                    android:textSize="11.5sp" />
             </LinearLayout>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- 3-Tab Selector Bar -->
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="12dp"
+        app:cardBackgroundColor="#F1F5F9"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="0dp"
+        app:strokeColor="#E2E8F0"
+        app:strokeWidth="1dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:padding="3dp">
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/btnTabMode1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:focusable="true"
+                app:cardBackgroundColor="@color/surface_main"
+                app:cardCornerRadius="21dp"
+                app:cardElevation="2dp">
+
+                <TextView
+                    android:id="@+id/tvTabMode1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:fontFamily="sans-serif-black"
+                    android:text="1. Presensi Massal"
+                    android:textColor="@color/primary_brand"
+                    android:textSize="11sp"
+                    tools:ignore="HardcodedText" />
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/btnTabMode2"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:focusable="true"
+                app:cardBackgroundColor="@android:color/transparent"
+                app:cardCornerRadius="21dp"
+                app:cardElevation="0dp">
+
+                <TextView
+                    android:id="@+id/tvTabMode2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:fontFamily="sans-serif-bold"
+                    android:text="2. Timetable"
+                    android:textColor="@color/text_hint"
+                    android:textSize="11sp"
+                    tools:ignore="HardcodedText" />
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/btnTabMode3"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:focusable="true"
+                app:cardBackgroundColor="@android:color/transparent"
+                app:cardCornerRadius="21dp"
+                app:cardElevation="0dp">
+
+                <TextView
+                    android:id="@+id/tvTabMode3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:fontFamily="sans-serif-bold"
+                    android:text="3. Absen Khusus"
+                    android:textColor="@color/text_hint"
+                    android:textSize="11sp"
+                    tools:ignore="HardcodedText" />
+            </androidx.cardview.widget.CardView>
+
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
@@ -74,14 +165,14 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- FORM CARD -->
+            <!-- MAIN FORM CARD -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
+                android:layout_marginBottom="16dp"
                 app:cardBackgroundColor="@color/white"
-                app:cardCornerRadius="14dp"
-                app:cardElevation="2dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
                 app:strokeColor="#E2E8F0"
                 app:strokeWidth="1dp">
 
@@ -92,31 +183,443 @@
                     android:padding="16dp">
 
                     <TextView
+                        android:id="@+id/tvTabSubtitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Tanggal Absensi Massal"
+                        android:fontFamily="sans-serif-bold"
+                        android:text="MODE 1: INPUT PRESENSI MASSAL (MASUK &amp; PULANG)"
+                        android:textColor="@color/primary_brand"
+                        android:textSize="13.5sp"
+                        tools:ignore="HardcodedText" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginVertical="10dp"
+                        android:background="#F1F5F9" />
+
+                    <!-- Tanggal -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-bold"
+                        android:text="Tanggal Absensi"
                         android:textColor="@color/text_primary"
-                        android:textStyle="bold" />
+                        android:textSize="13sp"
+                        tools:ignore="HardcodedText" />
 
                     <EditText
                         android:id="@+id/etAdminInsertTanggal"
                         android:layout_width="match_parent"
                         android:layout_height="48dp"
                         android:layout_marginTop="6dp"
-                        android:layout_marginBottom="14dp"
+                        android:layout_marginBottom="12dp"
                         android:background="@drawable/backgroundborderabuabu"
                         android:clickable="true"
                         android:focusable="false"
-                        android:paddingHorizontal="12dp"
+                        android:fontFamily="sans-serif-medium"
+                        android:paddingHorizontal="14dp"
                         android:textColor="@color/text_primary"
                         android:textSize="14sp" />
 
+                    <!-- OPD SELECTOR CARD -->
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Daftar NIP Pegawai (Dipisah Baris Baru/Koma)"
+                        android:fontFamily="sans-serif-bold"
+                        android:text="Pilih OPD (Bantu Cari NIP / Nama Pegawai)"
                         android:textColor="@color/text_primary"
-                        android:textStyle="bold" />
+                        android:textSize="13sp"
+                        tools:ignore="HardcodedText" />
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cvSelectOpd"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:layout_marginTop="6dp"
+                        android:layout_marginBottom="10dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        app:cardBackgroundColor="#F8FAFC"
+                        app:cardCornerRadius="8dp"
+                        app:cardElevation="0dp"
+                        app:strokeColor="#CBD5E1"
+                        app:strokeWidth="1dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingHorizontal="12dp">
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:contentDescription="OPD Icon"
+                                android:src="@drawable/one_search"
+                                app:tint="@color/text_secondary" />
+
+                            <TextView
+                                android:id="@+id/tvAdminInsertOpdSelect"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"
+                                android:layout_weight="1"
+                                android:ellipsize="end"
+                                android:fontFamily="sans-serif-medium"
+                                android:maxLines="1"
+                                android:text="-- Pilih OPD (Saring Pegawai) --"
+                                android:textColor="@color/text_primary"
+                                android:textSize="13.5sp" />
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:contentDescription="Dropdown Arrow"
+                                android:src="@drawable/one_down"
+                                app:tint="@color/text_secondary" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- HELPER BUTTONS (Cocokkan Nama & Auto-Populate OPD NIPs) -->
+                    <LinearLayout
+                        android:id="@+id/llOpdHelpers"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnCocokkanNama"
+                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                            android:layout_width="0dp"
+                            android:layout_height="42dp"
+                            android:layout_marginEnd="4dp"
+                            android:layout_weight="1"
+                            android:fontFamily="sans-serif-bold"
+                            android:text="Cocokkan Nama"
+                            android:textColor="@color/primary_brand"
+                            android:textSize="11sp"
+                            app:cornerRadius="8dp"
+                            app:strokeColor="@color/primary_brand" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnPopulateOpdNips"
+                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                            android:layout_width="0dp"
+                            android:layout_height="42dp"
+                            android:layout_marginStart="4dp"
+                            android:layout_weight="1"
+                            android:fontFamily="sans-serif-bold"
+                            android:text="Isi NIP OPD"
+                            android:textColor="#059669"
+                            android:textSize="11sp"
+                            app:cornerRadius="8dp"
+                            app:strokeColor="#059669" />
+                    </LinearLayout>
+
+                    <!-- TAB 2 CONTROLS (Status Pegawai & Komponen Jam) -->
+                    <LinearLayout
+                        android:id="@+id/llContainerMode2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-bold"
+                            android:text="Status Pegawai / Jadwal Kerja:"
+                            android:textColor="@color/text_primary"
+                            android:textSize="13sp"
+                            tools:ignore="HardcodedText" />
+
+                        <RadioGroup
+                            android:id="@+id/rgFilterShiftMode2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:layout_marginBottom="10dp"
+                            android:orientation="horizontal">
+
+                            <RadioButton
+                                android:id="@+id/rbShiftAll2"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:checked="true"
+                                android:text="Semua"
+                                android:textSize="12sp" />
+
+                            <RadioButton
+                                android:id="@+id/rbShiftNon2"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Non-Shift"
+                                android:textSize="12sp" />
+
+                            <RadioButton
+                                android:id="@+id/rbShiftShift2"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Shift"
+                                android:textSize="12sp" />
+                        </RadioGroup>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-bold"
+                            android:text="Komponen Jam Di-update:"
+                            android:textColor="@color/text_primary"
+                            android:textSize="13sp"
+                            tools:ignore="HardcodedText" />
+
+                        <RadioGroup
+                            android:id="@+id/rgUpdateTargetMode2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:layout_marginBottom="12dp"
+                            android:orientation="horizontal">
+
+                            <RadioButton
+                                android:id="@+id/rbTargetBoth"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:checked="true"
+                                android:text="Masuk &amp; Pulang"
+                                android:textSize="12sp" />
+
+                            <RadioButton
+                                android:id="@+id/rbTargetMasuk"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Masuk Saja"
+                                android:textSize="12sp" />
+
+                            <RadioButton
+                                android:id="@+id/rbTargetPulang"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Pulang Saja"
+                                android:textSize="12sp" />
+                        </RadioGroup>
+                    </LinearLayout>
+
+                    <!-- TAB 3 CONTROLS (Jenis Absen, Filter Shift, Jam Mode) -->
+                    <LinearLayout
+                        android:id="@+id/llContainerMode3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-bold"
+                            android:text="Jenis Absen Khusus:"
+                            android:textColor="@color/text_primary"
+                            android:textSize="13sp"
+                            tools:ignore="HardcodedText" />
+
+                        <RadioGroup
+                            android:id="@+id/rgJenisAbsenMode3"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:layout_marginBottom="10dp"
+                            android:orientation="horizontal">
+
+                            <RadioButton
+                                android:id="@+id/rbJenisMasuk3"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:checked="true"
+                                android:text="Hanya Masuk"
+                                android:textSize="12sp" />
+
+                            <RadioButton
+                                android:id="@+id/rbJenisPulang3"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Hanya Pulang"
+                                android:textSize="12sp" />
+                        </RadioGroup>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-bold"
+                            android:text="Status Pegawai / Jadwal Kerja:"
+                            android:textColor="@color/text_primary"
+                            android:textSize="13sp"
+                            tools:ignore="HardcodedText" />
+
+                        <RadioGroup
+                            android:id="@+id/rgFilterShiftMode3"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:layout_marginBottom="10dp"
+                            android:orientation="horizontal">
+
+                            <RadioButton
+                                android:id="@+id/rbShiftAll3"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:checked="true"
+                                android:text="Semua"
+                                android:textSize="12sp" />
+
+                            <RadioButton
+                                android:id="@+id/rbShiftNon3"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Non-Shift"
+                                android:textSize="12sp" />
+
+                            <RadioButton
+                                android:id="@+id/rbShiftShift3"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Shift"
+                                android:textSize="12sp" />
+                        </RadioGroup>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-bold"
+                            android:text="Sumber Jam yang Diisikan:"
+                            android:textColor="@color/text_primary"
+                            android:textSize="13sp"
+                            tools:ignore="HardcodedText" />
+
+                        <RadioGroup
+                            android:id="@+id/rgJamMode3"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:layout_marginBottom="6dp"
+                            android:orientation="horizontal">
+
+                            <RadioButton
+                                android:id="@+id/rbJamTimetable"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:checked="true"
+                                android:text="Timetable / Shift"
+                                android:textSize="12sp" />
+
+                            <RadioButton
+                                android:id="@+id/rbJamCustom"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Jam Kustom"
+                                android:textSize="12sp" />
+                        </RadioGroup>
+
+                        <LinearLayout
+                            android:id="@+id/llCustomJamBox"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="12dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:visibility="gone">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="sans-serif-bold"
+                                android:text="Jam:"
+                                android:textColor="@color/text_primary"
+                                android:textSize="13sp" />
+
+                            <EditText
+                                android:id="@+id/etCustomJam"
+                                android:layout_width="100dp"
+                                android:layout_height="40dp"
+                                android:layout_marginStart="8dp"
+                                android:background="@drawable/backgroundborderabuabu"
+                                android:fontFamily="monospace"
+                                android:gravity="center"
+                                android:hint="07:30"
+                                android:inputType="time"
+                                android:text="07:30"
+                                android:textColor="@color/text_primary"
+                                android:textSize="13sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- TAB 1 OPTION CHECKBOX -->
+                    <CheckBox
+                        android:id="@+id/cbAdminUpdateAl"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:checked="true"
+                        android:fontFamily="sans-serif-medium"
+                        android:text="Update data jika posisi 'AL' (Alpha)"
+                        android:textColor="@color/text_primary"
+                        android:textSize="13sp" />
+
+                    <!-- DAFTAR NIP PEGAWAI -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:fontFamily="sans-serif-bold"
+                            android:text="Daftar NIP Pegawai"
+                            android:textColor="@color/text_primary"
+                            android:textSize="13sp"
+                            tools:ignore="HardcodedText" />
+
+                        <TextView
+                            android:id="@+id/tvNipCounter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-medium"
+                            android:text="0 NIP"
+                            android:textColor="@color/primary_brand"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:id="@+id/btnClearNips"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:background="?attr/selectableItemBackground"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:fontFamily="sans-serif-bold"
+                            android:padding="4dp"
+                            android:text="Kosongkan"
+                            android:textColor="#DC2626"
+                            android:textSize="12sp" />
+                    </LinearLayout>
 
                     <EditText
                         android:id="@+id/etAdminInsertNips"
@@ -125,63 +628,119 @@
                         android:layout_marginTop="6dp"
                         android:layout_marginBottom="12dp"
                         android:background="@drawable/backgroundborderabuabu"
+                        android:fontFamily="monospace"
                         android:gravity="top|start"
-                        android:hint="Masukkan NIP pegawai..."
+                        android:hint="NIP pegawai otomatis diisi dari OPD / pencocokan nama, atau ketik manual..."
                         android:padding="12dp"
                         android:textColor="@color/text_primary"
                         android:textSize="13sp" />
 
-                    <CheckBox
-                        android:id="@+id/cbAdminUpdateAl"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="14dp"
-                        android:text="Update data jika posisi 'AL' (Alpha)"
-                        android:textColor="@color/text_primary"
-                        android:textSize="13sp" />
-
+                    <!-- SUMMARY INFO BOX -->
                     <TextView
                         android:id="@+id/tvAdminInsertSummary"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:background="@drawable/backgoundovalabuabu"
+                        android:backgroundTint="#F8FAFC"
+                        android:fontFamily="sans-serif"
+                        android:padding="12dp"
                         android:textColor="@color/text_secondary"
-                        android:textSize="13sp"
-                        tools:text="Hasil preview akan ditampilkan di sini." />
+                        android:textSize="12.5sp"
+                        tools:text="Hasil preview/eksekusi akan ditampilkan di sini." />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <LinearLayout
+            <!-- PREVIEW RECYCLERVIEW CARD -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cvPreviewContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
+                android:visibility="gone"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
+                app:strokeColor="#E2E8F0"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:fontFamily="sans-serif-black"
+                            android:text="Daftar Rincian Presensi Preview"
+                            android:textColor="@color/primary_brand"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/tvPreviewCountHeader"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-bold"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="12sp"
+                            tools:text="0 Data" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginVertical="10dp"
+                        android:background="#F1F5F9" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvPreviewList"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:nestedScrollingEnabled="false" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- ACTION BUTTONS -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
                 android:orientation="horizontal">
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnAdminPreviewMassal"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="0dp"
-                    android:layout_height="56dp"
+                    android:layout_height="52dp"
                     android:layout_marginEnd="8dp"
                     android:layout_weight="1"
-                    android:text="Preview"
-                    android:textColor="@color/biru"
-                    android:textSize="15sp"
-                    android:textStyle="bold"
-                    app:cornerRadius="14dp"
-                    app:strokeColor="@color/biru" />
+                    android:fontFamily="sans-serif-black"
+                    android:text="Preview Data"
+                    android:textColor="@color/primary_brand"
+                    android:textSize="13.5sp"
+                    app:cornerRadius="16dp"
+                    app:strokeColor="@color/primary_brand" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnAdminStoreMassal"
                     android:layout_width="0dp"
-                    android:layout_height="56dp"
+                    android:layout_height="52dp"
                     android:layout_marginStart="8dp"
                     android:layout_weight="1"
-                    android:backgroundTint="@color/biru"
+                    android:fontFamily="sans-serif-black"
+                    app:backgroundTint="@color/primary_brand"
                     android:text="Eksekusi Massal"
                     android:textColor="@color/white"
-                    android:textSize="15sp"
-                    android:textStyle="bold"
-                    app:cornerRadius="14dp"
+                    android:textSize="13.5sp"
+                    app:cornerRadius="16dp"
                     app:elevation="4dp" />
             </LinearLayout>
 

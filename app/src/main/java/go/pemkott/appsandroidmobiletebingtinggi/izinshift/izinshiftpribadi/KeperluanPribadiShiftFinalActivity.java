@@ -180,6 +180,7 @@ public class KeperluanPribadiShiftFinalActivity extends AppCompatActivity  imple
     FusedLocationProviderClient fusedLocationProviderClient;
     LocationRequest locationRequest;
     File file;
+    View llUpload;
     @SuppressLint("WrongThread")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -212,6 +213,12 @@ public class KeperluanPribadiShiftFinalActivity extends AppCompatActivity  imple
         tvCondition = findViewById(R.id.tvCondition);
         ivWeatherIcon = findViewById(R.id.ivWeatherIcon);
         cardSafeZone = findViewById(R.id.cardSafeZone);
+        llUpload = findViewById(R.id.llUpload);
+        if (llUpload != null) {
+            llUpload.setEnabled(true);
+            llUpload.setClickable(true);
+            llUpload.setAlpha(1.0f);
+        }
 
         //Google Maps
         Window window = this.getWindow();
@@ -414,18 +421,13 @@ public class KeperluanPribadiShiftFinalActivity extends AppCompatActivity  imple
 
     public void kirimDataDinasLuar(View view){
         requestPermission();
-        if (mock_location == 1){
-            dialogView.viewNotifKosong(KeperluanPribadiShiftFinalActivity.this, "Anda terdeteksi menggunakan Fake GPS.", "Jika ditemukan berulang kali, akun anda akan terblokir otomatis dan tercatat Alpa.");
-
-        }else {
-            if (fotoTaging == null) {
-                dialogView.viewNotifKosong(KeperluanPribadiShiftFinalActivity.this, "Anda harus melampirkan Foto Kegiatan.", "");
-            } else {
-                uploadImages();
-            }
+        if (fotoTaging == null) {
+            dialogView.viewNotifKosong(KeperluanPribadiShiftFinalActivity.this, "Anda harus melampirkan Foto Kegiatan.", "");
+            if (llUpload != null) llUpload.setEnabled(true);
+        } else {
+            if (llUpload != null) llUpload.setEnabled(false);
+            uploadImages();
         }
-
-
     }
 
 

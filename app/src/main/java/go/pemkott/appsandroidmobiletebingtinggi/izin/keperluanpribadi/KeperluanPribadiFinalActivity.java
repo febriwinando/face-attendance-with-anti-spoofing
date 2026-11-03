@@ -174,6 +174,7 @@ public class KeperluanPribadiFinalActivity extends AppCompatActivity implements 
     SessionManager session;
     String userId;
     File file,filelampiran;
+    View llUpload;
     @SuppressLint("WrongThread")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -215,6 +216,12 @@ public class KeperluanPribadiFinalActivity extends AppCompatActivity implements 
 
 //        Image View
         ivFinalKegiatan = findViewById(R.id.ivFinalKegiatanKp);
+        llUpload = findViewById(R.id.llUpload);
+        if (llUpload != null) {
+            llUpload.setEnabled(true);
+            llUpload.setClickable(true);
+            llUpload.setAlpha(1.0f);
+        }
 
         findViewById(R.id.ivBack).setOnClickListener(v -> finish());
 
@@ -381,15 +388,12 @@ public class KeperluanPribadiFinalActivity extends AppCompatActivity implements 
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.R){
             requestPermission();
         }
-        if (mock_location == 1){
-            dialogView.viewNotifKosong(KeperluanPribadiFinalActivity.this, "Anda terdeteksi menggunakan Fake GPS.", "Jika ditemukan berulang kali, akun anda akan terblokir otomatis dan tercatat Alpa.");
-
-        }else {
-            if (file == null || !file.exists() || file.length() == 0) {
-                dialogView.viewNotifKosong(KeperluanPribadiFinalActivity.this, "Anda harus melampirkan Foto Kegiatan.", "");
-            } else {
-                uploadImages();
-            }
+        if (file == null || !file.exists() || file.length() == 0) {
+            dialogView.viewNotifKosong(KeperluanPribadiFinalActivity.this, "Anda harus melampirkan Foto Kegiatan.", "");
+            if (llUpload != null) llUpload.setEnabled(true);
+        } else {
+            if (llUpload != null) llUpload.setEnabled(false);
+            uploadImages();
         }
     }
 

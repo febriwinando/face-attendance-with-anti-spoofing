@@ -1,24 +1,12 @@
 package go.pemkott.appsandroidmobiletebingtinggi.api;
 
 import android.content.Context;
-import android.os.Build;
 import go.pemkott.appsandroidmobiletebingtinggi.MyApplication;
 import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
 
 public class ServerConfig {
 
-    public static String BASE_HOST = "https://svr-absensi.tebingtinggikota.go.id/";
-
-    public static boolean isEmulator() {
-        return (Build.FINGERPRINT.startsWith("generic")
-                || Build.FINGERPRINT.startsWith("unknown")
-                || Build.MODEL.contains("google_sdk")
-                || Build.MODEL.contains("Emulator")
-                || Build.MODEL.contains("Android SDK built for x86")
-                || Build.MANUFACTURER.contains("Genymotion")
-                || (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic"))
-                || "google_sdk".equals(Build.PRODUCT));
-    }
+    public static String BASE_HOST = "http://172.15.5.39:8000/";
 
     public static String getBaseUrl() {
         Context context = MyApplication.getAppContext();
@@ -28,21 +16,13 @@ public class ServerConfig {
             if (savedHost != null && !savedHost.trim().isEmpty()) {
                 String url = savedHost.trim();
                 if (!url.startsWith("http://") && !url.startsWith("https://")) {
-                    url = "https://" + url;
+                    url = "http://" + url;
                 }
                 if (!url.endsWith("/")) {
                     url = url + "/";
                 }
                 return url;
             }
-        }
-
-        if (isEmulator()) {
-            return "https://svr-absensi.tebingtinggikota.go.id/";
-        }
-
-        if (BASE_HOST == null || BASE_HOST.trim().isEmpty()) {
-            return "https://svr-absensi.tebingtinggikota.go.id/";
         }
 
         String url = BASE_HOST.trim();

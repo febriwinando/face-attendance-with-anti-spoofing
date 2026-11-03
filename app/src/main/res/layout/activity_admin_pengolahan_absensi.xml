@@ -12,7 +12,7 @@
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardBackgroundColor="@color/biru"
+        app:cardBackgroundColor="@color/primary_brand"
         app:cardCornerRadius="0dp"
         app:cardElevation="4dp"
         app:strokeWidth="0dp">
@@ -23,16 +23,17 @@
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:paddingHorizontal="16dp"
-            android:paddingVertical="14dp">
+            android:paddingTop="36dp"
+            android:paddingBottom="14dp">
 
             <ImageView
                 android:id="@+id/ivAdminPengolahanBack"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Kembali"
                 android:padding="6dp"
-                android:src="@drawable/ic_masuk_kanan"
+                android:src="@drawable/one_left"
                 app:tint="@color/white" />
 
             <LinearLayout
@@ -45,19 +46,19 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif-medium"
+                    android:fontFamily="sans-serif-black"
                     android:text="Pengolahan &amp; Edit Absensi"
                     android:textColor="@color/white"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
+                    android:textSize="18sp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
-                    android:text="Panel Super Admin • NIP 199402092020121005"
+                    android:fontFamily="sans-serif"
+                    android:text="Koreksi Data &amp; Media Absensi Pegawai"
                     android:textColor="#E0F2FE"
-                    android:textSize="12sp" />
+                    android:textSize="11.5sp" />
             </LinearLayout>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
@@ -74,14 +75,14 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- CARD 1: PEMILIHAN OPD DAN PEGAWAI -->
+            <!-- CARD 1: PEMILIHAN OPD DAN PEGAWAI DENGAN PENCARIAN -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 app:cardBackgroundColor="@color/white"
-                app:cardCornerRadius="14dp"
-                app:cardElevation="2dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
                 app:strokeColor="#E2E8F0"
                 app:strokeWidth="1dp">
 
@@ -91,59 +92,151 @@
                     android:orientation="vertical"
                     android:padding="16dp">
 
+                    <!-- 1. SELECT OPD / UNIT KERJA -->
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-bold"
                         android:text="1. Pilih OPD / Unit Kerja"
-                        android:textColor="@color/biru"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
+                        android:textColor="@color/primary_brand"
+                        android:textSize="13.5sp"
+                        tools:ignore="HardcodedText" />
 
-                    <FrameLayout
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardSelectOpd"
                         android:layout_width="match_parent"
-                        android:layout_height="48dp"
+                        android:layout_height="50dp"
                         android:layout_marginTop="6dp"
                         android:layout_marginBottom="14dp"
-                        android:background="@drawable/backgroundborderabuabu">
+                        android:clickable="true"
+                        android:focusable="true"
+                        app:cardBackgroundColor="#F8FAFC"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="0dp"
+                        app:strokeColor="#CBD5E1"
+                        app:strokeWidth="1dp">
 
-                        <Spinner
-                            android:id="@+id/spAdminPengolahanOpd"
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:paddingHorizontal="8dp"
-                            android:spinnerMode="dropdown" />
-                    </FrameLayout>
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingHorizontal="12dp">
 
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/ic_search_location"
+                                app:tint="@color/primary_brand"
+                                tools:ignore="ContentDescription" />
+
+                            <TextView
+                                android:id="@+id/tvAdminOpdSelect"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"
+                                android:layout_weight="1"
+                                android:ellipsize="end"
+                                android:fontFamily="sans-serif-medium"
+                                android:maxLines="1"
+                                android:text="Klik untuk mencari OPD..."
+                                android:textColor="@color/text_primary"
+                                android:textSize="13.5sp"
+                                tools:ignore="HardcodedText" />
+
+                            <ImageView
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
+                                android:src="@drawable/ic_arrow_down"
+                                app:tint="@color/text_hint"
+                                tools:ignore="ContentDescription" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Hidden spinner for fallback compatibility -->
+                    <Spinner
+                        android:id="@+id/spAdminPengolahanOpd"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:visibility="gone" />
+
+                    <!-- 2. SELECT PEGAWAI -->
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-bold"
                         android:text="2. Pilih Pegawai"
-                        android:textColor="@color/biru"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
+                        android:textColor="@color/primary_brand"
+                        android:textSize="13.5sp"
+                        tools:ignore="HardcodedText" />
 
-                    <FrameLayout
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardSelectPegawai"
                         android:layout_width="match_parent"
-                        android:layout_height="48dp"
+                        android:layout_height="50dp"
                         android:layout_marginTop="6dp"
                         android:layout_marginBottom="14dp"
-                        android:background="@drawable/backgroundborderabuabu">
+                        android:clickable="true"
+                        android:focusable="true"
+                        app:cardBackgroundColor="#F8FAFC"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="0dp"
+                        app:strokeColor="#CBD5E1"
+                        app:strokeWidth="1dp">
 
-                        <Spinner
-                            android:id="@+id/spAdminPengolahanPegawai"
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:paddingHorizontal="8dp"
-                            android:spinnerMode="dropdown" />
-                    </FrameLayout>
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingHorizontal="12dp">
 
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/one_person"
+                                app:tint="@color/primary_brand"
+                                tools:ignore="ContentDescription" />
+
+                            <TextView
+                                android:id="@+id/tvAdminPegawaiSelect"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"
+                                android:layout_weight="1"
+                                android:ellipsize="end"
+                                android:fontFamily="sans-serif-medium"
+                                android:maxLines="1"
+                                android:text="Klik untuk mencari pegawai..."
+                                android:textColor="@color/text_primary"
+                                android:textSize="13.5sp"
+                                tools:ignore="HardcodedText" />
+
+                            <ImageView
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
+                                android:src="@drawable/ic_arrow_down"
+                                app:tint="@color/text_hint"
+                                tools:ignore="ContentDescription" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Hidden spinner for fallback compatibility -->
+                    <Spinner
+                        android:id="@+id/spAdminPengolahanPegawai"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:visibility="gone" />
+
+                    <!-- 3. TANGGAL & ACTION -->
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-bold"
                         android:text="3. Pilih Tanggal Absensi"
-                        android:textColor="@color/biru"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
+                        android:textColor="@color/primary_brand"
+                        android:textSize="13.5sp"
+                        tools:ignore="HardcodedText" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -161,6 +254,7 @@
                             android:background="@drawable/backgroundborderabuabu"
                             android:clickable="true"
                             android:focusable="false"
+                            android:fontFamily="sans-serif-medium"
                             android:paddingHorizontal="12dp"
                             android:textColor="@color/text_primary"
                             android:textSize="14sp" />
@@ -170,20 +264,22 @@
                             android:layout_width="wrap_content"
                             android:layout_height="48dp"
                             android:layout_marginStart="8dp"
-                            android:backgroundTint="@color/biru"
+                            android:fontFamily="sans-serif-bold"
+                            app:backgroundTint="@color/primary_brand"
                             android:text="Cari Data"
                             android:textColor="@color/white"
                             android:textSize="13sp"
-                            app:cornerRadius="10dp" />
+                            app:cornerRadius="12dp" />
                     </LinearLayout>
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-bold"
                         android:text="ID Presensi (Otomatis)"
                         android:textColor="@color/text_secondary"
                         android:textSize="12sp"
-                        android:textStyle="bold" />
+                        tools:ignore="HardcodedText" />
 
                     <EditText
                         android:id="@+id/etAdminPengolahanId"
@@ -191,6 +287,7 @@
                         android:layout_height="44dp"
                         android:layout_marginTop="4dp"
                         android:background="@drawable/backgroundborderabuabu"
+                        android:fontFamily="sans-serif"
                         android:hint="ID Presensi terisi otomatis..."
                         android:inputType="number"
                         android:paddingHorizontal="12dp"
@@ -205,8 +302,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 app:cardBackgroundColor="@color/white"
-                app:cardCornerRadius="14dp"
-                app:cardElevation="2dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
                 app:strokeColor="#E2E8F0"
                 app:strokeWidth="1dp">
 
@@ -219,18 +316,20 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-bold"
                         android:text="--- BAGIAN ABSEN MASUK ---"
-                        android:textColor="@color/biru"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
+                        android:textColor="@color/primary_brand"
+                        android:textSize="13.5sp"
+                        tools:ignore="HardcodedText" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
+                        android:fontFamily="sans-serif-bold"
                         android:text="Kategori / Posisi Masuk"
                         android:textColor="@color/text_primary"
-                        android:textStyle="bold" />
+                        tools:ignore="HardcodedText" />
 
                     <FrameLayout
                         android:layout_width="match_parent"
@@ -250,213 +349,204 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-bold"
                         android:text="Jam Masuk (HH:mm)"
                         android:textColor="@color/text_primary"
-                        android:textStyle="bold" />
+                        tools:ignore="HardcodedText" />
 
                     <EditText
                         android:id="@+id/etAdminPengolahanJamMasuk"
                         android:layout_width="match_parent"
-                        android:layout_height="48dp"
-                        android:layout_marginTop="6dp"
+                        android:layout_height="44dp"
+                        android:layout_marginTop="4dp"
                         android:layout_marginBottom="12dp"
                         android:background="@drawable/backgroundborderabuabu"
+                        android:fontFamily="sans-serif-medium"
+                        android:hint="07:30"
                         android:paddingHorizontal="12dp"
                         android:textColor="@color/text_primary"
-                        android:textSize="14sp" />
+                        android:textSize="13sp" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Keterlambatan (Menit)"
+                        android:fontFamily="sans-serif-bold"
+                        android:text="Keterlambatan (menit)"
                         android:textColor="@color/text_primary"
-                        android:textStyle="bold" />
+                        tools:ignore="HardcodedText" />
 
                     <EditText
                         android:id="@+id/etAdminPengolahanKeterlambatan"
                         android:layout_width="match_parent"
-                        android:layout_height="48dp"
-                        android:layout_marginTop="6dp"
+                        android:layout_height="44dp"
+                        android:layout_marginTop="4dp"
                         android:layout_marginBottom="12dp"
                         android:background="@drawable/backgroundborderabuabu"
+                        android:fontFamily="sans-serif"
+                        android:hint="0"
                         android:inputType="number"
                         android:paddingHorizontal="12dp"
                         android:textColor="@color/text_primary"
-                        android:textSize="14sp" />
+                        android:textSize="13sp" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Catatan / Keterangan Masuk"
+                        android:fontFamily="sans-serif-bold"
+                        android:text="Keterangan Masuk"
                         android:textColor="@color/text_primary"
-                        android:textStyle="bold" />
+                        tools:ignore="HardcodedText" />
 
                     <EditText
                         android:id="@+id/etAdminPengolahanKetMasuk"
                         android:layout_width="match_parent"
-                        android:layout_height="48dp"
-                        android:layout_marginTop="6dp"
-                        android:layout_marginBottom="16dp"
+                        android:layout_height="44dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginBottom="14dp"
                         android:background="@drawable/backgroundborderabuabu"
+                        android:fontFamily="sans-serif"
+                        android:hint="sesuai waktu"
                         android:paddingHorizontal="12dp"
                         android:textColor="@color/text_primary"
-                        android:textSize="14sp" />
+                        android:textSize="13sp" />
 
-                    <!-- MEDIA CARDS EXACT PATTERN PERJALANAN DINAS FINAL -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="center_horizontal"
                         android:orientation="horizontal">
 
-                        <!-- Foto Absen Masuk -->
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center_horizontal"
-                            android:orientation="vertical">
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/cardPickFotoMasuk"
+                            android:layout_width="0dp"
+                            android:layout_height="110dp"
+                            android:layout_marginEnd="6dp"
+                            android:layout_weight="1"
+                            app:cardBackgroundColor="#F8FAFC"
+                            app:cardCornerRadius="12dp"
+                            app:strokeColor="#CBD5E1"
+                            app:strokeWidth="1dp">
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="8dp"
-                                android:fontFamily="sans-serif-medium"
-                                android:text="Foto Masuk"
-                                android:textColor="@color/text_hint"
-                                android:textSize="11sp" />
+                            <FrameLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent">
 
-                            <com.google.android.material.card.MaterialCardView
-                                android:id="@+id/cardPickFotoMasuk"
-                                android:layout_width="100dp"
-                                android:layout_height="130dp"
-                                android:clickable="true"
-                                android:focusable="true"
-                                android:foreground="?attr/selectableItemBackground"
-                                app:cardBackgroundColor="@color/surface_variant"
-                                app:cardCornerRadius="16dp"
-                                app:cardElevation="0dp"
-                                app:strokeColor="@color/surface_variant"
-                                app:strokeWidth="1dp">
-
-                                <FrameLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent">
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:gravity="center"
+                                    android:orientation="vertical">
 
                                     <ImageView
                                         android:id="@+id/iconFotoMasuk"
                                         android:layout_width="32dp"
                                         android:layout_height="32dp"
-                                        android:layout_gravity="center"
-                                        android:contentDescription="Foto Masuk"
-                                        android:src="@drawable/ic_camera"
-                                        app:tint="@color/text_hint" />
+                                        android:src="@drawable/ic_search_location"
+                                        app:tint="@color/primary_brand"
+                                        tools:ignore="ContentDescription" />
 
-                                    <com.google.android.material.imageview.ShapeableImageView
-                                        android:id="@+id/ivFotoMasukFinal"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="match_parent"
-                                        android:scaleType="centerCrop"
-                                        android:visibility="gone"
-                                        app:shapeAppearanceOverlay="@style/ImageStyle2" />
-                                </FrameLayout>
-                            </com.google.android.material.card.MaterialCardView>
-                        </LinearLayout>
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="4dp"
+                                        android:fontFamily="sans-serif-bold"
+                                        android:text="Foto Masuk"
+                                        android:textColor="@color/text_primary"
+                                        android:textSize="11sp"
+                                        tools:ignore="HardcodedText" />
+                                </LinearLayout>
 
-                        <!-- Lampiran Surat Masuk -->
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
-                            android:gravity="center_horizontal"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="8dp"
-                                android:fontFamily="sans-serif-medium"
-                                android:text="Lampiran Masuk"
-                                android:textColor="@color/text_hint"
-                                android:textSize="11sp" />
-
-                            <com.google.android.material.card.MaterialCardView
-                                android:id="@+id/cardPickLampiranMasuk"
-                                android:layout_width="100dp"
-                                android:layout_height="130dp"
-                                android:clickable="true"
-                                android:focusable="true"
-                                android:foreground="?attr/selectableItemBackground"
-                                app:cardBackgroundColor="@color/surface_variant"
-                                app:cardCornerRadius="16dp"
-                                app:cardElevation="0dp"
-                                app:strokeColor="@color/surface_variant"
-                                app:strokeWidth="1dp">
-
-                                <FrameLayout
+                                <ImageView
+                                    android:id="@+id/ivFotoMasukFinal"
                                     android:layout_width="match_parent"
-                                    android:layout_height="match_parent">
+                                    android:layout_height="match_parent"
+                                    android:scaleType="centerCrop"
+                                    android:visibility="gone"
+                                    tools:ignore="ContentDescription" />
+                            </FrameLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/cardPickLampiranMasuk"
+                            android:layout_width="0dp"
+                            android:layout_height="110dp"
+                            android:layout_marginStart="6dp"
+                            android:layout_weight="1"
+                            app:cardBackgroundColor="#F8FAFC"
+                            app:cardCornerRadius="12dp"
+                            app:strokeColor="#CBD5E1"
+                            app:strokeWidth="1dp">
+
+                            <FrameLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent">
+
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:gravity="center"
+                                    android:orientation="vertical">
 
                                     <ImageView
                                         android:id="@+id/iconLampiranMasuk"
                                         android:layout_width="32dp"
                                         android:layout_height="32dp"
-                                        android:layout_gravity="center"
-                                        android:contentDescription="Lampiran Masuk"
                                         android:src="@drawable/ic_document_scanner"
-                                        app:tint="@color/text_hint" />
+                                        app:tint="@color/primary_brand"
+                                        tools:ignore="ContentDescription" />
 
-                                    <com.google.android.material.imageview.ShapeableImageView
-                                        android:id="@+id/ivLampiranMasukFinal"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="match_parent"
-                                        android:scaleType="centerCrop"
-                                        android:visibility="gone"
-                                        app:shapeAppearanceOverlay="@style/ImageStyle2" />
-                                </FrameLayout>
-                            </com.google.android.material.card.MaterialCardView>
-                        </LinearLayout>
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="4dp"
+                                        android:fontFamily="sans-serif-bold"
+                                        android:text="Lampiran Masuk"
+                                        android:textColor="@color/text_primary"
+                                        android:textSize="11sp"
+                                        tools:ignore="HardcodedText" />
+                                </LinearLayout>
+
+                                <ImageView
+                                    android:id="@+id/ivLampiranMasukFinal"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:scaleType="centerCrop"
+                                    android:visibility="gone"
+                                    tools:ignore="ContentDescription" />
+
+                                <LinearLayout
+                                    android:id="@+id/llPdfMasuk"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:background="#EFF6FF"
+                                    android:gravity="center"
+                                    android:orientation="vertical"
+                                    android:padding="6dp"
+                                    android:visibility="gone">
+
+                                    <ImageView
+                                        android:layout_width="28dp"
+                                        android:layout_height="28dp"
+                                        android:src="@drawable/ic_document_scanner"
+                                        app:tint="@color/primary_brand"
+                                        tools:ignore="ContentDescription" />
+
+                                    <TextView
+                                        android:id="@+id/tvPdfMasukName"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="2dp"
+                                        android:ellipsize="middle"
+                                        android:fontFamily="sans-serif-bold"
+                                        android:maxLines="1"
+                                        android:textColor="@color/primary_brand"
+                                        android:textSize="11sp"
+                                        tools:text="file.pdf" />
+                                </LinearLayout>
+                            </FrameLayout>
+                        </com.google.android.material.card.MaterialCardView>
                     </LinearLayout>
-
-                    <!-- PDF INFO CARD FOR LAMPIRAN MASUK -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/llPdfMasuk"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:visibility="gone"
-                        app:cardBackgroundColor="@color/surface_main"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="2dp"
-                        app:strokeColor="@color/surface_variant"
-                        app:strokeWidth="1dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center_vertical"
-                            android:padding="12dp">
-
-                            <ImageView
-                                android:layout_width="36dp"
-                                android:layout_height="36dp"
-                                android:contentDescription="PDF Icon"
-                                android:src="@drawable/ic_artikel"
-                                app:tint="@color/biru" />
-
-                            <TextView
-                                android:id="@+id/tvPdfMasukName"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="12dp"
-                                android:layout_weight="1"
-                                android:ellipsize="middle"
-                                android:singleLine="true"
-                                android:textColor="@color/text_primary"
-                                android:textSize="13sp"
-                                tools:text="dokumen_lampiran_masuk.pdf" />
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
-
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -464,10 +554,10 @@
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
+                android:layout_marginBottom="16dp"
                 app:cardBackgroundColor="@color/white"
-                app:cardCornerRadius="14dp"
-                app:cardElevation="2dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
                 app:strokeColor="#E2E8F0"
                 app:strokeWidth="1dp">
 
@@ -480,18 +570,20 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-bold"
                         android:text="--- BAGIAN ABSEN PULANG ---"
-                        android:textColor="@color/biru"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
+                        android:textColor="@color/primary_brand"
+                        android:textSize="13.5sp"
+                        tools:ignore="HardcodedText" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
+                        android:fontFamily="sans-serif-bold"
                         android:text="Kategori / Posisi Pulang"
                         android:textColor="@color/text_primary"
-                        android:textStyle="bold" />
+                        tools:ignore="HardcodedText" />
 
                     <FrameLayout
                         android:layout_width="match_parent"
@@ -511,190 +603,176 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-bold"
                         android:text="Jam Pulang (HH:mm)"
                         android:textColor="@color/text_primary"
-                        android:textStyle="bold" />
+                        tools:ignore="HardcodedText" />
 
                     <EditText
                         android:id="@+id/etAdminPengolahanJamPulang"
                         android:layout_width="match_parent"
-                        android:layout_height="48dp"
-                        android:layout_marginTop="6dp"
-                        android:layout_marginBottom="16dp"
+                        android:layout_height="44dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginBottom="14dp"
                         android:background="@drawable/backgroundborderabuabu"
+                        android:fontFamily="sans-serif-medium"
+                        android:hint="16:30"
                         android:paddingHorizontal="12dp"
                         android:textColor="@color/text_primary"
-                        android:textSize="14sp" />
+                        android:textSize="13sp" />
 
-                    <!-- MEDIA CARDS EXACT PATTERN PERJALANAN DINAS FINAL -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="center_horizontal"
                         android:orientation="horizontal">
 
-                        <!-- Foto Absen Pulang -->
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center_horizontal"
-                            android:orientation="vertical">
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/cardPickFotoPulang"
+                            android:layout_width="0dp"
+                            android:layout_height="110dp"
+                            android:layout_marginEnd="6dp"
+                            android:layout_weight="1"
+                            app:cardBackgroundColor="#F8FAFC"
+                            app:cardCornerRadius="12dp"
+                            app:strokeColor="#CBD5E1"
+                            app:strokeWidth="1dp">
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="8dp"
-                                android:fontFamily="sans-serif-medium"
-                                android:text="Foto Pulang"
-                                android:textColor="@color/text_hint"
-                                android:textSize="11sp" />
+                            <FrameLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent">
 
-                            <com.google.android.material.card.MaterialCardView
-                                android:id="@+id/cardPickFotoPulang"
-                                android:layout_width="100dp"
-                                android:layout_height="130dp"
-                                android:clickable="true"
-                                android:focusable="true"
-                                android:foreground="?attr/selectableItemBackground"
-                                app:cardBackgroundColor="@color/surface_variant"
-                                app:cardCornerRadius="16dp"
-                                app:cardElevation="0dp"
-                                app:strokeColor="@color/surface_variant"
-                                app:strokeWidth="1dp">
-
-                                <FrameLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent">
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:gravity="center"
+                                    android:orientation="vertical">
 
                                     <ImageView
                                         android:id="@+id/iconFotoPulang"
                                         android:layout_width="32dp"
                                         android:layout_height="32dp"
-                                        android:layout_gravity="center"
-                                        android:contentDescription="Foto Pulang"
-                                        android:src="@drawable/ic_camera"
-                                        app:tint="@color/text_hint" />
+                                        android:src="@drawable/ic_search_location"
+                                        app:tint="@color/primary_brand"
+                                        tools:ignore="ContentDescription" />
 
-                                    <com.google.android.material.imageview.ShapeableImageView
-                                        android:id="@+id/ivFotoPulangFinal"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="match_parent"
-                                        android:scaleType="centerCrop"
-                                        android:visibility="gone"
-                                        app:shapeAppearanceOverlay="@style/ImageStyle2" />
-                                </FrameLayout>
-                            </com.google.android.material.card.MaterialCardView>
-                        </LinearLayout>
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="4dp"
+                                        android:fontFamily="sans-serif-bold"
+                                        android:text="Foto Pulang"
+                                        android:textColor="@color/text_primary"
+                                        android:textSize="11sp"
+                                        tools:ignore="HardcodedText" />
+                                </LinearLayout>
 
-                        <!-- Lampiran Surat Pulang -->
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
-                            android:gravity="center_horizontal"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="8dp"
-                                android:fontFamily="sans-serif-medium"
-                                android:text="Lampiran Pulang"
-                                android:textColor="@color/text_hint"
-                                android:textSize="11sp" />
-
-                            <com.google.android.material.card.MaterialCardView
-                                android:id="@+id/cardPickLampiranPulang"
-                                android:layout_width="100dp"
-                                android:layout_height="130dp"
-                                android:clickable="true"
-                                android:focusable="true"
-                                android:foreground="?attr/selectableItemBackground"
-                                app:cardBackgroundColor="@color/surface_variant"
-                                app:cardCornerRadius="16dp"
-                                app:cardElevation="0dp"
-                                app:strokeColor="@color/surface_variant"
-                                app:strokeWidth="1dp">
-
-                                <FrameLayout
+                                <ImageView
+                                    android:id="@+id/ivFotoPulangFinal"
                                     android:layout_width="match_parent"
-                                    android:layout_height="match_parent">
+                                    android:layout_height="match_parent"
+                                    android:scaleType="centerCrop"
+                                    android:visibility="gone"
+                                    tools:ignore="ContentDescription" />
+                            </FrameLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/cardPickLampiranPulang"
+                            android:layout_width="0dp"
+                            android:layout_height="110dp"
+                            android:layout_marginStart="6dp"
+                            android:layout_weight="1"
+                            app:cardBackgroundColor="#F8FAFC"
+                            app:cardCornerRadius="12dp"
+                            app:strokeColor="#CBD5E1"
+                            app:strokeWidth="1dp">
+
+                            <FrameLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent">
+
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:gravity="center"
+                                    android:orientation="vertical">
 
                                     <ImageView
                                         android:id="@+id/iconLampiranPulang"
                                         android:layout_width="32dp"
                                         android:layout_height="32dp"
-                                        android:layout_gravity="center"
-                                        android:contentDescription="Lampiran Pulang"
                                         android:src="@drawable/ic_document_scanner"
-                                        app:tint="@color/text_hint" />
+                                        app:tint="@color/primary_brand"
+                                        tools:ignore="ContentDescription" />
 
-                                    <com.google.android.material.imageview.ShapeableImageView
-                                        android:id="@+id/ivLampiranPulangFinal"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="match_parent"
-                                        android:scaleType="centerCrop"
-                                        android:visibility="gone"
-                                        app:shapeAppearanceOverlay="@style/ImageStyle2" />
-                                </FrameLayout>
-                            </com.google.android.material.card.MaterialCardView>
-                        </LinearLayout>
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="4dp"
+                                        android:fontFamily="sans-serif-bold"
+                                        android:text="Lampiran Pulang"
+                                        android:textColor="@color/text_primary"
+                                        android:textSize="11sp"
+                                        tools:ignore="HardcodedText" />
+                                </LinearLayout>
+
+                                <ImageView
+                                    android:id="@+id/ivLampiranPulangFinal"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:scaleType="centerCrop"
+                                    android:visibility="gone"
+                                    tools:ignore="ContentDescription" />
+
+                                <LinearLayout
+                                    android:id="@+id/llPdfPulang"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:background="#EFF6FF"
+                                    android:gravity="center"
+                                    android:orientation="vertical"
+                                    android:padding="6dp"
+                                    android:visibility="gone">
+
+                                    <ImageView
+                                        android:layout_width="28dp"
+                                        android:layout_height="28dp"
+                                        android:src="@drawable/ic_document_scanner"
+                                        app:tint="@color/primary_brand"
+                                        tools:ignore="ContentDescription" />
+
+                                    <TextView
+                                        android:id="@+id/tvPdfPulangName"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="2dp"
+                                        android:ellipsize="middle"
+                                        android:fontFamily="sans-serif-bold"
+                                        android:maxLines="1"
+                                        android:textColor="@color/primary_brand"
+                                        android:textSize="11sp"
+                                        tools:text="file.pdf" />
+                                </LinearLayout>
+                            </FrameLayout>
+                        </com.google.android.material.card.MaterialCardView>
                     </LinearLayout>
-
-                    <!-- PDF INFO CARD FOR LAMPIRAN PULANG -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/llPdfPulang"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:visibility="gone"
-                        app:cardBackgroundColor="@color/surface_main"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="2dp"
-                        app:strokeColor="@color/surface_variant"
-                        app:strokeWidth="1dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center_vertical"
-                            android:padding="12dp">
-
-                            <ImageView
-                                android:layout_width="36dp"
-                                android:layout_height="36dp"
-                                android:contentDescription="PDF Icon"
-                                android:src="@drawable/ic_artikel"
-                                app:tint="@color/biru" />
-
-                            <TextView
-                                android:id="@+id/tvPdfPulangName"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="12dp"
-                                android:layout_weight="1"
-                                android:ellipsize="middle"
-                                android:singleLine="true"
-                                android:textColor="@color/text_primary"
-                                android:textSize="13sp"
-                                tools:text="dokumen_lampiran_pulang.pdf" />
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
-
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- SUBMIT BUTTON -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnAdminPengolahanSubmit"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_marginBottom="16dp"
-                android:backgroundTint="@color/biru"
-                android:text="Simpan Perubahan Absensi"
+                android:layout_height="54dp"
+                android:layout_marginBottom="24dp"
+                android:fontFamily="sans-serif-black"
+                app:backgroundTint="@color/primary_brand"
+                android:text="Simpan &amp; Koreksi Absensi"
                 android:textColor="@color/white"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                app:cornerRadius="14dp"
+                android:textSize="15sp"
+                app:cornerRadius="16dp"
                 app:elevation="4dp" />
 
         </LinearLayout>

@@ -539,11 +539,14 @@
                 android:gravity="center_vertical">
 
                 <LinearLayout
+                    android:id="@+id/llMulaiDinasLuar"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
                     android:onClick="llMulaiDinasLuar"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:orientation="vertical">
 
                     <TextView
@@ -595,11 +598,14 @@
                     android:layout_marginHorizontal="10dp" />
 
                 <LinearLayout
+                    android:id="@+id/llSampaiDinasLuar"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
                     android:onClick="llSampaiDinasLuar"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:orientation="vertical">
 
                     <TextView

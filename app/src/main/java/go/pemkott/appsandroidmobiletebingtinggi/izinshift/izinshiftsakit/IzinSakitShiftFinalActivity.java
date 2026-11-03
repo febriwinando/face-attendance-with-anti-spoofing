@@ -183,6 +183,7 @@ public class IzinSakitShiftFinalActivity extends AppCompatActivity implements On
 
     private boolean mockLocationsEnabled;
     int mock_location = 0;
+    View llUpload;
     String inisialsift, tipesift, masuksift, pulangsift, idsift;
     File file, filelampiran;
     SessionManager session;
@@ -222,6 +223,12 @@ public class IzinSakitShiftFinalActivity extends AppCompatActivity implements On
         llPdfDinasLuar = findViewById(R.id.llPdfDinasLuarSakit);
         llLampiranDinasLuar = findViewById(R.id.llLampiranDinasLuarSakit);
         llLampiranDinasLuarHead = findViewById(R.id.llLampiranDinasLuarHead);
+        llUpload = findViewById(R.id.llUpload);
+        if (llUpload != null) {
+            llUpload.setEnabled(true);
+            llUpload.setClickable(true);
+            llUpload.setAlpha(1.0f);
+        }
 
         findViewById(R.id.ivBack).setOnClickListener(v -> finish());
 
@@ -474,16 +481,12 @@ public class IzinSakitShiftFinalActivity extends AppCompatActivity implements On
         requestPermission();
         Log.d("ABSEN_MASUK_PAGI", "kirimdataIzinSakitShift");
 
-        if (mock_location == 1){
-
-            dialogView.viewNotifKosong(IzinSakitShiftFinalActivity.this, "Anda terdeteksi menggunakan Fake GPS.", "Jika ditemukan berulang kali, akun anda akan terblokir otomatis dan tercatat Alpa.");
-
-        }else {
-            if (file == null || !file.exists() || file.length() == 0) {
-                dialogView.viewNotifKosong(IzinSakitShiftFinalActivity.this, "Anda harus melampirkan Foto Kondisi Kesehatan dan Surat Dokter.", "");
-            } else {
-                uploadImages();
-            }
+        if (file == null || !file.exists() || file.length() == 0) {
+            dialogView.viewNotifKosong(IzinSakitShiftFinalActivity.this, "Anda harus melampirkan Foto Kondisi Kesehatan dan Surat Dokter.", "");
+            if (llUpload != null) llUpload.setEnabled(true);
+        } else {
+            if (llUpload != null) llUpload.setEnabled(false);
+            uploadImages();
         }
     }
 

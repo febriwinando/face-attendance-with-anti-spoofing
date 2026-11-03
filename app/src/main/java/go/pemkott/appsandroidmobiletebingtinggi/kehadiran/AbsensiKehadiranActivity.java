@@ -292,28 +292,23 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
             return;
         }
 
-        llUpload.setEnabled(false);
-        llUpload.setClickable(false);
-        llUpload.setAlpha(0.5f);
+        llUpload.setEnabled(true);
+        llUpload.setClickable(true);
+        llUpload.setAlpha(1.0f);
 
         llUpload.setOnClickListener(view -> {
-            if (!lokasiSiap) {
+            if (!lokasiSiap && latGMap == 0.0 && lngGMap == 0.0) {
                 dialogView.viewNotifKosong(
                         this,
                         "Lokasi belum diperoleh",
                         "Mohon tunggu beberapa detik."
                 );
                 return;
-
             }
-//            if (mock_location == 1){
-//                dialogView.viewNotifKosong(AbsensiKehadiranActivity.this, "Anda terdeteksi menggunakan Fake GPS.", "Jika ditemukan berulang kali, akun anda akan terblokir otomatis dan tercatat Alpa.");
-//            }else {
-                llUpload.setEnabled(false);
-                llUpload.setClickable(false);
-                llUpload.setAlpha(0.5f);
-                uploadImages();
-//            }
+            llUpload.setEnabled(false);
+            llUpload.setClickable(false);
+            llUpload.setAlpha(0.5f);
+            uploadImages();
         });
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override

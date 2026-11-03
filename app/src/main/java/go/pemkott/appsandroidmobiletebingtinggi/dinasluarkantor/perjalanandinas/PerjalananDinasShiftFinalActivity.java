@@ -33,6 +33,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import java.util.Locale;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.provider.Settings;
@@ -695,35 +696,53 @@ public class PerjalananDinasShiftFinalActivity extends AppCompatActivity impleme
     }
 
     public void llMulaiDinasLuar(View view){
-        datePickerDialogMulai.show();
+        if (datePickerDialogMulai == null) {
+            datePickerMulai();
+        }
+        if (datePickerDialogMulai != null) {
+            datePickerDialogMulai.show();
+        }
     }
 
     private void datePickerMulai(){
         DatePickerDialog.OnDateSetListener dateSetListener = (datePicker, tahun, bulan, hari) -> {
             bulan = bulan + 1;
             String date = makeDateString(tahun, bulan);
-            dariTanggal = tahun + "-" + String.format("%02d", bulan) + "-" + String.format("%02d", hari);
+            dariTanggal = String.format(Locale.US, "%d-%02d-%02d", tahun, bulan, hari);
             tvHariMulai.setText(String.valueOf(hari));
             tvBulanTahunMulai.setText(date);
         };
         Calendar calendar = Calendar.getInstance();
-        datePickerDialogMulai = new DatePickerDialog(this, android.R.style.Theme_DeviceDefault_Light_Dialog, dateSetListener, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+        try {
+            datePickerDialogMulai = new DatePickerDialog(this, dateSetListener, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+        } catch (Exception e) {
+            datePickerDialogMulai = new DatePickerDialog(this, dateSetListener, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+        }
     }
 
     public void llSampaiDinasLuar(View view){
-        datePickerDialogSampai.show();
+        if (datePickerDialogSampai == null) {
+            datePickerSampai();
+        }
+        if (datePickerDialogSampai != null) {
+            datePickerDialogSampai.show();
+        }
     }
 
     private void datePickerSampai(){
         DatePickerDialog.OnDateSetListener dateSetListener = (datePicker, tahun, bulan, hari) -> {
             bulan = bulan + 1;
             String date = makeDateString(tahun, bulan);
-            sampaiTanggal = tahun + "-" + String.format("%02d", bulan) + "-" + String.format("%02d", hari);
+            sampaiTanggal = String.format(Locale.US, "%d-%02d-%02d", tahun, bulan, hari);
             tvHariSampai.setText(String.valueOf(hari));
             tvBulanTahunSampai.setText(date);
         };
         Calendar calendar = Calendar.getInstance();
-        datePickerDialogSampai = new DatePickerDialog(this, android.R.style.Theme_DeviceDefault_Light_Dialog, dateSetListener, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+        try {
+            datePickerDialogSampai = new DatePickerDialog(this, dateSetListener, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+        } catch (Exception e) {
+            datePickerDialogSampai = new DatePickerDialog(this, dateSetListener, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+        }
     }
 
     private String makeDateString(int year, int month) {

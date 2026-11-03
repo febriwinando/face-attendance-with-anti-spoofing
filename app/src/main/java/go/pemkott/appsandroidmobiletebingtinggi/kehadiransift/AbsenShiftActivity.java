@@ -327,19 +327,16 @@ public class AbsenShiftActivity extends AppCompatActivity implements OnMapReadyC
 //        selectedBitmap.compress(Bitmap.CompressFormat.JPEG,90, byteArrayOutputStream);
 //        byte[] imageInByte = byteArrayOutputStream.toByteArray();
 //        encodedImage =  Base64.encodeToString(imageInByte,Base64.DEFAULT);
+        llUpload.setEnabled(true);
+        llUpload.setClickable(true);
+        llUpload.setAlpha(1.0f);
+
         llUpload.setOnClickListener(view -> {
             requestPermission();
-            if (mock_location == 1){
-                dialogView.viewNotifKosong(AbsenShiftActivity.this, "Anda terdeteksi menggunakan Fake GPS.", "Jika ditemukan berulang kali, akun anda akan terblokir otomatis dan tercatat Alpa.");
-                llUpload.setEnabled(true);
-                llUpload.setClickable(true);
-                llUpload.setAlpha(1.0f);
-            }else {
-                llUpload.setEnabled(false);
-                llUpload.setClickable(false);
-                llUpload.setAlpha(0.5f);
-                uploadImages();
-            }
+            llUpload.setEnabled(false);
+            llUpload.setClickable(false);
+            llUpload.setAlpha(0.5f);
+            uploadImages();
         });
 
 

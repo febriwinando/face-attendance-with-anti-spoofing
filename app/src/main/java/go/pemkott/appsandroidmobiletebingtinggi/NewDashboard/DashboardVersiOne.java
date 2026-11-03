@@ -1028,31 +1028,15 @@ public class DashboardVersiOne extends AppCompatActivity {
     }
 
     public void dataValidasi(String verifikator, String idE){
-        if ("verifikator1".equalsIgnoreCase(verifikator) || "verifikator2".equalsIgnoreCase(verifikator)){
-            Call<List<ValidasiData>> callKegiatan = httpService.getUrlListValidasi(ServerConfig.getApiUrl() + "newVeriFragment?verifikator="+verifikator+"&id="+idE);
-            callKegiatan.enqueue(new Callback<List<ValidasiData>>() {
-                @Override
-                public void onResponse(@NonNull Call<List<ValidasiData>> call, @NonNull Response<List<ValidasiData>> response) {
-                    if (!response.isSuccessful()){
-
-                        return;
-                    }
-
-                    List<ValidasiData> validasiDatas = response.body();
-                    if (validasiDatas != null && !validasiDatas.isEmpty()) {
-                        clVerifikasi.setVisibility(View.VISIBLE);
-                    }else{
-                        clVerifikasi.setVisibility(View.GONE);
-                    }
-                }
-
-                @Override
-                public void onFailure(@NonNull Call<List<ValidasiData>> call, @NonNull Throwable t) {
-//                    pesanError();
-                }
-            });
+        if (verifikator != null && !verifikator.trim().isEmpty() && !"0".equals(verifikator.trim()) && !"null".equalsIgnoreCase(verifikator.trim())) {
+            if (clVerifikasi != null) {
+                clVerifikasi.setVisibility(View.VISIBLE);
+            }
+        } else {
+            if (clVerifikasi != null) {
+                clVerifikasi.setVisibility(View.GONE);
+            }
         }
-
     }
 
 
@@ -1146,6 +1130,22 @@ public class DashboardVersiOne extends AppCompatActivity {
             if (cvSuperAdminHub != null) {
                 cvSuperAdminHub.setVisibility(View.GONE);
             }
+        }
+
+        if (tvNamaUser != null && sUsername != null && !sUsername.isEmpty()) {
+            if (sUsername.length() > 18) {
+                tvNamaUser.setText(sUsername.substring(0, 18) + "...");
+            } else {
+                tvNamaUser.setText(sUsername);
+            }
+        }
+
+        if (ciUser != null && fotoProfile != null) {
+            Glide.with(this)
+                    .load(ServerConfig.getStorageUrl() + "foto-pegawai/" + fotoProfile)
+                    .placeholder(R.drawable.profil_pic)
+                    .error(R.drawable.profil_pic)
+                    .into(ciUser);
         }
     }
 

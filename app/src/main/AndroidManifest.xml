@@ -63,7 +63,7 @@ xmlns:dist="http://schemas.android.com/apk/distribution">
     <activity
         android:name=".admin.AdminInsertMassalActivity"
         android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
-        android:exported="false"
+        android:exported="true"
         android:windowSoftInputMode="adjustResize" />
     <activity
         android:name=".admin.AdminLokasiPegawaiActivity"
@@ -73,7 +73,7 @@ xmlns:dist="http://schemas.android.com/apk/distribution">
     <activity
         android:name=".admin.AdminPengolahanAbsensiActivity"
         android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
-        android:exported="false"
+        android:exported="true"
         android:windowSoftInputMode="adjustResize" />
     <activity
         android:name=".helpdesk.log.LogAktivitasActivity"
@@ -186,7 +186,7 @@ xmlns:dist="http://schemas.android.com/apk/distribution">
         android:exported="false" />
     <activity
         android:name=".verifikasi.ValidasiNewActivity"
-        android:exported="false" />
+        android:exported="true" />
     <activity
         android:name=".ProfileActivity"
         android:exported="false" />

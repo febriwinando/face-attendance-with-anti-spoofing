@@ -12,12 +12,16 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.OpenableColumns;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,10 +30,10 @@ import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.bumptech.glide.Glide;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 
@@ -48,7 +52,6 @@ import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.api.HttpService;
 import go.pemkott.appsandroidmobiletebingtinggi.api.ResponsePOJO;
 import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
-import go.pemkott.appsandroidmobiletebingtinggi.api.ServerConfig;
 import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraXTanpaDetectionAcitvity;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFoto;
@@ -68,7 +71,8 @@ import retrofit2.Response;
 
 public class AdminPengolahanAbsensiActivity extends AppCompatActivity {
 
-    private Spinner spOpd, spPegawai, spPosisiMasuk, spPosisiPulang;
+    private Spinner spPosisiMasuk, spPosisiPulang;
+    private TextView tvAdminOpdSelect, tvAdminPegawaiSelect;
     private EditText etTanggal, etAbsensiId, etJamMasuk, etKeterlambatan, etKetMasuk, etJamPulang;
 
     private ImageView iconFotoMasuk, iconLampiranMasuk, iconFotoPulang, iconLampiranPulang;
@@ -79,6 +83,9 @@ public class AdminPengolahanAbsensiActivity extends AppCompatActivity {
 
     private List<OpdModel> listOpd = new ArrayList<>();
     private List<Employee> listPegawai = new ArrayList<>();
+
+    private OpdModel selectedOpd = null;
+    private Employee selectedEmployee = null;
 
     private File fileFotoMasuk = null;
     private File fileLampiranMasuk = null;
@@ -142,8 +149,11 @@ public class AdminPengolahanAbsensiActivity extends AppCompatActivity {
         dialogView = new DialogView(this);
         ImageView ivBack = findViewById(R.id.ivAdminPengolahanBack);
 
-        spOpd = findViewById(R.id.spAdminPengolahanOpd);
-        spPegawai = findViewById(R.id.spAdminPengolahanPegawai);
+        tvAdminOpdSelect = findViewById(R.id.tvAdminOpdSelect);
+        tvAdminPegawaiSelect = findViewById(R.id.tvAdminPegawaiSelect);
+        MaterialCardView cardSelectOpd = findViewById(R.id.cardSelectOpd);
+        MaterialCardView cardSelectPegawai = findViewById(R.id.cardSelectPegawai);
+
         etTanggal = findViewById(R.id.etAdminPengolahanTanggal);
         MaterialButton btnFindPresence = findViewById(R.id.btnAdminFindPresence);
 
@@ -177,12 +187,12 @@ public class AdminPengolahanAbsensiActivity extends AppCompatActivity {
 
         MaterialButton btnSubmit = findViewById(R.id.btnAdminPengolahanSubmit);
 
-        ivBack.setOnClickListener(v -> finish());
+        ivBack.setOnClickListener(v -> navigateBack());
 
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                finish();
+                navigateBack();
             }
         });
 
@@ -204,31 +214,25 @@ public class AdminPengolahanAbsensiActivity extends AppCompatActivity {
         etKetMasuk.setText("sesuai waktu");
         etJamPulang.setText("16:30");
 
-        // Load OPDs
+        // Load OPD List
         loadOpdList();
 
-        spOpd.setOnTouchListener((v, event) -> {
-            if (event.getAction() == android.view.MotionEvent.ACTION_UP) {
-                v.performClick();
-                if (listOpd == null || listOpd.isEmpty()) {
-                    loadOpdList();
-                }
+        cardSelectOpd.setOnClickListener(v -> {
+            if (listOpd == null || listOpd.isEmpty()) {
+                loadOpdList();
+            } else {
+                showOpdSearchDialog();
             }
-            return false;
         });
 
-        spPegawai.setOnTouchListener((v, event) -> {
-            if (event.getAction() == android.view.MotionEvent.ACTION_UP) {
-                v.performClick();
-                if (listPegawai == null || listPegawai.isEmpty()) {
-                    if (spOpd.getSelectedItemPosition() >= 0 && listOpd != null && !listOpd.isEmpty()) {
-                        loadPegawaiList(listOpd.get(spOpd.getSelectedItemPosition()).getId());
-                    } else {
-                        loadOpdList();
-                    }
-                }
+        cardSelectPegawai.setOnClickListener(v -> {
+            if (selectedOpd == null) {
+                dialogView.viewNotifKosong(this, "Peringatan", "Silakan pilih OPD terlebih dahulu.");
+            } else if (listPegawai == null || listPegawai.isEmpty()) {
+                loadPegawaiList(selectedOpd.getId());
+            } else {
+                showPegawaiSearchDialog();
             }
-            return false;
         });
 
         btnFindPresence.setOnClickListener(v -> findPresenceForSelectedEmployee());
@@ -242,6 +246,116 @@ public class AdminPengolahanAbsensiActivity extends AppCompatActivity {
         cardPickLampiranPulang.setOnClickListener(v -> viewLampiran(4));
 
         btnSubmit.setOnClickListener(v -> submitPengolahan());
+    }
+
+    private void showOpdSearchDialog() {
+        Dialog dialog = new Dialog(this, R.style.DialogStyle);
+        dialog.setContentView(R.layout.dialog_search_selection);
+
+        TextView tvTitle = dialog.findViewById(R.id.tvSearchDialogTitle);
+        ImageView ivClose = dialog.findViewById(R.id.ivCloseSearchDialog);
+        EditText etSearch = dialog.findViewById(R.id.etSearchDialogInput);
+        ListView lvItems = dialog.findViewById(R.id.lvSearchDialogItems);
+
+        tvTitle.setText("Pilih OPD / Unit Kerja");
+        etSearch.setHint("Ketik nama OPD...");
+
+        List<String> opdDisplayList = new ArrayList<>();
+        for (OpdModel opd : listOpd) {
+            opdDisplayList.add(opd.getOpd() != null ? opd.getOpd() : opd.toString());
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, opdDisplayList);
+        lvItems.setAdapter(adapter);
+
+        etSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                adapter.getFilter().filter(s);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
+        lvItems.setOnItemClickListener((parent, view, position, id) -> {
+            String selectedName = adapter.getItem(position);
+            for (OpdModel opd : listOpd) {
+                if ((opd.getOpd() != null && opd.getOpd().equals(selectedName)) || opd.toString().equals(selectedName)) {
+                    selectedOpd = opd;
+                    tvAdminOpdSelect.setText(selectedName);
+                    selectedEmployee = null;
+                    tvAdminPegawaiSelect.setText("Klik untuk mencari pegawai...");
+                    loadPegawaiList(opd.getId());
+                    break;
+                }
+            }
+            dialog.dismiss();
+        });
+
+        ivClose.setOnClickListener(v -> dialog.dismiss());
+        dialog.show();
+    }
+
+    private void showPegawaiSearchDialog() {
+        Dialog dialog = new Dialog(this, R.style.DialogStyle);
+        dialog.setContentView(R.layout.dialog_search_selection);
+
+        TextView tvTitle = dialog.findViewById(R.id.tvSearchDialogTitle);
+        ImageView ivClose = dialog.findViewById(R.id.ivCloseSearchDialog);
+        EditText etSearch = dialog.findViewById(R.id.etSearchDialogInput);
+        ListView lvItems = dialog.findViewById(R.id.lvSearchDialogItems);
+
+        tvTitle.setText("Pilih Pegawai");
+        etSearch.setHint("Ketik nama atau NIP pegawai...");
+
+        List<String> empDisplayList = new ArrayList<>();
+        for (Employee emp : listPegawai) {
+            String label = emp.getNama();
+            if (emp.getNip() != null && !emp.getNip().isEmpty()) {
+                label += " - " + emp.getNip();
+            }
+            empDisplayList.add(label);
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, empDisplayList);
+        lvItems.setAdapter(adapter);
+
+        etSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                adapter.getFilter().filter(s);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
+        lvItems.setOnItemClickListener((parent, view, position, id) -> {
+            String selectedLabel = adapter.getItem(position);
+            for (Employee emp : listPegawai) {
+                String label = emp.getNama();
+                if (emp.getNip() != null && !emp.getNip().isEmpty()) {
+                    label += " - " + emp.getNip();
+                }
+                if (label.equals(selectedLabel) || emp.getNama().equals(selectedLabel)) {
+                    selectedEmployee = emp;
+                    tvAdminPegawaiSelect.setText(selectedLabel);
+                    findPresenceForSelectedEmployeeSilently();
+                    break;
+                }
+            }
+            dialog.dismiss();
+        });
+
+        ivClose.setOnClickListener(v -> dialog.dismiss());
+        dialog.show();
     }
 
     public void viewLampiran(int targetType) {
@@ -533,6 +647,7 @@ public class AdminPengolahanAbsensiActivity extends AppCompatActivity {
             calendar.set(Calendar.MONTH, month);
             calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
             etTanggal.setText(dateFormat.format(calendar.getTime()));
+            findPresenceForSelectedEmployeeSilently();
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
     }
 
@@ -545,32 +660,14 @@ public class AdminPengolahanAbsensiActivity extends AppCompatActivity {
         HttpService api = RetroClient.getInstance(this).getApi2();
         api.getAdminOpdList().enqueue(new Callback<AdminOpdListResponse>() {
             @Override
-            public void onResponse(Call<AdminOpdListResponse> call, Response<AdminOpdListResponse> response) {
+            public void onResponse(@NonNull Call<AdminOpdListResponse> call, @NonNull Response<AdminOpdListResponse> response) {
                 dialogLoading.dismiss();
                 if (response.isSuccessful() && response.body() != null && response.body().isStatus()) {
                     listOpd = response.body().getData();
                     if (listOpd != null && !listOpd.isEmpty()) {
-                        ArrayAdapter<OpdModel> adapter = new ArrayAdapter<>(AdminPengolahanAbsensiActivity.this, android.R.layout.simple_spinner_dropdown_item, listOpd);
-                        spOpd.setAdapter(adapter);
-
-                        spOpd.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                            @Override
-                            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                                if (listOpd != null && position >= 0 && position < listOpd.size()) {
-                                    OpdModel selectedOpd = listOpd.get(position);
-                                    if (selectedOpd != null && selectedOpd.getId() != null) {
-                                        loadPegawaiList(selectedOpd.getId());
-                                    }
-                                }
-                            }
-
-                            @Override
-                            public void onNothingSelected(AdapterView<?> parent) {}
-                        });
-
-                        if (listOpd.get(0) != null && listOpd.get(0).getId() != null) {
-                            loadPegawaiList(listOpd.get(0).getId());
-                        }
+                        selectedOpd = listOpd.get(0);
+                        tvAdminOpdSelect.setText(selectedOpd.getOpd() != null ? selectedOpd.getOpd() : selectedOpd.toString());
+                        loadPegawaiList(selectedOpd.getId());
                     } else {
                         dialogView.viewNotifKosong(AdminPengolahanAbsensiActivity.this, "Data OPD Kosong", "Tidak ada data OPD pada server.");
                     }
@@ -580,7 +677,7 @@ public class AdminPengolahanAbsensiActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<AdminOpdListResponse> call, Throwable t) {
+            public void onFailure(@NonNull Call<AdminOpdListResponse> call, @NonNull Throwable t) {
                 dialogLoading.dismiss();
                 Log.e("PENGOLAHAN_ADMIN", "Error loadOpdList", t);
                 dialogView.viewNotifKosong(AdminPengolahanAbsensiActivity.this, "Koneksi Server Gagal", "Gagal memuat OPD dari server:\n" + t.getMessage());
@@ -592,26 +689,21 @@ public class AdminPengolahanAbsensiActivity extends AppCompatActivity {
         HttpService api = RetroClient.getInstance(this).getApi2();
         api.getAdminPegawaiList(opdId).enqueue(new Callback<AdminEmployeeListResponse>() {
             @Override
-            public void onResponse(Call<AdminEmployeeListResponse> call, Response<AdminEmployeeListResponse> response) {
+            public void onResponse(@NonNull Call<AdminEmployeeListResponse> call, @NonNull Response<AdminEmployeeListResponse> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().isStatus()) {
                     listPegawai = response.body().getData();
                     if (listPegawai != null && !listPegawai.isEmpty()) {
-                        ArrayAdapter<Employee> adapter = new ArrayAdapter<>(AdminPengolahanAbsensiActivity.this, android.R.layout.simple_spinner_dropdown_item, listPegawai);
-                        spPegawai.setAdapter(adapter);
-
-                        spPegawai.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                            @Override
-                            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                                findPresenceForSelectedEmployeeSilently();
-                            }
-
-                            @Override
-                            public void onNothingSelected(AdapterView<?> parent) {}
-                        });
-
+                        selectedEmployee = listPegawai.get(0);
+                        String label = selectedEmployee.getNama();
+                        if (selectedEmployee.getNip() != null && !selectedEmployee.getNip().isEmpty()) {
+                            label += " - " + selectedEmployee.getNip();
+                        }
+                        tvAdminPegawaiSelect.setText(label);
                         findPresenceForSelectedEmployeeSilently();
                     } else {
-                        spPegawai.setAdapter(null);
+                        selectedEmployee = null;
+                        tvAdminPegawaiSelect.setText("Tidak ada pegawai di OPD ini");
+                        bindPresensiToUI(null);
                     }
                 } else {
                     Log.e("PENGOLAHAN_ADMIN", "loadPegawaiList failed: " + response.code());
@@ -619,21 +711,19 @@ public class AdminPengolahanAbsensiActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<AdminEmployeeListResponse> call, Throwable t) {
+            public void onFailure(@NonNull Call<AdminEmployeeListResponse> call, @NonNull Throwable t) {
                 Log.e("PENGOLAHAN_ADMIN", "Error loadPegawaiList", t);
             }
         });
     }
 
     private void findPresenceForSelectedEmployee() {
-        int selectedEmpIdx = spPegawai.getSelectedItemPosition();
-        if (selectedEmpIdx < 0 || selectedEmpIdx >= listPegawai.size()) {
+        if (selectedEmployee == null) {
             dialogView.viewNotifKosong(this, "Peringatan", "Silakan pilih pegawai terlebih dahulu.");
             return;
         }
 
-        Employee selectedEmp = listPegawai.get(selectedEmpIdx);
-        String employeeId = selectedEmp.getId();
+        String employeeId = selectedEmployee.getId();
         String tanggal = etTanggal.getText().toString().trim();
 
         if (tanggal.isEmpty()) {
@@ -649,7 +739,7 @@ public class AdminPengolahanAbsensiActivity extends AppCompatActivity {
         HttpService api = RetroClient.getInstance(this).getApi2();
         api.findPresenceAdmin(employeeId, tanggal).enqueue(new Callback<AdminPresenceFindResponse>() {
             @Override
-            public void onResponse(Call<AdminPresenceFindResponse> call, Response<AdminPresenceFindResponse> response) {
+            public void onResponse(@NonNull Call<AdminPresenceFindResponse> call, @NonNull Response<AdminPresenceFindResponse> response) {
                 dialogProses.dismiss();
                 if (response.isSuccessful() && response.body() != null && response.body().isStatus()) {
                     Presensi p = response.body().getData();
@@ -664,7 +754,7 @@ public class AdminPengolahanAbsensiActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<AdminPresenceFindResponse> call, Throwable t) {
+            public void onFailure(@NonNull Call<AdminPresenceFindResponse> call, @NonNull Throwable t) {
                 dialogProses.dismiss();
                 bindPresensiToUI(null);
                 dialogView.viewNotifKosong(AdminPengolahanAbsensiActivity.this, "Koneksi Gagal", t.getMessage());
@@ -673,13 +763,8 @@ public class AdminPengolahanAbsensiActivity extends AppCompatActivity {
     }
 
     private void findPresenceForSelectedEmployeeSilently() {
-        if (listPegawai == null || listPegawai.isEmpty()) return;
-        int selectedEmpIdx = spPegawai.getSelectedItemPosition();
-        if (selectedEmpIdx < 0 || selectedEmpIdx >= listPegawai.size()) return;
-
-        Employee selectedEmp = listPegawai.get(selectedEmpIdx);
-        if (selectedEmp == null) return;
-        String employeeId = selectedEmp.getId();
+        if (selectedEmployee == null) return;
+        String employeeId = selectedEmployee.getId();
         String tanggal = etTanggal.getText().toString().trim();
 
         if (employeeId == null || employeeId.isEmpty() || tanggal.isEmpty()) return;
@@ -687,7 +772,7 @@ public class AdminPengolahanAbsensiActivity extends AppCompatActivity {
         HttpService api = RetroClient.getInstance(this).getApi2();
         api.findPresenceAdmin(employeeId, tanggal).enqueue(new Callback<AdminPresenceFindResponse>() {
             @Override
-            public void onResponse(Call<AdminPresenceFindResponse> call, Response<AdminPresenceFindResponse> response) {
+            public void onResponse(@NonNull Call<AdminPresenceFindResponse> call, @NonNull Response<AdminPresenceFindResponse> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().isStatus()) {
                     Presensi p = response.body().getData();
                     bindPresensiToUI(p);
@@ -697,7 +782,7 @@ public class AdminPengolahanAbsensiActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<AdminPresenceFindResponse> call, Throwable t) {
+            public void onFailure(@NonNull Call<AdminPresenceFindResponse> call, @NonNull Throwable t) {
                 bindPresensiToUI(null);
             }
         });
@@ -734,7 +819,6 @@ public class AdminPengolahanAbsensiActivity extends AppCompatActivity {
             }
         }
 
-        // Load existing photos/lampiran byte arrays if available
         if (p.getPhototaging_masuk() != null && p.getPhototaging_masuk().length > 0) {
             Bitmap b = BitmapFactory.decodeByteArray(p.getPhototaging_masuk(), 0, p.getPhototaging_masuk().length);
             if (b != null) {
@@ -833,13 +917,13 @@ public class AdminPengolahanAbsensiActivity extends AppCompatActivity {
                     jamPulang, posisiPulang, statusPulang, validasiPulang
             ).enqueue(new Callback<ResponsePOJO>() {
                 @Override
-                public void onResponse(Call<ResponsePOJO> call, Response<ResponsePOJO> response) {
+                public void onResponse(@NonNull Call<ResponsePOJO> call, @NonNull Response<ResponsePOJO> response) {
                     dialogProses.dismiss();
                     handleResponse(response);
                 }
 
                 @Override
-                public void onFailure(Call<ResponsePOJO> call, Throwable t) {
+                public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
                     dialogProses.dismiss();
                     dialogView.viewNotifKosong(AdminPengolahanAbsensiActivity.this, "Koneksi Gagal", t.getMessage());
                 }
@@ -869,13 +953,13 @@ public class AdminPengolahanAbsensiActivity extends AppCompatActivity {
                     partFotoM, partFotoP, partLampM, partLampP
             ).enqueue(new Callback<ResponsePOJO>() {
                 @Override
-                public void onResponse(Call<ResponsePOJO> call, Response<ResponsePOJO> response) {
+                public void onResponse(@NonNull Call<ResponsePOJO> call, @NonNull Response<ResponsePOJO> response) {
                     dialogProses.dismiss();
                     handleResponse(response);
                 }
 
                 @Override
-                public void onFailure(Call<ResponsePOJO> call, Throwable t) {
+                public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
                     dialogProses.dismiss();
                     dialogView.viewNotifKosong(AdminPengolahanAbsensiActivity.this, "Koneksi Gagal", t.getMessage());
                 }
@@ -906,5 +990,14 @@ public class AdminPengolahanAbsensiActivity extends AppCompatActivity {
         } else {
             dialogView.viewNotifKosong(AdminPengolahanAbsensiActivity.this, "Gagal Server", "HTTP " + response.code());
         }
+    }
+
+    private void navigateBack() {
+        if (isTaskRoot()) {
+            Intent intent = new Intent(this, go.pemkott.appsandroidmobiletebingtinggi.NewDashboard.DashboardVersiOne.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
+        }
+        finish();
     }
 }

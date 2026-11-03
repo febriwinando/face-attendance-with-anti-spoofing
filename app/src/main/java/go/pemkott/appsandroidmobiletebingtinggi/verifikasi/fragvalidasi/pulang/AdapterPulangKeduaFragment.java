@@ -10,26 +10,28 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.button.MaterialButton;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.model.RekapPulangKeduaFragment;
 
-
 public class AdapterPulangKeduaFragment extends RecyclerView.Adapter<AdapterPulangKeduaFragment.ListViewHolder> {
-
 
     private OnItemClickCallback onItemClickCallback;
 
-    public void setOnItemClickCallback(OnItemClickCallback onItemClickCallback) {
-        this.onItemClickCallback = onItemClickCallback;
+    public void setOnItemClickCallback(OnItemClickCallback callback) {
+        this.onItemClickCallback = callback;
     }
 
-    Context context;
+    private final Context context;
     private List<RekapPulangKeduaFragment> rekapServers;
+
     public AdapterPulangKeduaFragment(List<RekapPulangKeduaFragment> rekapServers, Context context) {
-        this.rekapServers = rekapServers;
+        this.rekapServers = rekapServers != null ? rekapServers : new ArrayList<>();
         this.context = context;
     }
 
@@ -42,58 +44,77 @@ public class AdapterPulangKeduaFragment extends RecyclerView.Adapter<AdapterPula
 
     @Override
     public void onBindViewHolder(@NonNull ListViewHolder holder, int position) {
+        RekapPulangKeduaFragment item = rekapServers.get(position);
 
-                holder.tvNamaEmployee.setText(rekapServers.get(position).getNama());
-                if (rekapServers.get(position).getPosisi_pulang().equals("tl-masuk")){
-                    holder.tvStatus.setText("Tugas Lapangan");
-                }else if (rekapServers.get(position).getPosisi_pulang().equals("tl-pulang")){
-                    holder.tvStatus.setText("Tugas Lapangan");
-                }else if (rekapServers.get(position).getPosisi_pulang().equals("sk")){
-                    holder.tvStatus.setText("Sakit");
-                }else if (rekapServers.get(position).getPosisi_pulang().equals("pd")){
-                    holder.tvStatus.setText("Perjalanan Dinas");
-                }else if (rekapServers.get(position).getPosisi_pulang().equals("kp")){
-                    holder.tvStatus.setText("Keperluan Pribadi");
-                }else if (rekapServers.get(position).getPosisi_pulang().equals("cuti")){
-                    holder.tvStatus.setText("Cuti");
-                }
+        holder.tvNamaEmployee.setText(item.getNama() != null ? item.getNama() : "-");
 
-                if (rekapServers.get(position).getValidasi_pulang() == 3 || rekapServers.get(position).getValidasi_pulang() == 4){
-                    holder.civPresensiReject.setVisibility(View.VISIBLE);
-                }else{
-                    holder.civPresensi.setVisibility(View.VISIBLE);
-                }
+        String tgl = item.getTanggal() != null ? item.getTanggal() : "";
+        String jam = item.getJam_pulang() != null ? item.getJam_pulang() : "";
+        holder.tvTanggalJam.setText("📅 " + tgl + " • " + jam + " WIB");
 
+        String posisi = item.getPosisi_pulang();
+        String katName = "Presensi";
+        if ("tl-masuk".equals(posisi) || "tl-pulang".equals(posisi) || "tl".equals(posisi) || "luar".equals(posisi)) {
+            katName = "Tugas Lapangan";
+        } else if ("sk".equals(posisi)) {
+            katName = "Sakit";
+        } else if ("pd".equals(posisi)) {
+            katName = "Perjalanan Dinas";
+        } else if ("kp".equals(posisi)) {
+            katName = "Keperluan Pribadi";
+        } else if ("cuti".equals(posisi) || "ct".equals(posisi)) {
+            katName = "Cuti";
+        }
 
-        holder.cvValidasi.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onItemClickCallback.onItemClicked(rekapServers.get(holder.getAdapterPosition()));
-            }
+        if (holder.tvStatus != null) {
+            holder.tvStatus.setText(katName);
+        }
+
+        String ket = item.getKet_pulang() != null && !item.getKet_pulang().trim().isEmpty() ? item.getKet_pulang().trim() : katName;
+        holder.tvAktivitas.setText("Keterangan: " + ket);
+
+        if (item.getValidasi_pulang() == 3 || item.getValidasi_pulang() == 4) {
+            holder.civPresensiReject.setVisibility(View.VISIBLE);
+            holder.civPresensi.setVisibility(View.GONE);
+        } else {
+            holder.civPresensi.setVisibility(View.VISIBLE);
+            holder.civPresensiReject.setVisibility(View.GONE);
+        }
+
+        if (holder.btnVerifikasi != null) {
+            holder.btnVerifikasi.setOnClickListener(v -> {
+                if (onItemClickCallback != null) onItemClickCallback.onItemClicked(item);
+            });
+        }
+
+        holder.cvValidasi.setOnClickListener(v -> {
+            if (onItemClickCallback != null) onItemClickCallback.onItemClicked(item);
         });
-
     }
 
     @Override
     public int getItemCount() {
-        return rekapServers.size();
+        return rekapServers != null ? rekapServers.size() : 0;
     }
 
-    class ListViewHolder extends RecyclerView.ViewHolder{
+    static class ListViewHolder extends RecyclerView.ViewHolder {
 
-        TextView tvNamaEmployee, tvStatus;
+        TextView tvNamaEmployee, tvStatus, tvTanggalJam, tvAktivitas;
         CardView cvValidasi;
         CircleImageView civPresensiReject, civPresensi;
+        MaterialButton btnVerifikasi;
 
         public ListViewHolder(@NonNull View itemView) {
             super(itemView);
 
             tvNamaEmployee = itemView.findViewById(R.id.tvNamaValidasi);
             tvStatus = itemView.findViewById(R.id.txtSatusVerif);
+            tvTanggalJam = itemView.findViewById(R.id.tvTanggalJamValidasi);
+            tvAktivitas = itemView.findViewById(R.id.tvAktivitasValidasi);
             cvValidasi = itemView.findViewById(R.id.cvValidasi);
             civPresensiReject = itemView.findViewById(R.id.civPresensiReject);
             civPresensi = itemView.findViewById(R.id.civPresensi);
-
+            btnVerifikasi = itemView.findViewById(R.id.btnVerifikasiCard);
         }
     }
 

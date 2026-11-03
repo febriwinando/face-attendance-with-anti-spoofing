@@ -31,6 +31,7 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
+import java.util.Locale;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -184,6 +185,7 @@ public class IzinCutiShiftFinalActivity extends AppCompatActivity implements OnM
     File file, filelampiran;
     SessionManager session;
     String userId;
+    View llUpload;
 
     @SuppressLint("WrongThread")
     @Override
@@ -227,6 +229,12 @@ public class IzinCutiShiftFinalActivity extends AppCompatActivity implements OnM
         llPdfDinasLuar = findViewById(R.id.llPdfDinasLuarCuti);
         llLampiranDinasLuar = findViewById(R.id.llLampiranDinasLuarCuti);
         llLampiranDinasLuarCutiHead = findViewById(R.id.llLampiranDinasLuarCutiHead);
+        llUpload = findViewById(R.id.llUpload);
+        if (llUpload != null) {
+            llUpload.setEnabled(true);
+            llUpload.setClickable(true);
+            llUpload.setAlpha(1.0f);
+        }
         fragmentContainerView = findViewById(R.id.map);
 
         findViewById(R.id.ivBack).setOnClickListener(v -> finish());
@@ -496,15 +504,12 @@ public class IzinCutiShiftFinalActivity extends AppCompatActivity implements OnM
 
     public void kirimdatacutishift(View view){
         requestPermission();
-        if (mock_location == 1){
-            dialogView.viewNotifKosong(IzinCutiShiftFinalActivity.this, "Anda terdeteksi menggunakan Fake GPS.", "Jika ditemukan berulang kali, akun anda akan terblokir otomatis dan tercatat Alpa.");
-        }else {
-
-            if (file == null || !file.exists() || file.length() == 0) {
-                dialogView.viewNotifKosong(IzinCutiShiftFinalActivity.this, "Anda harus melampirkan Foto Kegiatan dan Izin Cuti.", "");
-            } else {
-                uploadImages();
-            }
+        if (file == null || !file.exists() || file.length() == 0) {
+            dialogView.viewNotifKosong(IzinCutiShiftFinalActivity.this, "Anda harus melampirkan Foto Kegiatan dan Izin Cuti.", "");
+            if (llUpload != null) llUpload.setEnabled(true);
+        } else {
+            if (llUpload != null) llUpload.setEnabled(false);
+            uploadImages();
         }
     }
 
@@ -1040,27 +1045,34 @@ public class IzinCutiShiftFinalActivity extends AppCompatActivity implements OnM
     }
 
     public void llMulaiDinasLuar(View view){
-        datePickerDialogMulai.show();
+        if (datePickerDialogMulai == null) {
+            datePickerMulai();
+        }
+        if (datePickerDialogMulai != null) {
+            datePickerDialogMulai.show();
+        }
     }
 
     private void datePickerMulai(){
         DatePickerDialog.OnDateSetListener dateSetListener = (datePicker, tahun, bulan, hari) -> {
-
             bulan = bulan + 1;
             String date = makeDateString(tahun, bulan);
 
-            Date drTgl = null;
+            String formattedStr = String.format(Locale.US, "%d-%02d-%02d", tahun, bulan, hari);
             try {
-                drTgl = SIMPLE_FORMAT_TANGGAL.parse(tahun+"-"+bulan+"-"+hari);
-            } catch (ParseException e) {
-                e.printStackTrace();
+                Date drTgl = SIMPLE_FORMAT_TANGGAL.parse(formattedStr);
+                if (drTgl != null) {
+                    dariTanggal = SIMPLE_FORMAT_TANGGAL.format(drTgl);
+                } else {
+                    dariTanggal = formattedStr;
+                }
+            } catch (Exception e) {
+                dariTanggal = formattedStr;
             }
-            dariTanggal = SIMPLE_FORMAT_TANGGAL.format(drTgl);
 
             tvHariMulai.setText(String.valueOf(hari));
             tvBulanTahunMulai.setText(date);
-            sTglMulai = tahun+"-"+bulan+"-"+hari;
-
+            sTglMulai = formattedStr;
         };
 
         Calendar calendar = Calendar.getInstance();
@@ -1068,22 +1080,25 @@ public class IzinCutiShiftFinalActivity extends AppCompatActivity implements OnM
         int bulan = calendar.get(Calendar.MONTH);
         int hari = calendar.get(Calendar.DAY_OF_MONTH);
 
-        int style = android.R.style.Theme_DeviceDefault_Light_Dialog;
-        Date today = new Date();
-        Calendar c = Calendar.getInstance();
-        c.setTime(today);
-        c.add( Calendar.MONTH, 1);
-        long maxDate = c.getTime().getTime();
+        try {
+            datePickerDialogMulai = new DatePickerDialog(this, dateSetListener, tahun, bulan, hari);
 
-        Calendar d = Calendar.getInstance();
-        d.setTime(today);
-        d.add( Calendar.MONTH, -1);
-        long minDate = d.getTime().getTime();
+            Date today = new Date();
+            Calendar c = Calendar.getInstance();
+            c.setTime(today);
+            c.add(Calendar.MONTH, 1);
+            long maxDate = c.getTime().getTime();
 
-        datePickerDialogMulai = new DatePickerDialog(this, style, dateSetListener, tahun, bulan, hari);
-        datePickerDialogMulai.getDatePicker().setMaxDate(maxDate);
-        datePickerDialogMulai.getDatePicker().setMinDate(minDate);
+            Calendar d = Calendar.getInstance();
+            d.setTime(today);
+            d.add(Calendar.MONTH, -1);
+            long minDate = d.getTime().getTime();
 
+            datePickerDialogMulai.getDatePicker().setMaxDate(maxDate);
+            datePickerDialogMulai.getDatePicker().setMinDate(minDate);
+        } catch (Exception e) {
+            datePickerDialogMulai = new DatePickerDialog(this, dateSetListener, tahun, bulan, hari);
+        }
     }
 
     private void datePickerSampai(){
@@ -1091,17 +1106,21 @@ public class IzinCutiShiftFinalActivity extends AppCompatActivity implements OnM
             bulan = bulan + 1;
             String date = makeDateString(tahun, bulan);
 
-            Date spTgl = null;
+            String formattedStr = String.format(Locale.US, "%d-%02d-%02d", tahun, bulan, hari);
             try {
-                spTgl = SIMPLE_FORMAT_TANGGAL.parse(tahun+"-"+bulan+"-"+hari);
-            } catch (ParseException e) {
-                e.printStackTrace();
+                Date spTgl = SIMPLE_FORMAT_TANGGAL.parse(formattedStr);
+                if (spTgl != null) {
+                    sampaiTanggal = SIMPLE_FORMAT_TANGGAL.format(spTgl);
+                } else {
+                    sampaiTanggal = formattedStr;
+                }
+            } catch (Exception e) {
+                sampaiTanggal = formattedStr;
             }
-            sampaiTanggal = SIMPLE_FORMAT_TANGGAL.format(spTgl);
 
             tvHariSampai.setText(String.valueOf(hari));
             tvBulanTahunSampai.setText(date);
-            sTglSAmpai = tahun+"-"+bulan+"-"+hari;
+            sTglSAmpai = formattedStr;
         };
 
         Calendar calendar = Calendar.getInstance();
@@ -1109,25 +1128,34 @@ public class IzinCutiShiftFinalActivity extends AppCompatActivity implements OnM
         int bulan = calendar.get(Calendar.MONTH);
         int hari = calendar.get(Calendar.DAY_OF_MONTH);
 
-        int style = android.R.style.Theme_DeviceDefault_Light_Dialog;
-        Date today = new Date();
-        Calendar c = Calendar.getInstance();
-        c.setTime(today);
-        c.add( Calendar.MONTH, 1);
-        long maxDate = c.getTime().getTime();
+        try {
+            datePickerDialogSampai = new DatePickerDialog(this, dateSetListener, tahun, bulan, hari);
 
-        Calendar d = Calendar.getInstance();
-        d.setTime(today);
-        d.add( Calendar.MONTH, -1);
-        long minDate = d.getTime().getTime();
-        datePickerDialogSampai = new DatePickerDialog(this, style, dateSetListener, tahun, bulan, hari);
-        datePickerDialogSampai.getDatePicker().setMaxDate(maxDate);
-        datePickerDialogSampai.getDatePicker().setMinDate(minDate);
+            Date today = new Date();
+            Calendar c = Calendar.getInstance();
+            c.setTime(today);
+            c.add(Calendar.MONTH, 1);
+            long maxDate = c.getTime().getTime();
 
+            Calendar d = Calendar.getInstance();
+            d.setTime(today);
+            d.add(Calendar.MONTH, -1);
+            long minDate = d.getTime().getTime();
+
+            datePickerDialogSampai.getDatePicker().setMaxDate(maxDate);
+            datePickerDialogSampai.getDatePicker().setMinDate(minDate);
+        } catch (Exception e) {
+            datePickerDialogSampai = new DatePickerDialog(this, dateSetListener, tahun, bulan, hari);
+        }
     }
 
     public void llSampaiDinasLuar(View view){
-        datePickerDialogSampai.show();
+        if (datePickerDialogSampai == null) {
+            datePickerSampai();
+        }
+        if (datePickerDialogSampai != null) {
+            datePickerDialogSampai.show();
+        }
     }
 
     //  Maps

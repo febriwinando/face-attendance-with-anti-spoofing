@@ -501,24 +501,18 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
     };
 
     public void kirimIzinSakit(View view){
-        llUpload.setEnabled(false);
         requestPermission();
-
-        if (mock_location == 1){
-            dialogView.viewNotifKosong(IzinSakitFinalActivity.this, "Anda terdeteksi menggunakan Fake GPS.", "Jika ditemukan berulang kali, akun anda akan terblokir otomatis dan tercatat Alpa.");
-            llUpload.setEnabled(true);
-        }else {
-            if (file == null || !file.exists() || file.length() == 0) {
-                dialogView.viewNotifKosong(IzinSakitFinalActivity.this, "Anda harus melampirkan Foto Kondisi Kesehatan.", "");
-                llUpload.setEnabled(true);
-            } else if (ekslampiran == null || 
-                       ("pdf".equals(ekslampiran) && imageBytesDokumenPdf == null) || 
-                       ("jpg".equals(ekslampiran) && (filelampiran == null || !filelampiran.exists()))) {
-                dialogView.viewNotifKosong(IzinSakitFinalActivity.this, "Anda harus melampirkan Surat Dokter.", "");
-                llUpload.setEnabled(true);
-            } else {
-                uploadImages();
-            }
+        if (file == null || !file.exists() || file.length() == 0) {
+            dialogView.viewNotifKosong(IzinSakitFinalActivity.this, "Anda harus melampirkan Foto Kondisi Kesehatan.", "");
+            if (llUpload != null) llUpload.setEnabled(true);
+        } else if (ekslampiran == null || 
+                   ("pdf".equals(ekslampiran) && imageBytesDokumenPdf == null) || 
+                   ("jpg".equals(ekslampiran) && (filelampiran == null || !filelampiran.exists()))) {
+            dialogView.viewNotifKosong(IzinSakitFinalActivity.this, "Anda harus melampirkan Surat Dokter.", "");
+            if (llUpload != null) llUpload.setEnabled(true);
+        } else {
+            if (llUpload != null) llUpload.setEnabled(false);
+            uploadImages();
         }
     }
 
