@@ -498,6 +498,8 @@ public class ProfileActivity extends AppCompatActivity {
         dialogproses.setCancelable(false);
         dialogproses.show();
 
+        go.pemkott.appsandroidmobiletebingtinggi.utils.FcmTokenHelper.logoutDevice(ProfileActivity.this, null);
+
         api.logout(sToken).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {

@@ -23,8 +23,31 @@ public interface ApiAddProduk {
 
     @FormUrlEncoded
     @POST("update-fcm-token")
+    Call<ResponsePOJO> registerEmployeeDevice(
+            @Field("employee_id") String employeeId,
+            @Field("pegawai_id") String pegawaiId,
+            @Field("nip") String nip,
+            @Field("device_id") String deviceId,
+            @Field("device_name") String deviceName,
+            @Field("device_model") String deviceModel,
+            @Field("os_version") String osVersion,
+            @Field("app_version") String appVersion,
+            @Field("fcm_token") String fcmToken
+    );
+
+    @FormUrlEncoded
+    @POST("update-fcm-token")
     Call<ResponsePOJO> updateFcmToken(
             @Field("pegawai_id") String pegawaiId,
+            @Field("fcm_token") String fcmToken
+    );
+
+    @FormUrlEncoded
+    @POST("logout-device")
+    Call<ResponsePOJO> logoutEmployeeDevice(
+            @Field("employee_id") String employeeId,
+            @Field("nip") String nip,
+            @Field("device_id") String deviceId,
             @Field("fcm_token") String fcmToken
     );
     @FormUrlEncoded

@@ -263,10 +263,9 @@ public class LoginActivity extends AppCompatActivity {
                                            Response<List<LoginResponse>> response) {
 
                         if (isFinishing()) return;
-                        dialogproses.dismiss();
 
                         if (!response.isSuccessful()) {
-
+                            dialogproses.dismiss();
                             dialogView.viewNotifKosong(
                                     LoginActivity.this,
                                     "Login gagal",
@@ -348,7 +347,7 @@ public class LoginActivity extends AppCompatActivity {
                                     sVerifikator
                             );
 
-                            fetchFcmTokenAndSend();
+                            fetchFcmTokenAndSend(sEmployee_id, username);
 
                         } else {
 
@@ -412,16 +411,35 @@ public class LoginActivity extends AppCompatActivity {
                 });
     }
 
-    private void fetchFcmTokenAndSend() {
-        FcmTokenHelper.fetchAndSendToken(this, success -> openNextPage());
-    }
+    private boolean isNextPageOpened = false;
 
-    private void openNextPage() {
-        dialogproses.dismiss();
+    private synchronized void openNextPage() {
+        if (isNextPageOpened) return;
+        isNextPageOpened = true;
+
+        if (dialogproses != null && dialogproses.isShowing()) {
+            try {
+                dialogproses.dismiss();
+            } catch (Exception ignored) {}
+        }
+
         Intent intent = new Intent(LoginActivity.this, DownloadDataActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         finish();
+    }
+
+    private void fetchFcmTokenAndSend(String employeeId, String nip) {
+        isNextPageOpened = false;
+
+        // Safety fallback: Jika network lambat, maksimal 2.5 detik langsung buka halaman berikutnya
+        new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
+            openNextPage();
+        }, 2500);
+
+        FcmTokenHelper.fetchAndSendTokenForUser(getApplicationContext(), employeeId, nip, success -> {
+            runOnUiThread(this::openNextPage);
+        });
     }
 
     private void showPrivacyPolicy() {

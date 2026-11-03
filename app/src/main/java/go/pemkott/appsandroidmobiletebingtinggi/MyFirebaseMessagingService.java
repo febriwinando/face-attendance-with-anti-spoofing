@@ -4,6 +4,7 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Build;
 import android.util.Log;
@@ -55,17 +56,50 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
         Log.d("FCM_SERVICE", "Message Received from: " + remoteMessage.getFrom());
 
+        Map<String, String> dataMap = remoteMessage.getData();
+
+        // 0. PRIORITY CHECK: Remote Logout Command (Eksekusi langsung sebelum validasi session)
+        boolean isRemoteLogout = false;
+        if (dataMap != null && !dataMap.isEmpty()) {
+            String type = dataMap.get("type");
+            String command = dataMap.get("command");
+            String title = dataMap.get("title");
+            String screen = dataMap.get("screen");
+
+            if ("remote_logout".equalsIgnoreCase(type)
+                    || "remote_logout".equalsIgnoreCase(command)
+                    || "LOGOUT".equalsIgnoreCase(title)
+                    || "LOGOUT".equalsIgnoreCase(command)
+                    || "login".equalsIgnoreCase(screen)) {
+                isRemoteLogout = true;
+            }
+        }
+        if (remoteMessage.getNotification() != null) {
+            String notifTitle = remoteMessage.getNotification().getTitle();
+            if (notifTitle != null && notifTitle.equalsIgnoreCase("LOGOUT")) {
+                isRemoteLogout = true;
+            }
+        }
+
+        if (isRemoteLogout) {
+            Log.w("FCM_SERVICE", "Menerima perintah PUSH LOGOUT dari Administrator Web! Eksekusi logout...");
+            showNotification("Sesi Diakhiri", "Sesi login Anda telah diakhiri secara remote dari Administrator Web.", dataMap);
+            executeRemoteLogout();
+            return;
+        }
+
         SessionManager session = new SessionManager(this);
         String currentPegawaiId = session.getPegawaiId();
         String currentEmployeeId = session.getEmployeeId();
 
+        boolean hasActiveUser = (currentEmployeeId != null && !currentEmployeeId.trim().isEmpty() && !"0".equals(currentEmployeeId.trim()))
+                || (currentPegawaiId != null && !currentPegawaiId.trim().isEmpty() && !"0".equals(currentPegawaiId.trim()));
+
         // 1. Validasi: Jika tidak ada user yang sedang login di perangkat ini, abaikan notifikasi
-        if (currentPegawaiId == null || "0".equals(currentPegawaiId)) {
+        if (!hasActiveUser) {
             Log.w("FCM_SERVICE", "Abaikan notifikasi: Tidak ada user aktif yang login di perangkat ini.");
             return;
         }
-
-        Map<String, String> dataMap = remoteMessage.getData();
 
         // 2. Validasi Penerima: Mencegah salah kirim jika perangkat pernah dipakai akun lain
         if (dataMap != null && !dataMap.isEmpty()) {
@@ -73,10 +107,14 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             if (targetEmpId == null) targetEmpId = dataMap.get("employee_id");
             if (targetEmpId == null) targetEmpId = dataMap.get("pegawai_id");
 
-            if (targetEmpId != null && !targetEmpId.trim().isEmpty()) {
-                boolean isEmployeeMatch = currentEmployeeId != null && targetEmpId.trim().equals(currentEmployeeId.trim());
-                boolean isPegawaiMatch = currentPegawaiId != null && targetEmpId.trim().equals(currentPegawaiId.trim());
-                if (!isEmployeeMatch && !isPegawaiMatch) {
+            if (targetEmpId != null && !targetEmpId.trim().isEmpty() && !"0".equals(targetEmpId.trim())) {
+                String cleanTarget = targetEmpId.trim().replace(".0", "");
+                String cleanEmpId = currentEmployeeId != null ? currentEmployeeId.trim().replace(".0", "") : "";
+                String cleanPegId = currentPegawaiId != null ? currentPegawaiId.trim().replace(".0", "") : "";
+
+                boolean isMatch = cleanTarget.equalsIgnoreCase(cleanEmpId) || cleanTarget.equalsIgnoreCase(cleanPegId);
+                
+                if (!isMatch) {
                     Log.w("FCM_SERVICE", "Abaikan notifikasi: Pesan ditujukan untuk ID " + targetEmpId + 
                           ", tetapi user yang login adalah " + currentEmployeeId + "/" + currentPegawaiId);
                     return;
@@ -133,7 +171,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         
         String lowerCommand = command.toLowerCase();
         
-        if (lowerCommand.contains("lokasi")) {
+        if (lowerCommand.contains("logout")) {
+            executeRemoteLogout();
+        } else if (lowerCommand.contains("lokasi")) {
             koordinat_e();
         } else if (lowerCommand.contains("jadwal")) {
             stepTimetable();
@@ -145,6 +185,31 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             databaseHelper.updateCameraDetectionStatus(1);
         } else if (lowerCommand.contains("deteksiwajahdisable") || lowerCommand.contains("wajah nonaktif")) {
             databaseHelper.updateCameraDetectionStatus(0);
+        }
+    }
+
+    private void executeRemoteLogout() {
+        Log.w("FCM_SERVICE", "Menerima perintah PUSH LOGOUT dari Administrator Web! Membersihkan seluruh data lokal...");
+
+        try {
+            // 1. Hapus seluruh data SQLite lokal
+            databaseHelper.deleteAllDataUser();
+            databaseHelper.deleteDataEmployeeAll();
+            new go.pemkott.appsandroidmobiletebingtinggi.database.ChatLocalDatabase(this).clearAllLocalChatData();
+
+            // 2. Clear Session Manager
+            SessionManager session = new SessionManager(this);
+            session.clearSession();
+
+            // 3. Delete Firebase instance token
+            com.google.firebase.messaging.FirebaseMessaging.getInstance().deleteToken();
+
+            // 4. Buka LoginActivity dan bersihkan Task Stack
+            Intent intent = new Intent(this, go.pemkott.appsandroidmobiletebingtinggi.login.LoginActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        } catch (Exception e) {
+            Log.e("FCM_SERVICE", "Error executing remote logout: " + e.getMessage(), e);
         }
     }
 
@@ -371,10 +436,15 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(
                     channelId,
-                    "Notifikasi",
+                    "Notifikasi Absensi",
                     NotificationManager.IMPORTANCE_HIGH
             );
-            manager.createNotificationChannel(channel);
+            channel.setDescription("Notifikasi penting aplikasi absensi");
+            channel.enableVibration(true);
+            channel.enableLights(true);
+            if (manager != null) {
+                manager.createNotificationChannel(channel);
+            }
         }
 
         android.content.Intent intent;
@@ -412,11 +482,15 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .setContentTitle(title)
                 .setContentText(body)
                 .setSmallIcon(R.drawable.logoabsensilogin)
+                .setPriority(NotificationCompat.PRIORITY_MAX)
+                .setDefaults(NotificationCompat.DEFAULT_ALL)
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true)
                 .build();
 
-        manager.notify((int) System.currentTimeMillis(), notification);
+        if (manager != null) {
+            manager.notify((int) System.currentTimeMillis(), notification);
+        }
     }
 
 

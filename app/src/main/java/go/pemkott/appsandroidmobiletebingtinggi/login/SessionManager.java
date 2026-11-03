@@ -104,6 +104,10 @@ public class SessionManager {
         return prefs.getString("KEY_USERNAME", "");
     }
 
+    public String getNip() {
+        return getUsername();
+    }
+
     public void saveVerifikator(String verifikator) {
         prefs.edit().putString("KEY_VERIFIKATOR", verifikator).apply();
     }

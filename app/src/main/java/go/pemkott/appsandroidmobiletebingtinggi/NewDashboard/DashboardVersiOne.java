@@ -913,7 +913,9 @@ public class DashboardVersiOne extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        FcmTokenHelper.fetchAndSendToken(this, null);
+        if (sEmployee_id != null && !sEmployee_id.isEmpty() && !"0".equals(sEmployee_id)) {
+            FcmTokenHelper.fetchAndSendTokenForUser(this, sEmployee_id, session.getNip(), null);
+        }
 
         datauser();
 

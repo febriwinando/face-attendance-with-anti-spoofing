@@ -970,7 +970,7 @@ public class AdminPengolahanAbsensiActivity extends AppCompatActivity {
     private MultipartBody.Part prepareFilePart(String partName, File file, boolean isPdf) {
         if (file == null || !file.exists()) return null;
         try {
-            String mimeType = isPdf ? "application/pdf" : "image/*";
+            String mimeType = isPdf ? "application/pdf" : "image/jpeg";
             RequestBody requestFile = RequestBody.create(MediaType.parse(mimeType), file);
             return MultipartBody.Part.createFormData(partName, file.getName(), requestFile);
         } catch (Exception e) {
