@@ -3,6 +3,7 @@ package go.pemkott.appsandroidmobiletebingtinggi.dinasluarkantor.tugaslapangan;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.View;
 import android.widget.EditText;
 
@@ -45,15 +46,49 @@ public class TugasLapanganActivity extends AppCompatActivity {
 
         rvKegiatanPd = findViewById(R.id.rvKegiatanPd);
         etkegiatanLainnya = findViewById(R.id.etKegiatanLainnya);
-
         androidx.core.widget.NestedScrollView nsvTugasLapangan = findViewById(R.id.nsvTugasLapangan);
-        if (etkegiatanLainnya != null && nsvTugasLapangan != null) {
-            etkegiatanLainnya.setOnFocusChangeListener((v, hasFocus) -> {
-                if (hasFocus) {
-                    nsvTugasLapangan.postDelayed(() -> nsvTugasLapangan.fullScroll(android.view.View.FOCUS_DOWN), 300);
-                }
+
+        View tlRootLayout = findViewById(R.id.tlRootLayout);
+        if (tlRootLayout != null) {
+            androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(tlRootLayout, (v, insets) -> {
+                androidx.core.graphics.Insets imeInsets = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.ime());
+                androidx.core.graphics.Insets systemBars = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars());
+                int bottomPadding = Math.max(imeInsets.bottom, systemBars.bottom);
+                v.setPadding(v.getPaddingLeft(), systemBars.top, v.getPaddingRight(), bottomPadding);
+                return insets;
             });
-            etkegiatanLainnya.setOnClickListener(v -> nsvTugasLapangan.postDelayed(() -> nsvTugasLapangan.fullScroll(android.view.View.FOCUS_DOWN), 300));
+        }
+
+        if (etkegiatanLainnya != null) {
+            etkegiatanLainnya.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+            etkegiatanLainnya.setSingleLine(false);
+
+            etkegiatanLainnya.setOnTouchListener((v, event) -> {
+                v.getParent().requestDisallowInterceptTouchEvent(true);
+                if (event.getAction() == android.view.MotionEvent.ACTION_UP) {
+                    v.performClick();
+                }
+                return false;
+            });
+
+            if (nsvTugasLapangan != null) {
+                etkegiatanLainnya.setOnFocusChangeListener((v, hasFocus) -> {
+                    if (hasFocus) {
+                        nsvTugasLapangan.postDelayed(() -> {
+                            int targetY = etkegiatanLainnya.getTop() - 100;
+                            nsvTugasLapangan.smoothScrollTo(0, Math.max(0, targetY));
+                        }, 250);
+                    }
+                });
+
+                etkegiatanLainnya.setOnClickListener(v -> {
+                    etkegiatanLainnya.requestFocus();
+                    nsvTugasLapangan.postDelayed(() -> {
+                        int targetY = etkegiatanLainnya.getTop() - 100;
+                        nsvTugasLapangan.smoothScrollTo(0, Math.max(0, targetY));
+                    }, 250);
+                });
+            }
         }
 
         findViewById(R.id.rlBackTl).setOnClickListener(v -> finish());

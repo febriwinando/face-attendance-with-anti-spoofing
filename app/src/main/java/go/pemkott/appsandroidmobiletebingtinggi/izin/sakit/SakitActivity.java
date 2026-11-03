@@ -48,15 +48,49 @@ public class SakitActivity extends AppCompatActivity {
 
         rvKegiatanSakit = findViewById(R.id.rvKegiatanSakit);
         etkegiatanSakitLainnya = findViewById(R.id.etKegiatanSakitLainmya);
-
         androidx.core.widget.NestedScrollView nsvSakit = findViewById(R.id.nsvSakit);
-        if (etkegiatanSakitLainnya != null && nsvSakit != null) {
-            etkegiatanSakitLainnya.setOnFocusChangeListener((v, hasFocus) -> {
-                if (hasFocus) {
-                    nsvSakit.postDelayed(() -> nsvSakit.fullScroll(android.view.View.FOCUS_DOWN), 300);
-                }
+
+        View sakitRootLayout = findViewById(R.id.sakitRootLayout);
+        if (sakitRootLayout != null) {
+            androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(sakitRootLayout, (v, insets) -> {
+                androidx.core.graphics.Insets imeInsets = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.ime());
+                androidx.core.graphics.Insets systemBars = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars());
+                int bottomPadding = Math.max(imeInsets.bottom, systemBars.bottom);
+                v.setPadding(v.getPaddingLeft(), systemBars.top, v.getPaddingRight(), bottomPadding);
+                return insets;
             });
-            etkegiatanSakitLainnya.setOnClickListener(v -> nsvSakit.postDelayed(() -> nsvSakit.fullScroll(android.view.View.FOCUS_DOWN), 300));
+        }
+
+        if (etkegiatanSakitLainnya != null) {
+            etkegiatanSakitLainnya.setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE | android.text.InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+            etkegiatanSakitLainnya.setSingleLine(false);
+
+            etkegiatanSakitLainnya.setOnTouchListener((v, event) -> {
+                v.getParent().requestDisallowInterceptTouchEvent(true);
+                if (event.getAction() == android.view.MotionEvent.ACTION_UP) {
+                    v.performClick();
+                }
+                return false;
+            });
+
+            if (nsvSakit != null) {
+                etkegiatanSakitLainnya.setOnFocusChangeListener((v, hasFocus) -> {
+                    if (hasFocus) {
+                        nsvSakit.postDelayed(() -> {
+                            int targetY = etkegiatanSakitLainnya.getTop() - 100;
+                            nsvSakit.smoothScrollTo(0, Math.max(0, targetY));
+                        }, 250);
+                    }
+                });
+
+                etkegiatanSakitLainnya.setOnClickListener(v -> {
+                    etkegiatanSakitLainnya.requestFocus();
+                    nsvSakit.postDelayed(() -> {
+                        int targetY = etkegiatanSakitLainnya.getTop() - 100;
+                        nsvSakit.smoothScrollTo(0, Math.max(0, targetY));
+                    }, 250);
+                });
+            }
         }
         
         setupRecyclerData();

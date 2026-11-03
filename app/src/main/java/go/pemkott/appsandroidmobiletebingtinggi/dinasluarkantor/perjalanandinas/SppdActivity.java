@@ -46,16 +46,50 @@ public class SppdActivity extends AppCompatActivity {
 
         rvKegiatanPd = findViewById(R.id.rvKegiatanPd);
         etkegiatanPdLainnya = findViewById(R.id.etKegiatanPdLainnya);
-        etkegiatanPdLainnya.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
-
         androidx.core.widget.NestedScrollView nsvSppd = findViewById(R.id.nsvSppd);
-        if (etkegiatanPdLainnya != null && nsvSppd != null) {
-            etkegiatanPdLainnya.setOnFocusChangeListener((v, hasFocus) -> {
-                if (hasFocus) {
-                    nsvSppd.postDelayed(() -> nsvSppd.fullScroll(android.view.View.FOCUS_DOWN), 300);
-                }
+
+        // Auto-adjust padding when keyboard opens with EdgeToEdge
+        View sppdRootLayout = findViewById(R.id.sppdRootLayout);
+        if (sppdRootLayout != null) {
+            androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(sppdRootLayout, (v, insets) -> {
+                androidx.core.graphics.Insets imeInsets = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.ime());
+                androidx.core.graphics.Insets systemBars = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars());
+                int bottomPadding = Math.max(imeInsets.bottom, systemBars.bottom);
+                v.setPadding(v.getPaddingLeft(), systemBars.top, v.getPaddingRight(), bottomPadding);
+                return insets;
             });
-            etkegiatanPdLainnya.setOnClickListener(v -> nsvSppd.postDelayed(() -> nsvSppd.fullScroll(android.view.View.FOCUS_DOWN), 300));
+        }
+
+        if (etkegiatanPdLainnya != null) {
+            etkegiatanPdLainnya.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+            etkegiatanPdLainnya.setSingleLine(false);
+
+            etkegiatanPdLainnya.setOnTouchListener((v, event) -> {
+                v.getParent().requestDisallowInterceptTouchEvent(true);
+                if (event.getAction() == android.view.MotionEvent.ACTION_UP) {
+                    v.performClick();
+                }
+                return false;
+            });
+
+            if (nsvSppd != null) {
+                etkegiatanPdLainnya.setOnFocusChangeListener((v, hasFocus) -> {
+                    if (hasFocus) {
+                        nsvSppd.postDelayed(() -> {
+                            int targetY = etkegiatanPdLainnya.getTop() - 100;
+                            nsvSppd.smoothScrollTo(0, Math.max(0, targetY));
+                        }, 250);
+                    }
+                });
+
+                etkegiatanPdLainnya.setOnClickListener(v -> {
+                    etkegiatanPdLainnya.requestFocus();
+                    nsvSppd.postDelayed(() -> {
+                        int targetY = etkegiatanPdLainnya.getTop() - 100;
+                        nsvSppd.smoothScrollTo(0, Math.max(0, targetY));
+                    }, 250);
+                });
+            }
         }
 
         findViewById(R.id.rlBackSppd).setOnClickListener(v -> finish());

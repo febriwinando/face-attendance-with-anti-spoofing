@@ -48,16 +48,49 @@ public class CutiActivity extends AppCompatActivity {
 
         rvKegiatanCuti = findViewById(R.id.rvKegiatanCuti);
         etkegiatanCutiLainnya = findViewById(R.id.etKegiatanCutiLainnya);
-        etkegiatanCutiLainnya.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
-
         androidx.core.widget.NestedScrollView nsvCuti = findViewById(R.id.nsvCuti);
-        if (etkegiatanCutiLainnya != null && nsvCuti != null) {
-            etkegiatanCutiLainnya.setOnFocusChangeListener((v, hasFocus) -> {
-                if (hasFocus) {
-                    nsvCuti.postDelayed(() -> nsvCuti.fullScroll(android.view.View.FOCUS_DOWN), 300);
-                }
+
+        View cutiRootLayout = findViewById(R.id.cutiRootLayout);
+        if (cutiRootLayout != null) {
+            androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(cutiRootLayout, (v, insets) -> {
+                androidx.core.graphics.Insets imeInsets = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.ime());
+                androidx.core.graphics.Insets systemBars = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars());
+                int bottomPadding = Math.max(imeInsets.bottom, systemBars.bottom);
+                v.setPadding(v.getPaddingLeft(), systemBars.top, v.getPaddingRight(), bottomPadding);
+                return insets;
             });
-            etkegiatanCutiLainnya.setOnClickListener(v -> nsvCuti.postDelayed(() -> nsvCuti.fullScroll(android.view.View.FOCUS_DOWN), 300));
+        }
+
+        if (etkegiatanCutiLainnya != null) {
+            etkegiatanCutiLainnya.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+            etkegiatanCutiLainnya.setSingleLine(false);
+
+            etkegiatanCutiLainnya.setOnTouchListener((v, event) -> {
+                v.getParent().requestDisallowInterceptTouchEvent(true);
+                if (event.getAction() == android.view.MotionEvent.ACTION_UP) {
+                    v.performClick();
+                }
+                return false;
+            });
+
+            if (nsvCuti != null) {
+                etkegiatanCutiLainnya.setOnFocusChangeListener((v, hasFocus) -> {
+                    if (hasFocus) {
+                        nsvCuti.postDelayed(() -> {
+                            int targetY = etkegiatanCutiLainnya.getTop() - 100;
+                            nsvCuti.smoothScrollTo(0, Math.max(0, targetY));
+                        }, 250);
+                    }
+                });
+
+                etkegiatanCutiLainnya.setOnClickListener(v -> {
+                    etkegiatanCutiLainnya.requestFocus();
+                    nsvCuti.postDelayed(() -> {
+                        int targetY = etkegiatanCutiLainnya.getTop() - 100;
+                        nsvCuti.smoothScrollTo(0, Math.max(0, targetY));
+                    }, 250);
+                });
+            }
         }
 
         setupRecyclerData();
