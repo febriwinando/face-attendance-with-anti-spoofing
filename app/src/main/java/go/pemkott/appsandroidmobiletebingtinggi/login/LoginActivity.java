@@ -7,6 +7,7 @@ import android.content.IntentSender;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -294,69 +295,22 @@ public class LoginActivity extends AppCompatActivity {
                             return;
                         }
 
-                        if (data.getStatus() == 401) {
-
-                            dialogView.viewNotifKosong(
-                                    LoginActivity.this,
-                                    "NIP/NIK atau Password tidak sesuai",
-                                    "Periksa kembali!");
-
+                        if (data.getStatus() == 202 || data.isRequire2fa()) {
+                            dialogproses.dismiss();
+                            show2faOtpDialog(data, username, password);
                             return;
                         }
 
-                        User user = data.getUser();
-                        if (user == null) {
+                        if (data.getStatus() == 401 || data.getStatus() == 422) {
+                            dialogproses.dismiss();
                             dialogView.viewNotifKosong(
                                     LoginActivity.this,
                                     "Login gagal",
-                                    "Data pengguna tidak ditemukan dalam respon server.");
+                                    data.getMessage() != null ? data.getMessage() : "NIP/NIK atau Password/Kode 2FA tidak sesuai.");
                             return;
                         }
 
-                        sId = user.getId();
-                        sEmployee_id = user.getEmployeeId();
-                        sAkses = user.getAkses();
-                        sActive = user.getActive();
-                        sVerifikator = user.getRole();
-
-                        sToken = data.getToken();
-                        sUsername = data.getNama();
-
-                        session.saveToken("Bearer " + sToken);
-                        session.savePegawaiId(sId);
-                        session.saveEmployeeId(sEmployee_id);
-                        session.saveUsername(username);
-                        session.saveVerifikator(sVerifikator);
-                        etPassword.setText("");
-
-                        // Hapus sisa cache chat dari akun sebelumnya agar data bersih & privat
-                        try {
-                            new go.pemkott.appsandroidmobiletebingtinggi.database.ChatLocalDatabase(LoginActivity.this).clearAllLocalChatData();
-                        } catch (Exception ignored) {}
-
-                        if ("1".equals(sActive)) {
-                            databaseHelper.insertLog(sEmployee_id, "-", SIMPLE_FORMAT_TANGGAL.format(new Date()), "Melakukan Login Aplikasi", "Login");
-
-                            databaseHelper.insertDataUserLogin(
-                                    sId,
-                                    sEmployee_id,
-                                    sUsername,
-                                    sAkses,
-                                    sActive,
-                                    sToken,
-                                    sVerifikator
-                            );
-
-                            fetchFcmTokenAndSend(sEmployee_id, username);
-
-                        } else {
-
-                            dialogView.viewNotifKosong(
-                                    LoginActivity.this,
-                                    "User tidak aktif",
-                                    "Silahkan hubungi bagian umum unit kerja anda");
-
-                        }
+                        processLoginSuccessData(data, username);
                     }
 
                     @Override
@@ -407,6 +361,147 @@ public class LoginActivity extends AppCompatActivity {
                                 errorTitle,
                                 errorMsg
                         );
+                    }
+                });
+    }
+
+    private void processLoginSuccessData(LoginResponse data, String username) {
+        User user = data.getUser();
+        if (user == null) {
+            dialogView.viewNotifKosong(
+                    LoginActivity.this,
+                    "Login gagal",
+                    "Data pengguna tidak ditemukan dalam respon server.");
+            return;
+        }
+
+        sId = user.getId();
+        sEmployee_id = user.getEmployeeId();
+        sAkses = user.getAkses();
+        sActive = user.getActive();
+        sVerifikator = user.getRole();
+
+        sToken = data.getToken();
+        sUsername = data.getNama();
+
+        session.saveToken("Bearer " + sToken);
+        session.savePegawaiId(sId);
+        session.saveEmployeeId(sEmployee_id);
+        session.saveUsername(username);
+        session.saveVerifikator(sVerifikator);
+        etPassword.setText("");
+
+        // Hapus sisa cache chat dari akun sebelumnya agar data bersih & privat
+        try {
+            new go.pemkott.appsandroidmobiletebingtinggi.database.ChatLocalDatabase(LoginActivity.this).clearAllLocalChatData();
+        } catch (Exception ignored) {}
+
+        if ("1".equals(sActive)) {
+            databaseHelper.insertLog(sEmployee_id, "-", SIMPLE_FORMAT_TANGGAL.format(new Date()), "Melakukan Login Aplikasi", "Login");
+
+            databaseHelper.insertDataUserLogin(
+                    sId,
+                    sEmployee_id,
+                    sUsername,
+                    sAkses,
+                    sActive,
+                    sToken,
+                    sVerifikator
+            );
+
+            fetchFcmTokenAndSend(sEmployee_id, username);
+        } else {
+            dialogproses.dismiss();
+            dialogView.viewNotifKosong(
+                    LoginActivity.this,
+                    "Akun Non-Aktif",
+                    "Status akun Anda belum diaktifkan oleh admin.");
+        }
+    }
+
+    private void show2faOtpDialog(LoginResponse data, String username, String password) {
+        Dialog dialog2fa = new Dialog(LoginActivity.this, R.style.DialogStyle);
+        dialog2fa.setContentView(R.layout.view_2fa_otp);
+        dialog2fa.setCancelable(true);
+
+        TextView tvTitle = dialog2fa.findViewById(R.id.tv2faTitle);
+        TextView tvDesc = dialog2fa.findViewById(R.id.tv2faDescription);
+        View llSecretContainer = dialog2fa.findViewById(R.id.ll2faSecretContainer);
+        TextView tvSecretKey = dialog2fa.findViewById(R.id.tv2faSecretKey);
+        com.google.android.material.button.MaterialButton btnCopy = dialog2fa.findViewById(R.id.btn2faCopySecret);
+        EditText etOtp = dialog2fa.findViewById(R.id.et2faOtp);
+        com.google.android.material.button.MaterialButton btnVerify = dialog2fa.findViewById(R.id.btn2faVerify);
+
+        if (data != null && data.isSetupRequired() && data.getSecretKey() != null) {
+            if (tvTitle != null) tvTitle.setText("Setup 2FA Wajib");
+            if (tvDesc != null) tvDesc.setText("Aplikasi mewajibkan 2FA. Daftarkan Kunci Rahasia ini ke Google Authenticator Anda lalu masukkan kode 6-digit:");
+            if (llSecretContainer != null) llSecretContainer.setVisibility(View.VISIBLE);
+            if (tvSecretKey != null) tvSecretKey.setText(data.getSecretKey());
+            if (btnCopy != null) {
+                btnCopy.setOnClickListener(v -> {
+                    android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(android.content.Context.CLIPBOARD_SERVICE);
+                    android.content.ClipData clip = android.content.ClipData.newPlainText("2FA Secret Key", data.getSecretKey());
+                    if (clipboard != null) {
+                        clipboard.setPrimaryClip(clip);
+                        Toast.makeText(LoginActivity.this, "Kunci Rahasia 2FA Berhasil Disalin!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+            if (btnVerify != null) btnVerify.setText("VERIFIKASI & AKTIFKAN");
+        } else {
+            if (tvTitle != null) tvTitle.setText("Verifikasi 2FA");
+            if (tvDesc != null) tvDesc.setText("Masukkan 6 digit kode dari aplikasi Google Authenticator Anda:");
+            if (llSecretContainer != null) llSecretContainer.setVisibility(View.GONE);
+            if (btnVerify != null) btnVerify.setText("VERIFIKASI");
+        }
+
+        if (btnVerify != null) {
+            btnVerify.setOnClickListener(v -> {
+                String otpCode = etOtp != null ? etOtp.getText().toString().trim() : "";
+                if (otpCode.length() != 6) {
+                    dialogView.viewNotifKosong(LoginActivity.this, "Kode 2FA Tidak Valid", "Masukkan 6 digit angka dari aplikasi Google Authenticator.");
+                    return;
+                }
+                dialog2fa.dismiss();
+                loginApp2fa(username, password, otpCode);
+            });
+        }
+
+        dialog2fa.show();
+    }
+
+    private void loginApp2fa(String username, String password, String otp) {
+        dialogproses = new Dialog(LoginActivity.this, R.style.DialogStyle);
+        dialogproses.setContentView(R.layout.view_proses);
+        dialogproses.setCancelable(false);
+        dialogproses.show();
+
+        RetroClient
+                .getInstance(LoginActivity.this)
+                .getApi2()
+                .login2fa(username, password, otp)
+                .enqueue(new Callback<List<LoginResponse>>() {
+                    @Override
+                    public void onResponse(@NonNull Call<List<LoginResponse>> call, @NonNull Response<List<LoginResponse>> response) {
+                        if (isFinishing()) return;
+                        if (!response.isSuccessful() || response.body() == null || response.body().isEmpty()) {
+                            dialogproses.dismiss();
+                            dialogView.viewNotifKosong(LoginActivity.this, "Verifikasi 2FA Gagal", "Respon server tidak valid.");
+                            return;
+                        }
+                        LoginResponse data = response.body().get(0);
+                        if (data.getStatus() == 422 || data.getStatus() == 401) {
+                            dialogproses.dismiss();
+                            dialogView.viewNotifKosong(LoginActivity.this, "Verifikasi 2FA Gagal", data.getMessage() != null ? data.getMessage() : "Kode OTP 2FA Salah atau Kadaluarsa.");
+                            return;
+                        }
+                        processLoginSuccessData(data, username);
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<List<LoginResponse>> call, @NonNull Throwable t) {
+                        dialogproses.dismiss();
+                        dialogView.viewNotifKosong(LoginActivity.this, "Koneksi Gagal", t.getMessage());
                     }
                 });
     }

@@ -112,7 +112,14 @@ public interface HttpService {
     Call<List<LoginResponse>> login(
             @Field("username") String username,
             @Field("password") String password
+    );
 
+    @FormUrlEncoded
+    @POST("login")
+    Call<List<LoginResponse>> login2fa(
+            @Field("username") String username,
+            @Field("password") String password,
+            @Field("otp") String otp
     );
 
     @FormUrlEncoded

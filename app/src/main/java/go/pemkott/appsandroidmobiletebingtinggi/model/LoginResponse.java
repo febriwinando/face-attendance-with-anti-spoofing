@@ -16,6 +16,18 @@ public class LoginResponse {
     @SerializedName("status")
     private int status;
 
+    @SerializedName("require_2fa")
+    private boolean require2fa;
+
+    @SerializedName("setup_required")
+    private boolean setupRequired;
+
+    @SerializedName("secret_key")
+    private String secretKey;
+
+    @SerializedName("message")
+    private String message;
+
     public User getUser() {
         return user;
     }
@@ -30,5 +42,21 @@ public class LoginResponse {
 
     public int getStatus() {
         return status;
+    }
+
+    public boolean isRequire2fa() {
+        return require2fa;
+    }
+
+    public boolean isSetupRequired() {
+        return setupRequired;
+    }
+
+    public String getSecretKey() {
+        return secretKey;
+    }
+
+    public String getMessage() {
+        return message;
     }
 }

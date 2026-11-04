@@ -10,6 +10,7 @@
 
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">tebingtinggikota.go.id</domain>
+        <domain includeSubdomains="true">172.15.1.35</domain>
         <domain includeSubdomains="true">172.15.5.39</domain>
         <domain includeSubdomains="true">172.15.1.12</domain>
         <domain includeSubdomains="true">172.15.1.13</domain>

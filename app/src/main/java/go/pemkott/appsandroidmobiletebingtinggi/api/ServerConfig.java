@@ -6,7 +6,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
 
 public class ServerConfig {
 
-    public static String BASE_HOST = "http://172.15.5.39:8000/";
+    public static String BASE_HOST = "http://172.15.1.35:8000/";
 
     public static String getBaseUrl() {
         Context context = MyApplication.getAppContext();
