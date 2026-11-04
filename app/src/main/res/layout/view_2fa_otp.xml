@@ -1,114 +1,262 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="24dp"
-    android:background="@drawable/bg_dialog">
+    android:fillViewport="true"
+    android:overScrollMode="never">
 
-    <TextView
-        android:id="@+id/tv2faTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="sans-serif-black"
-        android:text="Verifikasi 2FA (Google Authenticator)"
-        android:textColor="@color/text_primary"
-        android:textSize="18sp" />
-
-    <TextView
-        android:id="@+id/tv2faDescription"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:fontFamily="sans-serif"
-        android:text="Masukkan 6 digit kode dari aplikasi Google Authenticator Anda:"
-        android:textColor="@color/text_secondary"
-        android:textSize="14sp" />
-
-    <!-- Container Secret Key untuk Pendaftaran Baru -->
     <LinearLayout
-        android:id="@+id/ll2faSecretContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_marginTop="12dp"
-        android:padding="12dp"
-        android:background="@drawable/bg_time_info_card"
-        android:visibility="gone">
+        android:padding="24dp"
+        android:layout_margin="8dp"
+        android:background="@drawable/bg_dialog_cool">
 
-        <TextView
-            android:layout_width="wrap_content"
+        <!-- Top Security Icon Badge -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="sans-serif-medium"
-            android:text="Kunci Rahasia Setup 2FA Anda:"
-            android:textColor="@color/text_primary"
-            android:textSize="13sp" />
+            android:orientation="vertical"
+            android:gravity="center">
 
+            <FrameLayout
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:background="@drawable/bg_shield_gradient"
+                android:padding="10dp">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_verified_user"
+                    app:tint="@color/primary_brand"
+                    android:contentDescription="Security Icon" />
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/tv2faTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:fontFamily="sans-serif-black"
+                android:text="Verifikasi Keamanan 2FA"
+                android:textColor="@color/text_primary"
+                android:textSize="19sp"
+                android:textAlignment="center" />
+
+            <TextView
+                android:id="@+id/tv2faSubtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:fontFamily="sans-serif-medium"
+                android:text="GOOGLE AUTHENTICATOR"
+                android:textColor="@color/primary_brand"
+                android:textSize="11sp"
+                android:letterSpacing="0.15" />
+
+            <TextView
+                android:id="@+id/tv2faDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="sans-serif"
+                android:gravity="center"
+                android:lineSpacingExtra="3dp"
+                android:text="Masukkan 6 digit kode dari aplikasi Google Authenticator Anda:"
+                android:textColor="@color/text_secondary"
+                android:textSize="13sp" />
+        </LinearLayout>
+
+        <!-- Container Secret Key & Barcode QR Code untuk Setup Wajib Pertama Kali -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/ll2faSecretContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:visibility="gone"
+            app:cardBackgroundColor="@color/surface_main"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="0dp"
+            app:strokeColor="@color/primary_brand"
+            app:strokeWidth="1.5dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="sans-serif-black"
+                        android:text="KUNCI RAHASIA &amp; BARCODE SETUP"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="11sp"
+                        android:letterSpacing="0.1" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-bold"
+                        android:text="LANGKAH 1"
+                        android:textColor="@color/primary_brand"
+                        android:textSize="10sp"
+                        android:letterSpacing="0.1" />
+                </LinearLayout>
+
+                <!-- Barcode QR Code Image Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="160dp"
+                    android:layout_height="160dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="10dp"
+                    app:cardBackgroundColor="@android:color/white"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="2dp"
+                    app:strokeWidth="0dp">
+
+                    <ImageView
+                        android:id="@+id/iv2faQrCode"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:padding="8dp"
+                        android:scaleType="fitCenter"
+                        android:contentDescription="Barcode QR Code 2FA" />
+                </com.google.android.material.card.MaterialCardView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="8dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="Pindai Barcode di atas atau Salin Kunci di bawah:"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="11sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginTop="8dp">
+
+                    <TextView
+                        android:id="@+id/tv2faSecretKey"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="monospace"
+                        android:text="4IA7 2SCU NSG4 VNSY"
+                        android:textColor="@color/primary_brand"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.1"
+                        android:textIsSelectable="true" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn2faCopySecret"
+                        style="@style/Widget.Material3.Button.TonalButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="38dp"
+                        android:text="SALIN"
+                        android:textSize="12sp"
+                        android:fontFamily="sans-serif-black"
+                        app:icon="@drawable/ic_content_copy"
+                        app:iconSize="16dp"
+                        app:cornerRadius="10dp" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:fontFamily="sans-serif"
+                    android:lineSpacingExtra="2dp"
+                    android:text="Pindai QR Code di atas menggunakan Google Authenticator, atau salin kunci teks lalu pilih 'Enter a setup key'."
+                    android:textColor="@color/text_secondary"
+                    android:textSize="11sp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- OTP Input Box -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:cardBackgroundColor="@color/surface_main"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="0dp"
+            app:strokeColor="@color/primary_brand"
+            app:strokeWidth="2dp">
+
+            <EditText
+                android:id="@+id/et2faOtp"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:background="@android:color/transparent"
+                android:fontFamily="sans-serif-black"
+                android:gravity="center"
+                android:hint="0 0 0   0 0 0"
+                android:inputType="number"
+                android:maxLength="6"
+                android:letterSpacing="0.3"
+                android:paddingHorizontal="16dp"
+                android:textColor="@color/text_primary"
+                android:textColorHint="@color/text_secondary"
+                android:textSize="24sp" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Action Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn2faVerify"
+            style="@style/Widget.Material3.Button"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:layout_marginTop="20dp"
+            android:text="VERIFIKASI &amp; MASUK"
+            android:fontFamily="sans-serif-black"
+            android:textSize="15sp"
+            android:letterSpacing="0.05"
+            app:backgroundTint="@color/primary_brand"
+            app:cornerRadius="18dp" />
+
+        <!-- Bottom Security Notice -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginTop="6dp">
+            android:gravity="center"
+            android:layout_marginTop="14dp">
+
+            <ImageView
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:src="@drawable/ic_security_lock"
+                app:tint="@color/text_secondary"
+                android:contentDescription="Protected Icon" />
 
             <TextView
-                android:id="@+id/tv2faSecretKey"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:fontFamily="sans-serif-black"
-                android:text="4IA72SCUNSG4VNSY"
-                android:textColor="@color/primary_brand"
-                android:textSize="15sp"
-                android:textIsSelectable="true" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn2faCopySecret"
-                style="@style/Widget.Material3.Button.OutlinedButton"
                 android:layout_width="wrap_content"
-                android:layout_height="38dp"
-                android:text="SALIN"
-                android:textSize="12sp"
-                app:cornerRadius="8dp" />
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:fontFamily="sans-serif"
+                android:text="Terproteksi oleh Google Authenticator TOTP"
+                android:textColor="@color/text_secondary"
+                android:textSize="11sp" />
         </LinearLayout>
+
     </LinearLayout>
-
-    <com.google.android.material.card.MaterialCardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        app:cardBackgroundColor="@color/surface_main"
-        app:cardCornerRadius="12dp"
-        app:cardElevation="0dp"
-        app:strokeColor="@color/primary_brand"
-        app:strokeWidth="1dp">
-
-        <EditText
-            android:id="@+id/et2faOtp"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@android:color/transparent"
-            android:fontFamily="sans-serif-black"
-            android:gravity="center"
-            android:hint="000000"
-            android:inputType="number"
-            android:maxLength="6"
-            android:paddingHorizontal="16dp"
-            android:textColor="@color/text_primary"
-            android:textColorHint="@color/text_secondary"
-            android:textSize="22sp" />
-    </com.google.android.material.card.MaterialCardView>
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn2faVerify"
-        style="@style/Widget.Material3.Button"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginTop="20dp"
-        android:text="VERIFIKASI &amp; AKTIFKAN"
-        android:fontFamily="sans-serif-black"
-        app:backgroundTint="@color/primary_brand"
-        app:cornerRadius="12dp" />
-
-</LinearLayout>
+</androidx.core.widget.NestedScrollView>

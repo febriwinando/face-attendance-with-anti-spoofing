@@ -25,6 +25,9 @@ public class LoginResponse {
     @SerializedName("secret_key")
     private String secretKey;
 
+    @SerializedName("qr_code")
+    private String qrCode;
+
     @SerializedName("message")
     private String message;
 
@@ -54,6 +57,10 @@ public class LoginResponse {
 
     public String getSecretKey() {
         return secretKey;
+    }
+
+    public String getQrCode() {
+        return qrCode;
     }
 
     public String getMessage() {

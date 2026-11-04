@@ -8,8 +8,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.common.BitMatrix;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -419,24 +424,76 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    public static android.graphics.Bitmap generateQrCode(String text, int width, int height) {
+        try {
+            com.google.zxing.common.BitMatrix bitMatrix = new com.google.zxing.MultiFormatWriter()
+                    .encode(text, com.google.zxing.BarcodeFormat.QR_CODE, width, height);
+            int[] pixels = new int[width * height];
+            for (int y = 0; y < height; y++) {
+                int offset = y * width;
+                for (int x = 0; x < width; x++) {
+                    pixels[offset + x] = bitMatrix.get(x, y) ? 0xFF000000 : 0xFFFFFFFF;
+                }
+            }
+            android.graphics.Bitmap bitmap = android.graphics.Bitmap.createBitmap(width, height, android.graphics.Bitmap.Config.ARGB_8888);
+            bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
+            return bitmap;
+        } catch (Exception e) {
+            Log.e("QR_GEN", "Error generating local QR code: " + e.getMessage(), e);
+            return null;
+        }
+    }
+
     private void show2faOtpDialog(LoginResponse data, String username, String password) {
         Dialog dialog2fa = new Dialog(LoginActivity.this, R.style.DialogStyle);
         dialog2fa.setContentView(R.layout.view_2fa_otp);
         dialog2fa.setCancelable(true);
 
+        if (dialog2fa.getWindow() != null) {
+            dialog2fa.getWindow().setLayout(android.view.ViewGroup.LayoutParams.MATCH_PARENT, android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
+            dialog2fa.getWindow().setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        }
+
         TextView tvTitle = dialog2fa.findViewById(R.id.tv2faTitle);
         TextView tvDesc = dialog2fa.findViewById(R.id.tv2faDescription);
         View llSecretContainer = dialog2fa.findViewById(R.id.ll2faSecretContainer);
         TextView tvSecretKey = dialog2fa.findViewById(R.id.tv2faSecretKey);
+        ImageView ivQrCode = dialog2fa.findViewById(R.id.iv2faQrCode);
         com.google.android.material.button.MaterialButton btnCopy = dialog2fa.findViewById(R.id.btn2faCopySecret);
         EditText etOtp = dialog2fa.findViewById(R.id.et2faOtp);
         com.google.android.material.button.MaterialButton btnVerify = dialog2fa.findViewById(R.id.btn2faVerify);
 
-        if (data != null && data.isSetupRequired() && data.getSecretKey() != null) {
-            if (tvTitle != null) tvTitle.setText("Setup 2FA Wajib");
-            if (tvDesc != null) tvDesc.setText("Aplikasi mewajibkan 2FA. Daftarkan Kunci Rahasia ini ke Google Authenticator Anda lalu masukkan kode 6-digit:");
+        if (data != null && data.getSecretKey() != null && !data.getSecretKey().trim().isEmpty()) {
+            if (tvTitle != null) tvTitle.setText(data.isSetupRequired() ? "Setup 2FA Wajib" : "Verifikasi 2FA");
+            if (tvDesc != null) tvDesc.setText("Pindai Barcode di bawah atau salin Kunci Rahasia ke Google Authenticator Anda lalu masukkan kode 6-digit:");
             if (llSecretContainer != null) llSecretContainer.setVisibility(View.VISIBLE);
             if (tvSecretKey != null) tvSecretKey.setText(data.getSecretKey());
+
+            if (ivQrCode != null) {
+                String totpUri = "otpauth://totp/E-ABSENSI%20TEBING%20TINGGI:" + username + "?secret=" + data.getSecretKey() + "&issuer=E-ABSENSI%20TEBING%20TINGGI";
+                android.graphics.Bitmap localQrBitmap = generateQrCode(totpUri, 400, 400);
+
+                if (localQrBitmap != null) {
+                    ivQrCode.setImageBitmap(localQrBitmap);
+                } else if (data.getQrCode() != null && !data.getQrCode().trim().isEmpty()) {
+                    try {
+                        byte[] decodedString = android.util.Base64.decode(data.getQrCode(), android.util.Base64.DEFAULT);
+                        android.graphics.Bitmap decodedByte = android.graphics.BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                        if (decodedByte != null) {
+                            ivQrCode.setImageBitmap(decodedByte);
+                        } else {
+                            String qrUrl = ServerConfig.getBaseUrl() + "api/2fa/qr-code?secret=" + data.getSecretKey() + "&username=" + username;
+                            com.bumptech.glide.Glide.with(LoginActivity.this).load(qrUrl).into(ivQrCode);
+                        }
+                    } catch (Exception eQr) {
+                        String qrUrl = ServerConfig.getBaseUrl() + "api/2fa/qr-code?secret=" + data.getSecretKey() + "&username=" + username;
+                        com.bumptech.glide.Glide.with(LoginActivity.this).load(qrUrl).into(ivQrCode);
+                    }
+                } else {
+                    String qrUrl = ServerConfig.getBaseUrl() + "api/2fa/qr-code?secret=" + data.getSecretKey() + "&username=" + username;
+                    com.bumptech.glide.Glide.with(LoginActivity.this).load(qrUrl).into(ivQrCode);
+                }
+            }
             if (btnCopy != null) {
                 btnCopy.setOnClickListener(v -> {
                     android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(android.content.Context.CLIPBOARD_SERVICE);
@@ -447,7 +504,7 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 });
             }
-            if (btnVerify != null) btnVerify.setText("VERIFIKASI & AKTIFKAN");
+            if (btnVerify != null) btnVerify.setText("VERIFIKASI & MASUK");
         } else {
             if (tvTitle != null) tvTitle.setText("Verifikasi 2FA");
             if (tvDesc != null) tvDesc.setText("Masukkan 6 digit kode dari aplikasi Google Authenticator Anda:");

@@ -123,4 +123,7 @@ dependencies {
 
     // ML Kit Face Detection
     implementation("com.google.mlkit:face-detection:16.1.7")
+
+    // ZXing QR Code Generator
+    implementation("com.google.zxing:core:3.5.3")
 }
