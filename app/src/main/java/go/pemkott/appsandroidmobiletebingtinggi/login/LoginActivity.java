@@ -89,17 +89,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
-        WindowInsetsControllerCompat controller =
-                new WindowInsetsControllerCompat(
-                        getWindow(),
-                        getWindow().getDecorView()
-                );
-        // icon status bar terang/gelap
-        controller.setAppearanceLightStatusBars(true);
-        // icon navigation terang/gelap
-        controller.setAppearanceLightNavigationBars(true);
+        go.pemkott.appsandroidmobiletebingtinggi.utils.WindowUtil.applyDashboardStyle(this);
         setContentView(R.layout.activity_login);
 
         appUpdateManager = AppUpdateManagerFactory.create(LoginActivity.this);
@@ -261,7 +251,7 @@ public class LoginActivity extends AppCompatActivity {
         RetroClient
                 .getInstance(LoginActivity.this)
                 .getApi2()
-                .login(username, password)
+                .login(username, password, "2.1")
                 .enqueue(new Callback<List<LoginResponse>>() {
 
                     @Override
@@ -536,7 +526,7 @@ public class LoginActivity extends AppCompatActivity {
         RetroClient
                 .getInstance(LoginActivity.this)
                 .getApi2()
-                .login2fa(username, password, otp)
+                .login2fa(username, password, otp, "2.1")
                 .enqueue(new Callback<List<LoginResponse>>() {
                     @Override
                     public void onResponse(@NonNull Call<List<LoginResponse>> call, @NonNull Response<List<LoginResponse>> response) {

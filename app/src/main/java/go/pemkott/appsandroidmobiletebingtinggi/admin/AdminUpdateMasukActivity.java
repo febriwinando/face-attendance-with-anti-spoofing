@@ -100,7 +100,7 @@ public class AdminUpdateMasukActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
+        go.pemkott.appsandroidmobiletebingtinggi.utils.WindowUtil.applyDashboardStyle(this);
         setContentView(R.layout.activity_admin_update_masuk);
 
         ambilFoto = new AmbilFoto(this);

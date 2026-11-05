@@ -5,12 +5,15 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -37,8 +40,7 @@ public class TugasLapanganActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-
+        go.pemkott.appsandroidmobiletebingtinggi.utils.WindowUtil.applyDashboardStyle(this);
         setContentView(R.layout.activity_tugas_lapangan);
 
         databaseHelper = new DatabaseHelper(this);
@@ -48,13 +50,17 @@ public class TugasLapanganActivity extends AppCompatActivity {
         etkegiatanLainnya = findViewById(R.id.etKegiatanLainnya);
         androidx.core.widget.NestedScrollView nsvTugasLapangan = findViewById(R.id.nsvTugasLapangan);
 
+        View titleHeader = findViewById(R.id.titleHeader);
         View tlRootLayout = findViewById(R.id.tlRootLayout);
         if (tlRootLayout != null) {
             androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(tlRootLayout, (v, insets) -> {
                 androidx.core.graphics.Insets imeInsets = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.ime());
                 androidx.core.graphics.Insets systemBars = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars());
                 int bottomPadding = Math.max(imeInsets.bottom, systemBars.bottom);
-                v.setPadding(v.getPaddingLeft(), systemBars.top, v.getPaddingRight(), bottomPadding);
+                v.setPadding(v.getPaddingLeft(), 0, v.getPaddingRight(), bottomPadding);
+                if (titleHeader != null) {
+                    titleHeader.setPadding(titleHeader.getPaddingLeft(), systemBars.top, titleHeader.getPaddingRight(), titleHeader.getPaddingBottom());
+                }
                 return insets;
             });
         }

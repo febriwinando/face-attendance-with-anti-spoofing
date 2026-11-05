@@ -5,8 +5,8 @@
     android:layout_height="wrap_content"
     android:layout_margin="20dp"
     app:cardBackgroundColor="@color/surface_main"
-    app:cardCornerRadius="24dp"
-    app:cardElevation="8dp"
+    app:cardCornerRadius="28dp"
+    app:cardElevation="12dp"
     app:strokeWidth="0dp">
 
     <LinearLayout
@@ -30,7 +30,8 @@
                 android:backgroundTint="#124CAF50"
                 android:padding="8dp"
                 app:srcCompat="@drawable/ic_sukses"
-                app:tint="@color/hijau" />
+                app:tint="@color/hijau"
+                android:contentDescription="Ikon Berhasil" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -53,7 +54,8 @@
                 android:focusable="true"
                 android:padding="4dp"
                 android:src="@drawable/one_close"
-                app:tint="@color/text_hint" />
+                app:tint="@color/text_hint"
+                android:contentDescription="Tutup" />
         </RelativeLayout>
 
         <TextView
@@ -64,6 +66,56 @@
             android:textColor="@color/text_secondary"
             android:textSize="15sp"
             android:lineSpacingExtra="4dp" />
+
+        <!-- Prominent & Clean Motivational Quote Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cvQuoteContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            app:cardBackgroundColor="#1410B981"
+            app:cardCornerRadius="20dp"
+            app:strokeColor="#4010B981"
+            app:strokeWidth="1.5dp"
+            app:cardElevation="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <!-- Quote Icon (Clean & Minimalist) -->
+                <ImageView
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_marginBottom="8dp"
+                    android:src="@drawable/ic_quote_mark"
+                    app:tint="@color/primary_brand"
+                    android:contentDescription="Ikon Quotes" />
+
+                <!-- Prominent Quote Content (16sp) -->
+                <TextView
+                    android:id="@+id/tvQuoteContent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
+                    android:lineSpacingExtra="5dp"
+                    android:textColor="@color/text_primary"
+                    android:textSize="16sp" />
+
+                <!-- Author Name (14sp Bold) -->
+                <TextView
+                    android:id="@+id/tvQuoteAuthor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_marginTop="12dp"
+                    android:fontFamily="sans-serif-black"
+                    android:textColor="@color/primary_brand"
+                    android:textSize="14sp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

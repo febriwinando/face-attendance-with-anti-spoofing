@@ -28,9 +28,10 @@
                 android:layout_marginEnd="12dp"
                 android:background="@drawable/backgoundovalabuabu"
                 android:backgroundTint="#1AF7B620"
-                android:padding="8dp"
-                app:srcCompat="@drawable/one_warning"
-                app:tint="@color/kuning" />
+                android:padding="10dp"
+                app:srcCompat="@drawable/ic_dialog_warning"
+                app:tint="@color/kuning"
+                android:contentDescription="Ikon Peringatan" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -39,7 +40,7 @@
                 android:layout_toEndOf="@+id/emoticon"
                 android:text="Peringatan!"
                 android:textColor="@color/text_primary"
-                android:textSize="22sp"
+                android:textSize="20sp"
                 android:fontFamily="sans-serif-black" />
 
             <ImageView
@@ -53,7 +54,8 @@
                 android:focusable="true"
                 android:padding="4dp"
                 android:src="@drawable/one_close"
-                app:tint="@color/text_hint" />
+                app:tint="@color/text_hint"
+                android:contentDescription="Tutup" />
         </RelativeLayout>
 
         <TextView
@@ -63,16 +65,17 @@
             android:fontFamily="sans-serif-medium"
             android:textAlignment="viewStart"
             android:textColor="@color/text_secondary"
-            android:textSize="16sp"
+            android:textSize="15sp"
             android:lineSpacingExtra="4dp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/tvCobaKembali"
             style="@style/Widget.Material3.Button.TonalButton"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="20dp"
             android:text="@string/coba_kembali"
+            android:fontFamily="sans-serif-black"
             android:textAllCaps="false"
             android:visibility="gone"
             app:cornerRadius="12dp" />

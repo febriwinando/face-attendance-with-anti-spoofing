@@ -28,8 +28,8 @@
                 android:layout_marginEnd="12dp"
                 android:background="@drawable/backgoundovalabuabu"
                 android:backgroundTint="#12C11515"
-                android:padding="8dp"
-                app:srcCompat="@drawable/ic_emot_error"
+                android:padding="10dp"
+                app:srcCompat="@drawable/ic_dialog_error"
                 app:tint="@color/merah"
                 android:contentDescription="Ikon Error" />
 

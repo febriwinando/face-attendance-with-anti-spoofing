@@ -27,10 +27,11 @@
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="12dp"
                 android:background="@drawable/backgoundovalabuabu"
-                android:backgroundTint="#1AF7B620"
-                android:padding="8dp"
-                app:srcCompat="@drawable/one_warning"
-                app:tint="@color/kuning" />
+                android:backgroundTint="#1AC11515"
+                android:padding="10dp"
+                app:srcCompat="@drawable/ic_dialog_logout"
+                app:tint="@color/merah"
+                android:contentDescription="Ikon Keluar" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -39,7 +40,7 @@
                 android:layout_toEndOf="@+id/emoticon"
                 android:text="@string/peringatan"
                 android:textColor="@color/text_primary"
-                android:textSize="22sp"
+                android:textSize="20sp"
                 android:fontFamily="sans-serif-black" />
 
             <ImageView
@@ -53,30 +54,32 @@
                 android:focusable="true"
                 android:padding="4dp"
                 android:src="@drawable/one_close"
-                app:tint="@color/text_hint" />
+                app:tint="@color/text_hint"
+                android:contentDescription="Tutup" />
         </RelativeLayout>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-medium"
-            android:text="Apakah anda yakin akan keluar?"
+            android:text="Apakah anda yakin akan keluar dari akun ini?"
             android:textAlignment="viewStart"
             android:textColor="@color/text_secondary"
-            android:textSize="16sp"
+            android:textSize="15sp"
             android:lineSpacingExtra="4dp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/tvYakin"
             style="@style/Widget.Material3.Button"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="Ya, Keluar"
+            android:layout_height="52dp"
+            android:layout_marginTop="20dp"
+            android:text="Ya, Keluar Akun"
+            android:fontFamily="sans-serif-black"
             android:textAllCaps="false"
             android:textColor="@color/white"
             app:backgroundTint="@color/merah"
-            app:cornerRadius="12dp" />
+            app:cornerRadius="14dp" />
 
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

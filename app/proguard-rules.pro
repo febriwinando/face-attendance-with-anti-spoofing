@@ -60,3 +60,14 @@
 -keep class org.tensorflow.lite.** { *; }
 -dontwarn org.tensorflow.lite.**
 
+# ZXing
+-keep class com.google.zxing.** { *; }
+-dontwarn com.google.zxing.**
+
+# Glide
+-keep class com.bumptech.glide.** { *; }
+-dontwarn com.bumptech.glide.**
+
+# Motivational Quotes & Utils
+-keep class go.pemkott.appsandroidmobiletebingtinggi.utils.** { *; }
+

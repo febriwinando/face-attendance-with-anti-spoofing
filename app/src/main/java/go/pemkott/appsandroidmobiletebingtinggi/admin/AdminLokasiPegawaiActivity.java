@@ -70,7 +70,7 @@ public class AdminLokasiPegawaiActivity extends AppCompatActivity implements OnM
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
+        go.pemkott.appsandroidmobiletebingtinggi.utils.WindowUtil.applyDashboardStyle(this);
         setContentView(R.layout.activity_admin_lokasi_pegawai);
 
         dialogView = new DialogView(this);

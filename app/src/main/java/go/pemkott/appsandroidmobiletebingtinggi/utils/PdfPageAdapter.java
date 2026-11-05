@@ -10,10 +10,20 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class PdfPageAdapter extends RecyclerView.Adapter<PdfPageAdapter.PageViewHolder> {
 
-    private PdfRenderer pdfRenderer;
+    private final PdfRenderer pdfRenderer;
+    private float scaleFactor = 1.0f;
 
     public PdfPageAdapter(PdfRenderer renderer) {
         this.pdfRenderer = renderer;
+    }
+
+    public void setScaleFactor(float scale) {
+        this.scaleFactor = Math.max(0.5f, Math.min(scale, 4.0f));
+        notifyDataSetChanged();
+    }
+
+    public float getScaleFactor() {
+        return scaleFactor;
     }
 
     @NonNull
@@ -24,35 +34,41 @@ public class PdfPageAdapter extends RecyclerView.Adapter<PdfPageAdapter.PageView
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT));
         imageView.setAdjustViewBounds(true);
+        imageView.setPadding(0, 8, 0, 8);
         return new PageViewHolder(imageView);
     }
 
     @Override
     public void onBindViewHolder(@NonNull PageViewHolder holder, int position) {
-        PdfRenderer.Page page = pdfRenderer.openPage(position);
+        if (pdfRenderer == null) return;
 
-        Bitmap bitmap = Bitmap.createBitmap(
-                page.getWidth(),
-                page.getHeight(),
-                Bitmap.Config.ARGB_8888
-        );
+        try (PdfRenderer.Page page = pdfRenderer.openPage(position)) {
+            int renderWidth = Math.max(100, (int) (page.getWidth() * scaleFactor));
+            int renderHeight = Math.max(100, (int) (page.getHeight() * scaleFactor));
 
-        page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY);
-        holder.imageView.setImageBitmap(bitmap);
+            Bitmap bitmap = Bitmap.createBitmap(
+                    renderWidth,
+                    renderHeight,
+                    Bitmap.Config.ARGB_8888
+            );
 
-        page.close();
+            page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY);
+            holder.imageView.setImageBitmap(bitmap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public int getItemCount() {
-        return pdfRenderer.getPageCount();
+        return pdfRenderer != null ? pdfRenderer.getPageCount() : 0;
     }
 
     static class PageViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
         PageViewHolder(@NonNull ImageView itemView) {
             super(itemView);
-            imageView = itemView;
+            imageView = (ImageView) itemView;
         }
     }
 }

@@ -80,6 +80,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
 
 import go.pemkott.appsandroidmobiletebingtinggi.model.KegiatanIzin;
 import go.pemkott.appsandroidmobiletebingtinggi.model.Koordinat;
+import go.pemkott.appsandroidmobiletebingtinggi.model.RekapMasukFragment;
 import go.pemkott.appsandroidmobiletebingtinggi.model.ValidasiData;
 import go.pemkott.appsandroidmobiletebingtinggi.rekap.RekapAbsensActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.singkronjadwal.SettingAdapter;
@@ -280,6 +281,8 @@ public class DashboardVersiOne extends AppCompatActivity {
                 startActivity(intent);
             });
         }
+
+        loadDailyMotivationalQuote();
 
         loadBeritaDiskominfo();
 
@@ -926,6 +929,7 @@ public class DashboardVersiOne extends AppCompatActivity {
         }
 
         loadBeritaDiskominfo();
+        loadDailyMotivationalQuote();
 
         if (clockRunnable != null) {
             clockHandler.post(clockRunnable);
@@ -933,6 +937,23 @@ public class DashboardVersiOne extends AppCompatActivity {
 
         if (beritaUtamaAdapter != null && beritaUtamaAdapter.getItemCount() > 1) {
             startBeritaAutoSlide();
+        }
+    }
+
+    private void loadDailyMotivationalQuote() {
+        TextView tvDashboardQuoteContent = findViewById(R.id.tvDashboardQuoteContent);
+        TextView tvDashboardQuoteAuthor = findViewById(R.id.tvDashboardQuoteAuthor);
+
+        go.pemkott.appsandroidmobiletebingtinggi.utils.MotivationalQuotesLibrary.Quote todayQuote =
+                go.pemkott.appsandroidmobiletebingtinggi.utils.MotivationalQuotesLibrary.getTodayQuote();
+
+        if (todayQuote != null) {
+            if (tvDashboardQuoteContent != null) {
+                tvDashboardQuoteContent.setText("“" + todayQuote.getQuote() + "”");
+            }
+            if (tvDashboardQuoteAuthor != null) {
+                tvDashboardQuoteAuthor.setText("— " + todayQuote.getAuthor());
+            }
         }
     }
 
@@ -1029,16 +1050,48 @@ public class DashboardVersiOne extends AppCompatActivity {
                 .show();
     }
 
-    public void dataValidasi(String verifikator, String idE){
-        if (verifikator != null && !verifikator.trim().isEmpty() && !"0".equals(verifikator.trim()) && !"null".equalsIgnoreCase(verifikator.trim())) {
-            if (clVerifikasi != null) {
-                clVerifikasi.setVisibility(View.VISIBLE);
-            }
-        } else {
+    public void dataValidasi(String verifikator, String idE) {
+        // Task 1: Jika pegawai bukan verifikator (verifikator "0", null, atau kosong), sembunyikan menu verifikasi
+        if (verifikator == null || verifikator.trim().isEmpty() || "0".equals(verifikator.trim()) || "null".equalsIgnoreCase(verifikator.trim())) {
             if (clVerifikasi != null) {
                 clVerifikasi.setVisibility(View.GONE);
             }
+            return;
         }
+
+        String targetEmpId = (idE != null && !idE.trim().isEmpty() && !"0".equals(idE.trim())) ? idE : session.getPegawaiId();
+
+        // Task 2: Jika di akun verifikator tidak ada data pegawai yang perlu diverifikasi, sembunyikan menu verifikasi
+        String checkUrl = ServerConfig.getApiUrl() + "newVeriFragment?id=" + targetEmpId;
+        httpService.getRekapMasukFragment(checkUrl).enqueue(new Callback<List<RekapMasukFragment>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<RekapMasukFragment>> call,
+                                   @NonNull Response<List<RekapMasukFragment>> response) {
+                if (isFinishing()) return;
+
+                if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
+                    // Ada data pegawai yang perlu diverifikasi -> Tampilkan menu verifikasi
+                    if (clVerifikasi != null) {
+                        clVerifikasi.setVisibility(View.VISIBLE);
+                    }
+                } else {
+                    // Tidak ada data pegawai yang perlu diverifikasi -> Sembunyikan menu verifikasi
+                    if (clVerifikasi != null) {
+                        clVerifikasi.setVisibility(View.GONE);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<RekapMasukFragment>> call,
+                                  @NonNull Throwable t) {
+                if (isFinishing()) return;
+                // Jika gagal mengambil data verifikasi, sembunyikan demi keamanan & kebersihan UI
+                if (clVerifikasi != null) {
+                    clVerifikasi.setVisibility(View.GONE);
+                }
+            }
+        });
     }
 
 

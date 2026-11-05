@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.google.android.material.imageview.ShapeableImageView;
 
 import go.pemkott.appsandroidmobiletebingtinggi.R;
+import go.pemkott.appsandroidmobiletebingtinggi.utils.MotivationalQuotesLibrary;
 
 public class DialogView {
 
@@ -57,6 +58,8 @@ public class DialogView {
             tvSukseKeterangan.setText(info);
         }
 
+        setupMotivationalQuote(dialogSukes);
+
         if (tvTutupDialog != null) {
             tvTutupDialog.setOnClickListener(v -> {
                 dialogSukes.dismiss();
@@ -80,11 +83,29 @@ public class DialogView {
             tvSukseKeterangan.setText(info);
         }
 
+        setupMotivationalQuote(dialogSukes);
+
         if (tvTutupDialog != null) {
             tvTutupDialog.setOnClickListener(v -> dialogSukes.dismiss());
         }
 
         dialogSukes.show();
+    }
+
+    private void setupMotivationalQuote(Dialog dialog) {
+        if (dialog == null) return;
+        TextView tvQuoteContent = dialog.findViewById(R.id.tvQuoteContent);
+        TextView tvQuoteAuthor = dialog.findViewById(R.id.tvQuoteAuthor);
+
+        MotivationalQuotesLibrary.Quote quote = MotivationalQuotesLibrary.getRandomQuote();
+        if (quote != null) {
+            if (tvQuoteContent != null) {
+                tvQuoteContent.setText("“" + quote.getQuote() + "”");
+            }
+            if (tvQuoteAuthor != null) {
+                tvQuoteAuthor.setText("— " + quote.getAuthor());
+            }
+        }
     }
 
     public void viewFoto(Bitmap data){

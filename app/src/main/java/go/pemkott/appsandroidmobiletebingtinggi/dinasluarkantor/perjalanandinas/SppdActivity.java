@@ -6,12 +6,15 @@ import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -38,7 +41,7 @@ public class SppdActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
+        go.pemkott.appsandroidmobiletebingtinggi.utils.WindowUtil.applyDashboardStyle(this);
         setContentView(R.layout.activity_sppd);
 
         databaseHelper = new DatabaseHelper(this);
@@ -48,14 +51,18 @@ public class SppdActivity extends AppCompatActivity {
         etkegiatanPdLainnya = findViewById(R.id.etKegiatanPdLainnya);
         androidx.core.widget.NestedScrollView nsvSppd = findViewById(R.id.nsvSppd);
 
-        // Auto-adjust padding when keyboard opens with EdgeToEdge
+        // Auto-adjust padding when keyboard opens with EdgeToEdge & Status Bar filling
+        View titleHeader = findViewById(R.id.titleHeader);
         View sppdRootLayout = findViewById(R.id.sppdRootLayout);
         if (sppdRootLayout != null) {
             androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(sppdRootLayout, (v, insets) -> {
                 androidx.core.graphics.Insets imeInsets = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.ime());
                 androidx.core.graphics.Insets systemBars = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars());
                 int bottomPadding = Math.max(imeInsets.bottom, systemBars.bottom);
-                v.setPadding(v.getPaddingLeft(), systemBars.top, v.getPaddingRight(), bottomPadding);
+                v.setPadding(v.getPaddingLeft(), 0, v.getPaddingRight(), bottomPadding);
+                if (titleHeader != null) {
+                    titleHeader.setPadding(titleHeader.getPaddingLeft(), systemBars.top, titleHeader.getPaddingRight(), titleHeader.getPaddingBottom());
+                }
                 return insets;
             });
         }

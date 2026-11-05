@@ -38,7 +38,7 @@ public class KeperluanPribadiActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
+        go.pemkott.appsandroidmobiletebingtinggi.utils.WindowUtil.applyDashboardStyle(this);
 
         setContentView(R.layout.activity_keperluan_pribadi);
 
@@ -50,13 +50,17 @@ public class KeperluanPribadiActivity extends AppCompatActivity {
         etkegiatanKpLainnya = findViewById(R.id.etKegiatanKpLainnya);
         androidx.core.widget.NestedScrollView nsvKeperluanPribadi = findViewById(R.id.nsvKeperluanPribadi);
 
+        View titleHeader = findViewById(R.id.titleHeader);
         View kpRootLayout = findViewById(R.id.kpRootLayout);
         if (kpRootLayout != null) {
             androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(kpRootLayout, (v, insets) -> {
                 androidx.core.graphics.Insets imeInsets = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.ime());
                 androidx.core.graphics.Insets systemBars = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars());
                 int bottomPadding = Math.max(imeInsets.bottom, systemBars.bottom);
-                v.setPadding(v.getPaddingLeft(), systemBars.top, v.getPaddingRight(), bottomPadding);
+                v.setPadding(v.getPaddingLeft(), 0, v.getPaddingRight(), bottomPadding);
+                if (titleHeader != null) {
+                    titleHeader.setPadding(titleHeader.getPaddingLeft(), systemBars.top, titleHeader.getPaddingRight(), titleHeader.getPaddingBottom());
+                }
                 return insets;
             });
         }

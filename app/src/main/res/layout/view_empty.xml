@@ -1,78 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="200dp"
-    android:background="@drawable/backgroundnavbarkuning"
-    android:backgroundTint="@color/surface_main"
-    android:gravity="center"
-    android:padding="10dp"
-    android:layout_margin="20dp">
+    android:layout_height="wrap_content"
+    android:layout_margin="20dp"
+    app:cardBackgroundColor="@color/surface_main"
+    app:cardCornerRadius="24dp"
+    app:cardElevation="8dp"
+    app:strokeWidth="0dp">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
 
-        <ImageView
-            android:id="@+id/emoticon"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_centerVertical="true"
-            app:srcCompat="@drawable/ic_empty"
-            app:tint="@color/primary_brand"
-            android:layout_marginEnd="20dp"/>
-
-        <LinearLayout
-            android:layout_toRightOf="@+id/emoticon"
-            android:layout_width="wrap_content"
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:orientation="vertical"
-            >
+            android:layout_marginBottom="16dp">
+
+            <ImageView
+                android:id="@+id/emoticon"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="12dp"
+                android:background="@drawable/backgoundovalabuabu"
+                android:backgroundTint="#1A0284C7"
+                android:padding="10dp"
+                app:srcCompat="@drawable/ic_dialog_empty"
+                app:tint="@color/primary_brand"
+                android:contentDescription="Ikon Data Kosong" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Oops!"
-                android:textSize="30sp"
-                android:textColor="@color/primary_brand"
-
-                />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Anda harus mengisi,"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@+id/emoticon"
+                android:text="Pilih Rentang Tanggal"
                 android:textColor="@color/text_primary"
-                android:textSize="12sp"
+                android:textSize="18sp"
+                android:fontFamily="sans-serif-black" />
 
-                />
+            <ImageView
+                android:id="@+id/tvTutupDialog"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="4dp"
+                android:src="@drawable/one_close"
+                app:tint="@color/text_hint"
+                android:contentDescription="Tutup" />
+        </RelativeLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="rentang waktu dari rekap yang diperlukan."
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp"
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-medium"
+            android:text="Silakan isi dan pilih rentang tanggal rekap absensi yang ingin ditampilkan."
+            android:textColor="@color/text_secondary"
+            android:textSize="14sp"
+            android:lineSpacingExtra="4dp" />
 
-                />
-
-        </LinearLayout>
-
-
-        <ImageView
-            android:id="@+id/tvTutupDialog"
-            android:layout_width="38dp"
-            android:layout_height="38dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:clickable="true"
-            android:src="@drawable/one_close"
-            app:tint="@color/text_primary"
-            android:focusable="true" />
-
-    </RelativeLayout>
-
-</LinearLayout>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

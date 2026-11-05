@@ -130,13 +130,63 @@
                             app:tint="@color/primary_brand" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
+                    <!-- Daily Unique Motivational Quote Card (Tepat di Bawah Cari Rekap) -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cvDashboardQuoteContainer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        app:cardBackgroundColor="#1410B981"
+                        app:cardCornerRadius="20dp"
+                        app:strokeColor="#4010B981"
+                        app:strokeWidth="1.5dp"
+                        app:cardElevation="0dp"
+                        app:layout_constraintTop_toBottomOf="@+id/clCariRekap">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <ImageView
+                                android:layout_width="22dp"
+                                android:layout_height="22dp"
+                                android:layout_marginBottom="8dp"
+                                android:src="@drawable/ic_quote_mark"
+                                app:tint="@color/primary_brand"
+                                android:contentDescription="Ikon Quotes" />
+
+                            <TextView
+                                android:id="@+id/tvDashboardQuoteContent"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="sans-serif-medium"
+                                android:lineSpacingExtra="4dp"
+                                android:textColor="@color/text_primary"
+                                android:textSize="14sp"
+                                tools:text="“Cara terbaik untuk memulai adalah dengan berhenti berbicara dan mulai melakukan.”" />
+
+                            <TextView
+                                android:id="@+id/tvDashboardQuoteAuthor"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="end"
+                                android:layout_marginTop="8dp"
+                                android:fontFamily="sans-serif-black"
+                                android:textColor="@color/primary_brand"
+                                android:textSize="13sp"
+                                tools:text="— Walt Disney" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
                     <!-- Menu Grid -->
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/clPresensi"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
-                        app:layout_constraintTop_toBottomOf="@+id/clCariRekap">
+                        android:layout_marginTop="16dp"
+                        app:layout_constraintTop_toBottomOf="@+id/cvDashboardQuoteContainer">
 
                         <androidx.cardview.widget.CardView
                             android:id="@+id/cvKehadiran"

@@ -111,7 +111,8 @@ public interface HttpService {
     @POST("login")
     Call<List<LoginResponse>> login(
             @Field("username") String username,
-            @Field("password") String password
+            @Field("password") String password,
+            @Field("app_version") String appVersion
     );
 
     @FormUrlEncoded
@@ -119,7 +120,8 @@ public interface HttpService {
     Call<List<LoginResponse>> login2fa(
             @Field("username") String username,
             @Field("password") String password,
-            @Field("otp") String otp
+            @Field("otp") String otp,
+            @Field("app_version") String appVersion
     );
 
     @FormUrlEncoded
