@@ -236,16 +236,17 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
 
 
         Intent intent = getIntent();
-        String uriString =
-                intent.getStringExtra("namafile");
+        String uriString = intent != null ? intent.getStringExtra("namafile") : null;
 
         if (uriString == null) {
-            Toast.makeText(
+            dialogView.viewNotifKosong(
                     this,
-                    "Foto tidak ditemukan",
-                    Toast.LENGTH_SHORT
-            ).show();
-            finish();
+                    "Foto Tidak Ditemukan",
+                    "Silakan ambil foto terlebih dahulu."
+            );
+            llUpload.setEnabled(false);
+            llUpload.setClickable(false);
+            llUpload.setAlpha(0.5f);
             return;
         }
 
@@ -263,8 +264,10 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
             }
 
             if (file == null || !file.exists() || file.length() == 0) {
-                Toast.makeText(this, "Gagal memproses foto", Toast.LENGTH_SHORT).show();
-                finish();
+                dialogView.viewNotifKosong(this, "Gagal Memproses Foto", "File foto sementara tidak ditemukan. Silakan foto ulang.");
+                llUpload.setEnabled(false);
+                llUpload.setClickable(false);
+                llUpload.setAlpha(0.5f);
                 return;
             }
 
@@ -274,21 +277,25 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
                 opts.inSampleSize = 2; // Decode preview hemat RAM
                 preview = BitmapFactory.decodeFile(file.getAbsolutePath(), opts);
             } catch (OutOfMemoryError e) {
-                e.printStackTrace();
+                Log.e("FOTO_ERROR", "OutOfMemory saat decode preview", e);
             }
 
             if (preview != null) {
                 ivTaging.setImageBitmap(preview);
             } else {
-                Toast.makeText(this, "Gagal membaca foto preview", Toast.LENGTH_SHORT).show();
-                finish();
+                dialogView.viewNotifKosong(this, "Gagal Membaca Foto", "Sistem gagal memuat preview foto. Silakan coba foto ulang.");
+                llUpload.setEnabled(false);
+                llUpload.setClickable(false);
+                llUpload.setAlpha(0.5f);
                 return;
             }
 
         } catch (Exception e) {
             Log.e("FOTO_ERROR", "Gagal memproses foto", e);
-            Toast.makeText(this, "Gagal memproses foto", Toast.LENGTH_SHORT).show();
-            finish();
+            dialogView.viewNotifKosong(this, "Gagal Memproses Foto", "Terjadi kesalahan saat memproses foto. Silakan coba foto ulang.");
+            llUpload.setEnabled(false);
+            llUpload.setClickable(false);
+            llUpload.setAlpha(0.5f);
             return;
         }
 
@@ -805,16 +812,52 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
                 periksaWaktu();
                 hitungJarakAbsensi();
 
+                // Null Guard untuk Waktu
+                if (tagingTime == null || dateBatasWaktu == null || jamMasukDate == null || jamPulangDate == null) {
+                    dialogView.viewNotifKosong(
+                            AbsensiKehadiranActivity.this,
+                            "Jadwal Kerja Tidak Valid",
+                            "Format jam masuk atau jam pulang kerja tidak valid."
+                    );
+                    llUpload.setEnabled(true);
+                    llUpload.setClickable(true);
+                    llUpload.setAlpha(1.0f);
+                    return;
+                }
+
                 if (tagingTime.before(dateBatasWaktu)){
                     dialogView.viewNotifKosong(AbsensiKehadiranActivity.this, "Anda hanya dapat mengisi absen masuk, "+batasWaktu+" menit sebelum Jam Masuk", "");
                     llUpload.setEnabled(true);
                     llUpload.setClickable(true);
                     llUpload.setAlpha(1.0f);
                 } else{
-                    selected = rgKehadiran.getCheckedRadioButtonId();
-                    radioSelectedKehadiran = findViewById(selected);
+                    selected = rgKehadiran != null ? rgKehadiran.getCheckedRadioButtonId() : -1;
+                    if (selected == -1) {
+                        dialogView.viewNotifKosong(
+                                AbsensiKehadiranActivity.this,
+                                "Pilih Jenis Kehadiran",
+                                "Silakan pilih jenis kehadiran (MASUK atau PULANG)."
+                        );
+                        llUpload.setEnabled(true);
+                        llUpload.setClickable(true);
+                        llUpload.setAlpha(1.0f);
+                        return;
+                    }
 
-                    if (eJabatan.equals("2")){
+                    radioSelectedKehadiran = findViewById(selected);
+                    if (radioSelectedKehadiran == null || radioSelectedKehadiran.getText() == null) {
+                        dialogView.viewNotifKosong(
+                                AbsensiKehadiranActivity.this,
+                                "Pilihan Tidak Valid",
+                                "Silakan pilih jenis kehadiran terlebih dahulu."
+                        );
+                        llUpload.setEnabled(true);
+                        llUpload.setClickable(true);
+                        llUpload.setAlpha(1.0f);
+                        return;
+                    }
+
+                    if (eJabatan != null && eJabatan.equals("2")){
                         totalJarak = 1;
                     }
                     Log.d("JARAK_DEBUG", "total jarak: "+totalJarak);
@@ -1006,7 +1049,7 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
                     dialogView.viewSukses(AbsensiKehadiranActivity.this, data.getRemarks());
                     autoCloseHandler.postDelayed(
                             autoCloseRunnable,
-                            10000
+                            30000
                     );
                 }else {
                     dialogView.viewNotifKosong(AbsensiKehadiranActivity.this, data.getRemarks(),"");
@@ -1114,10 +1157,10 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
                     databaseHelper.insertLog(sEmployId, eOPD, rbTanggal, "Melakukan Absen Pulang", "Pulang");
                     hapusFileSementara();
                     dialogView.viewSukses(AbsensiKehadiranActivity.this, data.getRemarks());
-                    // mulai hitung 10 detik
+                    // mulai hitung 30 detik
                     autoCloseHandler.postDelayed(
                             autoCloseRunnable,
-                            10000
+                            30000
                     );
 
                 }else {

@@ -48,12 +48,30 @@ public class BeritaItem {
     @SerializedName("content")
     private String content;
 
+    public static String stripHtml(String html) {
+        if (html == null || html.trim().isEmpty()) {
+            return "";
+        }
+        String clean;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            clean = android.text.Html.fromHtml(html, android.text.Html.FROM_HTML_MODE_LEGACY).toString();
+        } else {
+            clean = android.text.Html.fromHtml(html).toString();
+        }
+        clean = clean.replace('\u00A0', ' ')
+                     .replace("&nbsp;", " ")
+                     .replaceAll("<[^>]*>", "")
+                     .replaceAll("(?m)^[ \t]*\r?\n", "")
+                     .trim();
+        return clean;
+    }
+
     public long getId() {
         return id;
     }
 
     public String getTitle() {
-        return title;
+        return stripHtml(title);
     }
 
     public String getSlug() {
@@ -61,11 +79,13 @@ public class BeritaItem {
     }
 
     public String getSummary() {
-        return summary != null && !summary.isEmpty() ? summary : excerpt;
+        String raw = summary != null && !summary.isEmpty() ? summary : excerpt;
+        return stripHtml(raw);
     }
 
     public String getExcerpt() {
-        return excerpt != null && !excerpt.isEmpty() ? excerpt : summary;
+        String raw = excerpt != null && !excerpt.isEmpty() ? excerpt : summary;
+        return stripHtml(raw);
     }
 
     public String getThumbnail() {

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -104,31 +105,19 @@ public class ChatMonitoringActivity extends AppCompatActivity implements ChatMon
         if (switchMaster == null) return;
 
         HttpService api = RetroClient.getInstance(this).getApi2();
-        api.getChatGlobalStatus().enqueue(new Callback<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatGlobalStatusResponse>() {
-            @Override
-            public void onResponse(Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatGlobalStatusResponse> call, Response<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatGlobalStatusResponse> response) {
-                if (response.isSuccessful() && response.body() != null && response.body().isStatus()) {
-                    boolean enabled = response.body().isChatEnabled();
-                    switchMaster.setChecked(enabled);
-                    if (tvDesc != null) {
-                        tvDesc.setText(enabled 
-                                ? "Status: Menu Chat TAMPIL di seluruh perangkat pegawai" 
-                                : "Status: Menu Chat TERSEMBUNYI dari seluruh perangkat pegawai");
-                    }
-                }
-            }
 
-            @Override
-            public void onFailure(Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatGlobalStatusResponse> call, Throwable t) {}
-        });
+        CompoundButton.OnCheckedChangeListener[] listenerHolder = new CompoundButton.OnCheckedChangeListener[1];
 
-        switchMaster.setOnCheckedChangeListener((buttonView, isChecked) -> {
+        listenerHolder[0] = (buttonView, isChecked) -> {
             api.toggleChatGlobalStatus(isChecked ? "1" : "0").enqueue(new Callback<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatGlobalStatusResponse>() {
                 @Override
                 public void onResponse(Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatGlobalStatusResponse> call, Response<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatGlobalStatusResponse> response) {
                     if (response.isSuccessful() && response.body() != null && response.body().isStatus()) {
                         boolean nowEnabled = response.body().isChatEnabled();
+                        switchMaster.setOnCheckedChangeListener(null);
                         switchMaster.setChecked(nowEnabled);
+                        switchMaster.setOnCheckedChangeListener(listenerHolder[0]);
+
                         if (tvDesc != null) {
                             tvDesc.setText(nowEnabled 
                                     ? "Status: Menu Chat TAMPIL di seluruh perangkat pegawai" 
@@ -147,6 +136,32 @@ public class ChatMonitoringActivity extends AppCompatActivity implements ChatMon
                     );
                 }
             });
+        };
+
+        api.getChatGlobalStatus().enqueue(new Callback<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatGlobalStatusResponse>() {
+            @Override
+            public void onResponse(Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatGlobalStatusResponse> call, Response<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatGlobalStatusResponse> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isStatus()) {
+                    boolean enabled = response.body().isChatEnabled();
+                    switchMaster.setOnCheckedChangeListener(null);
+                    switchMaster.setChecked(enabled);
+                    switchMaster.setOnCheckedChangeListener(listenerHolder[0]);
+                    if (tvDesc != null) {
+                        tvDesc.setText(enabled 
+                                ? "Status: Menu Chat TAMPIL di seluruh perangkat pegawai" 
+                                : "Status: Menu Chat TERSEMBUNYI dari seluruh perangkat pegawai");
+                    }
+                } else {
+                    switchMaster.setOnCheckedChangeListener(null);
+                    switchMaster.setChecked(false);
+                    switchMaster.setOnCheckedChangeListener(listenerHolder[0]);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatGlobalStatusResponse> call, Throwable t) {
+                switchMaster.setOnCheckedChangeListener(listenerHolder[0]);
+            }
         });
     }
 
@@ -178,13 +193,13 @@ public class ChatMonitoringActivity extends AppCompatActivity implements ChatMon
         items.add(new MultiSelectItem(0, "Semua Unit Kerja / OPD", "Tampilkan seluruh riwayat pesan pegawai", null, selectedOpdId.isEmpty()));
 
         for (OpdModel o : listOpd) {
-            long opdId = 0;
+            long opdIdVal = 0;
             try {
-                opdId = Long.parseLong(o.getId());
+                opdIdVal = (long) Double.parseDouble(o.getId().trim());
             } catch (Exception ignored) {}
-            if (opdId > 0) {
-                boolean isSelected = String.valueOf(opdId).equals(selectedOpdId);
-                items.add(new MultiSelectItem(opdId, o.getOpd(), "Unit Kerja / OPD", null, isSelected));
+            if (opdIdVal > 0) {
+                boolean isSelected = String.valueOf(opdIdVal).equals(selectedOpdId);
+                items.add(new MultiSelectItem(opdIdVal, o.getOpd(), "Unit Kerja / OPD", null, isSelected));
             }
         }
 

@@ -69,8 +69,13 @@ public class SearchableMultiSelectAdapter extends RecyclerView.Adapter<Searchabl
 
         holder.itemView.setOnClickListener(v -> {
             boolean newState = !item.isChecked();
+            if (isOpdMode && newState) {
+                for (MultiSelectItem m : fullList) {
+                    m.setChecked(false);
+                }
+            }
             item.setChecked(newState);
-            holder.cbCheck.setChecked(newState);
+            notifyDataSetChanged();
 
             if (listener != null) {
                 listener.onSelectionChanged(getSelectedIds().size());
@@ -116,6 +121,15 @@ public class SearchableMultiSelectAdapter extends RecyclerView.Adapter<Searchabl
             }
         }
         return selected;
+    }
+
+    public MultiSelectItem getSingleSelectedItem() {
+        for (MultiSelectItem item : fullList) {
+            if (item.isChecked()) {
+                return item;
+            }
+        }
+        return null;
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {

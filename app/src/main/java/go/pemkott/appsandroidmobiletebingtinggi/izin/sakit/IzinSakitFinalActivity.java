@@ -1043,8 +1043,9 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
                 File originalLampiran = new File(FilePath2);
                 try {
                     filelampiran = ambilFoto.compressToFile(this, originalLampiran);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+                } catch (Exception e) {
+                    Log.e("IZIN_SAKIT", "Gagal kompres lampiran", e);
+                    filelampiran = originalLampiran;
                 }
                 BitmapFactory.Options optsLampiran = new BitmapFactory.Options();
                 optsLampiran.inSampleSize = 4;

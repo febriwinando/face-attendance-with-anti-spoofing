@@ -78,12 +78,15 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- OPD Filter Dropdown Container -->
+    <!-- Searchable OPD Filter Card Container (Persis Seperti Halaman Pesan & Monitoring) -->
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cvOpdFilterPicker"
         android:layout_width="match_parent"
         android:layout_height="44dp"
         android:layout_marginHorizontal="16dp"
         android:layout_marginBottom="8dp"
+        android:clickable="true"
+        android:focusable="true"
         app:cardCornerRadius="22dp"
         app:cardElevation="1dp"
         app:strokeWidth="0dp">
@@ -102,12 +105,25 @@
                 app:tint="#2563EB"
                 android:contentDescription="Unit Kerja / OPD"/>
 
-            <Spinner
-                android:id="@+id/spOpdFilterPicker"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginStart="8dp"
-                android:spinnerMode="dropdown"/>
+            <TextView
+                android:id="@+id/tvOpdFilterSelectedName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="10dp"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif-medium"
+                android:maxLines="1"
+                android:text="Semua Unit Kerja / OPD"
+                android:textColor="#1E293B"
+                android:textSize="13sp" />
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:src="@drawable/ic_arrow_down"
+                app:tint="#94A3B8"
+                android:contentDescription="Pilih OPD" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 

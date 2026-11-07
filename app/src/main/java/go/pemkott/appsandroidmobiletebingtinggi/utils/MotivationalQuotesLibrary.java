@@ -38,7 +38,7 @@ public class MotivationalQuotesLibrary {
         QUOTES.add(new Quote(11, "Pengetahuan adalah kekuatan, tetapi informasi tanpa tindakan adalah tidak berguna.", "B.J. Habibie"));
         QUOTES.add(new Quote(12, "Keberhasilan itu bukan milik orang pintar, melainkan milik orang yang selalu berusaha.", "B.J. Habibie"));
         QUOTES.add(new Quote(13, "Gantungkan cita-citamu setinggi langit! Jika engkau jatuh, engkau akan jatuh di antara bintang-bintang.", "Ir. Soekarno"));
-        QUOTES.add(new Quote(14, "Beri aku 1.000 orang tua, niscaya akan kucabut semeru dari akarnya. Beri aku 10 pemuda niscaya akan kuguncangkan dunia.", "Ir. Soekarno"));
+        QUOTES.add(new Quote(14, "Beri aku 1.000 orang tua, niscaya akan kucabut Semeru dari akarnya. Beri aku 10 pemuda niscaya akan kuguncangkan dunia.", "Ir. Soekarno"));
         QUOTES.add(new Quote(15, "Pendidikan adalah senjata paling mematikan di dunia, karena dengan pendidikan Anda dapat mengubah dunia.", "Nelson Mandela"));
         QUOTES.add(new Quote(16, "Kelihatannya selalu tidak mungkin sampai sesuatu itu selesai dilakukan.", "Nelson Mandela"));
         QUOTES.add(new Quote(17, "Satu-satunya cara untuk melakukan pekerjaan besar adalah dengan mencintai apa yang Anda lakukan.", "Steve Jobs"));
@@ -77,7 +77,7 @@ public class MotivationalQuotesLibrary {
         QUOTES.add(new Quote(50, "Cobalah untuk tidak menjadi orang yang sukses, melainkan orang yang bernilai.", "Albert Einstein"));
         QUOTES.add(new Quote(51, "Di tengah kesulitan terletak kesempatan.", "Albert Einstein"));
         QUOTES.add(new Quote(52, "Hidup itu seperti mengendarai sepeda. Untuk menjaga keseimbangan, Anda harus terus bergerak.", "Albert Einstein"));
-        QUOTES.add(new Quote(53, "Lakukan yang terbaik yang kamu bisa sampai kamu tahu lebih baik. Lalu ketika kamu tahu lebih baik, lakukan lebih baik.", "Maya Angelou"));
+        QUOTES.add(new Quote(53, "Lakukan yang terbaik yang kamu bisa sampai kamu tahu caranya. Lalu ketika kamu tahu caranya, lakukan dengan lebih baik.", "Maya Angelou"));
         QUOTES.add(new Quote(54, "Orang akan melupakan apa yang kamu katakan dan lakukan, tapi tidak akan melupakan bagaimana kamu membuat mereka merasa.", "Maya Angelou"));
         QUOTES.add(new Quote(55, "Jika kamu tidak menyukai sesuatu, ubahlah. Jika kamu tidak bisa mengubahnya, ubah sikapmu.", "Maya Angelou"));
         QUOTES.add(new Quote(56, "Pendidikan bukanlah persiapan untuk hidup; pendidikan adalah hidup itu sendiri.", "John Dewey"));
@@ -124,16 +124,16 @@ public class MotivationalQuotesLibrary {
         QUOTES.add(new Quote(97, "Jika Anda menghakimi orang lain, Anda tidak memiliki waktu untuk mencintai mereka.", "Bunda Teresa"));
         QUOTES.add(new Quote(98, "Kita sendiri merasa bahwa apa yang kita lakukan hanyalah setetes air di lautan. Tetapi lautan akan berkurang jika setetes air itu tidak ada.", "Bunda Teresa"));
         QUOTES.add(new Quote(99, "Bukan berapa banyak yang kita berikan, tetapi berapa banyak cinta yang kita berikan saat memberi.", "Bunda Teresa"));
-        QUOTES.add(new Quote(100, "Petualangan terbesar yang bisa Anda ambil adalah menjalani hidup impian Anda.", "Oprah Winfrey"));
+        QUOTES.add(new Quote(100, "Petualangan terbesar yang bisa Anda jalani adalah mewujudkan hidup impian Anda.", "Oprah Winfrey"));
         QUOTES.add(new Quote(101, "Ubah luka Anda menjadi kebijaksanaan.", "Oprah Winfrey"));
         QUOTES.add(new Quote(102, "Semakin Anda memuji dan merayakan hidup Anda, semakin banyak hal dalam hidup yang dapat dirayakan.", "Oprah Winfrey"));
-        QUOTES.add(new Quote(103, "Mengelilingi diri Anda hanya dengan orang-orang yang akan mengangkat Anda lebih tinggi.", "Oprah Winfrey"));
-        QUOTES.add(new Quote(104, "Paham akan tujuan hidup adalah langkah pertama menuju kesuksesan.", "Oprah Winfrey"));
+        QUOTES.add(new Quote(103, "Kelilingilah diri Anda hanya dengan orang-orang yang akan mengangkat Anda lebih tinggi.", "Oprah Winfrey"));
+        QUOTES.add(new Quote(104, "Memahami tujuan hidup adalah langkah pertama menuju kesuksesan.", "Oprah Winfrey"));
         QUOTES.add(new Quote(105, "Keberuntungan adalah pertemuan antara persiapan dan kesempatan.", "Oprah Winfrey"));
         QUOTES.add(new Quote(106, "Pekerjaan Anda akan mengisi sebagian besar hidup Anda, dan satu-satunya cara untuk benar-benar puas adalah melakukan apa yang Anda yakini sebagai pekerjaan hebat.", "Steve Jobs"));
         QUOTES.add(new Quote(107, "Tetap lapar, tetap bodoh.", "Steve Jobs"));
         QUOTES.add(new Quote(108, "Inovasi membedakan antara seorang pemimpin dan pengikut.", "Steve Jobs"));
-        QUOTES.add(new Quote(109, "Desain bukan hanya seperti apa bentuknya dan terasanya. Desain adalah bagaimana itu bekerja.", "Steve Jobs"));
+        QUOTES.add(new Quote(109, "Desain bukan sekadar seperti apa bentuk dan rasanya. Desain adalah tentang bagaimana ia bekerja.", "Steve Jobs"));
         QUOTES.add(new Quote(110, "Kesederhanaan adalah kecanggihan tertinggi.", "Leonardo da Vinci"));
         QUOTES.add(new Quote(111, "Belajar tidak pernah menguras pikiran.", "Leonardo da Vinci"));
         QUOTES.add(new Quote(112, "Saya terkesan dengan urgensi bertindak. Mengetahui saja tidak cukup; kita harus menerapkan. Bersedia saja tidak cukup; kita harus melakukan.", "Leonardo da Vinci"));
@@ -155,7 +155,7 @@ public class MotivationalQuotesLibrary {
         QUOTES.add(new Quote(128, "Kemenangan pertama dan terbaik adalah menaklukkan diri sendiri.", "Plato"));
         QUOTES.add(new Quote(129, "Kita dapat dengan mudah memaafkan anak kecil yang takut pada kegelapan; tragedi hidup yang sebenarnya adalah ketika orang dewasa takut pada cahaya.", "Plato"));
         QUOTES.add(new Quote(130, "Mengenal diri sendiri adalah awal dari semua kebijaksanaan.", "Aristoteles"));
-        QUOTES.add(new Quote(131, "Kita adalah apa yang kita lakukan berulang kali. Keunggulan, bukan tindakan, tetapi kebiasaan.", "Aristoteles"));
+        QUOTES.add(new Quote(131, "Kita adalah apa yang kita lakukan berulang kali. Keunggulan bukan tindakan, melainkan kebiasaan.", "Aristoteles"));
         QUOTES.add(new Quote(132, "Mendidik pikiran tanpa mendidik hati bukanlah pendidikan sama sekali.", "Aristoteles"));
         QUOTES.add(new Quote(133, "Pikiran yang terdidik mampu mempertimbangkan suatu gagasan tanpa menerimanya.", "Aristoteles"));
         QUOTES.add(new Quote(134, "Kesabaran itu pahit, tetapi buahnya manis.", "Aristoteles"));
@@ -166,7 +166,7 @@ public class MotivationalQuotesLibrary {
         QUOTES.add(new Quote(139, "Biarkan dia yang ingin menggerakkan dunia menggerakkan dirinya sendiri terlebih dahulu.", "Socrates"));
         QUOTES.add(new Quote(140, "Niat tanpa tindakan adalah lamunan. Tindakan tanpa niat adalah mimpi buruk.", "Pepatah Jepang"));
         QUOTES.add(new Quote(141, "Perjalanan seribu mil dimulai dari bawah kaki Anda.", "Lao Tzu"));
-        QUOTES.add(new Quote(142, "Kekuatan tidak datang dari kemampuan fisik, tetapi dari kemauan yang tidak pernah goyah.", "Mahatma Gandhi"));
+        QUOTES.add(new Quote(142, "Kekuatan tidak berasal dari kemampuan fisik, tetapi dari kemauan yang tidak pernah goyah.", "Mahatma Gandhi"));
         QUOTES.add(new Quote(143, "Temukan apa yang Anda cintai dan biarkan itu membunuh Anda.", "Charles Bukowski"));
         QUOTES.add(new Quote(144, "Jika Anda ingin bahagia, jadilah.", "Leo Tolstoy"));
         QUOTES.add(new Quote(145, "Dua prajurit paling kuat adalah kesabaran dan waktu.", "Leo Tolstoy"));
@@ -187,19 +187,19 @@ public class MotivationalQuotesLibrary {
         QUOTES.add(new Quote(160, "Satu-satunya sumber pengetahuan adalah pengalaman.", "Albert Einstein"));
         QUOTES.add(new Quote(161, "Kebijaksanaan bukanlah produk dari sekolah, melainkan dari usaha seumur hidup untuk mendapatkannya.", "Albert Einstein"));
         QUOTES.add(new Quote(162, "Mata diganti mata hanya akan membuat seluruh dunia buta.", "Mahatma Gandhi"));
-        QUOTES.add(new Quote(163, "Lemah tidak pernah bisa memaafkan. Memaafkan adalah atribut dari yang kuat.", "Mahatma Gandhi"));
+        QUOTES.add(new Quote(163, "Orang yang lemah tidak akan pernah bisa memaafkan. Memaafkan adalah ciri dari orang yang kuat.", "Mahatma Gandhi"));
         QUOTES.add(new Quote(164, "Kebahagiaan adalah ketika apa yang Anda pikirkan, apa yang Anda katakan, dan apa yang Anda lakukan berada dalam keharmonisan.", "Mahatma Gandhi"));
         QUOTES.add(new Quote(165, "Doa adalah kunci di pagi hari dan kunci di malam hari.", "Mahatma Gandhi"));
-        QUOTES.add(new Quote(166, "Seseorang yang adalah pemenang adalah seorang pemimpi yang tidak pernah menyerah.", "Nelson Mandela"));
+        QUOTES.add(new Quote(166, "Seorang pemenang adalah seorang pemimpi yang tidak pernah menyerah.", "Nelson Mandela"));
         QUOTES.add(new Quote(167, "Pikiran yang baik dan hati yang baik selalu merupakan kombinasi yang hebat.", "Nelson Mandela"));
         QUOTES.add(new Quote(168, "Pendidikan adalah paspor kita ke masa depan, karena hari esok milik mereka yang mempersiapkannya hari ini.", "Malcolm X"));
         QUOTES.add(new Quote(169, "Jika Anda tidak membela sesuatu, Anda akan jatuh demi apa pun.", "Malcolm X"));
         QUOTES.add(new Quote(170, "Masa depan milik mereka yang mempersiapkannya hari ini.", "Malcolm X"));
         QUOTES.add(new Quote(171, "Kegelapan tidak bisa mengusir kegelapan; hanya cahaya yang bisa melakukannya. Kebencian tidak bisa mengusir kebencian; hanya cinta yang bisa melakukannya.", "Martin Luther King Jr."));
-        QUOTES.add(new Quote(172, "Jika Anda tidak bisa terbang, belarilah. Jika Anda tidak bisa berlari, berjalanlah. Jika Anda tidak bisa berjalan, merangkaklah. Namun apa pun yang Anda lakukan, Anda harus terus maju.", "Martin Luther King Jr."));
-        QUOTES.add(new Quote(173, "Ukuran sejati seorang pria bukanlah di mana dia berdiri saat nyaman, tetapi di mana dia berdiri saat tantangan.", "Martin Luther King Jr."));
+        QUOTES.add(new Quote(172, "Jika Anda tidak bisa terbang, berlarilah. Jika Anda tidak bisa berlari, berjalanlah. Jika Anda tidak bisa berjalan, merangkaklah. Namun apa pun yang Anda lakukan, Anda harus terus maju.", "Martin Luther King Jr."));
+        QUOTES.add(new Quote(173, "Ukuran sejati seorang manusia bukanlah saat berada di kondisi nyaman, melainkan saat berdiri menghadapi tantangan dan ujian.", "Martin Luther King Jr."));
         QUOTES.add(new Quote(174, "Waktu selalu tepat untuk melakukan apa yang benar.", "Martin Luther King Jr."));
-        QUOTES.add(new Quote(175, "Pada akhirnya, kita tidak akan mengingat kata-kata musuh kita, tetapi kepatuhan diam teman-teman kita.", "Martin Luther King Jr."));
+        QUOTES.add(new Quote(175, "Pada akhirnya, kita tidak akan mengingat kata-kata musuh kita, melainkan sikap bungkam dari teman-teman kita.", "Martin Luther King Jr."));
         QUOTES.add(new Quote(176, "Impian yang Anda impikan sendiri hanyalah impian. Impian yang Anda impikan bersama adalah kenyataan.", "John Lennon"));
         QUOTES.add(new Quote(177, "Hidup adalah apa yang terjadi pada Anda saat Anda sibuk membuat rencana lain.", "John Lennon"));
         QUOTES.add(new Quote(178, "Semuanya akan baik-baik saja pada akhirnya. Jika tidak baik-baik saja, itu bukan akhir.", "John Lennon"));
@@ -218,7 +218,7 @@ public class MotivationalQuotesLibrary {
         QUOTES.add(new Quote(191, "Saya berjalan lambat, tetapi saya tidak pernah berjalan mundur.", "Abraham Lincoln"));
         QUOTES.add(new Quote(192, "Beri saya enam jam untuk menebang pohon dan saya akan menghabiskan empat jam pertama untuk mengasah kapak.", "Abraham Lincoln"));
         QUOTES.add(new Quote(193, "Pada akhirnya, bukan tahun-tahun dalam hidup Anda yang dihitung, melainkan kehidupan dalam tahun-tahun Anda.", "Abraham Lincoln"));
-        QUOTES.add(new Quote(194, "Apapun diri Anda, jadilah yang baik.", "Abraham Lincoln"));
+        QUOTES.add(new Quote(194, "Apa pun peran Anda dalam hidup, jadilah yang terbaik.", "Abraham Lincoln"));
         QUOTES.add(new Quote(195, "Saya tidak tahu kunci menuju sukses, tetapi kunci menuju kegagalan adalah mencoba menyenangkan semua orang.", "Bill Cosby"));
         QUOTES.add(new Quote(196, "Jika Anda terlahir miskin itu bukan kesalahan Anda, tetapi jika Anda meninggal miskin itu kesalahan Anda.", "Bill Gates"));
         QUOTES.add(new Quote(197, "Pelanggan Anda yang paling tidak bahagia adalah sumber belajar terbesar Anda.", "Bill Gates"));
@@ -226,9 +226,9 @@ public class MotivationalQuotesLibrary {
         QUOTES.add(new Quote(199, "Kita selalu memperkirakan perubahan yang akan terjadi dalam dua tahun ke depan dan meremehkan perubahan yang terjadi dalam sepuluh tahun ke depan.", "Bill Gates"));
         QUOTES.add(new Quote(200, "Jangan membandingkan diri Anda dengan siapa pun di dunia ini... jika Anda melakukannya, Anda menghina diri sendiri.", "Bill Gates"));
         QUOTES.add(new Quote(201, "Risiko terbesar adalah tidak mengambil risiko apa pun.", "Mark Zuckerberg"));
-        QUOTES.add(new Quote(202, "Bergeraklah dengan cepat dan hancurkan hal-hal. Kecuali Anda menghancurkan sesuatu, Anda tidak bergerak cukup cepat.", "Mark Zuckerberg"));
+        QUOTES.add(new Quote(202, "Bergeraklah dengan cepat dan buatlah terobosan. Jika tidak pernah membuat terobosan, Anda belum bergerak cukup cepat.", "Mark Zuckerberg"));
         QUOTES.add(new Quote(203, "Pertanyaan yang saya tanyakan pada diri sendiri setiap hari adalah: Apakah saya melakukan hal terpenting yang bisa saya lakukan?", "Mark Zuckerberg"));
-        QUOTES.add(new Quote(204, "Orang tidak peduli dengan apa yang Anda katakan, mereka peduli dengan apa yang Anda bangun.", "Mark Zuckerberg"));
+        QUOTES.add(new Quote(204, "Orang tidak peduli pada apa yang Anda katakan, mereka peduli pada apa yang Anda hasilkan.", "Mark Zuckerberg"));
         QUOTES.add(new Quote(205, "Ketika kamu berhenti bermimpi, kamu berhenti hidup.", "Malcolm Forbes"));
         QUOTES.add(new Quote(206, "Kegagalan adalah sukses jika kita belajar darinya.", "Malcolm Forbes"));
         QUOTES.add(new Quote(207, "Bekerjalah seolah-olah ada orang lain yang bekerja 24 jam sehari untuk mengambilnya darimu.", "Mark Cuban"));
@@ -240,9 +240,9 @@ public class MotivationalQuotesLibrary {
         QUOTES.add(new Quote(213, "Tindakan adalah kunci mendasar untuk semua kesuksesan.", "Pablo Picasso"));
         QUOTES.add(new Quote(214, "Segala sesuatu yang dapat Anda bayangkan adalah nyata.", "Pablo Picasso"));
         QUOTES.add(new Quote(215, "Arti hidup adalah menemukan karunia Anda. Tujuan hidup adalah untuk memberikannya.", "Pablo Picasso"));
-        QUOTES.add(new Quote(216, "Hanya tunda hingga besok apa yang Anda relakan mati tanpa melakukannya.", "Pablo Picasso"));
-        QUOTES.add(new Quote(217, "Seni membersihkan debu kehidupan sehari-hari dari jiwa.", "Pablo Picasso"));
-        QUOTES.add(new Quote(218, "Kesuksesan berisikan dari satu kegagalan ke kegagalan lain tanpa kehilangan antusiasme.", "Winston Churchill"));
+        QUOTES.add(new Quote(216, "Hanya tunda hingga besok apa yang Anda relakan mati tanpa sempat melakukannya.", "Pablo Picasso"));
+        QUOTES.add(new Quote(217, "Seni membasuh dan membersihkan debu kehidupan sehari-hari dari dalam jiwa.", "Pablo Picasso"));
+        QUOTES.add(new Quote(218, "Kesuksesan adalah kemampuan melangkah dari satu kegagalan ke kegagalan lain tanpa kehilangan antusiasme.", "Winston Churchill"));
         QUOTES.add(new Quote(219, "Seseorang yang tidak pernah membaca buku yang baik tidak memiliki keunggulan dibanding orang yang tidak bisa membaca.", "Mark Twain"));
         QUOTES.add(new Quote(220, "Hambatan adalah hal-hal menakutkan yang Anda lihat ketika Anda mengalihkan pandangan dari tujuan Anda.", "Henry Ford"));
         QUOTES.add(new Quote(221, "Satu-satunya batasan untuk pencapaian kita hari ini adalah keraguan kita tentang hari esok.", "Franklin D. Roosevelt"));
@@ -251,8 +251,8 @@ public class MotivationalQuotesLibrary {
         QUOTES.add(new Quote(224, "Bahkan pohon yang paling tinggi pun pernah menjadi biji yang sangat kecil.", "Pepatah Jawa"));
         QUOTES.add(new Quote(225, "Urip iku urup (Hidup itu hendaknya memberi manfaat bagi orang lain).", "Sunan Kalijaga"));
         QUOTES.add(new Quote(226, "Aja dumeh, aja nyeleneh, aja ngeluh.", "Sunan Kalijaga"));
-        QUOTES.add(new Quote(227, "Sabar iku ingaran mustikaning wished (Kesabaran adalah permata kebijaksanaan).", "Pepatah Jawa"));
-        QUOTES.add(new Quote(228, "Mikul dhuwur mendhem treats (Menghormati dan menjaga nama baik orang tua/pemimpin).", "Pepatah Jawa"));
+        QUOTES.add(new Quote(227, "Sabar iku ingaran mustikaning wasiat (Kesabaran adalah permata kebijaksanaan).", "Pepatah Jawa"));
+        QUOTES.add(new Quote(228, "Mikul dhuwur mendhem jero (Menghormati dan menjaga nama baik orang tua/pemimpin).", "Pepatah Jawa"));
         QUOTES.add(new Quote(229, "Sapa tekun bakal tekan (Siapa yang tekun akan sampai pada tujuannya).", "Pepatah Jawa"));
         QUOTES.add(new Quote(230, "Alon-alon waton kelakon (Perlahan-lahan asal terlaksana dengan baik).", "Pepatah Jawa"));
         QUOTES.add(new Quote(231, "Memayu hayuning bawana (Memperindah keindahan dunia).", "Pepatah Jawa"));
@@ -260,7 +260,7 @@ public class MotivationalQuotesLibrary {
         QUOTES.add(new Quote(233, "Tidak masalah seberapa lambat Anda berjalan selama Anda tidak berhenti.", "Confucius"));
         QUOTES.add(new Quote(234, "Kemuliaan terbesar kita bukan karena tidak pernah jatuh, tetapi bangkit setiap kali kita jatuh.", "Confucius"));
         QUOTES.add(new Quote(235, "Segala sesuatu memiliki keindahan, tetapi tidak semua orang melihatnya.", "Confucius"));
-        QUOTES.add(new Quote(236, "Manusia yang menuntut segalanya dari dirinya sendiri; manusia kerdil menuntut segalanya dari orang lain.", "Confucius"));
+        QUOTES.add(new Quote(236, "Manusia berbudi luhur menuntut segalanya dari dirinya sendiri; manusia kerdil menuntut segalanya dari orang lain.", "Confucius"));
         QUOTES.add(new Quote(237, "Ketika kemarahan timbul, pikirkan konsekuensinya.", "Confucius"));
         QUOTES.add(new Quote(238, "Manusia sejati bertindak sebelum dia berbicara, dan sesudahnya dia berbicara sesuai dengan tindakannya.", "Confucius"));
         QUOTES.add(new Quote(239, "Bila kamu melihat orang baik, pikirlah untuk menyamainya. Bila kamu melihat orang tidak baik, periksalah dirimu sendiri.", "Confucius"));
@@ -280,19 +280,19 @@ public class MotivationalQuotesLibrary {
         QUOTES.add(new Quote(253, "Setiap kesulitan, setiap kegagalan, membawa serta benih dari keuntungan yang setara atau lebih besar.", "Napoleon Hill"));
         QUOTES.add(new Quote(254, "Tujuan adalah mimpi dengan batas waktu.", "Napoleon Hill"));
         QUOTES.add(new Quote(255, "Jika Anda tidak bisa melakukan hal-hal besar, lakukan hal-hal kecil dengan cara yang besar.", "Napoleon Hill"));
-        QUOTES.add(new Quote(256, "Pikiran adalah segalanya. Apa yang Anda pikirkan Anda menjadi.", "Buddha"));
+        QUOTES.add(new Quote(256, "Pikiran adalah segalanya. Apa yang Anda pikirkan, itulah wujud diri Anda.", "Buddha"));
         QUOTES.add(new Quote(257, "Tidak ada yang menyelamatkan kita kecuali diri kita sendiri. Tidak ada yang bisa dan tidak ada yang boleh. Kita sendiri harus berjalan di jalan itu.", "Buddha"));
         QUOTES.add(new Quote(258, "Kesehatan adalah hadiah terbesar, kepuasan adalah kekayaan terbesar, kesetiaan adalah hubungan terbaik.", "Buddha"));
         QUOTES.add(new Quote(259, "Satu lilin dapat menyalakan ribuan lilin tanpa memperpendek usianya. Kebahagiaan tidak akan pernah berkurang dengan dibagikan.", "Buddha"));
         QUOTES.add(new Quote(260, "Kamu tidak akan dihukum karena kemarahanmu, kamu akan dihukum oleh kemarahanmu sendiri.", "Buddha"));
         QUOTES.add(new Quote(261, "Pikiran yang tenang membawa kedamaian batin.", "Buddha"));
         QUOTES.add(new Quote(262, "Ubah pikiranmu dan kamu mengubah duniamu.", "Norman Vincent Peale"));
-        QUOTES.add(new Quote(263, "Percayalah pada diri sendiri! Milikilah iman pada kemampuan Anda!", "Norman Vincent Peale"));
+        QUOTES.add(new Quote(263, "Percayalah pada diri sendiri! Milikilah keyakinan teguh pada kemampuan Anda!", "Norman Vincent Peale"));
         QUOTES.add(new Quote(264, "Tembaklah bulan. Bahkan jika Anda meleset, Anda akan mendarat di antara bintang-bintang.", "Norman Vincent Peale"));
         QUOTES.add(new Quote(265, "Sikap yang baik akan menghasilkan tindakan yang baik.", "Norman Vincent Peale"));
         QUOTES.add(new Quote(266, "Berpikirlah positif dan hal-hal baik akan terjadi.", "Norman Vincent Peale"));
         QUOTES.add(new Quote(267, "Hanya ada satu cara untuk menghindari kritik: tidak melakukan apa-apa, tidak mengatakan apa-apa, dan tidak menjadi apa-apa.", "Aristoteles"));
-        QUOTES.add(new Quote(268, "Harapan adalah mimpi dari seorang yang terbangun.", "Aristoteles"));
+        QUOTES.add(new Quote(268, "Harapan adalah impian bagi jiwa yang terjaga.", "Aristoteles"));
         QUOTES.add(new Quote(269, "Siapa yang menguasai ketakutannya akan benar-benar bebas.", "Aristoteles"));
         QUOTES.add(new Quote(270, "Persahabatan adalah satu jiwa yang tinggal dalam dua tubuh.", "Aristoteles"));
         QUOTES.add(new Quote(271, "Cinta sejati tidak pernah padam.", "Rumi"));
@@ -324,7 +324,7 @@ public class MotivationalQuotesLibrary {
         QUOTES.add(new Quote(297, "Orang kaya membeli aset. Orang miskin memiliki pengeluaran. Kelas menengah membeli liabilitas yang mereka kira aset.", "Robert Kiyosaki"));
         QUOTES.add(new Quote(298, "Di dalam dunia nyata, orang yang paling pintar adalah orang yang membuat kesalahan dan belajar darinya.", "Robert Kiyosaki"));
         QUOTES.add(new Quote(299, "Gagal mengalahkan pecundang. Gagal menginspirasi pemenang.", "Robert Kiyosaki"));
-        QUOTES.add(new Quote(210, "Satu-satunya aset paling kuat yang kita miliki adalah pikiran kita.", "Robert Kiyosaki"));
+        QUOTES.add(new Quote(300, "Satu-satunya aset paling kuat yang kita miliki adalah pikiran kita.", "Robert Kiyosaki"));
         QUOTES.add(new Quote(301, "Ukuran keberhasilan Anda diukur oleh kekuatan keinginan Anda; ukuran impian Anda; dan bagaimana Anda menangani kekecewaan di sepanjang jalan.", "Robert Kiyosaki"));
         QUOTES.add(new Quote(302, "Emosi adalah yang membuat kita manusia. Membuat kita nyata. Kata emosi mengacu pada energi dalam gerakan.", "Robert Kiyosaki"));
         QUOTES.add(new Quote(303, "Orang-orang sukses tidak takut gagal tetapi memahami bahwa itu penting untuk dipelajari dan tumbuh darinya.", "Robert Kiyosaki"));
@@ -333,10 +333,10 @@ public class MotivationalQuotesLibrary {
         QUOTES.add(new Quote(306, "Pendidikan adalah senjata paling ampuh yang dapat Anda gunakan untuk mengubah dunia.", "Nelson Mandela"));
         QUOTES.add(new Quote(307, "Bila Anda berbicara dengan bahasa yang dipahami seseorang, itu akan sampai ke kepalanya. Bila Anda berbicara dengan bahasanya, itu akan sampai ke hatinya.", "Nelson Mandela"));
         QUOTES.add(new Quote(308, "Setelah memanjat bukit yang besar, seseorang hanya menemukan bahwa ada lebih banyak bukit untuk dipanjat.", "Nelson Mandela"));
-        QUOTES.add(new Quote(309, "Resiko datang dari tidak mengetahui apa yang Anda lakukan.", "Warren Buffett"));
+        QUOTES.add(new Quote(309, "Risiko datang dari tidak mengetahui apa yang Anda lakukan.", "Warren Buffett"));
         QUOTES.add(new Quote(310, "Aturan No. 1: Jangan pernah kehilangan uang. Aturan No. 2: Jangan pernah melupakan aturan No. 1.", "Warren Buffett"));
-        QUOTES.add(new Quote(311, "Seseorang duduk di teduh hari ini karena seseorang menanam pohon waktu yang lalu.", "Warren Buffett"));
-        QUOTES.add(new Quote(312, "Dibutuhkan 20 tahun untuk membangun reputasi dan lima menit untuk merusaknya. Jika Anda memikirkannya, Anda akan melakukan sesuatu dengan berbeda.", "Warren Buffett"));
+        QUOTES.add(new Quote(311, "Seseorang bisa berteduh hari ini karena ada orang yang menanam pohon di masa lalu.", "Warren Buffett"));
+        QUOTES.add(new Quote(312, "Dibutuhkan 20 tahun untuk membangun reputasi dan hanya 5 menit untuk merusaknya. Jika Anda menyadarinya, Anda akan bertindak dengan lebih bijaksana.", "Warren Buffett"));
         QUOTES.add(new Quote(313, "Investasi terbaik yang dapat Anda lakukan adalah pada diri Anda sendiri.", "Warren Buffett"));
         QUOTES.add(new Quote(314, "Harga adalah apa yang Anda bayar. Nilai adalah apa yang Anda dapatkan.", "Warren Buffett"));
         QUOTES.add(new Quote(315, "Jujur adalah hadiah yang sangat mahal, jangan mengharapkannya dari orang murahan.", "Warren Buffett"));
@@ -350,7 +350,7 @@ public class MotivationalQuotesLibrary {
         QUOTES.add(new Quote(323, "Ubah ekspektasi Anda dengan rasa syukur dan dunia Anda akan berubah seketika.", "Tony Robbins"));
         QUOTES.add(new Quote(324, "Keputusan Anda, bukan kondisi Anda, yang menentukan takdir Anda.", "Tony Robbins"));
         QUOTES.add(new Quote(325, "Jika Anda melakukan apa yang selalu Anda lakukan, Anda akan mendapatkan apa yang selalu Anda dapatkan.", "Tony Robbins"));
-        QUOTES.add(new Quote(326, "Di mana fokus pergi, energi mengalir.", "Tony Robbins"));
+        QUOTES.add(new Quote(326, "Ke mana fokus diarahkan, ke situlah energi akan mengalir.", "Tony Robbins"));
         QUOTES.add(new Quote(327, "Menetapkan tujuan adalah langkah pertama dalam mengubah yang tidak terlihat menjadi terlihat.", "Tony Robbins"));
         QUOTES.add(new Quote(328, "Setiap masalah adalah hadiah—tanpa masalah kita tidak akan tumbuh.", "Tony Robbins"));
         QUOTES.add(new Quote(329, "Pemimpin menghabiskan 5% waktu mereka untuk masalah dan 95% waktu mereka untuk solusi.", "Tony Robbins"));
@@ -365,11 +365,11 @@ public class MotivationalQuotesLibrary {
         QUOTES.add(new Quote(338, "Kebahagiaan adalah pilihan, bukan hasil.", "Unknown"));
         QUOTES.add(new Quote(339, "Satu-satunya batasan dalam hidupmu adalah batasan yang kamu buat dalam pikiranmu sendiri.", "Unknown"));
         QUOTES.add(new Quote(340, "Jangan menunggu kesempatan, ciptakanlah.", "Unknown"));
-        QUOTES.add(new Quote(341, "Semakin keras kamu bekerja untuk sesuatu, semakin besar perasaanmu saat mencapainya.", "Unknown"));
+        QUOTES.add(new Quote(341, "Semakin keras perjuanganmu meraih sesuatu, semakin besar kepuasan saat kamu mencapainya.", "Unknown"));
         QUOTES.add(new Quote(342, "Bermimpilah lebih besar. Lakukan lebih banyak.", "Unknown"));
         QUOTES.add(new Quote(343, "Jangan berhenti saat kamu lelah. Berhentilah saat kamu selesai.", "Unknown"));
         QUOTES.add(new Quote(344, "Bangunlah dengan tekad. Tidurlah dengan kepuasan.", "Unknown"));
-        QUOTES.add(new Quote(345, "Lakukan sesuatu hari ini yang akan berterima kasih pada dirimu di masa depan.", "Unknown"));
+        QUOTES.add(new Quote(345, "Lakukan sesuatu hari ini yang akan membuat dirimu di masa depan berterima kasih.", "Unknown"));
         QUOTES.add(new Quote(346, "Hal-hal kecil membuat hari-hari besar.", "Unknown"));
         QUOTES.add(new Quote(347, "Ini akan sulit, tapi sulit tidak berarti tidak mungkin.", "Unknown"));
         QUOTES.add(new Quote(348, "Jangan menunggu esok hari, mulailah sekarang.", "Unknown"));
@@ -378,7 +378,7 @@ public class MotivationalQuotesLibrary {
         QUOTES.add(new Quote(351, "Keyakinan dapat memindahkan gunung.", "Pepatah Bijak"));
         QUOTES.add(new Quote(352, "Air yang tenang menghanyutkan.", "Pepatah Indonesia"));
         QUOTES.add(new Quote(353, "Berakit-rakit ke hulu, berenang-renang ke tepian. Bersakit-sakit dahulu, bersenang-senang kemudian.", "Pepatah Indonesia"));
-        QUOTES.add(new Quote(354, "Dimana ada kemauan, disitu ada jalan.", "Pepatah Indonesia"));
+        QUOTES.add(new Quote(354, "Di mana ada kemauan, di situ ada jalan.", "Pepatah Indonesia"));
         QUOTES.add(new Quote(355, "Sekali merengkuh dayung, dua tiga pulau terlampaui.", "Pepatah Indonesia"));
         QUOTES.add(new Quote(356, "Tong kosong nyaring bunyinya.", "Pepatah Indonesia"));
         QUOTES.add(new Quote(357, "Hemat pangkal kaya, rajin pangkal pandai.", "Pepatah Indonesia"));
@@ -430,15 +430,45 @@ public class MotivationalQuotesLibrary {
         return QUOTES.get(0);
     }
 
-    public static Quote getTodayQuote() {
+    /**
+     * Dapatkan Quote berdasarkan Jadwal Sesi Hari Ini:
+     * - Sesi Pagi (07:00 - 14:29): Quote Sesi Pagi
+     * - Sesi Sore/Malam (14:30 ke atas): Quote Sesi Sore
+     */
+    public static Quote getScheduledQuote() {
         Calendar calendar = Calendar.getInstance();
-        int dayOfYear = calendar.get(Calendar.DAY_OF_YEAR); // 1 to 365 (atau 366 pada tahun kabisat)
-        int totalQuotes = QUOTES.size(); // 390
+        int dayOfYear = calendar.get(Calendar.DAY_OF_YEAR);
+        int year = calendar.get(Calendar.YEAR);
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+        int totalQuotes = QUOTES.size();
 
-        // Fungsi permutasi matematika bijektif (gcd(137, 390) = 1)
-        // Menjamin 100% TIDAK ADA DUA HARI YANG SAMA dalam 1 tahun penuh (365 hari)!
-        int uniqueIndex = Math.abs(((dayOfYear - 1) * 137 + 42)) % totalQuotes;
+        int sessionSlot = (dayOfYear - 1) * 2;
+        if (hour >= 14 && minute >= 30) {
+            sessionSlot += 1;
+        } else if (hour > 14 || hour < 7) {
+            sessionSlot += 1;
+        }
+
+        int yearOffset = (year * 97) % totalQuotes;
+        int uniqueIndex = Math.abs((sessionSlot * 137 + yearOffset + 42)) % totalQuotes;
         return QUOTES.get(uniqueIndex);
+    }
+
+    public static String getScheduleSessionTitle() {
+        Calendar calendar = Calendar.getInstance();
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+
+        if (hour >= 7 && (hour < 14 || (hour == 14 && minute < 30))) {
+            return "🌅 MOTIVASI PAGI";
+        } else {
+            return "🌇 APRESIASI SORE";
+        }
+    }
+
+    public static Quote getTodayQuote() {
+        return getScheduledQuote();
     }
 
     public static Quote getRandomQuote() {

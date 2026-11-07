@@ -247,54 +247,47 @@ public class AbsenShiftActivity extends AppCompatActivity implements OnMapReadyC
 
 //        String myDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString()+ "/eabsensi";
         Intent intent = getIntent();
-        String uriString =
-                intent.getStringExtra("namafile");
+        String uriString = intent != null ? intent.getStringExtra("namafile") : null;
 
         if (uriString == null) {
-            Toast.makeText(
+            dialogView.viewNotifKosong(
                     this,
-                    "Foto tidak ditemukan",
-                    Toast.LENGTH_SHORT
-            ).show();
-            finish();
+                    "Foto Tidak Ditemukan",
+                    "Silakan ambil foto terlebih dahulu."
+            );
+            llUpload.setEnabled(false);
+            llUpload.setClickable(false);
+            llUpload.setAlpha(0.5f);
             return;
         }
 
         Uri imageUri = Uri.parse(uriString);
 
         try {
-
             File originalFile = createTempFileFromUri(imageUri);
             file = ambilFoto.compressToFile(
                     this,
                     originalFile
             );
             if (file == null || !file.exists()) {
-                Toast.makeText(
-                        this,
-                        "Gagal memproses foto",
-                        Toast.LENGTH_SHORT
-                ).show();
-
-                finish();
+                dialogView.viewNotifKosong(this, "Gagal Memproses Foto", "File foto tidak ditemukan. Silakan foto ulang.");
+                llUpload.setEnabled(false);
+                llUpload.setClickable(false);
+                llUpload.setAlpha(0.5f);
                 return;
             }
 
             BitmapFactory.Options opts = new BitmapFactory.Options();
             opts.inSampleSize = 4;
             opts.inPreferredConfig = Bitmap.Config.RGB_565;
-            Bitmap preview =
-                    BitmapFactory.decodeFile(file.getAbsolutePath(), opts);
+            Bitmap preview = BitmapFactory.decodeFile(file.getAbsolutePath(), opts);
             if (preview != null) {
                 ivTaging.setImageBitmap(preview);
             } else {
-                Toast.makeText(
-                        this,
-                        "Gagal membaca foto",
-                        Toast.LENGTH_SHORT
-                ).show();
-
-                finish();
+                dialogView.viewNotifKosong(this, "Gagal Membaca Foto", "Sistem gagal memuat preview foto. Silakan coba foto ulang.");
+                llUpload.setEnabled(false);
+                llUpload.setClickable(false);
+                llUpload.setAlpha(0.5f);
                 return;
             }
             // hapus file sementara hasil copy dari Uri
@@ -303,15 +296,11 @@ public class AbsenShiftActivity extends AppCompatActivity implements OnMapReadyC
             }
 
         } catch (Exception e) {
-            Log.e("FOTO_ERROR",
-                    "Gagal memproses foto", e);
-            Toast.makeText(
-                    this,
-                    "Gagal memproses foto",
-                    Toast.LENGTH_SHORT
-            ).show();
-
-            finish();
+            Log.e("FOTO_ERROR", "Gagal memproses foto", e);
+            dialogView.viewNotifKosong(this, "Gagal Memproses Foto", "Terjadi kesalahan saat memproses foto. Silakan foto ulang.");
+            llUpload.setEnabled(false);
+            llUpload.setClickable(false);
+            llUpload.setAlpha(0.5f);
             return;
         }
 //        String myDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString()+ "/eabsensi";
@@ -726,14 +715,49 @@ public class AbsenShiftActivity extends AppCompatActivity implements OnMapReadyC
             llUpload.setClickable(true);
             llUpload.setAlpha(1.0f);
         }else{
-            selected = rgKehadiran.getCheckedRadioButtonId();
-            radioSelectedKehadiran = findViewById(selected);
+            selected = rgKehadiran != null ? rgKehadiran.getCheckedRadioButtonId() : -1;
+            if (selected == -1) {
+                dialogView.viewNotifKosong(
+                        AbsenShiftActivity.this,
+                        "Pilih Jenis Kehadiran",
+                        "Silakan pilih jenis kehadiran (MASUK atau PULANG)."
+                );
+                llUpload.setEnabled(true);
+                llUpload.setClickable(true);
+                llUpload.setAlpha(1.0f);
+                return;
+            }
 
+            radioSelectedKehadiran = findViewById(selected);
+            if (radioSelectedKehadiran == null || radioSelectedKehadiran.getText() == null) {
+                dialogView.viewNotifKosong(
+                        AbsenShiftActivity.this,
+                        "Pilihan Tidak Valid",
+                        "Silakan pilih jenis kehadiran terlebih dahulu."
+                );
+                llUpload.setEnabled(true);
+                llUpload.setClickable(true);
+                llUpload.setAlpha(1.0f);
+                return;
+            }
 
             periksaWaktu();
             hitungJarakAbsensi();
 
-            if (eJabatan.equals("2")){
+            // Null Guard untuk Waktu Shift
+            if (tagingTime == null || dateBatasWaktu == null || jamMasukDate == null || jamPulangDate == null) {
+                dialogView.viewNotifKosong(
+                        AbsenShiftActivity.this,
+                        "Jadwal Shift Tidak Valid",
+                        "Format jam masuk atau jam pulang shift tidak valid."
+                );
+                llUpload.setEnabled(true);
+                llUpload.setClickable(true);
+                llUpload.setAlpha(1.0f);
+                return;
+            }
+
+            if (eJabatan != null && eJabatan.equals("2")){
                 totalJarak = 1;
             }
 
@@ -745,7 +769,7 @@ public class AbsenShiftActivity extends AppCompatActivity implements OnMapReadyC
             }
             else{
                 //Malam
-                if (tipeshift.equals("malam")) {
+                if (tipeshift != null && tipeshift.equals("malam")) {
                     String rbPosisi = null;
                     String rbValid = "2", ketKehadiran;
                     String eselon = "0";
@@ -804,14 +828,26 @@ public class AbsenShiftActivity extends AppCompatActivity implements OnMapReadyC
 
                             Date hariini = null;
                             try {
-                                hariini = SIMPLE_FORMAT_TANGGAL.parse(rbTanggal);
+                                if (rbTanggal != null) {
+                                    hariini = SIMPLE_FORMAT_TANGGAL.parse(rbTanggal);
+                                }
                             } catch (ParseException e) {
-                                throw new RuntimeException(e);
+                                Log.e("ABSEN_SHIFT", "Gagal parse rbTanggal: " + rbTanggal, e);
                             }
 
+                            if (hariini == null) {
+                                dialogView.viewNotifKosong(
+                                        AbsenShiftActivity.this,
+                                        "Tanggal Shift Tidak Valid",
+                                        "Format tanggal shift tidak dapat diproses."
+                                );
+                                llUpload.setEnabled(true);
+                                llUpload.setClickable(true);
+                                llUpload.setAlpha(1.0f);
+                                return;
+                            }
 
                             Calendar calendar = Calendar.getInstance();
-                            assert hariini != null;
                             calendar.setTime(hariini);
                             calendar.add(Calendar.DAY_OF_YEAR, 1);
                             Date newDate = calendar.getTime();
@@ -1111,13 +1147,13 @@ private boolean isHariSenin() {
                     dialogproses.dismiss();
                     dialogView.viewSukses(AbsenShiftActivity.this, data.getRemarks());
 
-                    // mulai hitung 10 detik
+                    // mulai hitung 30 detik
 
                     autoCloseHandler.postDelayed(
 
                             autoCloseRunnable,
 
-                            10000
+                            30000
 
                     );
 
@@ -1208,13 +1244,13 @@ private boolean isHariSenin() {
                     dialogproses.dismiss();
                     dialogView.viewSukses(AbsenShiftActivity.this, data.getRemarks());
 
-                    // mulai hitung 10 detik
+                    // mulai hitung 30 detik
 
                     autoCloseHandler.postDelayed(
 
                             autoCloseRunnable,
 
-                            10000
+                            30000
 
                     );
                 } else {
@@ -1330,13 +1366,13 @@ private boolean isHariSenin() {
                     dialogproses.dismiss();
                     dialogView.viewSukses(AbsenShiftActivity.this, data.getRemarks());
 
-                    // mulai hitung 10 detik
+                    // mulai hitung 30 detik
 
                     autoCloseHandler.postDelayed(
 
                             autoCloseRunnable,
 
-                            10000
+                            30000
 
                     );
                 } else {
@@ -1431,13 +1467,13 @@ private boolean isHariSenin() {
                     dialogproses.dismiss();
                     dialogView.viewSukses(AbsenShiftActivity.this, data.getRemarks());
 
-                    // mulai hitung 10 detik
+                    // mulai hitung 30 detik
 
                     autoCloseHandler.postDelayed(
 
                             autoCloseRunnable,
 
-                            10000
+                            30000
 
                     );
                 } else {

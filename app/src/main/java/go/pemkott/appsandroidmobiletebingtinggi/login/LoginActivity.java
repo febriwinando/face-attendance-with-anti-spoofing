@@ -453,8 +453,10 @@ public class LoginActivity extends AppCompatActivity {
         EditText etOtp = dialog2fa.findViewById(R.id.et2faOtp);
         com.google.android.material.button.MaterialButton btnVerify = dialog2fa.findViewById(R.id.btn2faVerify);
 
-        if (data != null && data.getSecretKey() != null && !data.getSecretKey().trim().isEmpty()) {
-            if (tvTitle != null) tvTitle.setText(data.isSetupRequired() ? "Setup 2FA Wajib" : "Verifikasi 2FA");
+        boolean isSetupRequired = data != null && data.isSetupRequired() && data.getSecretKey() != null && !data.getSecretKey().trim().isEmpty();
+
+        if (isSetupRequired) {
+            if (tvTitle != null) tvTitle.setText("Setup 2FA Wajib");
             if (tvDesc != null) tvDesc.setText("Pindai Barcode di bawah atau salin Kunci Rahasia ke Google Authenticator Anda lalu masukkan kode 6-digit:");
             if (llSecretContainer != null) llSecretContainer.setVisibility(View.VISIBLE);
             if (tvSecretKey != null) tvSecretKey.setText(data.getSecretKey());
@@ -496,10 +498,10 @@ public class LoginActivity extends AppCompatActivity {
             }
             if (btnVerify != null) btnVerify.setText("VERIFIKASI & MASUK");
         } else {
-            if (tvTitle != null) tvTitle.setText("Verifikasi 2FA");
+            if (tvTitle != null) tvTitle.setText("Verifikasi Keamanan 2FA");
             if (tvDesc != null) tvDesc.setText("Masukkan 6 digit kode dari aplikasi Google Authenticator Anda:");
             if (llSecretContainer != null) llSecretContainer.setVisibility(View.GONE);
-            if (btnVerify != null) btnVerify.setText("VERIFIKASI");
+            if (btnVerify != null) btnVerify.setText("VERIFIKASI & MASUK");
         }
 
         if (btnVerify != null) {

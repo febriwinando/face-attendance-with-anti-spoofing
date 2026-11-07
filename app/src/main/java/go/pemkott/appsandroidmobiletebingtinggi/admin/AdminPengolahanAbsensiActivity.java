@@ -219,7 +219,7 @@ public class AdminPengolahanAbsensiActivity extends AppCompatActivity {
 
         cardSelectOpd.setOnClickListener(v -> {
             if (listOpd == null || listOpd.isEmpty()) {
-                loadOpdList();
+                loadOpdListAndShowDialog();
             } else {
                 showOpdSearchDialog();
             }
@@ -649,6 +649,38 @@ public class AdminPengolahanAbsensiActivity extends AppCompatActivity {
             etTanggal.setText(dateFormat.format(calendar.getTime()));
             findPresenceForSelectedEmployeeSilently();
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
+    }
+
+    private void loadOpdListAndShowDialog() {
+        Dialog dialogLoading = new Dialog(this, R.style.DialogStyle);
+        dialogLoading.setContentView(R.layout.view_proses);
+        dialogLoading.setCancelable(false);
+        dialogLoading.show();
+
+        HttpService api = RetroClient.getInstance(this).getApi2();
+        api.getAdminOpdList().enqueue(new Callback<AdminOpdListResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<AdminOpdListResponse> call, @NonNull Response<AdminOpdListResponse> response) {
+                if (!isFinishing()) dialogLoading.dismiss();
+                if (response.isSuccessful() && response.body() != null && response.body().isStatus()) {
+                    listOpd = response.body().getData();
+                    if (listOpd != null && !listOpd.isEmpty()) {
+                        showOpdSearchDialog();
+                    } else {
+                        dialogView.viewNotifKosong(AdminPengolahanAbsensiActivity.this, "Data OPD Kosong", "Tidak ada data OPD pada server.");
+                    }
+                } else {
+                    dialogView.viewNotifKosong(AdminPengolahanAbsensiActivity.this, "Gagal Memuat OPD", "Server mengembalikan HTTP " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<AdminOpdListResponse> call, @NonNull Throwable t) {
+                if (!isFinishing()) dialogLoading.dismiss();
+                Log.e("PENGOLAHAN_ADMIN", "Error loadOpdList", t);
+                dialogView.viewNotifKosong(AdminPengolahanAbsensiActivity.this, "Koneksi Server Gagal", "Gagal memuat OPD dari server:\n" + t.getMessage());
+            }
+        });
     }
 
     private void loadOpdList() {

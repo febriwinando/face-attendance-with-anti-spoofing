@@ -874,8 +874,9 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
                 File originalLampiran = new File(FilePath2);
                 try {
                     filelampiran = ambilFoto.compressToFile(this, originalLampiran);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+                } catch (Exception e) {
+                    Log.e("IZIN_CUTI", "Gagal kompres lampiran", e);
+                    filelampiran = originalLampiran;
                 }
                 BitmapFactory.Options optsLampiran = new BitmapFactory.Options();
                 optsLampiran.inSampleSize = 4;

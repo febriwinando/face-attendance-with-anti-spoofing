@@ -373,8 +373,35 @@ public class AdminInsertMassalActivity extends AppCompatActivity {
 
     private void showOpdSelectionDialog() {
         if (listOpd == null || listOpd.isEmpty()) {
-            Toast.makeText(this, "Memuat daftar OPD dari server...", Toast.LENGTH_SHORT).show();
-            loadOpdList();
+            Dialog dialogLoading = new Dialog(this, R.style.DialogStyle);
+            dialogLoading.setContentView(R.layout.view_proses);
+            dialogLoading.setCancelable(false);
+            dialogLoading.show();
+
+            HttpService api = RetroClient.getInstance(this).getApi2();
+            api.getAdminOpdList().enqueue(new Callback<AdminOpdListResponse>() {
+                @Override
+                public void onResponse(@NonNull Call<AdminOpdListResponse> call, @NonNull Response<AdminOpdListResponse> response) {
+                    if (!isFinishing()) dialogLoading.dismiss();
+                    if (response.isSuccessful() && response.body() != null && response.body().isStatus()) {
+                        listOpd = response.body().getData();
+                        if (listOpd == null) listOpd = new ArrayList<>();
+                        if (!listOpd.isEmpty()) {
+                            showOpdSelectionDialog();
+                        } else {
+                            Toast.makeText(AdminInsertMassalActivity.this, "Daftar OPD Kosong dari server", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Toast.makeText(AdminInsertMassalActivity.this, "Gagal memuat OPD dari server", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<AdminOpdListResponse> call, @NonNull Throwable t) {
+                    if (!isFinishing()) dialogLoading.dismiss();
+                    Toast.makeText(AdminInsertMassalActivity.this, "Gagal koneksi server: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
             return;
         }
 

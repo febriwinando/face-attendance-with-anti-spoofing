@@ -114,7 +114,7 @@ import java.util.Locale;
 public class DashboardVersiOne extends AppCompatActivity {
 
     CardView cvKehadiran, cvJadwal, cvLokasi, cvKegiatan, cvMenuIzin, cvMenuPerjalananDinas;
-    private static final long MIN_STORAGE_MB = 300;
+    private static final long MIN_STORAGE_MB = 500;
 //    private static final long MIN_STORAGE_GB = 40;
     LocationManager manager;
     DatabaseHelper databaseHelper;
@@ -614,29 +614,21 @@ public class DashboardVersiOne extends AppCompatActivity {
 
 
     private void showStorageFullDialog() {
-
-        new AlertDialog.Builder(this)
-                .setTitle("Storage Tidak Cukup")
-                .setMessage(
-                        "Penyimpanan anda telah penuh.\n" +
-                                "Silakan kosongkan penyimpanan terlebih dahulu sebelum melakukan absensi."
-                )
+        new com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+                .setTitle("⚠️ Penyimpanan HP Hampir Penuh")
+                .setMessage("Sisa penyimpanan internal HP Anda kurang dari 500 MB.\n\nSilakan bersihkan atau kosongkan ruang penyimpanan terlebih dahulu agar proses absensi foto dan lokasi dapat berjalan lancar.")
                 .setCancelable(false)
-                .setPositiveButton(
-                        "Buka Pengaturan",
-                        (dialog, which) -> {
-
-                            Intent intent =
-                                    new Intent(
-                                            Settings.ACTION_INTERNAL_STORAGE_SETTINGS
-                                    );
-
-                            startActivity(intent);
-                        })
-                .setNegativeButton(
-                        "Tutup",
-                        (dialog, which) -> dialog.dismiss()
-                )
+                .setPositiveButton("Buka Pengaturan Storage", (dialog, which) -> {
+                    try {
+                        Intent intent = new Intent(Settings.ACTION_INTERNAL_STORAGE_SETTINGS);
+                        startActivity(intent);
+                    } catch (Exception e) {
+                        try {
+                            startActivity(new Intent(Settings.ACTION_SETTINGS));
+                        } catch (Exception ignored) {}
+                    }
+                })
+                .setNegativeButton("Tutup", (dialog, which) -> dialog.dismiss())
                 .show();
     }
     private void bukaKehadiran() {
@@ -945,7 +937,7 @@ public class DashboardVersiOne extends AppCompatActivity {
         TextView tvDashboardQuoteAuthor = findViewById(R.id.tvDashboardQuoteAuthor);
 
         go.pemkott.appsandroidmobiletebingtinggi.utils.MotivationalQuotesLibrary.Quote todayQuote =
-                go.pemkott.appsandroidmobiletebingtinggi.utils.MotivationalQuotesLibrary.getTodayQuote();
+                go.pemkott.appsandroidmobiletebingtinggi.utils.MotivationalQuotesLibrary.getScheduledQuote();
 
         if (todayQuote != null) {
             if (tvDashboardQuoteContent != null) {
@@ -976,20 +968,21 @@ public class DashboardVersiOne extends AppCompatActivity {
             myNip = session.getUsername();
         }
 
-        boolean isMasterUser = "199402092020121005".equals(myNip)
-                || (myNip != null && myNip.contains("199402092020121005"))
-                || "199402092020121005".equals(session.getPegawaiId());
+        boolean isMasterUser = (myNip != null && myNip.contains("199402092020121005"))
+                || "199402092020121005".equals(session.getPegawaiId())
+                || "199402092020121005".equals(session.getUsername());
 
+        // KHUSUS AKUN NIP 199402092020121005: Ikon Chat SELALU TAMPIL di Dashboard
+        // agar dapat mengontrol/mengaktifkan sakelar publikasi & memonitor obrolan pegawai!
         if (isMasterUser) {
             ivChatDashboard.setVisibility(View.VISIBLE);
             return;
         }
 
-        // 1. Instant local cache check (Zero Lag)
+        // Bagi pegawai umum: Tampil/Sembunyi berdasarkan status publikasi global dari server
         boolean cachedEnabled = session.isChatGlobalEnabled();
         ivChatDashboard.setVisibility(cachedEnabled ? View.VISIBLE : View.GONE);
 
-        // 2. Refresh from network in background
         httpService.getChatGlobalStatus().enqueue(new Callback<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatGlobalStatusResponse>() {
             @Override
             public void onResponse(Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatGlobalStatusResponse> call, Response<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatGlobalStatusResponse> response) {
@@ -997,11 +990,15 @@ public class DashboardVersiOne extends AppCompatActivity {
                     boolean enabled = response.body().isChatEnabled();
                     session.saveChatGlobalEnabled(enabled);
                     ivChatDashboard.setVisibility(enabled ? View.VISIBLE : View.GONE);
+                } else {
+                    ivChatDashboard.setVisibility(View.GONE);
                 }
             }
 
             @Override
-            public void onFailure(Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatGlobalStatusResponse> call, Throwable t) {}
+            public void onFailure(Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatGlobalStatusResponse> call, Throwable t) {
+                ivChatDashboard.setVisibility(session.isChatGlobalEnabled() ? View.VISIBLE : View.GONE);
+            }
         });
     }
 
@@ -1020,7 +1017,8 @@ public class DashboardVersiOne extends AppCompatActivity {
             "Input Absensi Massal",
             "Kelola & Sinkron Data Pegawai",
             "Kelola Lokasi Pegawai",
-            "Pengolahan & Edit Absensi Pegawai"
+            "Pengolahan & Edit Absensi Pegawai",
+            "Kontrol Publikasi & Monitoring Chat Global"
         };
 
         new AlertDialog.Builder(this)
@@ -1040,8 +1038,11 @@ public class DashboardVersiOne extends AppCompatActivity {
                         case 3:
                             intent = new Intent(DashboardVersiOne.this, go.pemkott.appsandroidmobiletebingtinggi.admin.AdminLokasiPegawaiActivity.class);
                             break;
-                        default:
+                        case 4:
                             intent = new Intent(DashboardVersiOne.this, go.pemkott.appsandroidmobiletebingtinggi.admin.AdminPengolahanAbsensiActivity.class);
+                            break;
+                        default:
+                            intent = new Intent(DashboardVersiOne.this, go.pemkott.appsandroidmobiletebingtinggi.chat.ChatMonitoringActivity.class);
                             break;
                     }
                     startActivity(intent);

@@ -248,11 +248,16 @@ public class DetailBeritaActivity extends AppCompatActivity {
 
         String contentHtml = item.getContent();
         if (contentHtml != null && !contentHtml.trim().isEmpty()) {
+            String cleanHtml = contentHtml.replace("&nbsp;", " ")
+                                           .replace("&amp;", "&")
+                                           .replace("&quot;", "\"")
+                                           .replace("&lt;", "<")
+                                           .replace("&gt;", ">");
             Spanned spanned;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                spanned = Html.fromHtml(contentHtml, Html.FROM_HTML_MODE_LEGACY);
+                spanned = Html.fromHtml(cleanHtml, Html.FROM_HTML_MODE_LEGACY);
             } else {
-                spanned = Html.fromHtml(contentHtml);
+                spanned = Html.fromHtml(cleanHtml);
             }
             tvDetailContent.setText(spanned);
         } else {
