@@ -28,7 +28,7 @@ public class RetroClient {
 
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
 
-        OkHttpClient.Builder builder = (enableBypass || ServerConfig.getBaseUrl().contains("172.15.1.35") || ServerConfig.getBaseUrl().startsWith("https://"))
+        OkHttpClient.Builder builder = (enableBypass || !ServerConfig.getBaseUrl().contains("svr-absensi.tebingtinggikota.go.id") || ServerConfig.getBaseUrl().startsWith("https://"))
                 ? SSLHelper.getUnsafeOkHttpClientBuilder()
                 : new OkHttpClient.Builder();
 

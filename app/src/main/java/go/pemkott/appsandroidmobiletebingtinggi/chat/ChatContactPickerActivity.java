@@ -262,6 +262,7 @@ public class ChatContactPickerActivity extends AppCompatActivity implements Chat
         intent.putExtra("title", contact.getTitle());
         intent.putExtra("subtitle", contact.getSubtitle());
         intent.putExtra("avatar_url", contact.getAvatarUrl());
+        intent.putExtra("is_blocked", contact.isBlocked());
         startActivity(intent);
         finish();
     }

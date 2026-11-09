@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import com.google.firebase.FirebaseApp;
 import go.pemkott.appsandroidmobiletebingtinggi.api.SSLHelper;
+import go.pemkott.appsandroidmobiletebingtinggi.api.ServerConfig;
 import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
 
 public class MyApplication extends Application {
@@ -18,6 +19,9 @@ public class MyApplication extends Application {
 
         // Always enable SSL certificate checking bypass for HTTPS local server (172.15.1.35:8443)
         SSLHelper.disableSSLCertificateChecking();
+
+        // Pastikan default host server selalu mengarah ke http://192.168.1.6:8000/
+        ServerConfig.setCustomBaseHost(ServerConfig.DEFAULT_HOST);
     }
 
     public static Context getAppContext() {

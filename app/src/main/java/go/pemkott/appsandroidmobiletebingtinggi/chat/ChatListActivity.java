@@ -417,12 +417,17 @@ public class ChatListActivity extends AppCompatActivity implements ChatContactAd
 
     @Override
     public void onContactClick(ChatContact contact) {
+        contact.setUnreadCount(0);
+        adapter.notifyDataSetChanged();
+        chatDb.resetUnreadCount(contact.getChatType(), contact.getTargetId());
+
         Intent intent = new Intent(this, ChatRoomActivity.class);
         intent.putExtra("target_id", contact.getTargetId());
         intent.putExtra("chat_type", contact.getChatType());
         intent.putExtra("title", contact.getTitle());
         intent.putExtra("subtitle", contact.getSubtitle());
         intent.putExtra("avatar_url", contact.getAvatarUrl());
+        intent.putExtra("is_blocked", contact.isBlocked());
         startActivity(intent);
     }
 

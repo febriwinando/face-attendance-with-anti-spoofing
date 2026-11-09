@@ -103,11 +103,10 @@ public class ReadPdfActivity extends AppCompatActivity implements PdfViewerFragm
             go.pemkott.appsandroidmobiletebingtinggi.api.SSLHelper.disableSSLCertificateChecking();
             String activeBaseUrl = go.pemkott.appsandroidmobiletebingtinggi.api.ServerConfig.getBaseUrl();
             if (activeBaseUrl.endsWith("/")) activeBaseUrl = activeBaseUrl.substring(0, activeBaseUrl.length() - 1);
-            if (currentPdfUrl.contains("172.15.1.35") || currentPdfUrl.contains("172.15.1.13") || currentPdfUrl.contains("localhost") || currentPdfUrl.contains("10.0.2.2")) {
-                currentPdfUrl = currentPdfUrl.replaceAll("https?://(172\\.15\\.1\\.35|172\\.15\\.1\\.13|localhost|10\\.0\\.2\\.2)(:[0-9]+)?", "http://172.15.1.35:8000");
-            }
+            currentPdfUrl = currentPdfUrl.replaceAll("https?://(172\\.15\\.[0-9]+\\.[0-9]+|192\\.168\\.[0-9]+\\.[0-9]+|localhost|10\\.0\\.2\\.2)(:[0-9]+)?", activeBaseUrl);
+            currentPdfUrl = currentPdfUrl.replaceAll("https?://svr-absensi\\.tebingtinggikota\\.go\\.id(:[0-9]+)?", activeBaseUrl);
             if (currentPdfUrl.startsWith("/")) {
-                currentPdfUrl = "http://172.15.1.35:8000" + currentPdfUrl;
+                currentPdfUrl = activeBaseUrl + currentPdfUrl;
             }
             currentPdfUrl = currentPdfUrl.replaceAll("(?<!:)/{2,}", "/");
         }

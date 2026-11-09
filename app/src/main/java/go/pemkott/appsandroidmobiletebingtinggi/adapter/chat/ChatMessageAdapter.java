@@ -247,10 +247,10 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             r.tvTime.setText(item.getCreatedAtFormatted());
             if (item.isRead()) {
                 r.tvStatusCheck.setText("✓✓");
-                r.tvStatusCheck.setTextColor(Color.parseColor("#BBF7D0")); // Pale green double-check
+                r.tvStatusCheck.setTextColor(Color.parseColor("#93C5FD")); // Biru cerah double-check (sudah dibaca)
             } else {
                 r.tvStatusCheck.setText("✓");
-                r.tvStatusCheck.setTextColor(Color.parseColor("#DCFCE7")); // Soft green single tick
+                r.tvStatusCheck.setTextColor(Color.parseColor("#E2E8F0")); // Abu-abu muda single-check (terkirim belum dibaca)
             }
 
             // Adjust padding & background for image-only messages and search highlight
@@ -593,18 +593,16 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private String formatAudioUrl(String rawUrl) {
         if (TextUtils.isEmpty(rawUrl)) return "";
         String formatted = rawUrl.trim();
-        if (formatted.contains("172.15.1.35") || formatted.contains("172.15.1.13") || formatted.contains("localhost") || formatted.contains("10.0.2.2")) {
-            formatted = formatted.replaceAll("https?://(172\\.15\\.1\\.35|172\\.15\\.1\\.13|localhost|10\\.0\\.2\\.2)(:[0-9]+)?", "http://172.15.1.35:8000");
-        } else {
-            String activeBaseUrl = go.pemkott.appsandroidmobiletebingtinggi.api.ServerConfig.getBaseUrl();
-            if (activeBaseUrl.endsWith("/")) activeBaseUrl = activeBaseUrl.substring(0, activeBaseUrl.length() - 1);
-            formatted = formatted.replaceAll("https?://svr-absensi\\.tebingtinggikota\\.go\\.id(:[0-9]+)?", activeBaseUrl);
-        }
+        String activeBaseUrl = go.pemkott.appsandroidmobiletebingtinggi.api.ServerConfig.getBaseUrl();
+        if (activeBaseUrl.endsWith("/")) activeBaseUrl = activeBaseUrl.substring(0, activeBaseUrl.length() - 1);
+
+        formatted = formatted.replaceAll("https?://(172\\.15\\.[0-9]+\\.[0-9]+|192\\.168\\.[0-9]+\\.[0-9]+|localhost|10\\.0\\.2\\.2)(:[0-9]+)?", activeBaseUrl);
+        formatted = formatted.replaceAll("https?://svr-absensi\\.tebingtinggikota\\.go\\.id(:[0-9]+)?", activeBaseUrl);
 
         if (formatted.startsWith("/")) {
-            formatted = "http://172.15.1.35:8000" + formatted;
+            formatted = activeBaseUrl + formatted;
         } else if (!formatted.startsWith("http://") && !formatted.startsWith("https://") && !formatted.startsWith("file://") && !formatted.startsWith("content://")) {
-            formatted = "http://172.15.1.35:8000/" + formatted;
+            formatted = activeBaseUrl + "/" + formatted;
         }
         return formatted.replaceAll("(?<!:)/{2,}", "/");
     }
@@ -620,11 +618,14 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         if (TextUtils.isEmpty(primaryUrl) || imageView == null) return;
 
         try {
+            String activeBaseUrl = go.pemkott.appsandroidmobiletebingtinggi.api.ServerConfig.getBaseUrl();
+            if (activeBaseUrl.endsWith("/")) activeBaseUrl = activeBaseUrl.substring(0, activeBaseUrl.length() - 1);
+
             String fallbackUrl = primaryUrl;
             if (primaryUrl.contains(":8443")) {
-                fallbackUrl = primaryUrl.replace("https://172.15.1.35:8443", "http://172.15.1.35:8000");
+                fallbackUrl = primaryUrl.replace(":8443", ":8000").replace("https://", "http://");
             } else if (primaryUrl.contains(":8000")) {
-                fallbackUrl = primaryUrl.replace("http://172.15.1.35:8000", "https://172.15.1.35:8443");
+                fallbackUrl = primaryUrl.replace(":8000", ":8443").replace("http://", "https://");
             }
 
             Glide.with(context)

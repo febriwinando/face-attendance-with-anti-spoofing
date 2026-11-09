@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
-    <!-- Mengizinkan koneksi HTTP (Cleartext) untuk pengembangan lokal -->
+    <!-- Mengizinkan koneksi HTTP (Cleartext) untuk semua IP/Domain pada pengembangan lokal -->
     <base-config cleartextTrafficPermitted="true">
         <trust-anchors>
             <certificates src="system" />
@@ -10,6 +10,7 @@
 
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">tebingtinggikota.go.id</domain>
+        <domain includeSubdomains="true">192.168.1.6</domain>
         <domain includeSubdomains="true">172.15.1.35</domain>
         <domain includeSubdomains="true">172.15.5.39</domain>
         <domain includeSubdomains="true">172.15.1.12</domain>

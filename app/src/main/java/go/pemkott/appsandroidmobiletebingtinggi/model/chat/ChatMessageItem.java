@@ -121,19 +121,16 @@ public class ChatMessageItem {
         }
         String url = fileUrl.trim();
 
-        // Static media storage files on local IP 172.15.1.35 are served with full content via HTTP port 8000
-        if (url.contains("172.15.1.35") || url.contains("172.15.1.13") || url.contains("localhost") || url.contains("10.0.2.2")) {
-            url = url.replaceAll("https?://(172\\.15\\.1\\.35|172\\.15\\.1\\.13|localhost|10\\.0\\.2\\.2)(:[0-9]+)?", "http://172.15.1.35:8000");
-        } else if (url.contains("svr-absensi.tebingtinggikota.go.id")) {
-            String activeBaseUrl = go.pemkott.appsandroidmobiletebingtinggi.api.ServerConfig.getBaseUrl();
-            if (activeBaseUrl.endsWith("/")) activeBaseUrl = activeBaseUrl.substring(0, activeBaseUrl.length() - 1);
-            url = url.replaceAll("https?://svr-absensi\\.tebingtinggikota\\.go\\.id(:[0-9]+)?", activeBaseUrl);
-        }
+        String activeBaseUrl = go.pemkott.appsandroidmobiletebingtinggi.api.ServerConfig.getBaseUrl();
+        if (activeBaseUrl.endsWith("/")) activeBaseUrl = activeBaseUrl.substring(0, activeBaseUrl.length() - 1);
+
+        url = url.replaceAll("https?://(172\\.15\\.[0-9]+\\.[0-9]+|192\\.168\\.[0-9]+\\.[0-9]+|localhost|10\\.0\\.2\\.2)(:[0-9]+)?", activeBaseUrl);
+        url = url.replaceAll("https?://svr-absensi\\.tebingtinggikota\\.go\\.id(:[0-9]+)?", activeBaseUrl);
 
         if (url.startsWith("/")) {
-            url = "http://172.15.1.35:8000" + url;
+            url = activeBaseUrl + url;
         } else if (!url.startsWith("http://") && !url.startsWith("https://") && !url.startsWith("file://") && !url.startsWith("content://")) {
-            url = "http://172.15.1.35:8000/" + url;
+            url = activeBaseUrl + "/" + url;
         }
 
         url = url.replaceAll("(?<!:)/{2,}", "/");

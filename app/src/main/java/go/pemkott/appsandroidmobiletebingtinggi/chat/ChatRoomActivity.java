@@ -118,6 +118,7 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
 
     // Smart Adaptive Polling (every 8 seconds, 0% server overhead with incremental fetch)
     private final Handler pollHandler = new Handler(Looper.getMainLooper());
+    private boolean isContactBlocked = false;
     private final Runnable pollRunnable = new Runnable() {
         @Override
         public void run() {
@@ -139,8 +140,13 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
         title = getIntent().getStringExtra("title");
         subtitle = getIntent().getStringExtra("subtitle");
         avatarUrl = getIntent().getStringExtra("avatar_url");
+        isContactBlocked = getIntent().getBooleanExtra("is_blocked", false);
 
         if (chatType == null) chatType = "personal";
+
+        // Tandai pesan sudah dibaca dan reset unread count di database lokal saat obrolan dibuka
+        chatDb.markMessagesAsRead(chatType, targetId);
+        chatDb.resetUnreadCount(chatType, targetId);
 
         ImageView ivBack = findViewById(R.id.ivBackChatRoom);
         ImageView ivRefresh = findViewById(R.id.ivRefreshChatRoom);
@@ -346,6 +352,8 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
                     if (newMsgs != null && !newMsgs.isEmpty()) {
                         // Persist new messages and updated is_read / edit status to local SQLite database
                         chatDb.saveMessages(newMsgs);
+                        chatDb.markMessagesAsRead(chatType, targetId);
+                        chatDb.resetUnreadCount(chatType, targetId);
 
                         // Reload entire ordered list from local SQLite
                         List<ChatMessageItem> updatedLocal = chatDb.getMessages(chatType, targetId);
@@ -382,6 +390,19 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
         BottomSheetDialog dialog = new BottomSheetDialog(this);
         View view = getLayoutInflater().inflate(R.layout.dialog_group_opd_profile, null);
         dialog.setContentView(view);
+
+        dialog.setOnShowListener(d -> {
+            try {
+                BottomSheetDialog bsd = (BottomSheetDialog) d;
+                android.widget.FrameLayout bottomSheet = bsd.findViewById(com.google.android.material.R.id.design_bottom_sheet);
+                if (bottomSheet != null) {
+                    com.google.android.material.bottomsheet.BottomSheetBehavior<android.widget.FrameLayout> behavior =
+                            com.google.android.material.bottomsheet.BottomSheetBehavior.from(bottomSheet);
+                    behavior.setState(com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED);
+                    behavior.setSkipCollapsed(true);
+                }
+            } catch (Exception ignored) {}
+        });
 
         ImageView ivClose = view.findViewById(R.id.ivCloseGroupProfile);
         CircleImageView civAvatar = view.findViewById(R.id.civGroupProfileAvatar);
@@ -591,7 +612,16 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
                         etMessageInput.setText("");
                         cancelReply();
                     } else {
-                        String err = (response.body() != null && response.body().getMessage() != null) ? response.body().getMessage() : "Gagal mengunggah lampiran";
+                        String err = "Gagal mengunggah lampiran";
+                        try {
+                            if (response.errorBody() != null) {
+                                String errBody = response.errorBody().string();
+                                org.json.JSONObject obj = new org.json.JSONObject(errBody);
+                                if (obj.has("message")) err = obj.getString("message");
+                            } else if (response.body() != null && response.body().getMessage() != null) {
+                                err = response.body().getMessage();
+                            }
+                        } catch (Exception ignored) {}
                         go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.showTopBanner(
                                 ChatRoomActivity.this, err, go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.Type.ERROR
                         );
@@ -724,7 +754,19 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
                         loadMessages(false);
                     }
                 } else {
-                    Toast.makeText(ChatRoomActivity.this, "Gagal mengirim pesan", Toast.LENGTH_SHORT).show();
+                    String err = "Gagal mengirim pesan";
+                    try {
+                        if (response.errorBody() != null) {
+                            String errBody = response.errorBody().string();
+                            org.json.JSONObject obj = new org.json.JSONObject(errBody);
+                            if (obj.has("message")) err = obj.getString("message");
+                        } else if (response.body() != null && response.body().getMessage() != null) {
+                            err = response.body().getMessage();
+                        }
+                    } catch (Exception ignored) {}
+                    go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.showTopBanner(
+                            ChatRoomActivity.this, err, go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.Type.ERROR
+                    );
                 }
             }
 
@@ -827,18 +869,16 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
     private String formatMediaUrl(String mediaUrl) {
         if (TextUtils.isEmpty(mediaUrl)) return "";
         String formatted = mediaUrl.trim();
-        if (formatted.contains("172.15.1.35") || formatted.contains("172.15.1.13") || formatted.contains("localhost") || formatted.contains("10.0.2.2")) {
-            formatted = formatted.replaceAll("https?://(172\\.15\\.1\\.35|172\\.15\\.1\\.13|localhost|10\\.0\\.2\\.2)(:[0-9]+)?", "http://172.15.1.35:8000");
-        } else {
-            String activeBaseUrl = go.pemkott.appsandroidmobiletebingtinggi.api.ServerConfig.getBaseUrl();
-            if (activeBaseUrl.endsWith("/")) activeBaseUrl = activeBaseUrl.substring(0, activeBaseUrl.length() - 1);
-            formatted = formatted.replaceAll("https?://svr-absensi\\.tebingtinggikota\\.go\\.id(:[0-9]+)?", activeBaseUrl);
-        }
+        String activeBaseUrl = go.pemkott.appsandroidmobiletebingtinggi.api.ServerConfig.getBaseUrl();
+        if (activeBaseUrl.endsWith("/")) activeBaseUrl = activeBaseUrl.substring(0, activeBaseUrl.length() - 1);
+
+        formatted = formatted.replaceAll("https?://(172\\.15\\.[0-9]+\\.[0-9]+|192\\.168\\.[0-9]+\\.[0-9]+|localhost|10\\.0\\.2\\.2)(:[0-9]+)?", activeBaseUrl);
+        formatted = formatted.replaceAll("https?://svr-absensi\\.tebingtinggikota\\.go\\.id(:[0-9]+)?", activeBaseUrl);
 
         if (formatted.startsWith("/")) {
-            formatted = "http://172.15.1.35:8000" + formatted;
+            formatted = activeBaseUrl + formatted;
         } else if (!formatted.startsWith("http://") && !formatted.startsWith("https://") && !formatted.startsWith("file://") && !formatted.startsWith("content://")) {
-            formatted = "http://172.15.1.35:8000/" + formatted;
+            formatted = activeBaseUrl + "/" + formatted;
         }
         return formatted.replaceAll("(?<!:)/{2,}", "/");
     }
@@ -873,12 +913,12 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
                     android.view.WindowManager.LayoutParams.MATCH_PARENT,
                     android.view.WindowManager.LayoutParams.MATCH_PARENT
             );
-            dialog.getWindow().setBackgroundDrawableResource(android.R.color.black);
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.white);
             androidx.core.view.WindowCompat.setDecorFitsSystemWindows(dialog.getWindow(), false);
             androidx.core.view.WindowInsetsControllerCompat insetsController =
                     new androidx.core.view.WindowInsetsControllerCompat(dialog.getWindow(), dialog.getWindow().getDecorView());
-            insetsController.setAppearanceLightStatusBars(false);
-            insetsController.setAppearanceLightNavigationBars(false);
+            insetsController.setAppearanceLightStatusBars(true);
+            insetsController.setAppearanceLightNavigationBars(true);
         }
 
         View llTopBar = dialog.findViewById(R.id.llTopBarPreview);
@@ -959,12 +999,12 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
                     android.view.WindowManager.LayoutParams.MATCH_PARENT,
                     android.view.WindowManager.LayoutParams.MATCH_PARENT
             );
-            dialog.getWindow().setBackgroundDrawableResource(android.R.color.black);
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.white);
             androidx.core.view.WindowCompat.setDecorFitsSystemWindows(dialog.getWindow(), false);
             androidx.core.view.WindowInsetsControllerCompat insetsController =
                     new androidx.core.view.WindowInsetsControllerCompat(dialog.getWindow(), dialog.getWindow().getDecorView());
-            insetsController.setAppearanceLightStatusBars(false);
-            insetsController.setAppearanceLightNavigationBars(false);
+            insetsController.setAppearanceLightStatusBars(true);
+            insetsController.setAppearanceLightNavigationBars(true);
         }
 
         View llTopBarVideo = dialog.findViewById(R.id.llTopBarVideo);
@@ -1510,7 +1550,16 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
                     }
                     cancelReply();
                 } else {
-                    String err = (response.body() != null && response.body().getMessage() != null) ? response.body().getMessage() : "Gagal mengirim pesan suara";
+                    String err = "Gagal mengirim pesan suara";
+                    try {
+                        if (response.errorBody() != null) {
+                            String errBody = response.errorBody().string();
+                            org.json.JSONObject obj = new org.json.JSONObject(errBody);
+                            if (obj.has("message")) err = obj.getString("message");
+                        } else if (response.body() != null && response.body().getMessage() != null) {
+                            err = response.body().getMessage();
+                        }
+                    } catch (Exception ignored) {}
                     go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.showTopBanner(
                             ChatRoomActivity.this, err, go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.Type.ERROR
                     );
@@ -1552,7 +1601,13 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
             if (menuBlock != null) menuBlock.setVisibility(View.GONE);
         } else {
             if (menuOpd != null) menuOpd.setVisibility(View.GONE);
-            if (menuBlock != null) menuBlock.setVisibility(View.VISIBLE);
+            if (menuBlock != null) {
+                menuBlock.setVisibility(View.VISIBLE);
+                TextView tvMenuBlock = popupView.findViewById(R.id.tvMenuBlockContact);
+                if (tvMenuBlock != null) {
+                    tvMenuBlock.setText(isContactBlocked ? "Buka Blokir Kontak" : "Blokir Kontak");
+                }
+            }
         }
 
         if (menuSearch != null) {
@@ -1645,23 +1700,35 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
     }
 
     private void confirmBlockContact() {
+        String actionTitle = isContactBlocked ? "Buka Blokir Kontak" : "Blokir Kontak";
+        String actionMsg = isContactBlocked
+                ? "Apakah Anda yakin ingin membuka blokir kontak ini? Anda dan kontak akan dapat saling bertukar pesan kembali."
+                : "Apakah Anda yakin ingin memblokir kontak ini? Kontak tidak akan dapat mengirimkan pesan kepada Anda.";
+        String positiveBtn = isContactBlocked ? "Buka Blokir" : "Blokir";
+        String actionType = isContactBlocked ? "unblock" : "block";
+
         new androidx.appcompat.app.AlertDialog.Builder(this)
-                .setTitle("Blokir Kontak")
-                .setMessage("Apakah Anda yakin ingin memblokir kontak ini? Kontak tidak akan dapat mengirimkan pesan kepada Anda.")
-                .setPositiveButton("Blokir", (dialog, which) -> {
+                .setTitle(actionTitle)
+                .setMessage(actionMsg)
+                .setPositiveButton(positiveBtn, (dialog, which) -> {
                     HttpService api = RetroClient.getInstance(this).getApi2();
-                    api.toggleBlockContact(targetId, "block").enqueue(new Callback<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatPrivacyResponse>() {
+                    api.toggleBlockContact(targetId, actionType).enqueue(new Callback<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatPrivacyResponse>() {
                         @Override
                         public void onResponse(Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatPrivacyResponse> call, Response<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatPrivacyResponse> response) {
-                            go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.showTopBanner(
-                                    ChatRoomActivity.this, "Kontak telah diblokir", go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.Type.SUCCESS
-                            );
-                            finish();
+                            if (response.isSuccessful()) {
+                                isContactBlocked = !isContactBlocked;
+                                String resultMsg = isContactBlocked ? "Kontak telah diblokir" : "Blokir kontak telah dibuka";
+                                go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.showTopBanner(
+                                        ChatRoomActivity.this, resultMsg, go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.Type.SUCCESS
+                                );
+                            } else {
+                                Toast.makeText(ChatRoomActivity.this, "Gagal mengubah status blokir", Toast.LENGTH_SHORT).show();
+                            }
                         }
 
                         @Override
                         public void onFailure(Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatPrivacyResponse> call, Throwable t) {
-                            Toast.makeText(ChatRoomActivity.this, "Gagal memblokir: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ChatRoomActivity.this, "Koneksi gagal: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     });
                 })

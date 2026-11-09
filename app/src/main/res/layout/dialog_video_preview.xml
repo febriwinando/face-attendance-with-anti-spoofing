@@ -5,35 +5,36 @@
     android:layout_height="match_parent"
     android:background="#0F172A">
 
-    <!-- Top Action Bar -->
+    <!-- Top Action Bar (Identik dengan Header Halaman Lainnya) -->
     <LinearLayout
         android:id="@+id/llTopBarVideo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:background="#FFFFFF"
+        android:elevation="2dp"
         android:orientation="horizontal"
-        android:gravity="center_vertical"
         android:paddingHorizontal="16dp"
         android:paddingTop="36dp"
         android:paddingBottom="12dp"
-        android:background="#99000000"
-        android:elevation="4dp">
+        android:gravity="center_vertical">
 
         <ImageView
             android:id="@+id/ivCloseVideoPreview"
             android:layout_width="28dp"
             android:layout_height="28dp"
-            android:src="@drawable/ic_close"
-            app:tint="#FFFFFF"
+            android:src="@drawable/ic_arrow_back"
+            app:tint="#0F172A"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
-            android:contentDescription="Tutup"/>
+            android:contentDescription="Kembali"/>
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="14dp"
             android:orientation="vertical">
 
             <TextView
@@ -41,18 +42,20 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Pemutar Video"
-                android:textColor="#FFFFFF"
-                android:textSize="16sp"
-                android:textStyle="bold"
+                android:textColor="#0F172A"
+                android:textSize="18sp"
+                android:fontFamily="sans-serif-black"
                 android:maxLines="1"
                 android:ellipsize="end"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Video Kedinasan"
-                android:textColor="#94A3B8"
-                android:textSize="12sp"/>
+                android:layout_marginTop="1dp"
+                android:text="Video Lampiran Kedinasan"
+                android:textColor="#64748B"
+                android:textSize="12sp"
+                android:fontFamily="sans-serif"/>
         </LinearLayout>
     </LinearLayout>
 
@@ -176,5 +179,5 @@
                 android:contentDescription="Maju 10 Detik"/>
         </LinearLayout>
     </LinearLayout>
-</RelativeLayout>
 
+</RelativeLayout>

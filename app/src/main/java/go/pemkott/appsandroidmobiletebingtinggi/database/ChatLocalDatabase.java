@@ -402,4 +402,26 @@ public class ChatLocalDatabase extends SQLiteOpenHelper {
             db.delete(TABLE_MESSAGES, COL_MSG_CHAT_TYPE + " = ? AND (" + COL_SENDER_ID + " = ? OR " + COL_RECEIVER_ID + " = ?)", new String[]{"personal", String.valueOf(targetId), String.valueOf(targetId)});
         }
     }
+
+    public void markMessagesAsRead(String chatType, long targetId) {
+        try {
+            SQLiteDatabase db = getWritableDatabase();
+            ContentValues cv = new ContentValues();
+            cv.put(COL_IS_READ, 1);
+            if ("opd".equals(chatType)) {
+                db.update(TABLE_MESSAGES, cv, COL_MSG_CHAT_TYPE + " = ? AND " + COL_MSG_OPD_ID + " = ? AND " + COL_IS_ME + " = 0", new String[]{"opd", String.valueOf(targetId)});
+            } else {
+                db.update(TABLE_MESSAGES, cv, COL_MSG_CHAT_TYPE + " = ? AND " + COL_SENDER_ID + " = ? AND " + COL_IS_ME + " = 0", new String[]{"personal", String.valueOf(targetId)});
+            }
+        } catch (Exception ignored) {}
+    }
+
+    public void resetUnreadCount(String chatType, long targetId) {
+        try {
+            SQLiteDatabase db = getWritableDatabase();
+            ContentValues cv = new ContentValues();
+            cv.put(COL_UNREAD_COUNT, 0);
+            db.update(TABLE_CONTACTS, cv, COL_TARGET_ID + " = ? AND " + COL_CHAT_TYPE + " = ?", new String[]{String.valueOf(targetId), chatType});
+        } catch (Exception ignored) {}
+    }
 }
