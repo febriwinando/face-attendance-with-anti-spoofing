@@ -6,22 +6,21 @@
     android:background="#FFFFFF"
     android:orientation="vertical">
 
-    <!-- Top Header Bar (Mockup Style Clean White) -->
+    <!-- Top Header Bar (Modern Clean Style) -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#FFFFFF"
-        android:elevation="1dp"
         android:orientation="horizontal"
         android:paddingHorizontal="16dp"
         android:paddingTop="36dp"
-        android:paddingBottom="16dp"
+        android:paddingBottom="12dp"
         android:gravity="center_vertical">
 
         <ImageView
             android:id="@+id/ivBackChatList"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
             android:src="@drawable/ic_arrow_back"
             app:tint="#0F172A"
             android:background="?attr/selectableItemBackgroundBorderless"
@@ -33,34 +32,36 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="12dp"
             android:text="Chats"
             android:textColor="#0F172A"
-            android:textSize="22sp"
+            android:textSize="26sp"
             android:fontFamily="sans-serif-black"/>
-
-        <ImageView
-            android:id="@+id/ivPrivacyChatList"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginEnd="12dp"
-            android:src="@drawable/ic_privasi"
-            app:tint="#0F172A"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:focusable="true"
-            android:contentDescription="Privasi Kontak"/>
 
         <ImageView
             android:id="@+id/ivRefreshChatList"
             android:layout_width="24dp"
             android:layout_height="24dp"
+            android:layout_marginEnd="14dp"
             android:src="@drawable/ic_sync2"
-            app:tint="#0F172A"
+            app:tint="#64748B"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
             android:contentDescription="Refresh"/>
+
+        <!-- Green Round Add (+) Button Matching Mockup -->
+        <ImageView
+            android:id="@+id/btnHeaderNewChat"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:background="@drawable/bg_circle_green_add"
+            android:src="@drawable/ic_baseline_add"
+            app:tint="#FFFFFF"
+            android:padding="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="Mulai Chat Baru"/>
     </LinearLayout>
 
     <!-- Special Monitoring Banner Button (Visible only for Monitoring NIP 199402092020121005) -->
@@ -69,9 +70,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="12dp"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="2dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="6dp"
+        app:cardCornerRadius="14dp"
+        app:cardElevation="0dp"
         app:strokeWidth="1dp"
         app:strokeColor="#C7D2FE"
         app:cardBackgroundColor="#EEF2FF"
@@ -87,8 +89,8 @@
             android:padding="12dp">
 
             <ImageView
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
                 android:src="@drawable/ic_document_scanner"
                 app:tint="#3730A3"
                 android:contentDescription="Monitoring"/>
@@ -103,24 +105,24 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Halaman Monitoring Sistem"
+                    android:text="Monitoring Sistem Percakapan"
                     android:textColor="#3730A3"
-                    android:textSize="14sp"
+                    android:textSize="13sp"
                     android:fontFamily="sans-serif-black"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:text="Pantau seluruh riwayat obrolan pegawai Pemko"
+                    android:layout_marginTop="1dp"
+                    android:text="Pantau riwayat komunikasi dinas pegawai"
                     android:textColor="#4338CA"
-                    android:textSize="12sp"
+                    android:textSize="11sp"
                     android:fontFamily="sans-serif"/>
             </LinearLayout>
 
             <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
                 android:src="@drawable/ic_arrow_back"
                 android:rotation="180"
                 app:tint="#3730A3"
@@ -128,105 +130,149 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Search Box -->
-    <com.google.android.material.card.MaterialCardView
+    <!-- Search Box (Pill Style Like Image) -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="44dp"
         android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="8dp"
-        app:cardCornerRadius="22dp"
-        app:cardElevation="1dp"
-        app:strokeWidth="0dp">
+        android:layout_marginTop="6dp"
+        android:layout_marginBottom="12dp"
+        android:background="@drawable/bg_pill_input"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="14dp">
 
-        <LinearLayout
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_search_location"
+            app:tint="#9CA3AF"
+            android:contentDescription="Cari"/>
+
+        <EditText
+            android:id="@+id/etSearchChat"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingHorizontal="14dp">
+            android:layout_marginStart="10dp"
+            android:background="@null"
+            android:hint="Search"
+            android:textColor="#0F172A"
+            android:textColorHint="#9CA3AF"
+            android:textSize="14sp"
+            android:fontFamily="sans-serif"
+            android:inputType="text"/>
+    </LinearLayout>
 
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/ic_search_location"
-                app:tint="@color/text_hint"
-                android:contentDescription="Cari"/>
-
-            <EditText
-                android:id="@+id/etSearchChat"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginStart="10dp"
-                android:background="@null"
-                android:hint="Cari riwayat percakapan..."
-                android:textColor="@color/text_primary"
-                android:textColorHint="@color/text_hint"
-                android:textSize="14sp"
-                android:fontFamily="sans-serif"
-                android:inputType="text"/>
-        </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
-
-    <!-- OPD Filter Selector Card -->
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/cvOpdFilterSelector"
+    <!-- Filter Chips / Tabs (Horizontally Scrollable Like Image) -->
+    <HorizontalScrollView
         android:layout_width="match_parent"
-        android:layout_height="44dp"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginBottom="8dp"
-        app:cardCornerRadius="22dp"
-        app:cardElevation="1dp"
-        app:strokeWidth="0dp"
-        android:clickable="true"
-        android:focusable="true">
+        android:layout_height="wrap_content"
+        android:scrollbars="none"
+        android:clipToPadding="false"
+        android:paddingHorizontal="16dp"
+        android:layout_marginBottom="10dp">
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingHorizontal="14dp">
+            android:orientation="horizontal">
 
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/ic_locasi_office"
-                app:tint="@color/biru"
-                android:contentDescription="Unit Kerja / OPD"/>
-
+            <!-- All Chip -->
             <TextView
-                android:id="@+id/tvSelectedOpdFilterName"
-                android:layout_width="0dp"
+                android:id="@+id/tvFilterAll"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:background="@drawable/bg_pill_filter_active"
+                android:text="All"
+                android:textColor="#16A34A"
+                android:textSize="13sp"
+                android:fontFamily="sans-serif-bold"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="7dp"
+                android:clickable="true"
+                android:focusable="true"/>
+
+            <!-- Unread Chip -->
+            <TextView
+                android:id="@+id/tvFilterUnread"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:text="Semua Unit Kerja / OPD"
-                android:textColor="@color/text_primary"
+                android:background="@drawable/bg_pill_filter_inactive"
+                android:text="Unread"
+                android:textColor="#64748B"
                 android:textSize="13sp"
                 android:fontFamily="sans-serif-medium"
-                android:maxLines="1"
-                android:ellipsize="end"/>
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="7dp"
+                android:clickable="true"
+                android:focusable="true"/>
 
-            <ImageView
-                android:layout_width="18dp"
-                android:layout_height="18dp"
-                android:src="@drawable/ic_arrow_down"
-                app:tint="@color/text_hint"
-                android:contentDescription="Pilih OPD"/>
+            <!-- OPD Chip -->
+            <TextView
+                android:id="@+id/tvFilterOpd"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/bg_pill_filter_inactive"
+                android:text="Grup OPD"
+                android:textColor="#64748B"
+                android:textSize="13sp"
+                android:fontFamily="sans-serif-medium"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="7dp"
+                android:clickable="true"
+                android:focusable="true"/>
+
+            <!-- More / OPD Selector Chip (Hidden: Strict Single OPD Group Policy) -->
+            <LinearLayout
+                android:id="@+id/cvOpdFilterSelector"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/bg_pill_filter_inactive"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="7dp"
+                android:visibility="gone"
+                android:clickable="true"
+                android:focusable="true">
+
+                <TextView
+                    android:id="@+id/tvSelectedOpdFilterName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Pilih OPD"
+                    android:textColor="#64748B"
+                    android:textSize="13sp"
+                    android:fontFamily="sans-serif-medium"/>
+
+                <ImageView
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
+                    android:layout_marginStart="4dp"
+                    android:src="@drawable/ic_baseline_add"
+                    app:tint="#64748B"
+                    android:contentDescription="Tambah Filter"/>
+            </LinearLayout>
+
         </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
+    </HorizontalScrollView>
 
+    <!-- Main Message List -->
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvChatList"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
-            android:paddingVertical="8dp"/>
+            android:paddingBottom="12dp"/>
 
         <ProgressBar
             android:id="@+id/pbChatList"
@@ -236,7 +282,7 @@
             android:indeterminateTint="#16A34A"
             android:visibility="gone"/>
 
-        <!-- Formal Empty State -->
+        <!-- Empty State -->
         <LinearLayout
             android:id="@+id/llEmptyChatState"
             android:layout_width="match_parent"
@@ -248,46 +294,140 @@
             android:visibility="gone">
 
             <ImageView
-                android:layout_width="72dp"
-                android:layout_height="72dp"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
                 android:src="@drawable/ic_mail"
-                app:tint="@color/text_hint"
+                app:tint="#CBD5E1"
                 android:contentDescription="Pesan Kosong"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="Belum Ada Riwayat Percakapan"
-                android:textColor="@color/text_primary"
+                android:text="Belum Ada Percakapan"
+                android:textColor="#0F172A"
                 android:textSize="16sp"
                 android:fontFamily="sans-serif-black"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
+                android:layout_marginTop="4dp"
                 android:gravity="center"
-                android:text="Anda belum pernah melakukan komunikasi. Tekan tombol 'Mulai Chat Baru' di bawah untuk mengirim pesan ke rekan kerja."
-                android:textColor="@color/text_secondary"
+                android:text="Mulai percakapan baru dengan menekan tombol (+) di atas."
+                android:textColor="#64748B"
                 android:textSize="13sp"
                 android:fontFamily="sans-serif"/>
         </LinearLayout>
 
-        <!-- Start New Chat FAB Button -->
-        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        <!-- Hidden old FAB ID kept for backward compatibility if referenced -->
+        <View
             android:id="@+id/btnNewChatFab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_margin="20dp"
-            android:text="Mulai Chat Baru"
-            android:textColor="@color/putih"
-            android:textSize="14sp"
-            android:fontFamily="sans-serif-bold"
-            app:icon="@drawable/ic_baseline_add"
-            app:iconTint="@color/putih"
-            android:backgroundTint="#16A34A"/>
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone"/>
 
     </FrameLayout>
+
+    <!-- Bottom Navigation Bar Matching Image (Calls | Chats | Settings) -->
+    <LinearLayout
+        android:id="@+id/llBottomNavBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFFFFF"
+        android:elevation="6dp"
+        android:orientation="horizontal"
+        android:paddingTop="8dp"
+        android:paddingBottom="12dp"
+        android:weightSum="3">
+
+        <!-- Tab 1: Calls / Kontak -->
+        <LinearLayout
+            android:id="@+id/llTabCalls"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_baseline_person_24"
+                app:tint="#94A3B8"
+                android:contentDescription="Kontak"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:text="Kontak"
+                android:textColor="#94A3B8"
+                android:textSize="11sp"
+                android:fontFamily="sans-serif"/>
+        </LinearLayout>
+
+        <!-- Tab 2: Chats (Active Tab) -->
+        <LinearLayout
+            android:id="@+id/llTabChats"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_chat_bubble_outline"
+                app:tint="#16A34A"
+                android:contentDescription="Chats"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:text="Chats"
+                android:textColor="#16A34A"
+                android:textSize="11sp"
+                android:fontFamily="sans-serif-bold"/>
+        </LinearLayout>
+
+        <!-- Tab 3: Settings / Privasi -->
+        <LinearLayout
+            android:id="@+id/llTabSettings"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_settings_outline"
+                app:tint="#94A3B8"
+                android:contentDescription="Settings"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:text="Settings"
+                android:textColor="#94A3B8"
+                android:textSize="11sp"
+                android:fontFamily="sans-serif"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
 </LinearLayout>

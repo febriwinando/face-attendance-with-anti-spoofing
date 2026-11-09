@@ -51,14 +51,14 @@
             app:cardCornerRadius="40dp"
             app:cardElevation="0dp"
             app:strokeWidth="0dp"
-            app:cardBackgroundColor="#EFF6FF">
+            app:cardBackgroundColor="#DCFCE7">
 
             <ImageView
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_gravity="center"
                 android:src="@drawable/ic_audiotrack"
-                app:tint="#2563EB"
+                app:tint="#16A34A"
                 android:contentDescription="Audio"/>
         </com.google.android.material.card.MaterialCardView>
 
@@ -91,7 +91,7 @@
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:layout_gravity="center"
-        android:indeterminateTint="#2563EB"
+        android:indeterminateTint="#16A34A"
         android:layout_marginVertical="8dp"
         android:visibility="visible"/>
 
@@ -107,8 +107,8 @@
             android:id="@+id/sbAudioProgress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:progressTint="#2563EB"
-            android:thumbTint="#2563EB"
+            android:progressTint="#16A34A"
+            android:thumbTint="#16A34A"
             android:max="100"/>
 
         <RelativeLayout
@@ -163,7 +163,7 @@
             android:layout_height="wrap_content"
             android:src="@drawable/ic_play_arrow"
             app:tint="#FFFFFF"
-            app:backgroundTint="#2563EB"
+            app:backgroundTint="#16A34A"
             app:elevation="2dp"
             app:fabSize="normal"
             android:contentDescription="Putar / Jeda"/>

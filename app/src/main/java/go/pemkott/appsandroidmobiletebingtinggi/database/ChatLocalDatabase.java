@@ -226,8 +226,8 @@ public class ChatLocalDatabase extends SQLiteOpenHelper {
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.rawQuery(
                 "SELECT * FROM " + TABLE_CONTACTS +
-                " WHERE " + COL_LAST_MESSAGE + " IS NOT NULL AND " + COL_LAST_MESSAGE + " != ''" +
-                " ORDER BY " + COL_TARGET_ID + " DESC", null);
+                " WHERE " + COL_CHAT_TYPE + " = 'opd' OR (" + COL_LAST_MESSAGE + " IS NOT NULL AND " + COL_LAST_MESSAGE + " != '')" +
+                " ORDER BY CASE WHEN " + COL_CHAT_TYPE + " = 'opd' THEN 0 ELSE 1 END, " + COL_TARGET_ID + " DESC", null);
 
         if (cursor != null && cursor.moveToFirst()) {
             do {
@@ -247,6 +247,15 @@ public class ChatLocalDatabase extends SQLiteOpenHelper {
             cursor.close();
         }
         return list;
+    }
+
+    public void updateMessageText(long msgId, String newText) {
+        try {
+            SQLiteDatabase db = getWritableDatabase();
+            ContentValues cv = new ContentValues();
+            cv.put(COL_MESSAGE, newText);
+            db.update(TABLE_MESSAGES, cv, COL_MSG_ID + " = ?", new String[]{String.valueOf(msgId)});
+        } catch (Exception ignored) {}
     }
 
     // ==========================================
@@ -334,8 +343,16 @@ public class ChatLocalDatabase extends SQLiteOpenHelper {
                 m.setOpdId(cursor.getLong(cursor.getColumnIndexOrThrow(COL_MSG_OPD_ID)));
                 m.setChatType(cursor.getString(cursor.getColumnIndexOrThrow(COL_MSG_CHAT_TYPE)));
                 m.setMessage(cursor.getString(cursor.getColumnIndexOrThrow(COL_MESSAGE)));
-                m.setMsgType(cursor.getString(cursor.getColumnIndexOrThrow(COL_MSG_TYPE)));
-                m.setFileUrl(cursor.getString(cursor.getColumnIndexOrThrow(COL_FILE_URL)));
+                String type = cursor.getString(cursor.getColumnIndexOrThrow(COL_MSG_TYPE));
+                String url = cursor.getString(cursor.getColumnIndexOrThrow(COL_FILE_URL));
+                if (url != null) {
+                    String l = url.toLowerCase();
+                    if (l.endsWith(".m4a") || l.endsWith(".mp3") || l.endsWith(".wav") || l.endsWith(".aac") || l.endsWith(".ogg") || l.endsWith(".opus") || l.contains("/chat_media/audio/") || l.contains("voice_note")) {
+                        type = "audio";
+                    }
+                }
+                m.setMsgType(type != null ? type : "text");
+                m.setFileUrl(url);
                 m.setFileName(cursor.getString(cursor.getColumnIndexOrThrow(COL_FILE_NAME)));
                 m.setReplyToId(cursor.getLong(cursor.getColumnIndexOrThrow(COL_REPLY_TO_ID)));
                 m.setReplyToSenderName(cursor.getString(cursor.getColumnIndexOrThrow(COL_REPLY_SENDER_NAME)));
@@ -370,5 +387,19 @@ public class ChatLocalDatabase extends SQLiteOpenHelper {
             cursor.close();
         }
         return lastId;
+    }
+
+    public void deleteMessageLocal(long messageId) {
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete(TABLE_MESSAGES, COL_MSG_ID + " = ?", new String[]{String.valueOf(messageId)});
+    }
+
+    public void clearConversationLocal(String chatType, long targetId) {
+        SQLiteDatabase db = getWritableDatabase();
+        if ("opd".equals(chatType)) {
+            db.delete(TABLE_MESSAGES, COL_MSG_CHAT_TYPE + " = ? AND " + COL_MSG_OPD_ID + " = ?", new String[]{"opd", String.valueOf(targetId)});
+        } else {
+            db.delete(TABLE_MESSAGES, COL_MSG_CHAT_TYPE + " = ? AND (" + COL_SENDER_ID + " = ? OR " + COL_RECEIVER_ID + " = ?)", new String[]{"personal", String.valueOf(targetId), String.valueOf(targetId)});
+        }
     }
 }

@@ -573,6 +573,11 @@ public interface HttpService {
             @Query("active_only") int activeOnly
     );
 
+    @GET("chat/opd-group-profile")
+    Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.OpdGroupProfileResponse> getOpdGroupProfile(
+            @Query("opd_id") long opdId
+    );
+
     @GET("chat/messages")
     Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatMessageResponse> getChatMessages(@Query("chat_type") String chatType, @Query("target_id") long targetId);
 
@@ -609,6 +614,44 @@ public interface HttpService {
             @Field("privacy_mode") String privacyMode,
             @Field("allowed_employee_ids") String allowedEmployeeIdsJson,
             @Field("allowed_opd_ids") String allowedOpdIdsJson
+    );
+
+    @FormUrlEncoded
+    @POST("chat/privacy")
+    Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatPrivacyResponse> saveAdvancedChatPrivacySettings(
+            @Field("privacy_mode") String privacyMode,
+            @Field("allowed_employee_ids") String allowedEmployeeIdsJson,
+            @Field("allowed_opd_ids") String allowedOpdIdsJson,
+            @Field("read_receipts_enabled") int readReceiptsEnabled,
+            @Field("blocked_employee_ids") String blockedEmployeeIdsJson,
+            @Field("profile_photo_privacy") String profilePhotoPrivacy
+    );
+
+    @FormUrlEncoded
+    @POST("chat/block-contact")
+    Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatPrivacyResponse> toggleBlockContact(
+            @Field("target_employee_id") long targetEmployeeId,
+            @Field("action") String action
+    );
+
+    @FormUrlEncoded
+    @POST("chat/delete-message")
+    Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.SendMessageResponse> deleteChatMessage(
+            @Field("message_id") long messageId
+    );
+
+    @FormUrlEncoded
+    @POST("chat/edit-message")
+    Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.SendMessageResponse> editChatMessage(
+            @Field("message_id") long messageId,
+            @Field("message") String message
+    );
+
+    @FormUrlEncoded
+    @POST("chat/clear-conversation")
+    Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.SendMessageResponse> clearConversationHistory(
+            @Field("target_id") long targetId,
+            @Field("chat_type") String chatType
     );
 
     @GET("chat/monitoring-conversations")

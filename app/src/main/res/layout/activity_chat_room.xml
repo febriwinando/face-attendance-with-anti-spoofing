@@ -66,15 +66,124 @@
         </LinearLayout>
 
         <ImageView
-            android:id="@+id/ivRefreshChatRoom"
+            android:id="@+id/ivCallAction"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:src="@drawable/ic_sync2"
+            android:layout_marginEnd="12dp"
+            android:src="@drawable/ic_call"
             app:tint="#0F172A"
+            android:visibility="gone"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="Panggil"/>
+
+        <ImageView
+            android:id="@+id/ivRefreshChatRoom"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_marginEnd="10dp"
+            android:src="@drawable/ic_sync2"
+            app:tint="#64748B"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
             android:contentDescription="Refresh"/>
+
+        <ImageView
+            android:id="@+id/ivMoreOptionsChatRoom"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:padding="4dp"
+            android:src="@drawable/ic_more_vert"
+            app:tint="#0F172A"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="Menu Opsi"/>
+    </LinearLayout>
+
+    <!-- In-Chat Search Bar Container (Telegram Style) -->
+    <LinearLayout
+        android:id="@+id/llChatSearchBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="#FFFFFF"
+        android:elevation="2dp"
+        android:paddingHorizontal="14dp"
+        android:paddingVertical="8dp"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:src="@drawable/one_search"
+            app:tint="#64748B"/>
+
+        <EditText
+            android:id="@+id/etSearchInChat"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="6dp"
+            android:background="@null"
+            android:hint="Cari pesan..."
+            android:textColor="#0F172A"
+            android:textColorHint="#94A3B8"
+            android:textSize="13.5sp"
+            android:imeOptions="actionSearch"
+            android:inputType="text"
+            android:maxLines="1"/>
+
+        <TextView
+            android:id="@+id/tvSearchMatchCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="6dp"
+            android:text="0/0"
+            android:textColor="#64748B"
+            android:textSize="11.5sp"
+            android:visibility="gone"/>
+
+        <ImageView
+            android:id="@+id/ivSearchPrev"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:padding="4dp"
+            android:src="@drawable/ic_arrow_up"
+            app:tint="#0F172A"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="Mundur"/>
+
+        <ImageView
+            android:id="@+id/ivSearchNext"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:padding="4dp"
+            android:src="@drawable/ic_arrow_down"
+            app:tint="#0F172A"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="Maju"/>
+
+        <ImageView
+            android:id="@+id/ivCloseChatSearch"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_marginStart="4dp"
+            android:padding="5dp"
+            android:src="@drawable/ic_close"
+            app:tint="#64748B"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="Tutup"/>
     </LinearLayout>
 
     <!-- Message List Container -->
@@ -88,7 +197,24 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
-            android:paddingVertical="8dp"/>
+            android:paddingTop="36dp"
+            android:paddingBottom="8dp"/>
+
+        <!-- Date Badge ("Hari Ini" / "Today" Mockup Style) -->
+        <TextView
+            android:id="@+id/tvDateHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|center_horizontal"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_pill_filter_inactive"
+            android:paddingHorizontal="14dp"
+            android:paddingVertical="4dp"
+            android:text="Hari Ini"
+            android:textColor="#64748B"
+            android:textSize="11sp"
+            android:fontFamily="sans-serif-medium"
+            android:elevation="1dp"/>
 
         <ProgressBar
             android:id="@+id/pbChatRoom"
@@ -120,7 +246,7 @@
                 android:id="@+id/tvReplyPreviewSender"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/biru"
+                android:textColor="#16A34A"
                 android:textSize="12sp"
                 android:fontFamily="sans-serif-bold"/>
 
@@ -146,60 +272,160 @@
             android:contentDescription="Batal Balas"/>
     </LinearLayout>
 
-    <!-- Input Bar -->
+    <!-- Edit Message Preview Banner (Above Input Bar) -->
+    <LinearLayout
+        android:id="@+id/llEditPreview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="#FEF3C7"
+        android:paddingHorizontal="14dp"
+        android:paddingVertical="8dp"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:src="@drawable/ic_edit"
+            app:tint="#D97706"
+            android:layout_marginEnd="10dp"/>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Mengedit Pesan"
+                android:textColor="#B45309"
+                android:textSize="12sp"
+                android:fontFamily="sans-serif-bold"/>
+
+            <TextView
+                android:id="@+id/tvEditPreviewText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#78350F"
+                android:textSize="12sp"
+                android:maxLines="1"
+                android:ellipsize="end"/>
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/ivCancelEdit"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_close"
+            app:tint="#78350F"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="Batal Edit"/>
+    </LinearLayout>
+
+    <!-- Input Bar Matching Floating Pill Style -->
     <LinearLayout
         android:id="@+id/llInputContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/surface_main"
+        android:background="#FFFFFF"
         android:elevation="4dp"
-        android:gravity="bottom"
+        android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingHorizontal="12dp"
+        android:paddingHorizontal="10dp"
         android:paddingVertical="8dp">
 
+        <!-- Far Left: Plus (+) Button for Attachments -->
         <ImageView
             android:id="@+id/ivAttachFile"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            android:src="@drawable/ic_attachment"
-            app:tint="@color/text_secondary"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:padding="8dp"
+            android:layout_marginEnd="6dp"
+            android:src="@drawable/ic_baseline_add"
+            app:tint="#64748B"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
             android:contentDescription="Lampirkan File"/>
 
-        <EditText
-            android:id="@+id/etMessageInput"
+        <!-- Center Pill Input Box (Background #F3F4F6) -->
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@drawable/chat_input_bg"
-            android:hint="Tulis pesan..."
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="10dp"
-            android:textColor="@color/text_primary"
-            android:textColorHint="@color/text_hint"
-            android:textSize="14sp"
-            android:minLines="1"
-            android:maxLines="5"
-            android:scrollbars="vertical"
-            android:gravity="start|center_vertical"
-            android:inputType="textMultiLine|textCapSentences"/>
+            android:minHeight="44dp"
+            android:background="@drawable/bg_pill_input"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="12dp">
 
+            <EditText
+                android:id="@+id/etMessageInput"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@null"
+                android:hint="Message"
+                android:textColor="#0F172A"
+                android:textColorHint="#9CA3AF"
+                android:textSize="14sp"
+                android:minLines="1"
+                android:maxLines="4"
+                android:paddingVertical="8dp"
+                android:gravity="start|center_vertical"
+                android:inputType="textMultiLine|textCapSentences"/>
+
+            <!-- Inside Pill: Mic Icon -->
+            <ImageView
+                android:id="@+id/ivDirectMic"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:padding="5dp"
+                android:src="@drawable/ic_mic"
+                app:tint="#9CA3AF"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                android:contentDescription="Pesan Suara"/>
+
+            <!-- Inside Pill: Camera Icon -->
+            <ImageView
+                android:id="@+id/ivDirectCamera"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:padding="5dp"
+                android:layout_marginStart="2dp"
+                android:src="@drawable/ic_camera"
+                app:tint="#9CA3AF"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                android:contentDescription="Ambil Foto"/>
+        </LinearLayout>
+
+        <!-- Right Side: Send Button -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSendMessage"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_marginStart="8dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:insetLeft="0dp"
+            android:insetRight="0dp"
+            android:padding="0dp"
             android:enabled="false"
+            android:visibility="gone"
             app:icon="@drawable/ic_send_line"
             app:iconGravity="textStart"
             app:iconPadding="0dp"
             app:iconTint="@color/putih"
-            app:cornerRadius="22dp"
+            app:cornerRadius="20dp"
             android:backgroundTint="#CBD5E1"/>
     </LinearLayout>
 

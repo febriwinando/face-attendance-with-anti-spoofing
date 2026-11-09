@@ -33,6 +33,17 @@ public class ChatContact {
     @SerializedName("unread_count")
     private int unreadCount;
 
+    @SerializedName("is_blocked")
+    private boolean isBlocked;
+
+    public boolean isBlocked() {
+        return isBlocked;
+    }
+
+    public void setBlocked(boolean blocked) {
+        isBlocked = blocked;
+    }
+
     public long getTargetId() {
         return targetId;
     }

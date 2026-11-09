@@ -33,11 +33,11 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginStart="16dp"
-            android:text="Privasi Kontak Chat"
+            android:layout_marginStart="14dp"
+            android:text="Settings &amp; Privasi"
             android:textColor="#0F172A"
-            android:textSize="18sp"
-            android:textStyle="bold"/>
+            android:textSize="20sp"
+            android:fontFamily="sans-serif-black"/>
 
         <ImageView
             android:id="@+id/ivSyncPrivacy"
@@ -209,6 +209,161 @@
 
             </LinearLayout>
 
+            <!-- Read Receipts Section -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Laporan Dibaca (Centang Biru)"
+                android:textColor="#1E293B"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="8dp"/>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="1dp"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="14dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Kirim &amp; Tampilkan Tanda Dibaca"
+                            android:textColor="#1E293B"
+                            android:textSize="14sp"
+                            android:textStyle="bold"/>
+
+                        <com.google.android.material.switchmaterial.SwitchMaterial
+                            android:id="@+id/switchReadReceipts"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="true"/>
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Jika dinonaktifkan, Anda tidak akan mengirim tanda telah membaca pesan orang lain, dan tidak akan melihat tanda centang biru pada pesan Anda."
+                        android:textColor="#64748B"
+                        android:textSize="12sp"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Profile Photo Privacy Section -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Privasi Foto Profil"
+                android:textColor="#1E293B"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="8dp"/>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="1dp"
+                app:strokeWidth="0dp">
+
+                <RadioGroup
+                    android:id="@+id/rgProfilePhotoPrivacy"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="12dp">
+
+                    <RadioButton
+                        android:id="@+id/rbPhotoEveryone"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Semua Pegawai"
+                        android:textColor="#1E293B"
+                        android:textSize="14sp"
+                        android:paddingVertical="6dp"/>
+
+                    <RadioButton
+                        android:id="@+id/rbPhotoSameOpd"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Hanya Rekan Satu Unit Kerja (OPD)"
+                        android:textColor="#1E293B"
+                        android:textSize="14sp"
+                        android:paddingVertical="6dp"/>
+
+                    <RadioButton
+                        android:id="@+id/rbPhotoNobody"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Tidak Ada (Sembunyikan Semua)"
+                        android:textColor="#1E293B"
+                        android:textSize="14sp"
+                        android:paddingVertical="6dp"/>
+                </RadioGroup>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Blocked Contacts Section -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Kontak yang Diblokir"
+                android:textColor="#1E293B"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="8dp"/>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="1dp"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="14dp">
+
+                    <TextView
+                        android:id="@+id/tvBlockedSummary"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Tidak ada kontak yang diblokir"
+                        android:textColor="#64748B"
+                        android:textSize="13sp"/>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnManageBlocked"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Kelola Kontak Diblokir"
+                        app:cornerRadius="8dp"
+                        app:strokeWidth="1dp"
+                        app:strokeColor="#CBD5E1"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:textColor="#0F172A"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSavePrivacy"
                 android:layout_width="match_parent"
@@ -217,8 +372,8 @@
                 android:text="Simpan Pengaturan Privasi"
                 android:textColor="#FFFFFF"
                 android:textSize="15sp"
-                android:textStyle="bold"
-                app:cornerRadius="12dp"
+                android:fontFamily="sans-serif-bold"
+                app:cornerRadius="26dp"
                 android:backgroundTint="#16A34A"/>
 
         </LinearLayout>

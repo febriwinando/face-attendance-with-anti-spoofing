@@ -19,12 +19,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import go.pemkott.appsandroidmobiletebingtinggi.R;
+import go.pemkott.appsandroidmobiletebingtinggi.adapter.chat.BlockedContactsAdapter;
 import go.pemkott.appsandroidmobiletebingtinggi.adapter.chat.MultiSelectItem;
 import go.pemkott.appsandroidmobiletebingtinggi.adapter.chat.SearchableMultiSelectAdapter;
 import go.pemkott.appsandroidmobiletebingtinggi.api.HttpService;
@@ -34,6 +36,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.model.OpdModel;
 import go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatContact;
 import go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatContactResponse;
 import go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatPrivacyResponse;
+import go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatPrivacyResponse.BlockedEmployeeItem;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -46,6 +49,13 @@ public class ChatPrivacyActivity extends AppCompatActivity {
     private TextView tvSelectedEmployeesSummary, tvSelectedOpdSummary;
     private MaterialButton btnSelectEmployees, btnSelectOpd, btnSavePrivacy;
 
+    // Advanced Privacy Controls
+    private SwitchMaterial switchReadReceipts;
+    private RadioGroup rgProfilePhotoPrivacy;
+    private RadioButton rbPhotoEveryone, rbPhotoSameOpd, rbPhotoNobody;
+    private TextView tvBlockedSummary;
+    private MaterialButton btnManageBlocked;
+
     private ChatLocalDatabase chatDb;
 
     private List<ChatContact> allEmployees = new ArrayList<>();
@@ -53,12 +63,13 @@ public class ChatPrivacyActivity extends AppCompatActivity {
 
     private List<Long> selectedEmployeeIds = new ArrayList<>();
     private List<Long> selectedOpdIds = new ArrayList<>();
+    private List<Long> blockedEmployeeIds = new ArrayList<>();
+    private List<BlockedEmployeeItem> blockedEmployees = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         go.pemkott.appsandroidmobiletebingtinggi.utils.WindowUtil.applyDashboardStyle(this);
-        setContentView(R.layout.activity_chat_privacy);
         setContentView(R.layout.activity_chat_privacy);
 
         chatDb = new ChatLocalDatabase(this);
@@ -84,6 +95,14 @@ public class ChatPrivacyActivity extends AppCompatActivity {
         btnSelectOpd = findViewById(R.id.btnSelectOpd);
         btnSavePrivacy = findViewById(R.id.btnSavePrivacy);
 
+        switchReadReceipts = findViewById(R.id.switchReadReceipts);
+        rgProfilePhotoPrivacy = findViewById(R.id.rgProfilePhotoPrivacy);
+        rbPhotoEveryone = findViewById(R.id.rbPhotoEveryone);
+        rbPhotoSameOpd = findViewById(R.id.rbPhotoSameOpd);
+        rbPhotoNobody = findViewById(R.id.rbPhotoNobody);
+        tvBlockedSummary = findViewById(R.id.tvBlockedSummary);
+        btnManageBlocked = findViewById(R.id.btnManageBlocked);
+
         rgPrivacyMode.setOnCheckedChangeListener((group, checkedId) -> {
             if (checkedId == R.id.rbCustom) {
                 llCustomContainer.setVisibility(View.VISIBLE);
@@ -94,6 +113,7 @@ public class ChatPrivacyActivity extends AppCompatActivity {
 
         btnSelectEmployees.setOnClickListener(v -> showSelectEmployeesDialog());
         btnSelectOpd.setOnClickListener(v -> showSelectOpdDialog());
+        btnManageBlocked.setOnClickListener(v -> showManageBlockedDialog());
         btnSavePrivacy.setOnClickListener(v -> savePrivacySettings());
 
         loadContactsList();
@@ -145,6 +165,37 @@ public class ChatPrivacyActivity extends AppCompatActivity {
         selectedEmployeeIds = data.getAllowedEmployeeIds();
         selectedOpdIds = data.getAllowedOpdIds();
         updateSummaries();
+
+        // Advanced Privacy mapping
+        if (switchReadReceipts != null) {
+            switchReadReceipts.setChecked(data.isReadReceiptsEnabled());
+        }
+
+        String photoMode = data.getProfilePhotoPrivacy();
+        if ("same_opd".equals(photoMode)) {
+            if (rbPhotoSameOpd != null) rbPhotoSameOpd.setChecked(true);
+        } else if ("nobody".equals(photoMode)) {
+            if (rbPhotoNobody != null) rbPhotoNobody.setChecked(true);
+        } else {
+            if (rbPhotoEveryone != null) rbPhotoEveryone.setChecked(true);
+        }
+
+        blockedEmployees = data.getBlockedEmployees();
+        blockedEmployeeIds = data.getBlockedEmployeeIds();
+        updateBlockedSummary();
+    }
+
+    private void updateBlockedSummary() {
+        if (tvBlockedSummary == null) return;
+        int count = (blockedEmployees != null && !blockedEmployees.isEmpty())
+                ? blockedEmployees.size()
+                : (blockedEmployeeIds != null ? blockedEmployeeIds.size() : 0);
+
+        if (count == 0) {
+            tvBlockedSummary.setText("Tidak ada kontak yang diblokir");
+        } else {
+            tvBlockedSummary.setText(count + " Kontak telah diblokir");
+        }
     }
 
     private void fetchPrivacyFromNetwork() {
@@ -317,6 +368,59 @@ public class ChatPrivacyActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    private void showManageBlockedDialog() {
+        BottomSheetDialog dialog = new BottomSheetDialog(this);
+        View view = getLayoutInflater().inflate(R.layout.dialog_manage_blocked_contacts, null);
+        dialog.setContentView(view);
+
+        ImageView ivClose = view.findViewById(R.id.ivCloseBlockedDialog);
+        RecyclerView rv = view.findViewById(R.id.rvBlockedContacts);
+        TextView tvEmpty = view.findViewById(R.id.tvEmptyBlockedMessage);
+
+        ivClose.setOnClickListener(v -> dialog.dismiss());
+
+        rv.setLayoutManager(new LinearLayoutManager(this));
+
+        BlockedContactsAdapter adapter = new BlockedContactsAdapter(this, blockedEmployees, item -> {
+            // Unblock this employee
+            HttpService api = RetroClient.getInstance(ChatPrivacyActivity.this).getApi2();
+            api.toggleBlockContact(item.getId(), "unblock").enqueue(new Callback<ChatPrivacyResponse>() {
+                @Override
+                public void onResponse(Call<ChatPrivacyResponse> call, Response<ChatPrivacyResponse> response) {
+                    if (response.isSuccessful() && response.body() != null && response.body().isStatus()) {
+                        go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.showTopBanner(
+                                ChatPrivacyActivity.this, "Berhasil membuka blokir " + item.getNama(), go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.Type.SUCCESS
+                        );
+                        blockedEmployeeIds.remove(Long.valueOf(item.getId()));
+                        blockedEmployees.remove(item);
+                        updateBlockedSummary();
+                        fetchPrivacyFromNetwork();
+                        dialog.dismiss();
+                    } else {
+                        Toast.makeText(ChatPrivacyActivity.this, "Gagal membuka blokir", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ChatPrivacyResponse> call, Throwable t) {
+                    Toast.makeText(ChatPrivacyActivity.this, "Koneksi gagal: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
+
+        rv.setAdapter(adapter);
+
+        if (blockedEmployees == null || blockedEmployees.isEmpty()) {
+            tvEmpty.setVisibility(View.VISIBLE);
+            rv.setVisibility(View.GONE);
+        } else {
+            tvEmpty.setVisibility(View.GONE);
+            rv.setVisibility(View.VISIBLE);
+        }
+
+        dialog.show();
+    }
+
     private void savePrivacySettings() {
         String mode = "public";
         if (rbPrivate.isChecked()) {
@@ -325,9 +429,19 @@ public class ChatPrivacyActivity extends AppCompatActivity {
             mode = "custom";
         }
 
+        int readReceipts = (switchReadReceipts != null && switchReadReceipts.isChecked()) ? 1 : 0;
+
+        String photoPrivacy = "everyone";
+        if (rbPhotoSameOpd != null && rbPhotoSameOpd.isChecked()) {
+            photoPrivacy = "same_opd";
+        } else if (rbPhotoNobody != null && rbPhotoNobody.isChecked()) {
+            photoPrivacy = "nobody";
+        }
+
         Gson gson = new Gson();
         String empJson = gson.toJson(selectedEmployeeIds);
         String opdJson = gson.toJson(selectedOpdIds);
+        String blockedJson = gson.toJson(blockedEmployeeIds);
 
         // 1. Save locally immediately
         ChatPrivacyResponse.PrivacyData localData = chatDb.getPrivacyLocal();
@@ -336,9 +450,9 @@ public class ChatPrivacyActivity extends AppCompatActivity {
 
         btnSavePrivacy.setEnabled(false);
 
-        // 2. Post to server
+        // 2. Post advanced privacy to server
         HttpService api = RetroClient.getInstance(this).getApi2();
-        api.saveChatPrivacySettings(mode, empJson, opdJson).enqueue(new Callback<ChatPrivacyResponse>() {
+        api.saveAdvancedChatPrivacySettings(mode, empJson, opdJson, readReceipts, blockedJson, photoPrivacy).enqueue(new Callback<ChatPrivacyResponse>() {
             @Override
             public void onResponse(Call<ChatPrivacyResponse> call, Response<ChatPrivacyResponse> response) {
                 btnSavePrivacy.setEnabled(true);
@@ -353,7 +467,7 @@ public class ChatPrivacyActivity extends AppCompatActivity {
                         );
                     }
                     go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.showTopBanner(
-                            ChatPrivacyActivity.this, "Pengaturan privasi kontak berhasil disimpan!", go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.Type.SUCCESS
+                            ChatPrivacyActivity.this, "Pengaturan privasi berhasil disimpan secara akurat!", go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.Type.SUCCESS
                     );
                     finish();
                 } else {

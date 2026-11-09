@@ -19,6 +19,50 @@ public class ChatPrivacyResponse {
         @SerializedName("allowed_opd_ids")
         private List<Long> allowedOpdIds;
 
+        @SerializedName("read_receipts_enabled")
+        private boolean readReceiptsEnabled = true;
+
+        @SerializedName("blocked_employee_ids")
+        private List<Long> blockedEmployeeIds;
+
+        @SerializedName("blocked_employees")
+        private List<BlockedEmployeeItem> blockedEmployees;
+
+        @SerializedName("profile_photo_privacy")
+        private String profilePhotoPrivacy = "everyone";
+
+        public boolean isReadReceiptsEnabled() {
+            return readReceiptsEnabled;
+        }
+
+        public void setReadReceiptsEnabled(boolean readReceiptsEnabled) {
+            this.readReceiptsEnabled = readReceiptsEnabled;
+        }
+
+        public List<Long> getBlockedEmployeeIds() {
+            return blockedEmployeeIds != null ? blockedEmployeeIds : new ArrayList<>();
+        }
+
+        public void setBlockedEmployeeIds(List<Long> blockedEmployeeIds) {
+            this.blockedEmployeeIds = blockedEmployeeIds;
+        }
+
+        public List<BlockedEmployeeItem> getBlockedEmployees() {
+            return blockedEmployees != null ? blockedEmployees : new ArrayList<>();
+        }
+
+        public void setBlockedEmployees(List<BlockedEmployeeItem> blockedEmployees) {
+            this.blockedEmployees = blockedEmployees;
+        }
+
+        public String getProfilePhotoPrivacy() {
+            return profilePhotoPrivacy != null ? profilePhotoPrivacy : "everyone";
+        }
+
+        public void setProfilePhotoPrivacy(String profilePhotoPrivacy) {
+            this.profilePhotoPrivacy = profilePhotoPrivacy;
+        }
+
         public long getEmployeeId() {
             return employeeId;
         }
@@ -60,6 +104,59 @@ public class ChatPrivacyResponse {
 
     @SerializedName("data")
     private PrivacyData data;
+
+    public static class BlockedEmployeeItem {
+        @SerializedName("id")
+        private long id;
+        @SerializedName("nama")
+        private String nama;
+        @SerializedName("nip")
+        private String nip;
+        @SerializedName("opd_name")
+        private String opdName;
+        @SerializedName("avatar_url")
+        private String avatarUrl;
+
+        public long getId() {
+            return id;
+        }
+
+        public void setId(long id) {
+            this.id = id;
+        }
+
+        public String getNama() {
+            return nama != null ? nama : "Pegawai";
+        }
+
+        public void setNama(String nama) {
+            this.nama = nama;
+        }
+
+        public String getNip() {
+            return nip != null ? nip : "";
+        }
+
+        public void setNip(String nip) {
+            this.nip = nip;
+        }
+
+        public String getOpdName() {
+            return opdName != null ? opdName : "";
+        }
+
+        public void setOpdName(String opdName) {
+            this.opdName = opdName;
+        }
+
+        public String getAvatarUrl() {
+            return avatarUrl;
+        }
+
+        public void setAvatarUrl(String avatarUrl) {
+            this.avatarUrl = avatarUrl;
+        }
+    }
 
     public boolean isStatus() {
         return status;

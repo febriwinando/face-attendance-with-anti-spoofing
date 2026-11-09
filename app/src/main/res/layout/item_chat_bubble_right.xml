@@ -93,6 +93,66 @@
             </FrameLayout>
         </com.google.android.material.card.MaterialCardView>
 
+        <!-- Telegram Style Audio Player Card (Right) -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cvAudioContainer"
+            android:layout_width="220dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            app:cardCornerRadius="14dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp"
+            app:cardBackgroundColor="#20FFFFFF"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="8dp">
+
+                <ImageView
+                    android:id="@+id/ivAudioPlayPause"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:src="@drawable/ic_play_arrow"
+                    android:background="@drawable/bg_circle_play_white"
+                    android:padding="6dp"
+                    app:tint="#FFFFFF"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:contentDescription="Putar Audio"/>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="10dp"
+                    android:orientation="vertical">
+
+                    <SeekBar
+                        android:id="@+id/sbAudioProgress"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="0dp"
+                        android:paddingEnd="0dp"
+                        android:progressTint="#FFFFFF"
+                        android:thumbTint="#FFFFFF"
+                        android:max="100"/>
+
+                    <TextView
+                        android:id="@+id/tvAudioDuration"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="0:00 / 0:00"
+                        android:textColor="#E2E8F0"
+                        android:textSize="10sp"/>
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
         <!-- Document Attachment Card -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cvDocumentContainer"
@@ -154,7 +214,7 @@
                 android:id="@+id/tvTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#BFDBFE"
+                android:textColor="#DCFCE7"
                 android:textSize="10sp"/>
 
             <TextView
@@ -162,7 +222,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
-                android:textColor="#BFDBFE"
+                android:textColor="#DCFCE7"
                 android:textSize="11sp"
                 android:textStyle="bold"/>
         </LinearLayout>

@@ -45,9 +45,13 @@ public class ChatListActivity extends AppCompatActivity implements ChatContactAd
     private ProgressBar pbChatList;
     private LinearLayout llEmptyChatState;
     private EditText etSearchChat;
-    private MaterialCardView cvOpdFilterSelector;
+    private View cvOpdFilterSelector;
     private TextView tvSelectedOpdFilterName;
-    private ExtendedFloatingActionButton btnNewChatFab;
+    private View btnNewChatFab;
+    private ImageView btnHeaderNewChat;
+
+    private TextView tvFilterAll, tvFilterUnread, tvFilterOpd;
+    private String activeTabFilter = "all";
 
     private ChatContactAdapter adapter;
     private ChatLocalDatabase chatDb;
@@ -67,7 +71,7 @@ public class ChatListActivity extends AppCompatActivity implements ChatContactAd
 
         ImageView ivBack = findViewById(R.id.ivBackChatList);
         ImageView ivRefresh = findViewById(R.id.ivRefreshChatList);
-        ImageView ivPrivacy = findViewById(R.id.ivPrivacyChatList);
+        btnHeaderNewChat = findViewById(R.id.btnHeaderNewChat);
 
         etSearchChat = findViewById(R.id.etSearchChat);
         cvOpdFilterSelector = findViewById(R.id.cvOpdFilterSelector);
@@ -76,6 +80,34 @@ public class ChatListActivity extends AppCompatActivity implements ChatContactAd
         pbChatList = findViewById(R.id.pbChatList);
         llEmptyChatState = findViewById(R.id.llEmptyChatState);
         btnNewChatFab = findViewById(R.id.btnNewChatFab);
+
+        tvFilterAll = findViewById(R.id.tvFilterAll);
+        tvFilterUnread = findViewById(R.id.tvFilterUnread);
+        tvFilterOpd = findViewById(R.id.tvFilterOpd);
+
+        View tabCalls = findViewById(R.id.llTabCalls);
+        View tabSettings = findViewById(R.id.llTabSettings);
+
+        if (tabCalls != null) {
+            tabCalls.setOnClickListener(v -> startActivity(new Intent(this, ChatContactPickerActivity.class)));
+        }
+        if (tabSettings != null) {
+            tabSettings.setOnClickListener(v -> startActivity(new Intent(this, ChatPrivacyActivity.class)));
+        }
+
+        if (tvFilterAll != null) {
+            tvFilterAll.setOnClickListener(v -> setTabFilter("all"));
+        }
+        if (tvFilterUnread != null) {
+            tvFilterUnread.setOnClickListener(v -> setTabFilter("unread"));
+        }
+        if (tvFilterOpd != null) {
+            tvFilterOpd.setOnClickListener(v -> setTabFilter("opd"));
+        }
+
+        if (btnHeaderNewChat != null) {
+            btnHeaderNewChat.setOnClickListener(v -> startActivity(new Intent(this, ChatContactPickerActivity.class)));
+        }
 
         MaterialCardView cvMonitoringBanner = findViewById(R.id.cvMonitoringBanner);
 
@@ -112,7 +144,6 @@ public class ChatListActivity extends AppCompatActivity implements ChatContactAd
             );
             fetchContactsFromNetwork();
         });
-        ivPrivacy.setOnClickListener(v -> startActivity(new Intent(this, ChatPrivacyActivity.class)));
         btnNewChatFab.setOnClickListener(v -> startActivity(new Intent(this, ChatContactPickerActivity.class)));
         cvOpdFilterSelector.setOnClickListener(v -> showOpdFilterBottomSheet());
 
@@ -133,11 +164,9 @@ public class ChatListActivity extends AppCompatActivity implements ChatContactAd
             public void afterTextChanged(Editable s) {}
         });
 
-        // 1. Load local cached conversations instantly (No automatic background network call)
+        // 1. Load local cached conversations instantly and sync in background
         loadLocalContacts();
-        if (listPegawai == null || listPegawai.isEmpty()) {
-            fetchContactsFromNetwork();
-        }
+        fetchContactsFromNetwork();
 
         // 2. Tampilkan dialog persetujuan Syarat & Ketentuan jika belum disetujui
         checkAndShowChatTermsDialog();
@@ -317,12 +346,50 @@ public class ChatListActivity extends AppCompatActivity implements ChatContactAd
         }
     }
 
+    private void setTabFilter(String mode) {
+        activeTabFilter = mode;
+        if (tvFilterAll == null || tvFilterUnread == null || tvFilterOpd == null) return;
+
+        if ("all".equals(mode)) {
+            tvFilterAll.setBackgroundResource(R.drawable.bg_pill_filter_active);
+            tvFilterAll.setTextColor(android.graphics.Color.parseColor("#16A34A"));
+            tvFilterUnread.setBackgroundResource(R.drawable.bg_pill_filter_inactive);
+            tvFilterUnread.setTextColor(android.graphics.Color.parseColor("#64748B"));
+            tvFilterOpd.setBackgroundResource(R.drawable.bg_pill_filter_inactive);
+            tvFilterOpd.setTextColor(android.graphics.Color.parseColor("#64748B"));
+        } else if ("unread".equals(mode)) {
+            tvFilterAll.setBackgroundResource(R.drawable.bg_pill_filter_inactive);
+            tvFilterAll.setTextColor(android.graphics.Color.parseColor("#64748B"));
+            tvFilterUnread.setBackgroundResource(R.drawable.bg_pill_filter_active);
+            tvFilterUnread.setTextColor(android.graphics.Color.parseColor("#16A34A"));
+            tvFilterOpd.setBackgroundResource(R.drawable.bg_pill_filter_inactive);
+            tvFilterOpd.setTextColor(android.graphics.Color.parseColor("#64748B"));
+        } else if ("opd".equals(mode)) {
+            tvFilterAll.setBackgroundResource(R.drawable.bg_pill_filter_inactive);
+            tvFilterAll.setTextColor(android.graphics.Color.parseColor("#64748B"));
+            tvFilterUnread.setBackgroundResource(R.drawable.bg_pill_filter_inactive);
+            tvFilterUnread.setTextColor(android.graphics.Color.parseColor("#64748B"));
+            tvFilterOpd.setBackgroundResource(R.drawable.bg_pill_filter_active);
+            tvFilterOpd.setTextColor(android.graphics.Color.parseColor("#16A34A"));
+        }
+        filterList();
+    }
+
     private void filterList() {
         String query = etSearchChat.getText() != null ? etSearchChat.getText().toString().toLowerCase().trim() : "";
         List<ChatContact> filtered = new ArrayList<>();
 
         for (ChatContact c : listPegawai) {
-            if (TextUtils.isEmpty(c.getLastMessage())) {
+            boolean isOpdGroup = "opd".equals(c.getChatType());
+            if (!isOpdGroup && TextUtils.isEmpty(c.getLastMessage())) {
+                continue;
+            }
+
+            if ("unread".equals(activeTabFilter) && c.getUnreadCount() <= 0) {
+                continue;
+            }
+
+            if ("opd".equals(activeTabFilter) && !isOpdGroup) {
                 continue;
             }
 
@@ -333,10 +400,10 @@ public class ChatListActivity extends AppCompatActivity implements ChatContactAd
             }
 
             if (!query.isEmpty()) {
-                boolean matchName = c.getTitle().toLowerCase().contains(query);
-                boolean matchSub = c.getSubtitle().toLowerCase().contains(query);
-                boolean matchNip = c.getNip().contains(query);
-                boolean matchLast = c.getLastMessage().toLowerCase().contains(query);
+                boolean matchName = c.getTitle() != null && c.getTitle().toLowerCase().contains(query);
+                boolean matchSub = c.getSubtitle() != null && c.getSubtitle().toLowerCase().contains(query);
+                boolean matchNip = c.getNip() != null && c.getNip().contains(query);
+                boolean matchLast = c.getLastMessage() != null && c.getLastMessage().toLowerCase().contains(query);
                 if (!matchName && !matchSub && !matchNip && !matchLast) {
                     continue;
                 }
@@ -363,5 +430,6 @@ public class ChatListActivity extends AppCompatActivity implements ChatContactAd
     protected void onResume() {
         super.onResume();
         loadLocalContacts();
+        fetchContactsFromNetwork();
     }
 }

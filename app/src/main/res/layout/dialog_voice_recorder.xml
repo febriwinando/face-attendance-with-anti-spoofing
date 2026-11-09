@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/dialog_background_white"
+    android:padding="24dp">
+
+    <!-- Header -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:text="Pesan Suara"
+            android:textColor="#0F172A"
+            android:textSize="18sp"
+            android:fontFamily="sans-serif-black"/>
+
+        <ImageView
+            android:id="@+id/ivCloseVoiceRecorder"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_close"
+            app:tint="#64748B"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="Tutup"/>
+    </RelativeLayout>
+
+    <!-- Center Mic & Wave Area -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginTop="20dp"
+        android:orientation="vertical">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cvMicRecordingBadge"
+            android:layout_width="84dp"
+            android:layout_height="84dp"
+            app:cardCornerRadius="42dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp"
+            app:cardBackgroundColor="#F3E8FF">
+
+            <ImageView
+                android:id="@+id/ivMicRecordingIcon"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_mic"
+                app:tint="#9333EA"
+                android:contentDescription="Mikrofon"/>
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            android:id="@+id/tvRecordingTimer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:text="00:00"
+            android:textColor="#0F172A"
+            android:textSize="28sp"
+            android:fontFamily="sans-serif-black"/>
+
+        <TextView
+            android:id="@+id/tvRecordingInstruction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Tekan tombol untuk mulai merekam"
+            android:textColor="#64748B"
+            android:textSize="13sp"/>
+    </LinearLayout>
+
+    <!-- Controls Row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginTop="24dp"
+        android:orientation="horizontal">
+
+        <!-- Batal -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCancelRecording"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:text="Batal"
+            android:textColor="#64748B"
+            android:textSize="14sp"/>
+
+        <!-- Main Action (Record / Stop) -->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabRecordToggle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:src="@drawable/ic_mic"
+            app:tint="#FFFFFF"
+            app:backgroundTint="#9333EA"
+            app:elevation="3dp"
+            app:fabSize="normal"
+            android:contentDescription="Mulai / Berhenti Merekam"/>
+
+        <!-- Kirim -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSendVoiceNote"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:text="Kirim"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:cornerRadius="24dp"
+            android:backgroundTint="#16A34A"
+            android:enabled="false"/>
+    </LinearLayout>
+
+</LinearLayout>
+

@@ -12,7 +12,7 @@
         android:id="@+id/tvSenderName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#3B82F6"
+        android:textColor="#16A34A"
         android:textSize="11sp"
         android:textStyle="bold"
         android:layout_marginBottom="2dp"
@@ -51,7 +51,7 @@
                     android:id="@+id/tvReplySender"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="#2563EB"
+                    android:textColor="#16A34A"
                     android:textSize="11sp"
                     android:textStyle="bold"/>
 
@@ -102,6 +102,66 @@
                     app:tint="#FFFFFF"
                     android:contentDescription="Putar Video"/>
             </FrameLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Telegram Style Audio Player Card (Left) -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cvAudioContainer"
+            android:layout_width="220dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            app:cardCornerRadius="14dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp"
+            app:cardBackgroundColor="#E2E8F0"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="8dp">
+
+                <ImageView
+                    android:id="@+id/ivAudioPlayPause"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:src="@drawable/ic_play_arrow"
+                    android:background="@drawable/bg_circle_play_green"
+                    android:padding="6dp"
+                    app:tint="#16A34A"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:contentDescription="Putar Audio"/>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="10dp"
+                    android:orientation="vertical">
+
+                    <SeekBar
+                        android:id="@+id/sbAudioProgress"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="0dp"
+                        android:paddingEnd="0dp"
+                        android:progressTint="#16A34A"
+                        android:thumbTint="#16A34A"
+                        android:max="100"/>
+
+                    <TextView
+                        android:id="@+id/tvAudioDuration"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="0:00 / 0:00"
+                        android:textColor="#475569"
+                        android:textSize="10sp"/>
+                </LinearLayout>
+            </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
         <!-- Document Attachment Card -->
