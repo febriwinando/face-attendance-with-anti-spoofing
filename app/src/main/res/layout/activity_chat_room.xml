@@ -197,24 +197,54 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
-            android:paddingTop="36dp"
+            android:paddingTop="8dp"
             android:paddingBottom="8dp"/>
 
-        <!-- Date Badge ("Hari Ini" / "Today" Mockup Style) -->
-        <TextView
-            android:id="@+id/tvDateHeader"
+        <!-- Floating Scroll to Bottom Button with Unread Badge -->
+        <FrameLayout
+            android:id="@+id/flScrollToBottom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="top|center_horizontal"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/bg_pill_filter_inactive"
-            android:paddingHorizontal="14dp"
-            android:paddingVertical="4dp"
-            android:text="Hari Ini"
-            android:textColor="#64748B"
-            android:textSize="11sp"
-            android:fontFamily="sans-serif-medium"
-            android:elevation="1dp"/>
+            android:layout_gravity="bottom|end"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:visibility="gone">
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cvScrollToBottom"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                app:cardCornerRadius="22dp"
+                app:cardElevation="4dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="#CBD5E1"
+                app:cardBackgroundColor="#FFFFFF">
+
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_arrow_down"
+                    app:tint="#16A34A"
+                    android:contentDescription="Scroll ke Bawah"/>
+            </com.google.android.material.card.MaterialCardView>
+
+            <TextView
+                android:id="@+id/tvScrollToBottomBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:minWidth="20dp"
+                android:layout_gravity="top|end"
+                android:background="@drawable/bg_pill_filter_active"
+                android:gravity="center"
+                android:paddingHorizontal="6dp"
+                android:text="1"
+                android:textColor="#16A34A"
+                android:textSize="10.5sp"
+                android:textStyle="bold"
+                android:elevation="5dp"
+                android:visibility="gone"/>
+        </FrameLayout>
 
         <ProgressBar
             android:id="@+id/pbChatRoom"

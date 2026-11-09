@@ -35,6 +35,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         void onReplyMessage(ChatMessageItem item);
         void onCopyText(String text);
         void onEditMessage(ChatMessageItem item);
+        void onForwardMessage(ChatMessageItem item);
         void onViewMedia(String url, String type, String fileName);
         default void onViewMedia(String url, String type) {
             onViewMedia(url, type, "");
@@ -117,6 +118,13 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     }
 
+    public ChatMessageItem getItemAt(int position) {
+        if (position >= 0 && position < list.size()) {
+            return list.get(position);
+        }
+        return null;
+    }
+
     @Override
     public int getItemViewType(int position) {
         ChatMessageItem item = list.get(position);
@@ -143,8 +151,20 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         ChatMessageItem item = list.get(position);
 
+        boolean showDateHeader = (position == 0) || isDifferentDay(item, list.get(position - 1));
+
         if (holder instanceof RightViewHolder) {
             RightViewHolder r = (RightViewHolder) holder;
+
+            // Date Header Separator
+            if (r.llDateHeader != null) {
+                if (showDateHeader) {
+                    r.llDateHeader.setVisibility(View.VISIBLE);
+                    if (r.tvDateHeader != null) r.tvDateHeader.setText(getDateLabel(item));
+                } else {
+                    r.llDateHeader.setVisibility(View.GONE);
+                }
+            }
 
             // Message text
             if (TextUtils.isEmpty(item.getMessage())) {
@@ -280,6 +300,16 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         } else if (holder instanceof LeftViewHolder) {
             LeftViewHolder l = (LeftViewHolder) holder;
+
+            // Date Header Separator
+            if (l.llDateHeader != null) {
+                if (showDateHeader) {
+                    l.llDateHeader.setVisibility(View.VISIBLE);
+                    if (l.tvDateHeader != null) l.tvDateHeader.setText(getDateLabel(item));
+                } else {
+                    l.llDateHeader.setVisibility(View.GONE);
+                }
+            }
 
             // Sender name in OPD group chat
             if ("opd".equals(item.getChatType()) && !TextUtils.isEmpty(item.getSenderName())) {
@@ -636,9 +666,71 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         } catch (Exception ignored) {}
     }
 
+    public String getDateLabel(ChatMessageItem item) {
+        if (item == null) return "Hari Ini";
+        long ts = item.getCreatedAtTs();
+        java.util.Calendar msgCal = java.util.Calendar.getInstance();
+
+        if (ts > 0) {
+            msgCal.setTimeInMillis(ts * 1000L);
+        } else {
+            String raw = item.getCreatedAtFormatted();
+            if (!TextUtils.isEmpty(raw) && raw.contains(" ")) {
+                return raw.split(" ")[0];
+            }
+            return "Hari Ini";
+        }
+
+        java.util.Calendar nowCal = java.util.Calendar.getInstance();
+
+        boolean isToday = nowCal.get(java.util.Calendar.YEAR) == msgCal.get(java.util.Calendar.YEAR)
+                && nowCal.get(java.util.Calendar.DAY_OF_YEAR) == msgCal.get(java.util.Calendar.DAY_OF_YEAR);
+
+        if (isToday) {
+            return "Hari Ini";
+        }
+
+        nowCal.add(java.util.Calendar.DAY_OF_YEAR, -1);
+        boolean isYesterday = nowCal.get(java.util.Calendar.YEAR) == msgCal.get(java.util.Calendar.YEAR)
+                && nowCal.get(java.util.Calendar.DAY_OF_YEAR) == msgCal.get(java.util.Calendar.DAY_OF_YEAR);
+
+        if (isYesterday) {
+            return "Kemarin";
+        }
+
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd MMMM yyyy", new java.util.Locale("id", "ID"));
+        return sdf.format(msgCal.getTime());
+    }
+
+    public boolean isDifferentDay(ChatMessageItem cur, ChatMessageItem prev) {
+        if (cur == null || prev == null) return true;
+        long tsCur = cur.getCreatedAtTs();
+        long tsPrev = prev.getCreatedAtTs();
+
+        if (tsCur > 0 && tsPrev > 0) {
+            java.util.Calendar c1 = java.util.Calendar.getInstance();
+            c1.setTimeInMillis(tsCur * 1000L);
+            java.util.Calendar c2 = java.util.Calendar.getInstance();
+            c2.setTimeInMillis(tsPrev * 1000L);
+
+            return c1.get(java.util.Calendar.YEAR) != c2.get(java.util.Calendar.YEAR)
+                    || c1.get(java.util.Calendar.DAY_OF_YEAR) != c2.get(java.util.Calendar.DAY_OF_YEAR);
+        }
+
+        String dCur = cur.getCreatedAtFormatted();
+        String dPrev = prev.getCreatedAtFormatted();
+        if (dCur != null && dPrev != null && dCur.contains(" ") && dPrev.contains(" ")) {
+            String dateCur = dCur.split(" ")[0];
+            String datePrev = dPrev.split(" ")[0];
+            return !dateCur.equals(datePrev);
+        }
+        return false;
+    }
+
     private void showOptionsDialog(ChatMessageItem item) {
         List<String> options = new ArrayList<>();
         options.add("Balas Pesan");
+        options.add("Teruskan Pesan");
         if (!TextUtils.isEmpty(item.getMessage())) {
             options.add("Salin Teks Pesan");
         }
@@ -657,6 +749,8 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     String selected = optArray[which];
                     if ("Balas Pesan".equals(selected)) {
                         if (actionListener != null) actionListener.onReplyMessage(item);
+                    } else if ("Teruskan Pesan".equals(selected)) {
+                        if (actionListener != null) actionListener.onForwardMessage(item);
                     } else if ("Salin Teks Pesan".equals(selected)) {
                         if (actionListener != null) actionListener.onCopyText(item.getMessage());
                     } else if ("Edit Pesan".equals(selected)) {
@@ -672,6 +766,8 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     public static class LeftViewHolder extends RecyclerView.ViewHolder {
+        LinearLayout llDateHeader;
+        TextView tvDateHeader;
         LinearLayout llBubbleContainer;
         TextView tvSenderName, tvMessage, tvTime;
         MaterialCardView cvReplyContainer, cvImageContainer, cvDocumentContainer, cvAudioContainer;
@@ -682,6 +778,8 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         public LeftViewHolder(@NonNull View itemView) {
             super(itemView);
+            llDateHeader = itemView.findViewById(R.id.llDateHeader);
+            tvDateHeader = itemView.findViewById(R.id.tvDateHeader);
             llBubbleContainer = itemView.findViewById(R.id.llBubbleContainer);
             tvSenderName = itemView.findViewById(R.id.tvSenderName);
             tvMessage = itemView.findViewById(R.id.tvMessage);
@@ -703,6 +801,8 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     public static class RightViewHolder extends RecyclerView.ViewHolder {
+        LinearLayout llDateHeader;
+        TextView tvDateHeader;
         LinearLayout llBubbleContainer;
         TextView tvMessage, tvTime, tvStatusCheck;
         MaterialCardView cvReplyContainer, cvImageContainer, cvDocumentContainer, cvAudioContainer;
@@ -713,6 +813,8 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         public RightViewHolder(@NonNull View itemView) {
             super(itemView);
+            llDateHeader = itemView.findViewById(R.id.llDateHeader);
+            tvDateHeader = itemView.findViewById(R.id.tvDateHeader);
             llBubbleContainer = itemView.findViewById(R.id.llBubbleContainer);
             tvMessage = itemView.findViewById(R.id.tvMessage);
             tvTime = itemView.findViewById(R.id.tvTime);

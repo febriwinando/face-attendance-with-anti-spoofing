@@ -594,6 +594,17 @@ public interface HttpService {
             @Field("reply_to_id") String replyToId
     );
 
+    @FormUrlEncoded
+    @POST("chat/send")
+    Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.SendMessageResponse> forwardChatMessage(
+            @Field("chat_type") String chatType,
+            @Field("target_id") long targetId,
+            @Field("message") String message,
+            @Field("msg_type") String msgType,
+            @Field("file_url") String fileUrl,
+            @Field("file_name") String fileName
+    );
+
     @Multipart
     @POST("chat/send")
     Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.SendMessageResponse> sendChatMessageMultipart(

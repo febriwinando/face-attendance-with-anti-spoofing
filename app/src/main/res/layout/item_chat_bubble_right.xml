@@ -8,6 +8,30 @@
     android:paddingHorizontal="12dp"
     android:paddingVertical="4dp">
 
+    <!-- Date Header Separator (Centered) -->
+    <LinearLayout
+        android:id="@+id/llDateHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="10dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tvDateHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_chat_date_pill"
+            android:paddingHorizontal="14dp"
+            android:paddingVertical="4dp"
+            android:textColor="#475569"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:elevation="0.5dp"
+            android:text="Hari Ini"/>
+    </LinearLayout>
+
     <LinearLayout
         android:id="@+id/llBubbleContainer"
         android:layout_width="wrap_content"

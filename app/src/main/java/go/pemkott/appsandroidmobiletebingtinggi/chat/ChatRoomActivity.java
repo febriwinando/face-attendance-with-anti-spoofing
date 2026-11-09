@@ -29,6 +29,7 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
@@ -111,6 +112,11 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
     private ChatMessageAdapter adapter;
     private ChatLocalDatabase chatDb;
     private List<ChatMessageItem> messageList = new ArrayList<>();
+
+    // Scroll To Bottom FAB & Unread Badge
+    private FrameLayout flScrollToBottom;
+    private TextView tvScrollToBottomBadge;
+    private int unreadWhileScrolledUp = 0;
 
     private ActivityResultLauncher<String> filePickerLauncher;
     private Uri cameraPhotoUri;
@@ -254,6 +260,50 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
         adapter = new ChatMessageAdapter(this, messageList, this);
         rvMessages.setAdapter(adapter);
 
+        // 1. Gesture Swipe-to-Reply (WhatsApp / Telegram style)
+        androidx.recyclerview.widget.ItemTouchHelper itemTouchHelper = new androidx.recyclerview.widget.ItemTouchHelper(
+                new ChatSwipeToReplyCallback(this, adapter, this::onReplyMessage)
+        );
+        itemTouchHelper.attachToRecyclerView(rvMessages);
+
+        // 2. FAB Scroll to Bottom & New Messages Indicator
+        flScrollToBottom = findViewById(R.id.flScrollToBottom);
+        tvScrollToBottomBadge = findViewById(R.id.tvScrollToBottomBadge);
+
+        if (flScrollToBottom != null) {
+            flScrollToBottom.setOnClickListener(v -> {
+                if (adapter != null && adapter.getItemCount() > 0) {
+                    rvMessages.smoothScrollToPosition(adapter.getItemCount() - 1);
+                    unreadWhileScrolledUp = 0;
+                    if (tvScrollToBottomBadge != null) tvScrollToBottomBadge.setVisibility(View.GONE);
+                    flScrollToBottom.setVisibility(View.GONE);
+                }
+            });
+        }
+
+        rvMessages.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                LinearLayoutManager lm = (LinearLayoutManager) rvMessages.getLayoutManager();
+                if (lm != null && adapter != null) {
+                    int lastVisible = lm.findLastVisibleItemPosition();
+                    int total = adapter.getItemCount();
+                    boolean isNearBottom = (lastVisible >= total - 2);
+
+                    if (isNearBottom) {
+                        if (flScrollToBottom != null) flScrollToBottom.setVisibility(View.GONE);
+                        unreadWhileScrolledUp = 0;
+                        if (tvScrollToBottomBadge != null) tvScrollToBottomBadge.setVisibility(View.GONE);
+                    } else {
+                        if (flScrollToBottom != null && flScrollToBottom.getVisibility() != View.VISIBLE) {
+                            flScrollToBottom.setVisibility(View.VISIBLE);
+                        }
+                    }
+                }
+            }
+        });
+
         btnSendMessage.setOnClickListener(v -> sendMessage());
 
         // Dynamic TextWatcher for EditText & Send Button Activation
@@ -360,10 +410,23 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
                         if (updatedLocal != null) {
                             boolean wasAtBottom = isLastItemVisible();
                             int oldSize = messageList.size();
+                            int diff = updatedLocal.size() - oldSize;
                             messageList = updatedLocal;
                             adapter.setList(messageList);
-                            if (showProgress || wasAtBottom || updatedLocal.size() > oldSize) {
+
+                            if (showProgress || wasAtBottom) {
                                 rvMessages.scrollToPosition(messageList.size() - 1);
+                                unreadWhileScrolledUp = 0;
+                                if (tvScrollToBottomBadge != null) tvScrollToBottomBadge.setVisibility(View.GONE);
+                            } else if (diff > 0) {
+                                unreadWhileScrolledUp += diff;
+                                if (tvScrollToBottomBadge != null) {
+                                    tvScrollToBottomBadge.setText(String.valueOf(unreadWhileScrolledUp));
+                                    tvScrollToBottomBadge.setVisibility(View.VISIBLE);
+                                }
+                                if (flScrollToBottom != null) {
+                                    flScrollToBottom.setVisibility(View.VISIBLE);
+                                }
                             }
                         }
                     }
@@ -839,6 +902,180 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
                 Toast.makeText(this, "Teks pesan disalin", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    @Override
+    public void onForwardMessage(ChatMessageItem item) {
+        if (item == null) return;
+        showForwardBottomSheet(item);
+    }
+
+    private void showForwardBottomSheet(ChatMessageItem item) {
+        BottomSheetDialog dialog = new BottomSheetDialog(this);
+        View view = getLayoutInflater().inflate(R.layout.bottom_sheet_forward_chat, null);
+        dialog.setContentView(view);
+
+        ImageView ivClose = view.findViewById(R.id.ivCloseForwardSheet);
+        TextView tvPreviewText = view.findViewById(R.id.tvForwardPreviewText);
+        ImageView ivPreviewIcon = view.findViewById(R.id.ivForwardPreviewIcon);
+        EditText etSearch = view.findViewById(R.id.etSearchForward);
+        RecyclerView rvContacts = view.findViewById(R.id.rvForwardContacts);
+        ProgressBar pbLoading = view.findViewById(R.id.pbForwardLoading);
+
+        if (ivClose != null) ivClose.setOnClickListener(v -> dialog.dismiss());
+
+        String previewMsg = item.getMessage();
+        String msgType = item.getMsgType();
+        if ("image".equals(msgType)) {
+            if (ivPreviewIcon != null) ivPreviewIcon.setImageResource(R.drawable.ic_image);
+            previewMsg = "📷 [Foto] " + (previewMsg != null ? previewMsg : "");
+        } else if ("video".equals(msgType)) {
+            if (ivPreviewIcon != null) ivPreviewIcon.setImageResource(R.drawable.ic_videocam);
+            previewMsg = "🎥 [Video] " + (previewMsg != null ? previewMsg : "");
+        } else if ("audio".equals(msgType)) {
+            if (ivPreviewIcon != null) ivPreviewIcon.setImageResource(R.drawable.ic_mic);
+            previewMsg = "🎵 [Voice Note / Audio]";
+        } else if ("document".equals(msgType)) {
+            if (ivPreviewIcon != null) ivPreviewIcon.setImageResource(R.drawable.ic_document_scanner);
+            previewMsg = "📄 [Dokumen] " + (item.getFileName() != null ? item.getFileName() : "");
+        }
+        if (tvPreviewText != null) {
+            tvPreviewText.setText(previewMsg != null && !previewMsg.isEmpty() ? previewMsg : "Lampiran Pesan");
+        }
+
+        List<ChatContact> allContacts = new ArrayList<>();
+        List<ChatContact> localList = chatDb.getRecentConversations();
+        if (localList != null && !localList.isEmpty()) {
+            allContacts.addAll(localList);
+        }
+
+        if (rvContacts != null) {
+            rvContacts.setLayoutManager(new LinearLayoutManager(this));
+            ChatContactAdapter forwardAdapter = new ChatContactAdapter(this, allContacts, contact -> {
+                new AlertDialog.Builder(this)
+                        .setTitle("Teruskan Pesan")
+                        .setMessage("Teruskan pesan ini ke " + contact.getTitle() + "?")
+                        .setPositiveButton("Kirim", (d, which) -> {
+                            executeForwardMessage(item, contact);
+                            dialog.dismiss();
+                        })
+                        .setNegativeButton("Batal", null)
+                        .show();
+            });
+            rvContacts.setAdapter(forwardAdapter);
+
+            if (allContacts.size() < 2) {
+                if (pbLoading != null) pbLoading.setVisibility(View.VISIBLE);
+                HttpService api = RetroClient.getInstance(this).getApi2();
+                api.getChatContacts("", "", 0).enqueue(new Callback<ChatContactResponse>() {
+                    @Override
+                    public void onResponse(Call<ChatContactResponse> call, Response<ChatContactResponse> response) {
+                        if (pbLoading != null) pbLoading.setVisibility(View.GONE);
+                        if (response.isSuccessful() && response.body() != null && response.body().isStatus()) {
+                            List<ChatContact> netContacts = response.body().getPegawai();
+                            if (netContacts != null && !netContacts.isEmpty()) {
+                                allContacts.clear();
+                                allContacts.addAll(netContacts);
+                                forwardAdapter.setList(allContacts);
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ChatContactResponse> call, Throwable t) {
+                        if (pbLoading != null) pbLoading.setVisibility(View.GONE);
+                    }
+                });
+            }
+
+            if (etSearch != null) {
+                etSearch.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        String q = s != null ? s.toString().toLowerCase().trim() : "";
+                        if (q.isEmpty()) {
+                            forwardAdapter.setList(allContacts);
+                        } else {
+                            List<ChatContact> filtered = new ArrayList<>();
+                            for (ChatContact c : allContacts) {
+                                boolean matchTitle = c.getTitle() != null && c.getTitle().toLowerCase().contains(q);
+                                boolean matchSub = c.getSubtitle() != null && c.getSubtitle().toLowerCase().contains(q);
+                                boolean matchNip = c.getNip() != null && c.getNip().contains(q);
+                                if (matchTitle || matchSub || matchNip) {
+                                    filtered.add(c);
+                                }
+                            }
+                            forwardAdapter.setList(filtered);
+                        }
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {}
+                });
+            }
+        }
+
+        dialog.show();
+    }
+
+    private void executeForwardMessage(ChatMessageItem item, ChatContact contact) {
+        if (item == null || contact == null) return;
+
+        pbChatRoom.setVisibility(View.VISIBLE);
+        HttpService api = RetroClient.getInstance(this).getApi2();
+
+        String fwdChatType = contact.getChatType() != null ? contact.getChatType() : "personal";
+        long fwdTargetId = contact.getTargetId();
+        String messageText = item.getMessage() != null ? item.getMessage() : "";
+        String msgType = item.getMsgType() != null ? item.getMsgType() : "text";
+        String fileUrl = item.getFileUrl();
+        String fileName = item.getFileName();
+
+        api.forwardChatMessage(fwdChatType, fwdTargetId, messageText, msgType, fileUrl != null ? fileUrl : "", fileName != null ? fileName : "")
+                .enqueue(new Callback<SendMessageResponse>() {
+                    @Override
+                    public void onResponse(Call<SendMessageResponse> call, Response<SendMessageResponse> response) {
+                        pbChatRoom.setVisibility(View.GONE);
+                        if (response.isSuccessful() && response.body() != null && response.body().isStatus()) {
+                            ChatMessageItem forwardedMsg = response.body().getData();
+                            if (fwdTargetId == targetId && fwdChatType.equals(chatType)) {
+                                if (forwardedMsg != null) {
+                                    chatDb.insertMessage(forwardedMsg);
+                                    adapter.addMessage(forwardedMsg);
+                                    rvMessages.smoothScrollToPosition(adapter.getItemCount() - 1);
+                                } else {
+                                    loadMessages(false);
+                                }
+                            }
+                            go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.showTopBanner(
+                                    ChatRoomActivity.this,
+                                    "Pesan berhasil diteruskan ke " + contact.getTitle(),
+                                    go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.Type.SUCCESS
+                            );
+                        } else {
+                            String err = "Gagal meneruskan pesan";
+                            try {
+                                if (response.errorBody() != null) {
+                                    String raw = response.errorBody().string();
+                                    org.json.JSONObject obj = new org.json.JSONObject(raw);
+                                    if (obj.has("message")) err = obj.getString("message");
+                                }
+                            } catch (Exception ignored) {}
+                            go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.showTopBanner(
+                                    ChatRoomActivity.this, err, go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.Type.ERROR
+                            );
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<SendMessageResponse> call, Throwable t) {
+                        pbChatRoom.setVisibility(View.GONE);
+                        Toast.makeText(ChatRoomActivity.this, "Koneksi gagal: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     @Override

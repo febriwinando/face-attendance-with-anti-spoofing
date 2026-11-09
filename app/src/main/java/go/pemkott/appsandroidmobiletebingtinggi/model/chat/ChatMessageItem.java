@@ -51,6 +51,9 @@ public class ChatMessageItem {
     @SerializedName("created_at_formatted")
     private String createdAtFormatted;
 
+    @SerializedName("created_at_ts")
+    private long createdAtTs;
+
     public long getId() {
         return id;
     }
@@ -195,5 +198,13 @@ public class ChatMessageItem {
 
     public void setCreatedAtFormatted(String createdAtFormatted) {
         this.createdAtFormatted = createdAtFormatted;
+    }
+
+    public long getCreatedAtTs() {
+        return createdAtTs;
+    }
+
+    public void setCreatedAtTs(long createdAtTs) {
+        this.createdAtTs = createdAtTs;
     }
 }
