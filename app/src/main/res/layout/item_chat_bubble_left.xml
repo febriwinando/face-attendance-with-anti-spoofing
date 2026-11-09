@@ -32,16 +32,6 @@
             android:text="Hari Ini"/>
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/tvSenderName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="#16A34A"
-        android:textSize="11sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="2dp"
-        android:visibility="gone"/>
-
     <LinearLayout
         android:id="@+id/llBubbleContainer"
         android:layout_width="wrap_content"
@@ -51,6 +41,17 @@
         android:orientation="vertical"
         android:paddingHorizontal="10dp"
         android:paddingVertical="8dp">
+
+        <!-- Sender Name for Group / OPD Chat -->
+        <TextView
+            android:id="@+id/tvSenderName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#16A34A"
+            android:textSize="12sp"
+            android:fontFamily="sans-serif-bold"
+            android:layout_marginBottom="4dp"
+            android:visibility="gone"/>
 
         <!-- Quote / Reply Container -->
         <com.google.android.material.card.MaterialCardView

@@ -1,5 +1,6 @@
 package go.pemkott.appsandroidmobiletebingtinggi.chat;
 
+import android.app.DownloadManager;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -11,6 +12,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.OpenableColumns;
@@ -235,13 +237,22 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
         tvRoomTitle.setText(title != null ? title : "Chat");
         tvRoomSubtitle.setText(subtitle != null ? subtitle : "");
 
+        FrameLayout flOpdHeaderContainer = findViewById(R.id.flOpdHeaderContainer);
         if ("opd".equals(chatType)) {
-            civRoomAvatar.setImageResource(R.drawable.ic_locasi_office);
+            civRoomAvatar.setVisibility(View.GONE);
+            if (flOpdHeaderContainer != null) {
+                flOpdHeaderContainer.setVisibility(View.VISIBLE);
+                flOpdHeaderContainer.setOnClickListener(v -> showOpdGroupProfileDialog());
+            }
             View.OnClickListener headerClickListener = v -> showOpdGroupProfileDialog();
             civRoomAvatar.setOnClickListener(headerClickListener);
             tvRoomTitle.setOnClickListener(headerClickListener);
             tvRoomSubtitle.setOnClickListener(headerClickListener);
         } else {
+            civRoomAvatar.setVisibility(View.VISIBLE);
+            if (flOpdHeaderContainer != null) {
+                flOpdHeaderContainer.setVisibility(View.GONE);
+            }
             if (!TextUtils.isEmpty(avatarUrl)) {
                 Glide.with(this)
                         .load(avatarUrl)
@@ -1132,6 +1143,33 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
         }
     }
 
+    private void downloadMediaFile(String fileUrl, String defaultFileName, String defaultExt) {
+        if (TextUtils.isEmpty(fileUrl)) {
+            Toast.makeText(this, "URL berkas tidak valid", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        try {
+            String formattedUrl = formatMediaUrl(fileUrl);
+            String fileName = !TextUtils.isEmpty(defaultFileName) ? defaultFileName : ("Lampiran_Chat_" + System.currentTimeMillis() + defaultExt);
+
+            DownloadManager.Request request = new DownloadManager.Request(Uri.parse(formattedUrl));
+            request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE);
+            request.setTitle("Mengunduh " + fileName);
+            request.setDescription("Menyimpan berkas obrolan ke folder Unduhan");
+            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName);
+
+            DownloadManager manager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+            if (manager != null) {
+                manager.enqueue(request);
+                Toast.makeText(this, "Pengunduhan dimulai. Berkas tersimpan di folder Download.", Toast.LENGTH_LONG).show();
+            }
+        } catch (Exception e) {
+            Toast.makeText(this, "Gagal mengunduh: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
     private void showFullImageDialog(String imageUrl) {
         showFullImageDialog(imageUrl, "");
     }
@@ -1219,6 +1257,12 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
                 });
 
         ivClose.setOnClickListener(v -> dialog.dismiss());
+
+        ImageView ivDownload = dialog.findViewById(R.id.ivDownloadImage);
+        if (ivDownload != null) {
+            ivDownload.setOnClickListener(v -> downloadMediaFile(formattedUrl, fileName, ".jpg"));
+        }
+
         dialog.show();
     }
 
@@ -1388,6 +1432,11 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
         });
 
         ivClose.setOnClickListener(v -> dialog.dismiss());
+
+        ImageView ivDownloadVideo = dialog.findViewById(R.id.ivDownloadVideo);
+        if (ivDownloadVideo != null) {
+            ivDownloadVideo.setOnClickListener(v -> downloadMediaFile(formattedUrl, fileName, ".mp4"));
+        }
 
         dialog.setOnDismissListener(d -> {
             videoHandler.removeCallbacks(progressRunnable);

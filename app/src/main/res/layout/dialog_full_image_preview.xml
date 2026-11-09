@@ -61,6 +61,18 @@
                 android:maxLines="1"
                 android:ellipsize="end"/>
         </LinearLayout>
+
+        <ImageView
+            android:id="@+id/ivDownloadImage"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:padding="4dp"
+            android:src="@drawable/ic_file_download"
+            app:tint="#0F172A"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="Unduh Gambar"/>
     </LinearLayout>
 
     <!-- Main Media View (Centered Full Image Container) -->

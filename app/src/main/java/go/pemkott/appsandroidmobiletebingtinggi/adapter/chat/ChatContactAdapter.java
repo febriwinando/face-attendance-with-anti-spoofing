@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -71,7 +72,11 @@ public class ChatContactAdapter extends RecyclerView.Adapter<ChatContactAdapter.
         }
 
         if (item.getUnreadCount() > 0) {
-            holder.tvUnreadBadge.setText(String.valueOf(item.getUnreadCount()));
+            if (item.getUnreadCount() > 99) {
+                holder.tvUnreadBadge.setText("99+");
+            } else {
+                holder.tvUnreadBadge.setText(String.valueOf(item.getUnreadCount()));
+            }
             holder.tvUnreadBadge.setVisibility(View.VISIBLE);
         } else {
             holder.tvUnreadBadge.setVisibility(View.GONE);
@@ -79,10 +84,18 @@ public class ChatContactAdapter extends RecyclerView.Adapter<ChatContactAdapter.
 
         if ("opd".equals(item.getChatType())) {
             holder.civAvatar.setVisibility(View.GONE);
-            holder.ivOpdIcon.setVisibility(View.VISIBLE);
+            if (holder.flOpdContainer != null) {
+                holder.flOpdContainer.setVisibility(View.VISIBLE);
+            } else {
+                holder.ivOpdIcon.setVisibility(View.VISIBLE);
+            }
         } else {
             holder.civAvatar.setVisibility(View.VISIBLE);
-            holder.ivOpdIcon.setVisibility(View.GONE);
+            if (holder.flOpdContainer != null) {
+                holder.flOpdContainer.setVisibility(View.GONE);
+            } else {
+                holder.ivOpdIcon.setVisibility(View.GONE);
+            }
 
             if (!TextUtils.isEmpty(item.getAvatarUrl())) {
                 Glide.with(context)
@@ -109,12 +122,14 @@ public class ChatContactAdapter extends RecyclerView.Adapter<ChatContactAdapter.
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         CircleImageView civAvatar;
+        FrameLayout flOpdContainer;
         ImageView ivOpdIcon;
         TextView tvTitle, tvSubtitle, tvLastMsg, tvTime, tvUnreadBadge;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             civAvatar = itemView.findViewById(R.id.civChatAvatar);
+            flOpdContainer = itemView.findViewById(R.id.flOpdContainer);
             ivOpdIcon = itemView.findViewById(R.id.ivOpdIcon);
             tvTitle = itemView.findViewById(R.id.tvChatTitle);
             tvSubtitle = itemView.findViewById(R.id.tvChatSubtitle);
