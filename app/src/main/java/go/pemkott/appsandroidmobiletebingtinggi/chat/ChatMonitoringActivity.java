@@ -55,7 +55,7 @@ public class ChatMonitoringActivity extends AppCompatActivity implements ChatMon
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
+        go.pemkott.appsandroidmobiletebingtinggi.utils.WindowUtil.applyDashboardStyle(this);
         setContentView(R.layout.activity_chat_monitoring);
 
         ImageView ivBack = findViewById(R.id.ivBackMonitoring);

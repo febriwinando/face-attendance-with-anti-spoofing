@@ -99,6 +99,19 @@ public class ReadPdfActivity extends AppCompatActivity implements PdfViewerFragm
 
         currentPdfUrl = getIntent().getStringExtra("PDF_URL");
 
+        if (currentPdfUrl != null && !currentPdfUrl.trim().isEmpty()) {
+            go.pemkott.appsandroidmobiletebingtinggi.api.SSLHelper.disableSSLCertificateChecking();
+            String activeBaseUrl = go.pemkott.appsandroidmobiletebingtinggi.api.ServerConfig.getBaseUrl();
+            if (activeBaseUrl.endsWith("/")) activeBaseUrl = activeBaseUrl.substring(0, activeBaseUrl.length() - 1);
+            if (currentPdfUrl.contains("172.15.1.35") || currentPdfUrl.contains("172.15.1.13") || currentPdfUrl.contains("localhost") || currentPdfUrl.contains("10.0.2.2")) {
+                currentPdfUrl = currentPdfUrl.replaceAll("https?://(172\\.15\\.1\\.35|172\\.15\\.1\\.13|localhost|10\\.0\\.2\\.2)(:[0-9]+)?", "http://172.15.1.35:8000");
+            }
+            if (currentPdfUrl.startsWith("/")) {
+                currentPdfUrl = "http://172.15.1.35:8000" + currentPdfUrl;
+            }
+            currentPdfUrl = currentPdfUrl.replaceAll("(?<!:)/{2,}", "/");
+        }
+
         if (currentPdfUrl == null || currentPdfUrl.trim().isEmpty() || "null".equalsIgnoreCase(currentPdfUrl.trim())) {
             showPdfNotFoundAlertAndClose("Dokumen PDF tidak ditemukan atau URL kosong.");
         } else {

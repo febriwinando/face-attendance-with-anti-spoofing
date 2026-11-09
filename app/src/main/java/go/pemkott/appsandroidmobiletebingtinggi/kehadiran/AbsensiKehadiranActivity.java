@@ -1069,7 +1069,6 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
                 dialogView.pesanError(AbsensiKehadiranActivity.this);
             }
         });
-
     }
 
 

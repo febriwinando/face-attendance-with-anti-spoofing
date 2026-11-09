@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/dialog_background_white"
+    android:padding="20dp">
+
+    <!-- Header Close & Title -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:text="Pemutar Audio"
+            android:textColor="#0F172A"
+            android:textSize="18sp"
+            android:fontFamily="sans-serif-black"/>
+
+        <ImageView
+            android:id="@+id/ivCloseAudioPreview"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_close"
+            app:tint="#64748B"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="Tutup"/>
+    </RelativeLayout>
+
+    <!-- Center Icon Artwork -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="12dp"
+        android:orientation="vertical">
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            app:cardCornerRadius="40dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp"
+            app:cardBackgroundColor="#EFF6FF">
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_audiotrack"
+                app:tint="#2563EB"
+                android:contentDescription="Audio"/>
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            android:id="@+id/tvAudioFileName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:gravity="center"
+            android:text="Audio Lampiran"
+            android:textColor="#1E293B"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:maxLines="2"
+            android:ellipsize="middle"/>
+
+        <TextView
+            android:id="@+id/tvAudioStatusSubtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="Memuat audio..."
+            android:textColor="#64748B"
+            android:textSize="12sp"/>
+    </LinearLayout>
+
+    <!-- Buffering Progress -->
+    <ProgressBar
+        android:id="@+id/pbAudioLoading"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_gravity="center"
+        android:indeterminateTint="#2563EB"
+        android:layout_marginVertical="8dp"
+        android:visibility="visible"/>
+
+    <!-- Progress SeekBar -->
+    <LinearLayout
+        android:id="@+id/llAudioProgressContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="8dp">
+
+        <SeekBar
+            android:id="@+id/sbAudioProgress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:progressTint="#2563EB"
+            android:thumbTint="#2563EB"
+            android:max="100"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="14dp">
+
+            <TextView
+                android:id="@+id/tvAudioCurrentTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:text="00:00"
+                android:textColor="#64748B"
+                android:textSize="12sp"/>
+
+            <TextView
+                android:id="@+id/tvAudioTotalDuration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:text="00:00"
+                android:textColor="#64748B"
+                android:textSize="12sp"/>
+        </RelativeLayout>
+    </LinearLayout>
+
+    <!-- Controls Row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/ivAudioReplay10"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@drawable/ic_replay_10"
+            app:tint="#475569"
+            android:layout_marginEnd="28dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="Mundur 10 Detik"/>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabAudioPlayPause"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_play_arrow"
+            app:tint="#FFFFFF"
+            app:backgroundTint="#2563EB"
+            app:elevation="2dp"
+            app:fabSize="normal"
+            android:contentDescription="Putar / Jeda"/>
+
+        <ImageView
+            android:id="@+id/ivAudioForward10"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@drawable/ic_forward_10"
+            app:tint="#475569"
+            android:layout_marginStart="28dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="Maju 10 Detik"/>
+    </LinearLayout>
+</LinearLayout>
+

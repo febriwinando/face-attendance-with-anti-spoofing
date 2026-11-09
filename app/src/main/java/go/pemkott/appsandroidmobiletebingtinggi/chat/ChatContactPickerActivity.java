@@ -57,7 +57,8 @@ public class ChatContactPickerActivity extends AppCompatActivity implements Chat
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
+        go.pemkott.appsandroidmobiletebingtinggi.utils.WindowUtil.applyDashboardStyle(this);
+        setContentView(R.layout.activity_chat_contact_picker);
         setContentView(R.layout.activity_chat_contact_picker);
 
         chatDb = new ChatLocalDatabase(this);

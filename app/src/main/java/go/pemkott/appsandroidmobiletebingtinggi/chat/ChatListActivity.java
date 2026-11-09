@@ -60,7 +60,7 @@ public class ChatListActivity extends AppCompatActivity implements ChatContactAd
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
+        go.pemkott.appsandroidmobiletebingtinggi.utils.WindowUtil.applyDashboardStyle(this);
         setContentView(R.layout.activity_chat_list);
 
         chatDb = new ChatLocalDatabase(this);
@@ -269,6 +269,7 @@ public class ChatListActivity extends AppCompatActivity implements ChatContactAd
         if (localContacts != null && !localContacts.isEmpty()) {
             listPegawai = localContacts;
             filterList();
+            if (pbChatList != null) pbChatList.setVisibility(View.GONE);
         }
     }
 

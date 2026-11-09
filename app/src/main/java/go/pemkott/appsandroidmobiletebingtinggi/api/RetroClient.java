@@ -28,7 +28,7 @@ public class RetroClient {
 
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
 
-        OkHttpClient.Builder builder = enableBypass
+        OkHttpClient.Builder builder = (enableBypass || ServerConfig.getBaseUrl().contains("172.15.1.35") || ServerConfig.getBaseUrl().startsWith("https://"))
                 ? SSLHelper.getUnsafeOkHttpClientBuilder()
                 : new OkHttpClient.Builder();
 
@@ -46,7 +46,8 @@ public class RetroClient {
                     SessionManager session = new SessionManager(appContext);
                     String token = session.getToken();
                     if (token != null && !token.trim().isEmpty()) {
-                        requestBuilder.header("Authorization", token.startsWith("Bearer ") ? token : "Bearer " + token);
+                        String cleanToken = token.startsWith("Bearer ") ? token.substring(7).trim() : token.trim();
+                        requestBuilder.header("Authorization", "Bearer " + cleanToken);
                     }
                 }
             }
@@ -60,16 +61,6 @@ public class RetroClient {
                 String fallbackUrl = original.url().toString().replace("/api/v2/", "/api/");
                 okhttp3.Request fallbackRequest = requestBuilder.url(fallbackUrl).build();
                 return chain.proceed(fallbackRequest);
-            }
-
-            // Proteksi Sisi Klien: Jika server mengembalikan 401 (Unauthenticated / Token Expired),
-            // hapus token di SessionManager agar pengguna harus re-login secara aman.
-            if (response.code() == 401) {
-                Context appContext = MyApplication.getAppContext();
-                if (appContext != null) {
-                    SessionManager session = new SessionManager(appContext);
-                    session.saveToken(null);
-                }
             }
 
             return response;

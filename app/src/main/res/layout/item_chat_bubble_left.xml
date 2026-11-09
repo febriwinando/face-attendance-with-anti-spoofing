@@ -19,6 +19,7 @@
         android:visibility="gone"/>
 
     <LinearLayout
+        android:id="@+id/llBubbleContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:maxWidth="280dp"
@@ -68,12 +69,13 @@
         <!-- Image / Media Attachment Card -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cvImageContainer"
-            android:layout_width="230dp"
+            android:layout_width="240dp"
             android:layout_height="180dp"
-            android:layout_marginBottom="6dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="1dp"
+            android:layout_marginBottom="4dp"
+            app:cardCornerRadius="14dp"
+            app:cardElevation="0dp"
             app:strokeWidth="0dp"
+            app:cardBackgroundColor="#F1F5F9"
             android:visibility="gone">
 
             <ImageView
@@ -82,6 +84,24 @@
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
                 android:contentDescription="Foto Media"/>
+
+            <FrameLayout
+                android:id="@+id/flVideoOverlay"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#33000000"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_play_arrow"
+                    android:background="@drawable/bg_circle_play"
+                    android:padding="8dp"
+                    app:tint="#FFFFFF"
+                    android:contentDescription="Putar Video"/>
+            </FrameLayout>
         </com.google.android.material.card.MaterialCardView>
 
         <!-- Document Attachment Card -->
@@ -89,12 +109,12 @@
             android:id="@+id/cvDocumentContainer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="6dp"
+            android:layout_marginBottom="4dp"
             app:cardCornerRadius="10dp"
             app:cardElevation="0dp"
-            app:strokeColor="#CBD5E1"
+            app:strokeColor="#E2E8F0"
             app:strokeWidth="1dp"
-            app:cardBackgroundColor="#F8FAFC"
+            app:cardBackgroundColor="#E2E8F0"
             android:visibility="gone">
 
             <LinearLayout
@@ -106,6 +126,7 @@
                 android:padding="10dp">
 
                 <ImageView
+                    android:id="@+id/ivDocumentIcon"
                     android:layout_width="28dp"
                     android:layout_height="28dp"
                     android:src="@drawable/ic_document_scanner"

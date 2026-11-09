@@ -4,14 +4,15 @@
     android:id="@+id/llChatRoomRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_main"
+    android:background="#F9FAFB"
     android:orientation="vertical">
 
-    <!-- Header Bar -->
+    <!-- Header Bar (Clean White Mockup Style) -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/biru"
+        android:background="#FFFFFF"
+        android:elevation="1dp"
         android:orientation="horizontal"
         android:paddingHorizontal="16dp"
         android:paddingTop="36dp"
@@ -23,7 +24,7 @@
             android:layout_width="28dp"
             android:layout_height="28dp"
             android:src="@drawable/ic_arrow_back"
-            app:tint="@color/putih"
+            app:tint="#0F172A"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
@@ -47,7 +48,7 @@
                 android:id="@+id/tvRoomTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/putih"
+                android:textColor="#0F172A"
                 android:textSize="16sp"
                 android:fontFamily="sans-serif-black"
                 android:maxLines="1"
@@ -57,9 +58,9 @@
                 android:id="@+id/tvRoomSubtitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="#DDF2FD"
+                android:textColor="#16A34A"
                 android:textSize="12sp"
-                android:fontFamily="sans-serif"
+                android:fontFamily="sans-serif-medium"
                 android:maxLines="1"
                 android:ellipsize="end"/>
         </LinearLayout>
@@ -69,7 +70,7 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/ic_sync2"
-            app:tint="@color/putih"
+            app:tint="#0F172A"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
@@ -93,7 +94,8 @@
             android:id="@+id/pbChatRoom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"/>
+            android:layout_gravity="center"
+            android:indeterminateTint="#16A34A"/>
     </FrameLayout>
 
     <!-- Reply Preview Container -->

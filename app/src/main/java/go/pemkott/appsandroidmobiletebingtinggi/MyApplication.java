@@ -15,12 +15,9 @@ public class MyApplication extends Application {
         super.onCreate();
         instance = this;
         FirebaseApp.initializeApp(this);
-        SessionManager session = new SessionManager(this);
-        if (session.isSslBypassEnabled()) {
-            SSLHelper.disableSSLCertificateChecking();
-        } else {
-            SSLHelper.restoreDefaultSSLCertificateChecking();
-        }
+
+        // Always enable SSL certificate checking bypass for HTTPS local server (172.15.1.35:8443)
+        SSLHelper.disableSSLCertificateChecking();
     }
 
     public static Context getAppContext() {

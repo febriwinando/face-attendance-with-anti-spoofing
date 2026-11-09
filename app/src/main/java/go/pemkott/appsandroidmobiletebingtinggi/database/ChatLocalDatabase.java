@@ -349,4 +349,26 @@ public class ChatLocalDatabase extends SQLiteOpenHelper {
         }
         return list;
     }
+
+    public long getLastMessageId(String chatType, long targetId) {
+        long lastId = 0;
+        SQLiteDatabase db = getReadableDatabase();
+        String selection;
+        String[] selectionArgs;
+
+        if ("opd".equals(chatType)) {
+            selection = COL_MSG_CHAT_TYPE + " = ? AND " + COL_MSG_OPD_ID + " = ?";
+            selectionArgs = new String[]{"opd", String.valueOf(targetId)};
+        } else {
+            selection = COL_MSG_CHAT_TYPE + " = ? AND (" + COL_SENDER_ID + " = ? OR " + COL_RECEIVER_ID + " = ?)";
+            selectionArgs = new String[]{"personal", String.valueOf(targetId), String.valueOf(targetId)};
+        }
+
+        Cursor cursor = db.query(TABLE_MESSAGES, new String[]{"MAX(" + COL_MSG_ID + ")"}, selection, selectionArgs, null, null, null);
+        if (cursor != null && cursor.moveToFirst()) {
+            lastId = cursor.getLong(0);
+            cursor.close();
+        }
+        return lastId;
+    }
 }

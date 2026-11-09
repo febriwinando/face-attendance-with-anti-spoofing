@@ -576,6 +576,9 @@ public interface HttpService {
     @GET("chat/messages")
     Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatMessageResponse> getChatMessages(@Query("chat_type") String chatType, @Query("target_id") long targetId);
 
+    @GET("chat/messages")
+    Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatMessageResponse> getChatMessagesIncremental(@Query("chat_type") String chatType, @Query("target_id") long targetId, @Query("after_id") long afterId);
+
     @FormUrlEncoded
     @POST("chat/send")
     Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.SendMessageResponse> sendChatMessage(

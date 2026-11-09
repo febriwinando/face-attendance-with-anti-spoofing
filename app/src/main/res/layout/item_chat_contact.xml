@@ -99,7 +99,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
                 android:background="@drawable/badge_bg"
-                android:backgroundTint="#EF4444"
+                android:backgroundTint="#16A34A"
                 android:paddingHorizontal="6dp"
                 android:paddingVertical="2dp"
                 android:textColor="#FFFFFF"

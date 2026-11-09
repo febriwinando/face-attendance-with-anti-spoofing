@@ -1,30 +1,10 @@
 package go.pemkott.appsandroidmobiletebingtinggi.api;
 
-import android.content.Context;
-import go.pemkott.appsandroidmobiletebingtinggi.MyApplication;
-import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
-
 public class ServerConfig {
 
-    public static String BASE_HOST = "https://svr-absensi.tebingtinggikota.go.id/";
+    public static String BASE_HOST = "http://172.15.1.35:8000/";
 
     public static String getBaseUrl() {
-        Context context = MyApplication.getAppContext();
-        if (context != null) {
-            SessionManager session = new SessionManager(context);
-            String savedHost = session.getServerHost();
-            if (savedHost != null && !savedHost.trim().isEmpty()) {
-                String url = savedHost.trim();
-                if (!url.startsWith("http://") && !url.startsWith("https://")) {
-                    url = "https://" + url;
-                }
-                if (!url.endsWith("/")) {
-                    url = url + "/";
-                }
-                return url;
-            }
-        }
-
         String url = BASE_HOST.trim();
         if (!url.endsWith("/")) {
             return url + "/";

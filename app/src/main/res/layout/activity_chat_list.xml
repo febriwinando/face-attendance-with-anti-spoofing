@@ -3,14 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_main"
+    android:background="#FFFFFF"
     android:orientation="vertical">
 
-    <!-- Top Header Bar (Absensi Brand Color) -->
+    <!-- Top Header Bar (Mockup Style Clean White) -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/biru"
+        android:background="#FFFFFF"
+        android:elevation="1dp"
         android:orientation="horizontal"
         android:paddingHorizontal="16dp"
         android:paddingTop="36dp"
@@ -22,7 +23,7 @@
             android:layout_width="28dp"
             android:layout_height="28dp"
             android:src="@drawable/ic_arrow_back"
-            app:tint="@color/putih"
+            app:tint="#0F172A"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
@@ -33,9 +34,9 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginStart="16dp"
-            android:text="Pesan &amp; Diskusi"
-            android:textColor="@color/putih"
-            android:textSize="18sp"
+            android:text="Chats"
+            android:textColor="#0F172A"
+            android:textSize="22sp"
             android:fontFamily="sans-serif-black"/>
 
         <ImageView
@@ -44,7 +45,7 @@
             android:layout_height="24dp"
             android:layout_marginEnd="12dp"
             android:src="@drawable/ic_privasi"
-            app:tint="@color/putih"
+            app:tint="#0F172A"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
@@ -55,7 +56,7 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/ic_sync2"
-            app:tint="@color/putih"
+            app:tint="#0F172A"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
@@ -231,7 +232,9 @@
             android:id="@+id/pbChatList"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"/>
+            android:layout_gravity="center"
+            android:indeterminateTint="#16A34A"
+            android:visibility="gone"/>
 
         <!-- Formal Empty State -->
         <LinearLayout
@@ -284,7 +287,7 @@
             android:fontFamily="sans-serif-bold"
             app:icon="@drawable/ic_baseline_add"
             app:iconTint="@color/putih"
-            android:backgroundTint="@color/biru"/>
+            android:backgroundTint="#16A34A"/>
 
     </FrameLayout>
 </LinearLayout>

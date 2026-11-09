@@ -23,7 +23,11 @@ public class SessionManager {
     }
 
     public String getToken() {
-        return prefs.getString(KEY_TOKEN, null);
+        String token = prefs.getString(KEY_TOKEN, null);
+        if (token != null && token.startsWith("Bearer ")) {
+            return token.substring(7).trim();
+        }
+        return token;
     }
 
     // -------------------------

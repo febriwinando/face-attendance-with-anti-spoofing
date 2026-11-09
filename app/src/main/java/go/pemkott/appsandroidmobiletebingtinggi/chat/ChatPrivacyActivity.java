@@ -57,7 +57,8 @@ public class ChatPrivacyActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
+        go.pemkott.appsandroidmobiletebingtinggi.utils.WindowUtil.applyDashboardStyle(this);
+        setContentView(R.layout.activity_chat_privacy);
         setContentView(R.layout.activity_chat_privacy);
 
         chatDb = new ChatLocalDatabase(this);
