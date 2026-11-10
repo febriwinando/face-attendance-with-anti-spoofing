@@ -19,6 +19,7 @@ public class ChatMonitoringAdapter extends RecyclerView.Adapter<ChatMonitoringAd
 
     public interface OnThreadClickListener {
         void onThreadClick(ChatMonitoringThread thread);
+        default void onThreadLongClick(ChatMonitoringThread thread) {}
     }
 
     private final Context context;
@@ -56,6 +57,11 @@ public class ChatMonitoringAdapter extends RecyclerView.Adapter<ChatMonitoringAd
 
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) listener.onThreadClick(thread);
+        });
+
+        holder.itemView.setOnLongClickListener(v -> {
+            if (listener != null) listener.onThreadLongClick(thread);
+            return true;
         });
     }
 

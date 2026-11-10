@@ -53,6 +53,36 @@
             android:layout_marginBottom="4dp"
             android:visibility="gone"/>
 
+        <!-- Deleted Message Badge (Visible for Super Admin / Monitoring mode) -->
+        <LinearLayout
+            android:id="@+id/llDeletedBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@drawable/bg_deleted_msg_badge_left"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="3dp"
+            android:layout_marginBottom="6dp"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:src="@drawable/ic_delete"
+                app:tint="#EF4444"
+                android:layout_marginEnd="4dp"/>
+
+            <TextView
+                android:id="@+id/tvDeletedBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pesan Telah Dihapus Pengirim"
+                android:textColor="#B91C1C"
+                android:textSize="10sp"
+                android:textStyle="bold"/>
+        </LinearLayout>
+
         <!-- Quote / Reply Container -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cvReplyContainer"

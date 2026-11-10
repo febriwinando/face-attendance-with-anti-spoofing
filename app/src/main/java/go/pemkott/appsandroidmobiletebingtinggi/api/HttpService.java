@@ -652,6 +652,25 @@ public interface HttpService {
     );
 
     @FormUrlEncoded
+    @POST("chat/delete-message")
+    Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.SendMessageResponse> deleteChatMessage(
+            @Field("message_id") long messageId,
+            @Field("delete_type") String deleteType
+    );
+
+    @FormUrlEncoded
+    @POST("chat/hard-delete-message")
+    Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.SendMessageResponse> hardDeleteChatMessage(
+            @Field("message_id") long messageId
+    );
+
+    @FormUrlEncoded
+    @POST("chat/restore-message")
+    Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.SendMessageResponse> restoreChatMessage(
+            @Field("message_id") long messageId
+    );
+
+    @FormUrlEncoded
     @POST("chat/edit-message")
     Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.SendMessageResponse> editChatMessage(
             @Field("message_id") long messageId,
@@ -664,6 +683,23 @@ public interface HttpService {
             @Field("target_id") long targetId,
             @Field("chat_type") String chatType
     );
+
+    @FormUrlEncoded
+    @POST("chat/clear-conversation")
+    Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.SendMessageResponse> clearConversationHistory(
+            @Field("target_id") long targetId,
+            @Field("chat_type") String chatType,
+            @Field("clear_type") String clearType
+    );
+
+    @FormUrlEncoded
+    @POST("chat/accept-terms")
+    Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.SendMessageResponse> acceptChatTerms(
+            @Field("accepted") int accepted
+    );
+
+    @GET("chat/terms-status")
+    Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.SendMessageResponse> getChatTermsStatus();
 
     @GET("chat/monitoring-conversations")
     Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatMonitoringResponse> getMonitoringConversations(

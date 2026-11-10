@@ -54,6 +54,15 @@ public class ChatMessageItem {
     @SerializedName("created_at_ts")
     private long createdAtTs;
 
+    @SerializedName("is_deleted")
+    private int isDeleted;
+
+    @SerializedName("deleted_for_users")
+    private String deletedForUsers;
+
+    @SerializedName("is_deleted_global")
+    private int isDeletedGlobal;
+
     public long getId() {
         return id;
     }
@@ -206,5 +215,45 @@ public class ChatMessageItem {
 
     public void setCreatedAtTs(long createdAtTs) {
         this.createdAtTs = createdAtTs;
+    }
+
+    public int getIsDeleted() {
+        return isDeleted;
+    }
+
+    public void setIsDeleted(int isDeleted) {
+        this.isDeleted = isDeleted;
+    }
+
+    public boolean isDeleted() {
+        return isDeleted == 1 || isDeletedGlobal == 1;
+    }
+
+    public String getDeletedForUsers() {
+        return deletedForUsers;
+    }
+
+    public void setDeletedForUsers(String deletedForUsers) {
+        this.deletedForUsers = deletedForUsers;
+    }
+
+    public int getIsDeletedGlobal() {
+        return isDeletedGlobal;
+    }
+
+    public void setIsDeletedGlobal(int isDeletedGlobal) {
+        this.isDeletedGlobal = isDeletedGlobal;
+    }
+
+    public boolean isDeletedGlobal() {
+        return isDeletedGlobal == 1;
+    }
+
+    public boolean isDeletedForUser(String userId) {
+        if (isDeletedGlobal == 1 || isDeleted == 1) return true;
+        if (userId != null && !userId.isEmpty() && deletedForUsers != null && !deletedForUsers.isEmpty()) {
+            return deletedForUsers.contains("," + userId + ",") || deletedForUsers.contains(userId);
+        }
+        return false;
     }
 }

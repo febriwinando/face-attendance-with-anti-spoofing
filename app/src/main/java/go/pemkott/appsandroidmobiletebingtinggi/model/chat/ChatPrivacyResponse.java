@@ -31,6 +31,21 @@ public class ChatPrivacyResponse {
         @SerializedName("profile_photo_privacy")
         private String profilePhotoPrivacy = "everyone";
 
+        @SerializedName("terms_accepted")
+        private Integer termsAccepted;
+
+        @SerializedName("chat_terms_accepted")
+        private Integer chatTermsAccepted;
+
+        public boolean isTermsAccepted() {
+            if (termsAccepted != null && termsAccepted == 1) return true;
+            return chatTermsAccepted != null && chatTermsAccepted == 1;
+        }
+
+        public void setTermsAccepted(Integer termsAccepted) {
+            this.termsAccepted = termsAccepted;
+        }
+
         public boolean isReadReceiptsEnabled() {
             return readReceiptsEnabled;
         }

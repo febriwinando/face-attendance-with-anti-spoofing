@@ -32,6 +32,7 @@ import android.widget.VideoView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
@@ -90,11 +91,12 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
     private ImageView ivAttachFile;
     private ImageView ivDirectMic;
 
-    // Search UI (Telegram Style)
+    // Search UI (Dynamic, Spacious, Modern)
     private LinearLayout llChatSearchBar;
     private EditText etSearchInChat;
     private TextView tvSearchMatchCount;
-    private ImageView ivSearchPrev, ivSearchNext, ivCloseChatSearch;
+    private ImageView ivSearchPrev, ivSearchNext, ivCloseChatSearch, ivClearChatSearch;
+    private View flSearchPrev, flSearchNext, flCloseChatSearch;
     private final List<Integer> searchMatchPositions = new ArrayList<>();
     private int currentSearchIndex = -1;
 
@@ -120,9 +122,22 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
     private TextView tvScrollToBottomBadge;
     private int unreadWhileScrolledUp = 0;
 
+    // Empty State Views
+    private LinearLayout llEmptyChatRoom;
+    private TextView tvEmptyChatTitle, tvEmptyChatSubtitle, tvEmptyChatBadge;
+    private com.google.android.material.button.MaterialButton btnEmptyChatQuickSay;
+
     private ActivityResultLauncher<String> filePickerLauncher;
     private Uri cameraPhotoUri;
     private ActivityResultLauncher<Uri> cameraLauncher;
+
+    // Dedicated Media Pickers & CameraX Launchers
+    private ActivityResultLauncher<androidx.activity.result.PickVisualMediaRequest> photoPickerLauncher;
+    private ActivityResultLauncher<androidx.activity.result.PickVisualMediaRequest> videoPickerLauncher;
+    private ActivityResultLauncher<String> imagePickerFallbackLauncher;
+    private ActivityResultLauncher<String> videoPickerFallbackLauncher;
+    private ActivityResultLauncher<String[]> docPickerLauncher;
+    private ActivityResultLauncher<Intent> cameraXLauncher;
 
     // Smart Adaptive Polling (every 8 seconds, 0% server overhead with incremental fetch)
     private final Handler pollHandler = new Handler(Looper.getMainLooper());
@@ -134,6 +149,23 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
             pollHandler.postDelayed(this, 8000);
         }
     };
+
+    // Active Room Tracking for FCM suppression and instant sync
+    public static volatile long activeTargetId = -1;
+    public static volatile String activeChatType = null;
+    public static volatile boolean isChatRoomActive = false;
+    private static java.lang.ref.WeakReference<ChatRoomActivity> activeActivityRef = null;
+
+    public static void notifyIncomingMessageFromFCM(long incomingTargetId, String incomingChatType) {
+        if (isChatRoomActive && activeTargetId == incomingTargetId && activeActivityRef != null) {
+            ChatRoomActivity activity = activeActivityRef.get();
+            if (activity != null && !activity.isFinishing() && !activity.isDestroyed()) {
+                activity.runOnUiThread(() -> activity.loadMessages(false));
+            }
+        }
+    }
+
+    private final java.util.concurrent.ExecutorService mediaCompressExecutor = java.util.concurrent.Executors.newSingleThreadExecutor();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -175,6 +207,10 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
         ivSearchPrev = findViewById(R.id.ivSearchPrev);
         ivSearchNext = findViewById(R.id.ivSearchNext);
         ivCloseChatSearch = findViewById(R.id.ivCloseChatSearch);
+        ivClearChatSearch = findViewById(R.id.ivClearChatSearch);
+        flSearchPrev = findViewById(R.id.flSearchPrev);
+        flSearchNext = findViewById(R.id.flSearchNext);
+        flCloseChatSearch = findViewById(R.id.flCloseChatSearch);
 
         llReplyPreview = findViewById(R.id.llReplyPreview);
         tvReplyPreviewSender = findViewById(R.id.tvReplyPreviewSender);
@@ -190,14 +226,28 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
         if (ivMoreOptions != null) {
             ivMoreOptions.setOnClickListener(this::showMoreOptionsMenu);
         }
-        if (ivCloseChatSearch != null) {
+        if (flCloseChatSearch != null) {
+            flCloseChatSearch.setOnClickListener(v -> closeChatSearch());
+        } else if (ivCloseChatSearch != null) {
             ivCloseChatSearch.setOnClickListener(v -> closeChatSearch());
         }
-        if (ivSearchPrev != null) {
+        if (flSearchPrev != null) {
+            flSearchPrev.setOnClickListener(v -> navigateSearchPrev());
+        } else if (ivSearchPrev != null) {
             ivSearchPrev.setOnClickListener(v -> navigateSearchPrev());
         }
-        if (ivSearchNext != null) {
+        if (flSearchNext != null) {
+            flSearchNext.setOnClickListener(v -> navigateSearchNext());
+        } else if (ivSearchNext != null) {
             ivSearchNext.setOnClickListener(v -> navigateSearchNext());
+        }
+        if (ivClearChatSearch != null) {
+            ivClearChatSearch.setOnClickListener(v -> {
+                if (etSearchInChat != null) {
+                    etSearchInChat.setText("");
+                    etSearchInChat.requestFocus();
+                }
+            });
         }
         if (etSearchInChat != null) {
             etSearchInChat.addTextChangedListener(new TextWatcher() {
@@ -206,7 +256,11 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
 
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    performInChatSearch(s != null ? s.toString() : "");
+                    String query = s != null ? s.toString() : "";
+                    if (ivClearChatSearch != null) {
+                        ivClearChatSearch.setVisibility(query.isEmpty() ? View.GONE : View.VISIBLE);
+                    }
+                    performInChatSearch(query);
                 }
 
                 @Override
@@ -269,6 +323,7 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
         rvMessages.setLayoutManager(layoutManager);
 
         adapter = new ChatMessageAdapter(this, messageList, this);
+        adapter.setSuperAdmin(ChatLocalDatabase.isSuperAdminUser(this));
         rvMessages.setAdapter(adapter);
 
         // 1. Gesture Swipe-to-Reply (WhatsApp / Telegram style)
@@ -288,6 +343,26 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
                     unreadWhileScrolledUp = 0;
                     if (tvScrollToBottomBadge != null) tvScrollToBottomBadge.setVisibility(View.GONE);
                     flScrollToBottom.setVisibility(View.GONE);
+                }
+            });
+        }
+
+        llEmptyChatRoom = findViewById(R.id.llEmptyChatRoom);
+        tvEmptyChatTitle = findViewById(R.id.tvEmptyChatTitle);
+        tvEmptyChatSubtitle = findViewById(R.id.tvEmptyChatSubtitle);
+        tvEmptyChatBadge = findViewById(R.id.tvEmptyChatBadge);
+        btnEmptyChatQuickSay = findViewById(R.id.btnEmptyChatQuickSay);
+
+        if (btnEmptyChatQuickSay != null) {
+            btnEmptyChatQuickSay.setOnClickListener(v -> {
+                if (etMessageInput != null) {
+                    etMessageInput.setText("Halo, salam koordinasi.");
+                    etMessageInput.requestFocus();
+                    etMessageInput.setSelection(etMessageInput.getText().length());
+                    android.view.inputmethod.InputMethodManager imm = (android.view.inputmethod.InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    if (imm != null) {
+                        imm.showSoftInput(etMessageInput, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT);
+                    }
                 }
             });
         }
@@ -382,6 +457,59 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
                 }
         );
 
+        // CameraX Custom Activity Launcher
+        cameraXLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                        String path = result.getData().getStringExtra(ChatCameraActivity.EXTRA_CAPTURED_PATH);
+                        String type = result.getData().getStringExtra(ChatCameraActivity.EXTRA_CAPTURED_TYPE);
+                        if (path != null) {
+                            File f = new File(path);
+                            if (f.exists()) {
+                                uploadAndSendFile(Uri.fromFile(f), type);
+                            }
+                        }
+                    }
+                }
+        );
+
+        // Dedicated Photo Picker (Images Only)
+        photoPickerLauncher = registerForActivityResult(
+                new ActivityResultContracts.PickVisualMedia(),
+                uri -> {
+                    if (uri != null) handleSelectedPhoto(uri);
+                }
+        );
+        imagePickerFallbackLauncher = registerForActivityResult(
+                new ActivityResultContracts.GetContent(),
+                uri -> {
+                    if (uri != null) handleSelectedPhoto(uri);
+                }
+        );
+
+        // Dedicated Video Picker (Videos Only)
+        videoPickerLauncher = registerForActivityResult(
+                new ActivityResultContracts.PickVisualMedia(),
+                uri -> {
+                    if (uri != null) handleSelectedVideo(uri);
+                }
+        );
+        videoPickerFallbackLauncher = registerForActivityResult(
+                new ActivityResultContracts.GetContent(),
+                uri -> {
+                    if (uri != null) handleSelectedVideo(uri);
+                }
+        );
+
+        // Dedicated Document Picker
+        docPickerLauncher = registerForActivityResult(
+                new ActivityResultContracts.OpenDocument(),
+                uri -> {
+                    if (uri != null) handleSelectedDoc(uri);
+                }
+        );
+
         // 1. Load local messages instantly
         loadLocalMessages();
 
@@ -390,12 +518,14 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
     }
 
     private void loadLocalMessages() {
-        List<ChatMessageItem> localMsgs = chatDb.getMessages(chatType, targetId);
+        boolean isSuperAdmin = ChatLocalDatabase.isSuperAdminUser(this);
+        List<ChatMessageItem> localMsgs = chatDb.getMessages(chatType, targetId, isSuperAdmin);
         if (localMsgs != null && !localMsgs.isEmpty()) {
             messageList = localMsgs;
             adapter.setList(messageList);
             rvMessages.scrollToPosition(messageList.size() - 1);
         }
+        updateEmptyStateVisibility(false);
     }
 
     private void loadMessages(boolean showProgress) {
@@ -416,9 +546,16 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
                         chatDb.markMessagesAsRead(chatType, targetId);
                         chatDb.resetUnreadCount(chatType, targetId);
 
+                        boolean isSuperAdmin = ChatLocalDatabase.isSuperAdminUser(ChatRoomActivity.this);
                         // Reload entire ordered list from local SQLite
-                        List<ChatMessageItem> updatedLocal = chatDb.getMessages(chatType, targetId);
+                        List<ChatMessageItem> updatedLocal = chatDb.getMessages(chatType, targetId, isSuperAdmin);
                         if (updatedLocal != null) {
+                            boolean isIdentical = isMessageListIdentical(messageList, updatedLocal);
+                            if (isIdentical && !showProgress) {
+                                // No changes in message count, text, or read statuses -> skip redundant re-renders
+                                return;
+                            }
+
                             boolean wasAtBottom = isLastItemVisible();
                             int oldSize = messageList.size();
                             int diff = updatedLocal.size() - oldSize;
@@ -440,15 +577,59 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
                                 }
                             }
                         }
+                    } else if (messageList.isEmpty()) {
+                        boolean isSuperAdmin = ChatLocalDatabase.isSuperAdminUser(ChatRoomActivity.this);
+                        chatDb.softClearConversation(chatType, targetId);
+                        chatDb.syncLastMessageFromLocal(chatType, targetId, isSuperAdmin);
                     }
                 }
+                updateEmptyStateVisibility(false);
             }
 
             @Override
             public void onFailure(Call<ChatMessageResponse> call, Throwable t) {
                 pbChatRoom.setVisibility(View.GONE);
+                updateEmptyStateVisibility(false);
             }
         });
+    }
+
+    private void updateEmptyStateVisibility(boolean isClearedManually) {
+        boolean isEmpty = (messageList == null || messageList.isEmpty());
+        if (llEmptyChatRoom != null) {
+            if (isEmpty) {
+                if (isClearedManually) {
+                    if (tvEmptyChatTitle != null) tvEmptyChatTitle.setText("Riwayat Chat Telah Dibersihkan");
+                    if (tvEmptyChatSubtitle != null) tvEmptyChatSubtitle.setText("Tidak ada pesan pada halaman chat ini. Seluruh riwayat obrolan sebelumnya telah dibersihkan.");
+                    if (tvEmptyChatBadge != null) tvEmptyChatBadge.setText("Ruang Obrolan Bersih & Terproteksi");
+                } else {
+                    if (tvEmptyChatTitle != null) tvEmptyChatTitle.setText("Belum Ada Pesan");
+                    if (tvEmptyChatSubtitle != null) tvEmptyChatSubtitle.setText("Tidak ada pesan pada halaman chat ini. Mulai percakapan resmi atau sampaikan pesan kedinasan Anda di sini.");
+                    if (tvEmptyChatBadge != null) tvEmptyChatBadge.setText("Layanan Chat Kedinasan SAHUT Terproteksi");
+                }
+                if (llEmptyChatRoom.getVisibility() != View.VISIBLE) {
+                    llEmptyChatRoom.setVisibility(View.VISIBLE);
+                    llEmptyChatRoom.setAlpha(0f);
+                    llEmptyChatRoom.animate().alpha(1f).setDuration(220).start();
+                }
+            } else {
+                llEmptyChatRoom.setVisibility(View.GONE);
+            }
+        }
+    }
+
+    private boolean isMessageListIdentical(List<ChatMessageItem> oldList, List<ChatMessageItem> newList) {
+        if (oldList == null || newList == null) return false;
+        if (oldList.size() != newList.size()) return false;
+        for (int i = 0; i < oldList.size(); i++) {
+            ChatMessageItem a = oldList.get(i);
+            ChatMessageItem b = newList.get(i);
+            if (a.getId() != b.getId()) return false;
+            if (a.isRead() != b.isRead()) return false;
+            if (!TextUtils.equals(a.getMessage(), b.getMessage())) return false;
+            if (!TextUtils.equals(a.getFileUrl(), b.getFileUrl())) return false;
+        }
+        return true;
     }
 
     private boolean isLastItemVisible() {
@@ -597,14 +778,14 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
         if (cardPhoto != null) {
             cardPhoto.setOnClickListener(v -> {
                 dialog.dismiss();
-                filePickerLauncher.launch("image/*");
+                pickImageOnly();
             });
         }
 
         if (cardVideo != null) {
             cardVideo.setOnClickListener(v -> {
                 dialog.dismiss();
-                filePickerLauncher.launch("video/*");
+                pickVideoOnly();
             });
         }
 
@@ -618,139 +799,296 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
         if (cardDoc != null) {
             cardDoc.setOnClickListener(v -> {
                 dialog.dismiss();
-                filePickerLauncher.launch("*/*");
+                pickDocumentOnly();
             });
         }
 
         dialog.show();
     }
 
-    private void uploadAndSendFile(Uri uri) {
+    private void pickImageOnly() {
         try {
-            String mimeType = getContentResolver().getType(uri);
-            if (mimeType == null) mimeType = "application/octet-stream";
-
-            String fileName = getFileNameFromUri(uri);
-            String lowerFileName = fileName.toLowerCase();
-
-            boolean isImage = (mimeType != null && mimeType.startsWith("image/")) || lowerFileName.endsWith(".jpg") || lowerFileName.endsWith(".jpeg") || lowerFileName.endsWith(".png") || lowerFileName.endsWith(".webp") || lowerFileName.endsWith(".heic");
-            boolean isVideo = (mimeType != null && mimeType.startsWith("video/")) || lowerFileName.endsWith(".mp4") || lowerFileName.endsWith(".mkv") || lowerFileName.endsWith(".mov") || lowerFileName.endsWith(".3gp") || lowerFileName.endsWith(".avi") || lowerFileName.endsWith(".webm");
-            boolean isAudio = (mimeType != null && mimeType.startsWith("audio/")) || lowerFileName.endsWith(".mp3") || lowerFileName.endsWith(".wav") || lowerFileName.endsWith(".m4a") || lowerFileName.endsWith(".aac") || lowerFileName.endsWith(".ogg") || lowerFileName.endsWith(".opus") || lowerFileName.endsWith(".amr");
-
-            File file = null;
-            String msgTypeStr = "document";
-
-            if (isImage) {
-                msgTypeStr = "image";
-                if ("application/octet-stream".equals(mimeType)) mimeType = "image/jpeg";
-                file = go.pemkott.appsandroidmobiletebingtinggi.utils.ChatMediaCompressor.compressImage(this, uri);
-            } else if (isVideo) {
-                msgTypeStr = "video";
-                mimeType = "video/mp4";
-                file = go.pemkott.appsandroidmobiletebingtinggi.utils.ChatMediaCompressor.compressVideo(this, uri);
-                if (file == null || !file.exists()) {
-                    file = getFileFromUri(uri);
-                }
-            } else if (isAudio) {
-                msgTypeStr = "audio";
-                if (mimeType == null || "application/octet-stream".equals(mimeType)) {
-                    mimeType = "audio/mp4";
-                }
-                file = getFileFromUri(uri);
-            } else {
-                msgTypeStr = "document";
-                file = getFileFromUri(uri);
-            }
-
-            if (file == null || !file.exists()) {
-                file = getFileFromUri(uri);
-            }
-
-            if (file == null || !file.exists()) {
-                Toast.makeText(this, "Gagal mengambil file lampiran", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            if (isVideo && file.length() > 30 * 1024 * 1024) {
-                go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.showTopBanner(
-                        this, "Ukuran video melebihi batas maksimal (30MB)", go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.Type.ERROR
+            if (androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia.isPhotoPickerAvailable(this)) {
+                photoPickerLauncher.launch(
+                        new androidx.activity.result.PickVisualMediaRequest.Builder()
+                                .setMediaType(androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+                                .build()
                 );
-                return;
+            } else {
+                imagePickerFallbackLauncher.launch("image/*");
             }
-
-            String uploadFileName = fileName;
-            if (isVideo && !uploadFileName.contains(".")) {
-                uploadFileName = uploadFileName + ".mp4";
-            } else if (isImage && !uploadFileName.contains(".")) {
-                uploadFileName = uploadFileName + ".jpg";
-            } else if (isAudio && !uploadFileName.contains(".")) {
-                uploadFileName = uploadFileName + ".m4a";
-            }
-
-            btnSendMessage.setEnabled(false);
-            pbChatRoom.setVisibility(View.VISIBLE);
-
-            RequestBody chatTypeBody = RequestBody.create(MediaType.parse("text/plain"), chatType);
-            RequestBody targetIdBody = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(targetId));
-            RequestBody messageBody = RequestBody.create(MediaType.parse("text/plain"), etMessageInput.getText().toString().trim());
-            RequestBody msgTypeBody = RequestBody.create(MediaType.parse("text/plain"), msgTypeStr);
-            RequestBody replyToBody = RequestBody.create(MediaType.parse("text/plain"), activeReplyToId != null ? String.valueOf(activeReplyToId) : "");
-
-            RequestBody fileReqBody = RequestBody.create(MediaType.parse(mimeType), file);
-            MultipartBody.Part filePart = MultipartBody.Part.createFormData("file", uploadFileName, fileReqBody);
-
-            final boolean isVideoMsg = isVideo;
-            HttpService api = RetroClient.getInstance(this).getApi2();
-            api.sendChatMessageMultipart(chatTypeBody, targetIdBody, messageBody, msgTypeBody, replyToBody, filePart).enqueue(new Callback<SendMessageResponse>() {
-                @Override
-                public void onResponse(Call<SendMessageResponse> call, Response<SendMessageResponse> response) {
-                    btnSendMessage.setEnabled(true);
-                    pbChatRoom.setVisibility(View.GONE);
-                    if (response.isSuccessful() && response.body() != null && response.body().isStatus()) {
-                        ChatMessageItem newMsgItem = response.body().getData();
-                        if (newMsgItem != null) {
-                            if (isVideoMsg) newMsgItem.setMsgType("video");
-                            chatDb.insertMessage(newMsgItem);
-                            adapter.addMessage(newMsgItem);
-                            rvMessages.smoothScrollToPosition(adapter.getItemCount() - 1);
-                        } else {
-                            loadMessages(false);
-                        }
-                        etMessageInput.setText("");
-                        cancelReply();
-                    } else {
-                        String err = "Gagal mengunggah lampiran";
-                        try {
-                            if (response.errorBody() != null) {
-                                String errBody = response.errorBody().string();
-                                org.json.JSONObject obj = new org.json.JSONObject(errBody);
-                                if (obj.has("message")) err = obj.getString("message");
-                            } else if (response.body() != null && response.body().getMessage() != null) {
-                                err = response.body().getMessage();
-                            }
-                        } catch (Exception ignored) {}
-                        go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.showTopBanner(
-                                ChatRoomActivity.this, err, go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.Type.ERROR
-                        );
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<SendMessageResponse> call, Throwable t) {
-                    btnSendMessage.setEnabled(true);
-                    pbChatRoom.setVisibility(View.GONE);
-                    go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.showTopBanner(
-                            ChatRoomActivity.this, "Koneksi gagal: " + t.getMessage(), go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.Type.ERROR
-                    );
-                }
-            });
-
         } catch (Exception e) {
-            Toast.makeText(this, "Error memproses file: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            imagePickerFallbackLauncher.launch("image/*");
         }
     }
 
+    private void pickVideoOnly() {
+        try {
+            if (androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia.isPhotoPickerAvailable(this)) {
+                videoPickerLauncher.launch(
+                        new androidx.activity.result.PickVisualMediaRequest.Builder()
+                                .setMediaType(androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia.VideoOnly.INSTANCE)
+                                .build()
+                );
+            } else {
+                videoPickerFallbackLauncher.launch("video/*");
+            }
+        } catch (Exception e) {
+            videoPickerFallbackLauncher.launch("video/*");
+        }
+    }
+
+    private void pickDocumentOnly() {
+        try {
+            docPickerLauncher.launch(new String[]{
+                    "application/pdf",
+                    "application/msword",
+                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                    "application/vnd.ms-excel",
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    "application/vnd.ms-powerpoint",
+                    "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+                    "application/zip",
+                    "application/x-rar-compressed",
+                    "application/x-zip-compressed",
+                    "text/plain",
+                    "text/csv",
+                    "*/*"
+            });
+        } catch (Exception e) {
+            filePickerLauncher.launch("*/*");
+        }
+    }
+
+    private void handleSelectedPhoto(Uri uri) {
+        if (uri == null) return;
+        String mimeType = getContentResolver().getType(uri);
+        String fileName = getFileNameFromUri(uri);
+        String lower = fileName != null ? fileName.toLowerCase() : "";
+
+        boolean isImage = (mimeType != null && mimeType.startsWith("image/"))
+                || lower.endsWith(".jpg") || lower.endsWith(".jpeg") || lower.endsWith(".png")
+                || lower.endsWith(".webp") || lower.endsWith(".heic");
+
+        if (!isImage) {
+            go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.showTopBanner(
+                    this,
+                    "Berkas yang dipilih bukan foto. Silakan pilih berkas foto/gambar.",
+                    go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.Type.ERROR
+            );
+            return;
+        }
+
+        uploadAndSendFile(uri, "image");
+    }
+
+    private void handleSelectedVideo(Uri uri) {
+        if (uri == null) return;
+        String mimeType = getContentResolver().getType(uri);
+        String fileName = getFileNameFromUri(uri);
+        String lower = fileName != null ? fileName.toLowerCase() : "";
+
+        boolean isVideo = (mimeType != null && mimeType.startsWith("video/"))
+                || lower.endsWith(".mp4") || lower.endsWith(".mkv") || lower.endsWith(".mov")
+                || lower.endsWith(".3gp") || lower.endsWith(".avi") || lower.endsWith(".webm");
+
+        if (!isVideo) {
+            go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.showTopBanner(
+                    this,
+                    "Berkas yang dipilih bukan video. Silakan pilih berkas video.",
+                    go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.Type.ERROR
+            );
+            return;
+        }
+
+        uploadAndSendFile(uri, "video");
+    }
+
+    private void handleSelectedDoc(Uri uri) {
+        if (uri == null) return;
+        uploadAndSendFile(uri, "document");
+    }
+
+    private void uploadAndSendFile(Uri uri) {
+        uploadAndSendFile(uri, null);
+    }
+
+    private void uploadAndSendFile(Uri uri, @Nullable String forcedType) {
+        btnSendMessage.setEnabled(false);
+        pbChatRoom.setVisibility(View.VISIBLE);
+
+        mediaCompressExecutor.execute(() -> {
+            try {
+                String mimeType = getContentResolver().getType(uri);
+                if (mimeType == null) mimeType = "application/octet-stream";
+
+                String fileName = getFileNameFromUri(uri);
+                String lowerFileName = fileName.toLowerCase();
+
+                boolean isVideo = "video".equals(forcedType)
+                        || (forcedType == null && ((mimeType != null && mimeType.startsWith("video/"))
+                        || lowerFileName.endsWith(".mp4") || lowerFileName.endsWith(".mkv") || lowerFileName.endsWith(".mov")
+                        || lowerFileName.endsWith(".3gp") || lowerFileName.endsWith(".avi") || lowerFileName.endsWith(".webm")));
+
+                boolean isImage = !isVideo && ("image".equals(forcedType)
+                        || (forcedType == null && ((mimeType != null && mimeType.startsWith("image/"))
+                        || lowerFileName.endsWith(".jpg") || lowerFileName.endsWith(".jpeg") || lowerFileName.endsWith(".png")
+                        || lowerFileName.endsWith(".webp") || lowerFileName.endsWith(".heic"))));
+
+                boolean isAudio = !isVideo && !isImage && ("audio".equals(forcedType)
+                        || (forcedType == null && ((mimeType != null && mimeType.startsWith("audio/"))
+                        || lowerFileName.endsWith(".mp3") || lowerFileName.endsWith(".wav") || lowerFileName.endsWith(".m4a")
+                        || lowerFileName.endsWith(".aac") || lowerFileName.endsWith(".ogg") || lowerFileName.endsWith(".opus")
+                        || lowerFileName.endsWith(".amr"))));
+
+                File file = null;
+                String msgTypeStr = "document";
+
+                if (isImage) {
+                    msgTypeStr = "image";
+                    if ("application/octet-stream".equals(mimeType)) mimeType = "image/jpeg";
+                    file = go.pemkott.appsandroidmobiletebingtinggi.utils.ChatMediaCompressor.compressImage(this, uri);
+                } else if (isVideo) {
+                    msgTypeStr = "video";
+                    mimeType = "video/mp4";
+                    file = go.pemkott.appsandroidmobiletebingtinggi.utils.ChatMediaCompressor.compressVideo(this, uri);
+                    if (file == null || !file.exists()) {
+                        file = getFileFromUri(uri);
+                    }
+                } else if (isAudio) {
+                    msgTypeStr = "audio";
+                    if (mimeType == null || "application/octet-stream".equals(mimeType)) {
+                        mimeType = "audio/mp4";
+                    }
+                    file = getFileFromUri(uri);
+                } else {
+                    msgTypeStr = "document";
+                    file = getFileFromUri(uri);
+                }
+
+                if (file == null || !file.exists()) {
+                    file = getFileFromUri(uri);
+                }
+
+                final File finalFile = file;
+                if (finalFile == null || !finalFile.exists()) {
+                    runOnUiThread(() -> {
+                        btnSendMessage.setEnabled(true);
+                        pbChatRoom.setVisibility(View.GONE);
+                        Toast.makeText(this, "Gagal memproses file lampiran", Toast.LENGTH_SHORT).show();
+                    });
+                    return;
+                }
+
+                if (isVideo && finalFile.length() > 30 * 1024 * 1024) {
+                    runOnUiThread(() -> {
+                        btnSendMessage.setEnabled(true);
+                        pbChatRoom.setVisibility(View.GONE);
+                        go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.showTopBanner(
+                                this, "Ukuran video melebihi batas maksimal (30MB)", go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.Type.ERROR
+                        );
+                    });
+                    if (finalFile.getAbsolutePath().contains(getCacheDir().getAbsolutePath())) {
+                        try { finalFile.delete(); } catch (Exception ignored) {}
+                    }
+                    return;
+                }
+
+                String uploadFileName = fileName;
+                if (isVideo && !uploadFileName.contains(".")) {
+                    uploadFileName = uploadFileName + ".mp4";
+                } else if (isImage && !uploadFileName.contains(".")) {
+                    uploadFileName = uploadFileName + ".jpg";
+                } else if (isAudio && !uploadFileName.contains(".")) {
+                    uploadFileName = uploadFileName + ".m4a";
+                }
+
+                String caption = etMessageInput.getText() != null ? etMessageInput.getText().toString().trim() : "";
+                String replyStr = activeReplyToId != null ? String.valueOf(activeReplyToId) : "";
+
+                RequestBody chatTypeBody = RequestBody.create(MediaType.parse("text/plain"), chatType);
+                RequestBody targetIdBody = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(targetId));
+                RequestBody messageBody = RequestBody.create(MediaType.parse("text/plain"), caption);
+                RequestBody msgTypeBody = RequestBody.create(MediaType.parse("text/plain"), msgTypeStr);
+                RequestBody replyToBody = RequestBody.create(MediaType.parse("text/plain"), replyStr);
+
+                RequestBody fileReqBody = RequestBody.create(MediaType.parse(mimeType), finalFile);
+                MultipartBody.Part filePart = MultipartBody.Part.createFormData("file", uploadFileName, fileReqBody);
+
+                final boolean isVideoMsg = isVideo;
+                HttpService api = RetroClient.getInstance(this).getApi2();
+                api.sendChatMessageMultipart(chatTypeBody, targetIdBody, messageBody, msgTypeBody, replyToBody, filePart).enqueue(new Callback<SendMessageResponse>() {
+                    @Override
+                    public void onResponse(Call<SendMessageResponse> call, Response<SendMessageResponse> response) {
+                        btnSendMessage.setEnabled(true);
+                        pbChatRoom.setVisibility(View.GONE);
+
+                        // Clean up temporary cache file
+                        if (finalFile.getAbsolutePath().contains(getCacheDir().getAbsolutePath())) {
+                            try { finalFile.delete(); } catch (Exception ignored) {}
+                        }
+
+                        if (response.isSuccessful() && response.body() != null && response.body().isStatus()) {
+                            ChatMessageItem newMsgItem = response.body().getData();
+                            if (newMsgItem != null) {
+                                if (isVideoMsg) newMsgItem.setMsgType("video");
+                                chatDb.insertMessage(newMsgItem);
+                                adapter.addMessage(newMsgItem);
+                                updateEmptyStateVisibility(false);
+                                rvMessages.smoothScrollToPosition(adapter.getItemCount() - 1);
+                            } else {
+                                loadMessages(false);
+                            }
+                            etMessageInput.setText("");
+                            cancelReply();
+                        } else {
+                            String err = "Gagal mengunggah lampiran";
+                            try {
+                                if (response.errorBody() != null) {
+                                    String errBody = response.errorBody().string();
+                                    org.json.JSONObject obj = new org.json.JSONObject(errBody);
+                                    if (obj.has("message")) err = obj.getString("message");
+                                } else if (response.body() != null && response.body().getMessage() != null) {
+                                    err = response.body().getMessage();
+                                }
+                            } catch (Exception ignored) {}
+                            go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.showTopBanner(
+                                    ChatRoomActivity.this, err, go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.Type.ERROR
+                            );
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<SendMessageResponse> call, Throwable t) {
+                        btnSendMessage.setEnabled(true);
+                        pbChatRoom.setVisibility(View.GONE);
+
+                        // Clean up temporary cache file
+                        if (finalFile.getAbsolutePath().contains(getCacheDir().getAbsolutePath())) {
+                            try { finalFile.delete(); } catch (Exception ignored) {}
+                        }
+
+                        go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.showTopBanner(
+                                ChatRoomActivity.this, "Koneksi gagal: " + t.getMessage(), go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.Type.ERROR
+                        );
+                    }
+                });
+
+            } catch (Exception e) {
+                runOnUiThread(() -> {
+                    btnSendMessage.setEnabled(true);
+                    pbChatRoom.setVisibility(View.GONE);
+                    Toast.makeText(this, "Error memproses file: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+            }
+        });
+    }
+
     private File getFileFromUri(Uri uri) throws Exception {
+        if ("file".equals(uri.getScheme()) && uri.getPath() != null) {
+            File directFile = new File(uri.getPath());
+            if (directFile.exists()) return directFile;
+        }
         InputStream inputStream = getContentResolver().openInputStream(uri);
         if (inputStream == null) return null;
         String fileName = getFileNameFromUri(uri);
@@ -841,6 +1179,8 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
         }
 
         String replyStr = activeReplyToId != null ? String.valueOf(activeReplyToId) : "";
+        final String draftMsg = msg;
+        final Long pendingReplyId = activeReplyToId;
 
         etMessageInput.setText("");
         cancelReply();
@@ -856,11 +1196,17 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
                     if (newMsgItem != null) {
                         chatDb.insertMessage(newMsgItem);
                         adapter.addMessage(newMsgItem);
+                        updateEmptyStateVisibility(false);
                         rvMessages.smoothScrollToPosition(adapter.getItemCount() - 1);
                     } else {
                         loadMessages(false);
                     }
                 } else {
+                    // Restore unsent draft message to avoid losing user input
+                    etMessageInput.setText(draftMsg);
+                    etMessageInput.setSelection(draftMsg.length());
+                    if (pendingReplyId != null) activeReplyToId = pendingReplyId;
+
                     String err = "Gagal mengirim pesan";
                     try {
                         if (response.errorBody() != null) {
@@ -880,6 +1226,10 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
             @Override
             public void onFailure(Call<SendMessageResponse> call, Throwable t) {
                 btnSendMessage.setEnabled(true);
+                // Restore unsent draft message to avoid losing user input
+                etMessageInput.setText(draftMsg);
+                etMessageInput.setSelection(draftMsg.length());
+                if (pendingReplyId != null) activeReplyToId = pendingReplyId;
                 Toast.makeText(ChatRoomActivity.this, "Koneksi gagal: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
@@ -952,6 +1302,51 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
     public void onForwardMessage(ChatMessageItem item) {
         if (item == null) return;
         showForwardBottomSheet(item);
+    }
+
+    @Override
+    public void onDeleteMessage(ChatMessageItem item) {
+        if (item == null) return;
+        confirmDeleteForMe(item);
+    }
+
+    private void confirmDeleteForMe(ChatMessageItem item) {
+        String msg = "opd".equals(chatType)
+                ? "Pesan ini hanya akan dihapus dari obrolan pada perangkat Anda. Rekan kerja lainnya di grup OPD tetap dapat membaca pesan ini."
+                : "Pesan ini hanya akan dihapus dari obrolan pada perangkat Anda. Pegawai lawan bicara tetap dapat membaca pesan ini.";
+
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Hapus Pesan")
+                .setMessage(msg)
+                .setPositiveButton("Hapus", (dialog, which) -> {
+                    executeDeleteForMe(item);
+                })
+                .setNegativeButton("Batal", null)
+                .show();
+    }
+
+    private void executeDeleteForMe(ChatMessageItem item) {
+        if (item == null) return;
+        HttpService api = RetroClient.getInstance(this).getApi2();
+        api.deleteChatMessage(item.getId(), "for_me").enqueue(new Callback<SendMessageResponse>() {
+            @Override
+            public void onResponse(Call<SendMessageResponse> call, Response<SendMessageResponse> response) {}
+            @Override
+            public void onFailure(Call<SendMessageResponse> call, Throwable t) {}
+        });
+
+        // Hanya mengubah status di perangkat si penghapus (soft delete per-user)
+        chatDb.softDeleteMessage(item.getId());
+        boolean isSuperAdmin = ChatLocalDatabase.isSuperAdminUser(this);
+        chatDb.syncLastMessageFromLocal(chatType, targetId, isSuperAdmin);
+
+        messageList.remove(item);
+        adapter.notifyDataSetChanged();
+        updateEmptyStateVisibility(false);
+
+        go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.showTopBanner(
+                this, "Pesan telah dihapus dari perangkat Anda", go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.Type.SUCCESS
+        );
     }
 
     private void showForwardBottomSheet(ChatMessageItem item) {
@@ -1089,6 +1484,7 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
                                 if (forwardedMsg != null) {
                                     chatDb.insertMessage(forwardedMsg);
                                     adapter.addMessage(forwardedMsg);
+                                    updateEmptyStateVisibility(false);
                                     rvMessages.smoothScrollToPosition(adapter.getItemCount() - 1);
                                 } else {
                                     loadMessages(false);
@@ -1823,19 +2219,21 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
     }
 
     private void launchCameraCapture() {
-        if (androidx.core.content.ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
-            androidx.core.app.ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.CAMERA}, 101);
+        boolean hasCam = androidx.core.content.ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) == android.content.pm.PackageManager.PERMISSION_GRANTED;
+        boolean hasMic = androidx.core.content.ContextCompat.checkSelfPermission(this, android.Manifest.permission.RECORD_AUDIO) == android.content.pm.PackageManager.PERMISSION_GRANTED;
+
+        if (!hasCam || !hasMic) {
+            androidx.core.app.ActivityCompat.requestPermissions(
+                    this,
+                    new String[]{android.Manifest.permission.CAMERA, android.Manifest.permission.RECORD_AUDIO},
+                    101
+            );
             return;
         }
 
         try {
-            File photoFile = new File(getCacheDir(), "camera_" + System.currentTimeMillis() + ".jpg");
-            cameraPhotoUri = androidx.core.content.FileProvider.getUriForFile(
-                    this,
-                    "go.pemkott.appsandroidmobiletebingtinggi.fileprovider",
-                    photoFile
-            );
-            cameraLauncher.launch(cameraPhotoUri);
+            Intent intent = new Intent(this, ChatCameraActivity.class);
+            cameraXLauncher.launch(intent);
         } catch (Exception e) {
             Toast.makeText(this, "Gagal membuka kamera: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
@@ -1909,6 +2307,30 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
                     Toast.makeText(this, "Gagal memulai perekaman: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             } else {
+                long elapsed = System.currentTimeMillis() - startTime[0];
+                if (elapsed < 1000) {
+                    try {
+                        if (recorder[0] != null) {
+                            recorder[0].stop();
+                            recorder[0].release();
+                            recorder[0] = null;
+                        }
+                    } catch (Exception ignored) {}
+                    isRecording[0] = false;
+                    timerHandler.removeCallbacks(timerRunnable);
+                    if (recordFile[0] != null && recordFile[0].exists()) {
+                        recordFile[0].delete();
+                    }
+                    recordFile[0] = null;
+                    fabToggle.setImageResource(R.drawable.ic_mic);
+                    fabToggle.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#0869D8")));
+                    tvTimer.setText("00:00");
+                    tvInstruction.setText("Rekaman terlalu singkat (minimal 1 detik). Silakan ulangi.");
+                    btnSend.setEnabled(false);
+                    Toast.makeText(this, "Rekaman terlalu singkat (minimal 1 detik)", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 try {
                     if (recorder[0] != null) {
                         recorder[0].stop();
@@ -1919,7 +2341,7 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
                 isRecording[0] = false;
                 timerHandler.removeCallbacks(timerRunnable);
                 fabToggle.setImageResource(R.drawable.ic_mic);
-                fabToggle.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#9333EA")));
+                fabToggle.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#0869D8")));
                 tvInstruction.setText("Perekaman selesai. Tekan 'Kirim' untuk mengirim pesan suara.");
                 btnSend.setEnabled(true);
             }
@@ -1941,19 +2363,48 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
         });
 
         btnSend.setOnClickListener(v -> {
-            if (isRecording[0] && recorder[0] != null) {
+            if (isRecording[0]) {
+                long elapsed = System.currentTimeMillis() - startTime[0];
+                if (elapsed < 1000) {
+                    try {
+                        if (recorder[0] != null) {
+                            recorder[0].stop();
+                            recorder[0].release();
+                            recorder[0] = null;
+                        }
+                    } catch (Exception ignored) {}
+                    isRecording[0] = false;
+                    timerHandler.removeCallbacks(timerRunnable);
+                    if (recordFile[0] != null && recordFile[0].exists()) {
+                        recordFile[0].delete();
+                    }
+                    recordFile[0] = null;
+                    fabToggle.setImageResource(R.drawable.ic_mic);
+                    fabToggle.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#0869D8")));
+                    tvTimer.setText("00:00");
+                    tvInstruction.setText("Rekaman terlalu singkat (minimal 1 detik). Silakan ulangi.");
+                    btnSend.setEnabled(false);
+                    Toast.makeText(this, "Rekaman terlalu singkat (minimal 1 detik)", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 try {
-                    recorder[0].stop();
-                    recorder[0].release();
+                    if (recorder[0] != null) {
+                        recorder[0].stop();
+                        recorder[0].release();
+                        recorder[0] = null;
+                    }
                 } catch (Exception ignored) {}
                 isRecording[0] = false;
             }
             timerHandler.removeCallbacks(timerRunnable);
-            if (recordFile[0] != null && recordFile[0].exists()) {
+            if (recordFile[0] != null && recordFile[0].exists() && recordFile[0].length() > 1024) {
                 uploadAndSendRecordedAudio(recordFile[0]);
                 dialog.dismiss();
             } else {
-                Toast.makeText(this, "File rekaman tidak ditemukan", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Rekaman kosong atau terlalu singkat", Toast.LENGTH_SHORT).show();
+                if (recordFile[0] != null && recordFile[0].exists()) {
+                    recordFile[0].delete();
+                }
             }
         });
 
@@ -1995,12 +2446,19 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
             public void onResponse(Call<SendMessageResponse> call, Response<SendMessageResponse> response) {
                 btnSendMessage.setEnabled(true);
                 pbChatRoom.setVisibility(View.GONE);
+
+                // Clean up recorded voice note cache file
+                if (audioFile != null && audioFile.exists()) {
+                    try { audioFile.delete(); } catch (Exception ignored) {}
+                }
+
                 if (response.isSuccessful() && response.body() != null && response.body().isStatus()) {
                     ChatMessageItem newMsgItem = response.body().getData();
                     if (newMsgItem != null) {
                         newMsgItem.setMsgType("audio");
                         chatDb.insertMessage(newMsgItem);
                         adapter.addMessage(newMsgItem);
+                        updateEmptyStateVisibility(false);
                         rvMessages.smoothScrollToPosition(adapter.getItemCount() - 1);
                     } else {
                         loadMessages(false);
@@ -2027,6 +2485,12 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
             public void onFailure(Call<SendMessageResponse> call, Throwable t) {
                 btnSendMessage.setEnabled(true);
                 pbChatRoom.setVisibility(View.GONE);
+
+                // Clean up recorded voice note cache file
+                if (audioFile != null && audioFile.exists()) {
+                    try { audioFile.delete(); } catch (Exception ignored) {}
+                }
+
                 go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.showTopBanner(
                         ChatRoomActivity.this, "Koneksi gagal: " + t.getMessage(), go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.Type.ERROR
                 );
@@ -2070,16 +2534,7 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
         if (menuSearch != null) {
             menuSearch.setOnClickListener(v -> {
                 popupWindow.dismiss();
-                if (llChatSearchBar != null) {
-                    llChatSearchBar.setVisibility(View.VISIBLE);
-                }
-                if (etSearchInChat != null) {
-                    etSearchInChat.requestFocus();
-                    android.view.inputmethod.InputMethodManager imm = (android.view.inputmethod.InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                    if (imm != null) {
-                        imm.showSoftInput(etSearchInChat, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT);
-                    }
-                }
+                openChatSearch();
             });
         }
 
@@ -2135,25 +2590,37 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
     }
 
     private void confirmClearConversation() {
+        String clearMsg = "opd".equals(chatType)
+                ? "Apakah Anda yakin ingin membersihkan riwayat obrolan grup ini dari perangkat Anda? Anggota grup OPD lainnya tetap dapat membaca riwayat obrolan."
+                : "Apakah Anda yakin ingin membersihkan riwayat obrolan ini dari perangkat Anda? Pegawai lawan bicara tetap dapat membaca riwayat obrolan.";
+
         new androidx.appcompat.app.AlertDialog.Builder(this)
                 .setTitle("Bersihkan Obrolan")
-                .setMessage("Apakah Anda yakin ingin menghapus seluruh riwayat pesan dalam obrolan ini?")
+                .setMessage(clearMsg)
                 .setPositiveButton("Bersihkan", (dialog, which) -> {
-                    HttpService api = RetroClient.getInstance(this).getApi2();
-                    api.clearConversationHistory(targetId, chatType).enqueue(new Callback<SendMessageResponse>() {
-                        @Override
-                        public void onResponse(Call<SendMessageResponse> call, Response<SendMessageResponse> response) {}
-                        @Override
-                        public void onFailure(Call<SendMessageResponse> call, Throwable t) {}
-                    });
-
-                    chatDb.clearConversationLocal(chatType, targetId);
-                    messageList.clear();
-                    adapter.setList(messageList);
-                    Toast.makeText(this, "Riwayat obrolan telah dibersihkan", Toast.LENGTH_SHORT).show();
+                    executeClearForMe();
                 })
                 .setNegativeButton("Batal", null)
                 .show();
+    }
+
+    private void executeClearForMe() {
+        HttpService api = RetroClient.getInstance(this).getApi2();
+        api.clearConversationHistory(targetId, chatType, "for_me").enqueue(new Callback<SendMessageResponse>() {
+            @Override
+            public void onResponse(Call<SendMessageResponse> call, Response<SendMessageResponse> response) {}
+            @Override
+            public void onFailure(Call<SendMessageResponse> call, Throwable t) {}
+        });
+
+        chatDb.softClearConversation(chatType, targetId);
+        boolean isSuperAdmin = ChatLocalDatabase.isSuperAdminUser(this);
+        chatDb.syncLastMessageFromLocal(chatType, targetId, isSuperAdmin);
+
+        messageList.clear();
+        adapter.setList(messageList);
+        updateEmptyStateVisibility(true);
+        Toast.makeText(this, "Riwayat obrolan dibersihkan dari perangkat Anda", Toast.LENGTH_SHORT).show();
     }
 
     private void confirmBlockContact() {
@@ -2193,6 +2660,28 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
                 .show();
     }
 
+    private void openChatSearch() {
+        if (llChatSearchBar != null) {
+            llChatSearchBar.setVisibility(View.VISIBLE);
+            llChatSearchBar.setAlpha(0f);
+            llChatSearchBar.setTranslationY(-24f);
+            llChatSearchBar.animate()
+                    .alpha(1f)
+                    .translationY(0f)
+                    .setDuration(220)
+                    .setInterpolator(new android.view.animation.DecelerateInterpolator())
+                    .start();
+        }
+        if (etSearchInChat != null) {
+            etSearchInChat.requestFocus();
+            android.view.inputmethod.InputMethodManager imm = (android.view.inputmethod.InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                imm.showSoftInput(etSearchInChat, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT);
+            }
+        }
+        setSearchNavButtonsState(false);
+    }
+
     private void performInChatSearch(String keyword) {
         searchMatchPositions.clear();
         currentSearchIndex = -1;
@@ -2201,8 +2690,16 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
             if (tvSearchMatchCount != null) {
                 tvSearchMatchCount.setVisibility(View.GONE);
             }
+            if (ivClearChatSearch != null) {
+                ivClearChatSearch.setVisibility(View.GONE);
+            }
             adapter.setHighlightedPosition(-1);
+            setSearchNavButtonsState(false);
             return;
+        }
+
+        if (ivClearChatSearch != null) {
+            ivClearChatSearch.setVisibility(View.VISIBLE);
         }
 
         String query = keyword.toLowerCase().trim();
@@ -2222,13 +2719,35 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
 
         if (searchMatchPositions.isEmpty()) {
             if (tvSearchMatchCount != null) {
-                tvSearchMatchCount.setText("0/0");
+                tvSearchMatchCount.setBackgroundResource(R.drawable.bg_chat_search_count_chip_zero);
+                tvSearchMatchCount.setTextColor(Color.parseColor("#DC2626"));
+                tvSearchMatchCount.setText("0 hasil");
             }
             adapter.setHighlightedPosition(-1);
+            setSearchNavButtonsState(false);
         } else {
-            // Telegram: melompat ke pesan cocok yang paling mutakhir (paling bawah/terakhir)
+            // Telegram Style: Melompat langsung ke hasil pesan yang paling mutakhir (terbawah)
             currentSearchIndex = searchMatchPositions.size() - 1;
+            setSearchNavButtonsState(true);
             updateSearchDisplay();
+        }
+    }
+
+    private void setSearchNavButtonsState(boolean hasMatches) {
+        float alpha = hasMatches ? 1.0f : 0.35f;
+        if (flSearchPrev != null) {
+            flSearchPrev.setEnabled(hasMatches);
+            flSearchPrev.setAlpha(alpha);
+        } else if (ivSearchPrev != null) {
+            ivSearchPrev.setEnabled(hasMatches);
+            ivSearchPrev.setAlpha(alpha);
+        }
+        if (flSearchNext != null) {
+            flSearchNext.setEnabled(hasMatches);
+            flSearchNext.setAlpha(alpha);
+        } else if (ivSearchNext != null) {
+            ivSearchNext.setEnabled(hasMatches);
+            ivSearchNext.setAlpha(alpha);
         }
     }
 
@@ -2256,7 +2775,9 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
         }
 
         if (tvSearchMatchCount != null) {
-            tvSearchMatchCount.setText((currentSearchIndex + 1) + "/" + searchMatchPositions.size());
+            tvSearchMatchCount.setBackgroundResource(R.drawable.bg_chat_search_count_chip);
+            tvSearchMatchCount.setTextColor(Color.parseColor("#0869D8"));
+            tvSearchMatchCount.setText((currentSearchIndex + 1) + " / " + searchMatchPositions.size());
         }
 
         int targetPos = searchMatchPositions.get(currentSearchIndex);
@@ -2265,9 +2786,6 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
     }
 
     private void closeChatSearch() {
-        if (llChatSearchBar != null) {
-            llChatSearchBar.setVisibility(View.GONE);
-        }
         if (etSearchInChat != null) {
             etSearchInChat.setText("");
         }
@@ -2276,7 +2794,11 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
         if (tvSearchMatchCount != null) {
             tvSearchMatchCount.setVisibility(View.GONE);
         }
+        if (ivClearChatSearch != null) {
+            ivClearChatSearch.setVisibility(View.GONE);
+        }
         adapter.setHighlightedPosition(-1);
+        setSearchNavButtonsState(false);
 
         View view = this.getCurrentFocus();
         if (view != null) {
@@ -2284,6 +2806,20 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
             if (imm != null) {
                 imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
             }
+        }
+
+        if (llChatSearchBar != null && llChatSearchBar.getVisibility() == View.VISIBLE) {
+            llChatSearchBar.animate()
+                    .alpha(0f)
+                    .translationY(-24f)
+                    .setDuration(180)
+                    .setInterpolator(new android.view.animation.AccelerateInterpolator())
+                    .withEndAction(() -> {
+                        llChatSearchBar.setVisibility(View.GONE);
+                        llChatSearchBar.setTranslationY(0f);
+                        llChatSearchBar.setAlpha(1f);
+                    })
+                    .start();
         }
     }
 
@@ -2294,7 +2830,7 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
             if (grantResults.length > 0 && grantResults[0] == android.content.pm.PackageManager.PERMISSION_GRANTED) {
                 launchCameraCapture();
             } else {
-                Toast.makeText(this, "Izin kamera diperlukan untuk mengambil foto", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Izin kamera dan mikrofon diperlukan untuk mengambil foto/video", Toast.LENGTH_SHORT).show();
             }
         } else if (requestCode == 102) {
             if (grantResults.length > 0 && grantResults[0] == android.content.pm.PackageManager.PERMISSION_GRANTED) {
@@ -2308,12 +2844,23 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
     @Override
     protected void onResume() {
         super.onResume();
+        activeTargetId = targetId;
+        activeChatType = chatType;
+        isChatRoomActive = true;
+        activeActivityRef = new java.lang.ref.WeakReference<>(this);
+
+        pollHandler.removeCallbacks(pollRunnable);
         pollHandler.postDelayed(pollRunnable, 3000);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        if (activeTargetId == targetId) {
+            activeTargetId = -1;
+            activeChatType = null;
+            isChatRoomActive = false;
+        }
         pollHandler.removeCallbacks(pollRunnable);
         if (adapter != null) {
             adapter.releaseAudio();
@@ -2323,6 +2870,15 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (activeTargetId == targetId) {
+            activeTargetId = -1;
+            activeChatType = null;
+            isChatRoomActive = false;
+        }
+        pollHandler.removeCallbacks(pollRunnable);
+        try {
+            mediaCompressExecutor.shutdown();
+        } catch (Exception ignored) {}
         if (adapter != null) {
             adapter.releaseAudio();
         }

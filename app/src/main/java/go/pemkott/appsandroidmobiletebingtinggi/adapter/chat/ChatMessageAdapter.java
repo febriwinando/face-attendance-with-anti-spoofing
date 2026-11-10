@@ -39,6 +39,11 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         void onCopyText(String text);
         void onEditMessage(ChatMessageItem item);
         void onForwardMessage(ChatMessageItem item);
+        void onDeleteMessage(ChatMessageItem item);
+        default void onDeleteMessageWithScope(ChatMessageItem item, String scope) {
+            onDeleteMessage(item);
+        }
+        default void onRestoreMessage(ChatMessageItem item) {}
         void onViewMedia(String url, String type, String fileName);
         default void onViewMedia(String url, String type) {
             onViewMedia(url, type, "");
@@ -92,6 +97,15 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     // Search Highlight Support (Telegram Style)
     private int highlightedPosition = -1;
+    private boolean isSuperAdmin = false;
+
+    public void setSuperAdmin(boolean superAdmin) {
+        this.isSuperAdmin = superAdmin;
+    }
+
+    public boolean isSuperAdmin() {
+        return isSuperAdmin;
+    }
 
     public void setHighlightedPosition(int position) {
         int prev = this.highlightedPosition;
@@ -165,6 +179,28 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         if (holder instanceof RightViewHolder) {
             RightViewHolder r = (RightViewHolder) holder;
+
+            // Deleted status badge (Super Admin / Monitoring view)
+            if (r.llDeletedBadge != null) {
+                if (item.isDeleted() && isSuperAdmin) {
+                    r.llDeletedBadge.setVisibility(View.VISIBLE);
+                    if (r.tvDeletedBadge != null) {
+                        if (item.isDeletedGlobal()) {
+                            r.tvDeletedBadge.setText("Pesan Dihapus Kedinasan (Global)");
+                        } else {
+                            r.tvDeletedBadge.setText(item.isMe() ? "Pesan Ini Dihapus Oleh Anda" : "Pesan Ini Dihapus Pengirim");
+                        }
+                    }
+                    if (r.llBubbleContainer != null) {
+                        r.llBubbleContainer.setAlpha(0.85f);
+                    }
+                } else {
+                    r.llDeletedBadge.setVisibility(View.GONE);
+                    if (r.llBubbleContainer != null) {
+                        r.llBubbleContainer.setAlpha(1.0f);
+                    }
+                }
+            }
 
             // Date Header Separator
             if (r.llDateHeader != null) {
@@ -297,6 +333,30 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         } else if (holder instanceof LeftViewHolder) {
             LeftViewHolder l = (LeftViewHolder) holder;
+
+            // Deleted status badge (Super Admin / Monitoring view)
+            if (l.llDeletedBadge != null) {
+                if (item.isDeleted() && isSuperAdmin) {
+                    l.llDeletedBadge.setVisibility(View.VISIBLE);
+                    if (l.tvDeletedBadge != null) {
+                        if (item.isDeletedGlobal()) {
+                            l.tvDeletedBadge.setText("Pesan Dihapus Kedinasan (Global)");
+                        } else if ("opd".equals(item.getChatType()) && !TextUtils.isEmpty(item.getSenderName())) {
+                            l.tvDeletedBadge.setText("Pesan Dihapus Pengirim (" + item.getSenderName() + ")");
+                        } else {
+                            l.tvDeletedBadge.setText("Pesan Ini Dihapus Pengirim");
+                        }
+                    }
+                    if (l.llBubbleContainer != null) {
+                        l.llBubbleContainer.setAlpha(0.85f);
+                    }
+                } else {
+                    l.llDeletedBadge.setVisibility(View.GONE);
+                    if (l.llBubbleContainer != null) {
+                        l.llBubbleContainer.setAlpha(1.0f);
+                    }
+                }
+            }
 
             // Date Header Separator
             if (l.llDateHeader != null) {
@@ -819,6 +879,8 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     private final java.util.Map<Long, Integer> audioDurationCache = new java.util.concurrent.ConcurrentHashMap<>();
+    private static final java.util.concurrent.ExecutorService audioMetadataExecutor =
+            java.util.concurrent.Executors.newFixedThreadPool(2);
 
     private void loadAudioDurationAsync(ChatMessageItem item, TextView tvDuration) {
         if (item == null || TextUtils.isEmpty(item.getFileUrl())) {
@@ -832,7 +894,9 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             return;
         }
         tvDuration.setText("0:00");
-        new Thread(() -> {
+        tvDuration.setTag(msgId);
+
+        audioMetadataExecutor.execute(() -> {
             try {
                 android.media.MediaMetadataRetriever mmr = new android.media.MediaMetadataRetriever();
                 String formattedUrl = formatMediaUrl(item.getFileUrl());
@@ -847,13 +911,14 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     int dur = Integer.parseInt(durStr);
                     audioDurationCache.put(msgId, dur);
                     audioHandler.post(() -> {
-                        if (currentPlayingId != msgId && tvDuration != null) {
+                        Object tag = tvDuration.getTag();
+                        if (tag instanceof Long && ((Long) tag) == msgId && currentPlayingId != msgId) {
                             tvDuration.setText(formatTime(dur));
                         }
                     });
                 }
             } catch (Exception ignored) {}
-        }).start();
+        });
     }
 
     private void handleAudioToggle(ChatMessageItem item, ImageView ivPlayPause, AudioWaveformView waveform, TextView tvDuration) {
@@ -1042,7 +1107,10 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override
     public void onViewRecycled(@NonNull RecyclerView.ViewHolder holder) {
         super.onViewRecycled(holder);
-        int pos = holder.getAdapterPosition();
+        int pos = holder.getBindingAdapterPosition();
+        if (pos == RecyclerView.NO_POSITION) {
+            pos = holder.getAbsoluteAdapterPosition();
+        }
         if (pos != RecyclerView.NO_POSITION && pos < list.size()) {
             ChatMessageItem item = list.get(pos);
             if (item != null && currentPlayingVideoId == item.getId()) {
@@ -1180,11 +1248,16 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             options.add("Salin Teks Pesan");
         }
 
-        // Task 1: "menu hapus pesan jangan ada, tetapi edit pesan, kecuali pesan sudah dibaca, tidak dapat di edit"
+        // Edit Pesan
         if (item.isMe() && !TextUtils.isEmpty(item.getMessage())) {
-            if (!item.isRead()) {
+            if (!item.isRead() && !item.isDeleted()) {
                 options.add("Edit Pesan");
             }
+        }
+
+        // Hapus Pesan (Soft delete per-user - Bebas dari opsi hapus permanen di ruang chat)
+        if (!item.isDeleted()) {
+            options.add("Hapus Pesan");
         }
 
         String[] optArray = options.toArray(new String[0]);
@@ -1200,6 +1273,8 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                         if (actionListener != null) actionListener.onCopyText(item.getMessage());
                     } else if ("Edit Pesan".equals(selected)) {
                         if (actionListener != null) actionListener.onEditMessage(item);
+                    } else if ("Hapus Pesan".equals(selected) || "Hapus untuk Saya".equals(selected)) {
+                        if (actionListener != null) actionListener.onDeleteMessage(item);
                     }
                 })
                 .show();
@@ -1214,6 +1289,8 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         LinearLayout llDateHeader;
         TextView tvDateHeader;
         LinearLayout llBubbleContainer;
+        LinearLayout llDeletedBadge;
+        TextView tvDeletedBadge;
         TextView tvSenderName, tvMessage, tvTime;
         MaterialCardView cvReplyContainer, cvImageContainer, cvDocumentContainer;
         TextView tvReplySender, tvReplyMessage, tvDocumentName;
@@ -1243,6 +1320,8 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             llDateHeader = itemView.findViewById(R.id.llDateHeader);
             tvDateHeader = itemView.findViewById(R.id.tvDateHeader);
             llBubbleContainer = itemView.findViewById(R.id.llBubbleContainer);
+            llDeletedBadge = itemView.findViewById(R.id.llDeletedBadge);
+            tvDeletedBadge = itemView.findViewById(R.id.tvDeletedBadge);
             tvSenderName = itemView.findViewById(R.id.tvSenderName);
             tvMessage = itemView.findViewById(R.id.tvMessage);
             tvTime = itemView.findViewById(R.id.tvTime);
@@ -1278,6 +1357,8 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         LinearLayout llDateHeader;
         TextView tvDateHeader;
         LinearLayout llBubbleContainer;
+        LinearLayout llDeletedBadge;
+        TextView tvDeletedBadge;
         TextView tvMessage, tvTime, tvStatusCheck;
         LinearLayout llTimeMetadata;
         MaterialCardView cvReplyContainer, cvImageContainer, cvDocumentContainer;
@@ -1308,6 +1389,8 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             llDateHeader = itemView.findViewById(R.id.llDateHeader);
             tvDateHeader = itemView.findViewById(R.id.tvDateHeader);
             llBubbleContainer = itemView.findViewById(R.id.llBubbleContainer);
+            llDeletedBadge = itemView.findViewById(R.id.llDeletedBadge);
+            tvDeletedBadge = itemView.findViewById(R.id.tvDeletedBadge);
             tvMessage = itemView.findViewById(R.id.tvMessage);
             tvTime = itemView.findViewById(R.id.tvTime);
             tvStatusCheck = itemView.findViewById(R.id.tvStatusCheck);

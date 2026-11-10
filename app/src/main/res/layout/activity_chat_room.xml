@@ -124,87 +124,159 @@
             android:contentDescription="Menu Opsi"/>
     </LinearLayout>
 
-    <!-- In-Chat Search Bar Container (Telegram Style) -->
+    <!-- In-Chat Search Bar Container (Dynamic, Spacious, Modern) -->
     <LinearLayout
         android:id="@+id/llChatSearchBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
+        android:orientation="vertical"
         android:background="#FFFFFF"
-        android:elevation="2dp"
-        android:paddingHorizontal="14dp"
-        android:paddingVertical="8dp"
+        android:elevation="4dp"
         android:visibility="gone">
 
-        <ImageView
-            android:layout_width="18dp"
-            android:layout_height="18dp"
-            android:src="@drawable/one_search"
-            app:tint="#64748B"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#F1F5F9" />
 
-        <EditText
-            android:id="@+id/etSearchInChat"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="6dp"
-            android:background="@null"
-            android:hint="Cari pesan..."
-            android:textColor="#0F172A"
-            android:textColorHint="#94A3B8"
-            android:textSize="13.5sp"
-            android:imeOptions="actionSearch"
-            android:inputType="text"
-            android:maxLines="1"/>
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="14dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp">
 
-        <TextView
-            android:id="@+id/tvSearchMatchCount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="6dp"
-            android:text="0/0"
-            android:textColor="#64748B"
-            android:textSize="11.5sp"
-            android:visibility="gone"/>
+            <!-- Search Input Field Capsule (Spacious & Clean) -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="44dp"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@drawable/bg_chat_search_capsule"
+                android:paddingStart="12dp"
+                android:paddingEnd="10dp">
 
-        <ImageView
-            android:id="@+id/ivSearchPrev"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
-            android:padding="4dp"
-            android:src="@drawable/ic_arrow_up"
-            app:tint="#0F172A"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:focusable="true"
-            android:contentDescription="Mundur"/>
+                <ImageView
+                    android:id="@+id/ivSearchIconLeft"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/one_search"
+                    app:tint="#0869D8"
+                    android:contentDescription="Search"/>
 
-        <ImageView
-            android:id="@+id/ivSearchNext"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
-            android:padding="4dp"
-            android:src="@drawable/ic_arrow_down"
-            app:tint="#0F172A"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:focusable="true"
-            android:contentDescription="Maju"/>
+                <EditText
+                    android:id="@+id/etSearchInChat"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="6dp"
+                    android:background="@null"
+                    android:hint="Cari pesan di percakapan ini..."
+                    android:textColor="#0F172A"
+                    android:textColorHint="#94A3B8"
+                    android:textSize="14sp"
+                    android:imeOptions="actionSearch"
+                    android:inputType="text"
+                    android:maxLines="1"
+                    android:gravity="center_vertical"/>
 
-        <ImageView
-            android:id="@+id/ivCloseChatSearch"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
-            android:layout_marginStart="4dp"
-            android:padding="5dp"
-            android:src="@drawable/ic_close"
-            app:tint="#64748B"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:focusable="true"
-            android:contentDescription="Tutup"/>
+                <ImageView
+                    android:id="@+id/ivClearChatSearch"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:padding="4dp"
+                    android:src="@drawable/ic_close"
+                    app:tint="#94A3B8"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:visibility="gone"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:contentDescription="Hapus teks"/>
+
+            </LinearLayout>
+
+            <!-- Dynamic Result Count Chip Badge -->
+            <TextView
+                android:id="@+id/tvSearchMatchCount"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:layout_marginStart="8dp"
+                android:gravity="center"
+                android:paddingHorizontal="10dp"
+                android:background="@drawable/bg_chat_search_count_chip"
+                android:text="0/0"
+                android:textColor="#0869D8"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:visibility="gone"/>
+
+            <!-- Navigation: Previous Match (Up) -->
+            <FrameLayout
+                android:id="@+id/flSearchPrev"
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                android:layout_marginStart="6dp"
+                android:background="@drawable/bg_chat_search_nav_btn"
+                android:clickable="true"
+                android:focusable="true">
+                <ImageView
+                    android:id="@+id/ivSearchPrev"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_arrow_up"
+                    app:tint="#0F172A"
+                    android:contentDescription="Mundur"/>
+            </FrameLayout>
+
+            <!-- Navigation: Next Match (Down) -->
+            <FrameLayout
+                android:id="@+id/flSearchNext"
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                android:layout_marginStart="4dp"
+                android:background="@drawable/bg_chat_search_nav_btn"
+                android:clickable="true"
+                android:focusable="true">
+                <ImageView
+                    android:id="@+id/ivSearchNext"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_arrow_down"
+                    app:tint="#0F172A"
+                    android:contentDescription="Maju"/>
+            </FrameLayout>
+
+            <!-- Close Search Button -->
+            <FrameLayout
+                android:id="@+id/flCloseChatSearch"
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                android:layout_marginStart="4dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true">
+                <ImageView
+                    android:id="@+id/ivCloseChatSearch"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_close"
+                    app:tint="#64748B"
+                    android:contentDescription="Tutup"/>
+            </FrameLayout>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#E2E8F0" />
     </LinearLayout>
 
     <!-- Message List Container -->
@@ -220,6 +292,114 @@
             android:clipToPadding="false"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"/>
+
+        <!-- Modern & Cool Empty State View -->
+        <LinearLayout
+            android:id="@+id/llEmptyChatRoom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingHorizontal="28dp"
+            android:visibility="gone">
+
+            <!-- Glowing Layered Icon Container -->
+            <FrameLayout
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:background="@drawable/bg_empty_chat_glow">
+
+                <FrameLayout
+                    android:layout_width="68dp"
+                    android:layout_height="68dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/bg_empty_chat_circle">
+
+                    <ImageView
+                        android:id="@+id/ivEmptyChatIcon"
+                        android:layout_width="34dp"
+                        android:layout_height="34dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_chat_bubble_outline"
+                        app:tint="#0869D8"
+                        android:contentDescription="Ikon Chat"/>
+                </FrameLayout>
+            </FrameLayout>
+
+            <!-- Title -->
+            <TextView
+                android:id="@+id/tvEmptyChatTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Belum Ada Pesan"
+                android:textColor="#0F172A"
+                android:textSize="17sp"
+                android:fontFamily="sans-serif-medium"
+                android:textStyle="bold"
+                android:gravity="center"/>
+
+            <!-- Info Message -->
+            <TextView
+                android:id="@+id/tvEmptyChatSubtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="Tidak ada pesan pada halaman chat ini. Mulai percakapan resmi atau sampaikan pesan kedinasan Anda di sini."
+                android:textColor="#64748B"
+                android:textSize="13sp"
+                android:gravity="center"
+                android:lineSpacingExtra="3dp"
+                android:maxWidth="280dp"/>
+
+            <!-- Status / Encryption Chip Badge -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:background="@drawable/bg_empty_chat_badge"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="6dp">
+
+                <ImageView
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
+                    android:src="@drawable/ic_security_lock"
+                    app:tint="#0284C7"
+                    android:contentDescription="Aman"/>
+
+                <TextView
+                    android:id="@+id/tvEmptyChatBadge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:text="Layanan Chat Kedinasan SAHUT Terproteksi"
+                    android:textColor="#0284C7"
+                    android:textSize="11.5sp"
+                    android:textStyle="bold"/>
+            </LinearLayout>
+
+            <!-- Quick Greeting Action Pill Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnEmptyChatQuickSay"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_marginTop="18dp"
+                android:text="Katakan Halo 👋"
+                android:textSize="13sp"
+                android:textColor="#0869D8"
+                android:fontFamily="sans-serif-medium"
+                app:cornerRadius="20dp"
+                app:strokeColor="#BAE6FD"
+                app:strokeWidth="1.2dp"
+                app:backgroundTint="#F0F9FF"
+                app:elevation="0dp"
+                android:paddingHorizontal="18dp"/>
+
+        </LinearLayout>
 
         <!-- Floating Scroll to Bottom Button with Unread Badge -->
         <FrameLayout
@@ -246,7 +426,7 @@
                     android:layout_height="22dp"
                     android:layout_gravity="center"
                     android:src="@drawable/ic_arrow_down"
-                    app:tint="#16A34A"
+                    app:tint="#0869D8"
                     android:contentDescription="Scroll ke Bawah"/>
             </com.google.android.material.card.MaterialCardView>
 

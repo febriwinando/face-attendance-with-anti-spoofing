@@ -56,6 +56,13 @@ public class ChatMonitoringActivity extends AppCompatActivity implements ChatMon
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         go.pemkott.appsandroidmobiletebingtinggi.utils.WindowUtil.applyDashboardStyle(this);
+
+        if (!go.pemkott.appsandroidmobiletebingtinggi.database.ChatLocalDatabase.isSuperAdminUser(this)) {
+            android.widget.Toast.makeText(this, "Akses ditolak: Hanya akun Monitoring (NIP 199402092020121005) yang berwenang mengakses halaman ini.", android.widget.Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+
         setContentView(R.layout.activity_chat_monitoring);
 
         ImageView ivBack = findViewById(R.id.ivBackMonitoring);
@@ -292,6 +299,81 @@ public class ChatMonitoringActivity extends AppCompatActivity implements ChatMon
         intent.putExtra("title", thread.getSenderName() + " ➔ " + thread.getReceiverName());
         intent.putExtra("subtitle", "Monitoring Obrolan Kedinasan");
         intent.putExtra("avatar_url", "");
+        intent.putExtra("is_monitoring_mode", true);
         startActivity(intent);
+    }
+
+    @Override
+    public void onThreadLongClick(ChatMonitoringThread thread) {
+        if (thread == null) return;
+        String[] options = new String[]{
+                "Buka Obrolan Monitoring",
+                "Tandai Bersihkan Obrolan (Soft Clear Global)",
+                "Hapus Riwayat Obrolan Permanen dari Database"
+        };
+
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Kelola Obrolan (" + thread.getSenderName() + " ➔ " + thread.getReceiverName() + ")")
+                .setItems(options, (dialog, which) -> {
+                    if (which == 0) {
+                        onThreadClick(thread);
+                    } else if (which == 1) {
+                        confirmGlobalClearThread(thread);
+                    } else if (which == 2) {
+                        confirmHardClearThread(thread);
+                    }
+                })
+                .setNegativeButton("Batal", null)
+                .show();
+    }
+
+    private void confirmGlobalClearThread(ChatMonitoringThread thread) {
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Tandai Bersihkan Obrolan (Global)")
+                .setMessage("Apakah Anda ingin menandai seluruh riwayat obrolan ini dibersihkan? Riwayat pesan akan disembunyikan dari kedua pegawai, namun tetap tersimpan di database.")
+                .setPositiveButton("Tandai Bersihkan", (dialog, which) -> {
+                    HttpService api = RetroClient.getInstance(this).getApi2();
+                    api.clearConversationHistory(thread.getReceiverId(), "personal", "global").enqueue(new Callback<go.pemkott.appsandroidmobiletebingtinggi.model.chat.SendMessageResponse>() {
+                        @Override
+                        public void onResponse(Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.SendMessageResponse> call, Response<go.pemkott.appsandroidmobiletebingtinggi.model.chat.SendMessageResponse> response) {}
+                        @Override
+                        public void onFailure(Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.SendMessageResponse> call, Throwable t) {}
+                    });
+
+                    go.pemkott.appsandroidmobiletebingtinggi.database.ChatLocalDatabase chatDb =
+                            new go.pemkott.appsandroidmobiletebingtinggi.database.ChatLocalDatabase(this);
+                    chatDb.softClearConversation("personal", thread.getReceiverId());
+                    chatDb.syncLastMessageFromLocal("personal", thread.getReceiverId(), true);
+
+                    fetchMonitoringData();
+                    Toast.makeText(this, "Obrolan ditandai dibersihkan kedinasan (Global)", Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton("Batal", null)
+                .show();
+    }
+
+    private void confirmHardClearThread(ChatMonitoringThread thread) {
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Hapus Riwayat Permanen dari Database")
+                .setMessage("PERINGATAN: Seluruh percakapan antara kedua pegawai ini akan dihapus secara fisik dan permanen dari database. Tindakan ini tidak dapat dibatalkan (irreversible). Lanjutkan?")
+                .setPositiveButton("Hapus Permanen", (dialog, which) -> {
+                    HttpService api = RetroClient.getInstance(this).getApi2();
+                    api.clearConversationHistory(thread.getReceiverId(), "personal", "hard_delete").enqueue(new Callback<go.pemkott.appsandroidmobiletebingtinggi.model.chat.SendMessageResponse>() {
+                        @Override
+                        public void onResponse(Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.SendMessageResponse> call, Response<go.pemkott.appsandroidmobiletebingtinggi.model.chat.SendMessageResponse> response) {}
+                        @Override
+                        public void onFailure(Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.SendMessageResponse> call, Throwable t) {}
+                    });
+
+                    go.pemkott.appsandroidmobiletebingtinggi.database.ChatLocalDatabase chatDb =
+                            new go.pemkott.appsandroidmobiletebingtinggi.database.ChatLocalDatabase(this);
+                    chatDb.hardClearConversation("personal", thread.getReceiverId());
+                    chatDb.syncLastMessageFromLocal("personal", thread.getReceiverId(), true);
+
+                    fetchMonitoringData();
+                    Toast.makeText(this, "Seluruh riwayat obrolan telah dihapus permanen dari database", Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton("Batal", null)
+                .show();
     }
 }

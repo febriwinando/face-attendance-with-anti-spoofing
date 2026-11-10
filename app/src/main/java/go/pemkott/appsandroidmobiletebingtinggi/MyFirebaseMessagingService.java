@@ -459,6 +459,19 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 if (targetIdStr != null) targetId = Long.parseLong(targetIdStr);
             } catch (Exception ignored) {}
 
+            // 1. Redam notifikasi sistem bar jika pengguna sedang aktif di ruang chat lawan bicara ini
+            if (go.pemkott.appsandroidmobiletebingtinggi.chat.ChatRoomActivity.isChatRoomActive
+                    && go.pemkott.appsandroidmobiletebingtinggi.chat.ChatRoomActivity.activeTargetId == targetId
+                    && (chatType == null || chatType.equalsIgnoreCase(go.pemkott.appsandroidmobiletebingtinggi.chat.ChatRoomActivity.activeChatType))) {
+                go.pemkott.appsandroidmobiletebingtinggi.chat.ChatRoomActivity.notifyIncomingMessageFromFCM(targetId, chatType);
+                return;
+            }
+
+            // 2. Beri tahu ChatListActivity jika sedang aktif di latar depan
+            if (go.pemkott.appsandroidmobiletebingtinggi.chat.ChatListActivity.isChatListActive) {
+                go.pemkott.appsandroidmobiletebingtinggi.chat.ChatListActivity.notifyIncomingMessageFromFCM();
+            }
+
             if (targetId > 0) {
                 intent = new android.content.Intent(this, go.pemkott.appsandroidmobiletebingtinggi.chat.ChatRoomActivity.class);
                 intent.putExtra("target_id", targetId);

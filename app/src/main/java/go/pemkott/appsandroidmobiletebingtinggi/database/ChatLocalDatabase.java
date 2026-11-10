@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.text.TextUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -20,7 +21,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatPrivacyResponse;
 public class ChatLocalDatabase extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "chat_local.db";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 6;
 
     // Contacts Table
     private static final String TABLE_CONTACTS = "chat_contacts";
@@ -53,6 +54,9 @@ public class ChatLocalDatabase extends SQLiteOpenHelper {
     private static final String COL_IS_ME = "is_me";
     private static final String COL_IS_READ = "is_read";
     private static final String COL_CREATED_AT = "created_at_formatted";
+    private static final String COL_IS_DELETED = "is_deleted";
+    private static final String COL_DELETED_FOR_USERS = "deleted_for_users";
+    private static final String COL_IS_DELETED_GLOBAL = "is_deleted_global";
 
     // Privacy Table
     private static final String TABLE_PRIVACY = "chat_privacy";
@@ -69,7 +73,7 @@ public class ChatLocalDatabase extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String createContacts = "CREATE TABLE " + TABLE_CONTACTS + " (" +
-                COL_TARGET_ID + " INTEGER PRIMARY KEY, " +
+                COL_TARGET_ID + " INTEGER, " +
                 COL_OPD_ID + " INTEGER, " +
                 COL_CHAT_TYPE + " TEXT, " +
                 COL_TITLE + " TEXT, " +
@@ -78,7 +82,8 @@ public class ChatLocalDatabase extends SQLiteOpenHelper {
                 COL_AVATAR_URL + " TEXT, " +
                 COL_LAST_MESSAGE + " TEXT, " +
                 COL_LAST_TIME + " TEXT, " +
-                COL_UNREAD_COUNT + " INTEGER)";
+                COL_UNREAD_COUNT + " INTEGER, " +
+                "PRIMARY KEY (" + COL_TARGET_ID + ", " + COL_CHAT_TYPE + "))";
 
         String createMessages = "CREATE TABLE " + TABLE_MESSAGES + " (" +
                 COL_MSG_ID + " INTEGER PRIMARY KEY, " +
@@ -96,7 +101,10 @@ public class ChatLocalDatabase extends SQLiteOpenHelper {
                 COL_REPLY_MESSAGE + " TEXT, " +
                 COL_IS_ME + " INTEGER, " +
                 COL_IS_READ + " INTEGER, " +
-                COL_CREATED_AT + " TEXT)";
+                COL_CREATED_AT + " TEXT, " +
+                COL_IS_DELETED + " INTEGER DEFAULT 0, " +
+                COL_DELETED_FOR_USERS + " TEXT, " +
+                COL_IS_DELETED_GLOBAL + " INTEGER DEFAULT 0)";
 
         String createPrivacy = "CREATE TABLE " + TABLE_PRIVACY + " (" +
                 COL_PRIVACY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -112,10 +120,44 @@ public class ChatLocalDatabase extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        if (oldVersion < 5) {
+            try {
+                db.execSQL("ALTER TABLE " + TABLE_MESSAGES + " ADD COLUMN " + COL_IS_DELETED + " INTEGER DEFAULT 0");
+            } catch (Exception ignored) {}
+        }
+        if (oldVersion < 6) {
+            try {
+                db.execSQL("ALTER TABLE " + TABLE_MESSAGES + " ADD COLUMN " + COL_DELETED_FOR_USERS + " TEXT");
+                db.execSQL("ALTER TABLE " + TABLE_MESSAGES + " ADD COLUMN " + COL_IS_DELETED_GLOBAL + " INTEGER DEFAULT 0");
+                return;
+            } catch (Exception ignored) {}
+        }
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_CONTACTS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_MESSAGES);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PRIVACY);
         onCreate(db);
+    }
+
+    public static boolean isSuperAdminUser(Context context) {
+        if (context == null) return false;
+        try {
+            DatabaseHelper dbHelper = new DatabaseHelper(context);
+            go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager session =
+                    new go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager(context);
+            String myNip = dbHelper.getCurrentEmployeeNip();
+            return isSuperAdminNip(myNip)
+                    || isSuperAdminNip(session.getPegawaiId())
+                    || isSuperAdminNip(session.getUsername())
+                    || isSuperAdminNip(session.getEmployeeId());
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static boolean isSuperAdminNip(String nip) {
+        if (nip == null || nip.isEmpty()) return false;
+        String clean = nip.trim();
+        return clean.startsWith("19940209202012") || clean.contains("199402092020121005");
     }
 
     public void clearAllLocalChatData() {
@@ -222,6 +264,10 @@ public class ChatLocalDatabase extends SQLiteOpenHelper {
     }
 
     public List<ChatContact> getRecentConversations() {
+        return getRecentConversations(false);
+    }
+
+    public List<ChatContact> getRecentConversations(boolean includeDeleted) {
         List<ChatContact> list = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.rawQuery(
@@ -272,7 +318,11 @@ public class ChatLocalDatabase extends SQLiteOpenHelper {
                 cv.put(COL_SENDER_ID, m.getSenderId());
                 cv.put(COL_SENDER_NAME, m.getSenderName());
                 cv.put(COL_RECEIVER_ID, m.getReceiverId());
-                cv.put(COL_MSG_OPD_ID, m.getOpdId());
+                Long opdId = m.getOpdId();
+                if ((opdId == null || opdId == 0) && "opd".equals(m.getChatType())) {
+                    opdId = m.getReceiverId();
+                }
+                cv.put(COL_MSG_OPD_ID, opdId);
                 cv.put(COL_MSG_CHAT_TYPE, m.getChatType());
                 cv.put(COL_MESSAGE, m.getMessage());
                 cv.put(COL_MSG_TYPE, m.getMsgType());
@@ -284,6 +334,22 @@ public class ChatLocalDatabase extends SQLiteOpenHelper {
                 cv.put(COL_IS_ME, m.isMe() ? 1 : 0);
                 cv.put(COL_IS_READ, m.isRead() ? 1 : 0);
                 cv.put(COL_CREATED_AT, m.getCreatedAtFormatted());
+
+                // Pastikan jika pesan sudah dihapus di perangkat ini (soft delete per-user),
+                // sinkronisasi dari server tidak akan menghidupkan kembali pesan tersebut
+                int localIsDeleted = 0;
+                Cursor cDel = db.query(TABLE_MESSAGES, new String[]{COL_IS_DELETED},
+                        COL_MSG_ID + " = ?", new String[]{String.valueOf(m.getId())}, null, null, null);
+                if (cDel != null) {
+                    if (cDel.moveToFirst()) {
+                        localIsDeleted = cDel.getInt(0);
+                    }
+                    cDel.close();
+                }
+                int finalDeleted = (localIsDeleted == 1 || m.isDeleted()) ? 1 : 0;
+                cv.put(COL_IS_DELETED, finalDeleted);
+                cv.put(COL_DELETED_FOR_USERS, m.getDeletedForUsers());
+                cv.put(COL_IS_DELETED_GLOBAL, m.getIsDeletedGlobal());
 
                 db.insertWithOnConflict(TABLE_MESSAGES, null, cv, SQLiteDatabase.CONFLICT_REPLACE);
             }
@@ -301,7 +367,11 @@ public class ChatLocalDatabase extends SQLiteOpenHelper {
         cv.put(COL_SENDER_ID, m.getSenderId());
         cv.put(COL_SENDER_NAME, m.getSenderName());
         cv.put(COL_RECEIVER_ID, m.getReceiverId());
-        cv.put(COL_MSG_OPD_ID, m.getOpdId());
+        Long opdId = m.getOpdId();
+        if ((opdId == null || opdId == 0) && "opd".equals(m.getChatType())) {
+            opdId = m.getReceiverId();
+        }
+        cv.put(COL_MSG_OPD_ID, opdId);
         cv.put(COL_MSG_CHAT_TYPE, m.getChatType());
         cv.put(COL_MESSAGE, m.getMessage());
         cv.put(COL_MSG_TYPE, m.getMsgType());
@@ -314,20 +384,44 @@ public class ChatLocalDatabase extends SQLiteOpenHelper {
         cv.put(COL_IS_READ, m.isRead() ? 1 : 0);
         cv.put(COL_CREATED_AT, m.getCreatedAtFormatted());
 
+        int localIsDeleted = 0;
+        Cursor cDel = db.query(TABLE_MESSAGES, new String[]{COL_IS_DELETED},
+                COL_MSG_ID + " = ?", new String[]{String.valueOf(m.getId())}, null, null, null);
+        if (cDel != null) {
+            if (cDel.moveToFirst()) {
+                localIsDeleted = cDel.getInt(0);
+            }
+            cDel.close();
+        }
+        int finalDeleted = (localIsDeleted == 1 || m.isDeleted()) ? 1 : 0;
+        cv.put(COL_IS_DELETED, finalDeleted);
+        cv.put(COL_DELETED_FOR_USERS, m.getDeletedForUsers());
+        cv.put(COL_IS_DELETED_GLOBAL, m.getIsDeletedGlobal());
+
         db.insertWithOnConflict(TABLE_MESSAGES, null, cv, SQLiteDatabase.CONFLICT_REPLACE);
     }
 
     public List<ChatMessageItem> getMessages(String chatType, long targetId) {
+        return getMessages(chatType, targetId, false);
+    }
+
+    public List<ChatMessageItem> getMessages(String chatType, long targetId, boolean includeDeleted) {
         List<ChatMessageItem> list = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
         String selection;
         String[] selectionArgs;
 
         if ("opd".equals(chatType)) {
-            selection = COL_MSG_CHAT_TYPE + " = ? AND " + COL_MSG_OPD_ID + " = ?";
-            selectionArgs = new String[]{"opd", String.valueOf(targetId)};
+            selection = COL_MSG_CHAT_TYPE + " = ? AND (" + COL_MSG_OPD_ID + " = ? OR " + COL_RECEIVER_ID + " = ?)";
+            if (!includeDeleted) {
+                selection += " AND (" + COL_IS_DELETED + " = 0 OR " + COL_IS_DELETED + " IS NULL) AND (" + COL_IS_DELETED_GLOBAL + " = 0 OR " + COL_IS_DELETED_GLOBAL + " IS NULL)";
+            }
+            selectionArgs = new String[]{"opd", String.valueOf(targetId), String.valueOf(targetId)};
         } else {
             selection = COL_MSG_CHAT_TYPE + " = ? AND (" + COL_SENDER_ID + " = ? OR " + COL_RECEIVER_ID + " = ?)";
+            if (!includeDeleted) {
+                selection += " AND (" + COL_IS_DELETED + " = 0 OR " + COL_IS_DELETED + " IS NULL) AND (" + COL_IS_DELETED_GLOBAL + " = 0 OR " + COL_IS_DELETED_GLOBAL + " IS NULL)";
+            }
             selectionArgs = new String[]{"personal", String.valueOf(targetId), String.valueOf(targetId)};
         }
 
@@ -360,6 +454,18 @@ public class ChatLocalDatabase extends SQLiteOpenHelper {
                 m.setMe(cursor.getInt(cursor.getColumnIndexOrThrow(COL_IS_ME)) == 1);
                 m.setRead(cursor.getInt(cursor.getColumnIndexOrThrow(COL_IS_READ)) == 1);
                 m.setCreatedAtFormatted(cursor.getString(cursor.getColumnIndexOrThrow(COL_CREATED_AT)));
+                int delColIndex = cursor.getColumnIndex(COL_IS_DELETED);
+                if (delColIndex != -1) {
+                    m.setIsDeleted(cursor.getInt(delColIndex));
+                }
+                int globalDelIndex = cursor.getColumnIndex(COL_IS_DELETED_GLOBAL);
+                if (globalDelIndex != -1) {
+                    m.setIsDeletedGlobal(cursor.getInt(globalDelIndex));
+                }
+                int userDelIndex = cursor.getColumnIndex(COL_DELETED_FOR_USERS);
+                if (userDelIndex != -1) {
+                    m.setDeletedForUsers(cursor.getString(userDelIndex));
+                }
                 list.add(m);
             } while (cursor.moveToNext());
             cursor.close();
@@ -374,8 +480,8 @@ public class ChatLocalDatabase extends SQLiteOpenHelper {
         String[] selectionArgs;
 
         if ("opd".equals(chatType)) {
-            selection = COL_MSG_CHAT_TYPE + " = ? AND " + COL_MSG_OPD_ID + " = ?";
-            selectionArgs = new String[]{"opd", String.valueOf(targetId)};
+            selection = COL_MSG_CHAT_TYPE + " = ? AND (" + COL_MSG_OPD_ID + " = ? OR " + COL_RECEIVER_ID + " = ?)";
+            selectionArgs = new String[]{"opd", String.valueOf(targetId), String.valueOf(targetId)};
         } else {
             selection = COL_MSG_CHAT_TYPE + " = ? AND (" + COL_SENDER_ID + " = ? OR " + COL_RECEIVER_ID + " = ?)";
             selectionArgs = new String[]{"personal", String.valueOf(targetId), String.valueOf(targetId)};
@@ -389,18 +495,142 @@ public class ChatLocalDatabase extends SQLiteOpenHelper {
         return lastId;
     }
 
+    public void softDeleteMessage(long messageId) {
+        try {
+            SQLiteDatabase db = getWritableDatabase();
+            ContentValues cv = new ContentValues();
+            cv.put(COL_IS_DELETED, 1);
+            db.update(TABLE_MESSAGES, cv, COL_MSG_ID + " = ?", new String[]{String.valueOf(messageId)});
+        } catch (Exception ignored) {}
+    }
+
+    public void softClearConversation(String chatType, long targetId) {
+        try {
+            SQLiteDatabase db = getWritableDatabase();
+            ContentValues cv = new ContentValues();
+            cv.put(COL_IS_DELETED, 1);
+            if ("opd".equals(chatType)) {
+                db.update(TABLE_MESSAGES, cv, COL_MSG_CHAT_TYPE + " = ? AND (" + COL_MSG_OPD_ID + " = ? OR " + COL_RECEIVER_ID + " = ?)", new String[]{"opd", String.valueOf(targetId), String.valueOf(targetId)});
+            } else {
+                db.update(TABLE_MESSAGES, cv, COL_MSG_CHAT_TYPE + " = ? AND (" + COL_SENDER_ID + " = ? OR " + COL_RECEIVER_ID + " = ?)", new String[]{"personal", String.valueOf(targetId), String.valueOf(targetId)});
+            }
+        } catch (Exception ignored) {}
+    }
+
+    public void syncLastMessageFromLocal(String chatType, long targetId, boolean includeDeleted) {
+        try {
+            SQLiteDatabase db = getWritableDatabase();
+            String selection;
+            String[] selectionArgs;
+            if ("opd".equals(chatType)) {
+                selection = COL_MSG_CHAT_TYPE + " = ? AND (" + COL_MSG_OPD_ID + " = ? OR " + COL_RECEIVER_ID + " = ?)";
+                if (!includeDeleted) {
+                    selection += " AND (" + COL_IS_DELETED + " = 0 OR " + COL_IS_DELETED + " IS NULL) AND (" + COL_IS_DELETED_GLOBAL + " = 0 OR " + COL_IS_DELETED_GLOBAL + " IS NULL)";
+                }
+                selectionArgs = new String[]{"opd", String.valueOf(targetId), String.valueOf(targetId)};
+            } else {
+                selection = COL_MSG_CHAT_TYPE + " = ? AND (" + COL_SENDER_ID + " = ? OR " + COL_RECEIVER_ID + " = ?)";
+                if (!includeDeleted) {
+                    selection += " AND (" + COL_IS_DELETED + " = 0 OR " + COL_IS_DELETED + " IS NULL) AND (" + COL_IS_DELETED_GLOBAL + " = 0 OR " + COL_IS_DELETED_GLOBAL + " IS NULL)";
+                }
+                selectionArgs = new String[]{"personal", String.valueOf(targetId), String.valueOf(targetId)};
+            }
+
+            Cursor cursor = db.query(TABLE_MESSAGES,
+                    new String[]{COL_MESSAGE, COL_MSG_TYPE, COL_CREATED_AT, COL_IS_DELETED, COL_SENDER_NAME, COL_IS_ME, COL_IS_DELETED_GLOBAL},
+                    selection, selectionArgs, null, null, COL_MSG_ID + " DESC", "1");
+
+            String lastMsg = "Tidak ada pesan";
+            String lastTime = "";
+            if (cursor != null && cursor.moveToFirst()) {
+                lastMsg = cursor.getString(0);
+                String msgType = cursor.getString(1);
+                lastTime = cursor.getString(2);
+                int isDel = cursor.getInt(3);
+                String senderName = cursor.getString(4);
+                int isMe = cursor.getInt(5);
+                int isDelGlobal = cursor.getInt(6);
+
+                if ("image".equalsIgnoreCase(msgType)) {
+                    if (lastMsg == null || lastMsg.trim().isEmpty()) lastMsg = "📷 Foto";
+                } else if ("audio".equalsIgnoreCase(msgType)) {
+                    if (lastMsg == null || lastMsg.trim().isEmpty()) lastMsg = "🎤 Pesan Suara";
+                } else if ("video".equalsIgnoreCase(msgType)) {
+                    if (lastMsg == null || lastMsg.trim().isEmpty()) lastMsg = "🎥 Video";
+                } else if ("document".equalsIgnoreCase(msgType)) {
+                    if (lastMsg == null || lastMsg.trim().isEmpty()) lastMsg = "📄 Dokumen";
+                }
+
+                if ("opd".equals(chatType)) {
+                    String senderPrefix = (isMe == 1) ? "Anda: " : (!TextUtils.isEmpty(senderName) ? senderName + ": " : "");
+                    lastMsg = senderPrefix + (lastMsg != null ? lastMsg : "");
+                }
+
+                if ((isDel == 1 || isDelGlobal == 1) && includeDeleted) {
+                    String tag = (isDelGlobal == 1) ? "[Dihapus Global] " : "[Dihapus] ";
+                    lastMsg = tag + (lastMsg != null ? lastMsg : "");
+                }
+
+                cursor.close();
+            } else if (cursor != null) {
+                cursor.close();
+            }
+
+            ContentValues cv = new ContentValues();
+            cv.put(COL_LAST_MESSAGE, lastMsg != null ? lastMsg : "Tidak ada pesan");
+            cv.put(COL_LAST_TIME, lastTime != null ? lastTime : "");
+            if ("Tidak ada pesan".equals(lastMsg)) {
+                cv.put(COL_UNREAD_COUNT, 0);
+            }
+            db.update(TABLE_CONTACTS, cv, COL_TARGET_ID + " = ? AND " + COL_CHAT_TYPE + " = ?", new String[]{String.valueOf(targetId), chatType});
+        } catch (Exception ignored) {}
+    }
+
     public void deleteMessageLocal(long messageId) {
-        SQLiteDatabase db = getWritableDatabase();
-        db.delete(TABLE_MESSAGES, COL_MSG_ID + " = ?", new String[]{String.valueOf(messageId)});
+        softDeleteMessage(messageId);
     }
 
     public void clearConversationLocal(String chatType, long targetId) {
-        SQLiteDatabase db = getWritableDatabase();
-        if ("opd".equals(chatType)) {
-            db.delete(TABLE_MESSAGES, COL_MSG_CHAT_TYPE + " = ? AND " + COL_MSG_OPD_ID + " = ?", new String[]{"opd", String.valueOf(targetId)});
-        } else {
-            db.delete(TABLE_MESSAGES, COL_MSG_CHAT_TYPE + " = ? AND (" + COL_SENDER_ID + " = ? OR " + COL_RECEIVER_ID + " = ?)", new String[]{"personal", String.valueOf(targetId), String.valueOf(targetId)});
-        }
+        softClearConversation(chatType, targetId);
+    }
+
+    public void hardDeleteMessage(long messageId) {
+        try {
+            SQLiteDatabase db = getWritableDatabase();
+            db.delete(TABLE_MESSAGES, COL_MSG_ID + " = ?", new String[]{String.valueOf(messageId)});
+        } catch (Exception ignored) {}
+    }
+
+    public void hardClearConversation(String chatType, long targetId) {
+        try {
+            SQLiteDatabase db = getWritableDatabase();
+            if ("opd".equals(chatType)) {
+                db.delete(TABLE_MESSAGES, COL_MSG_CHAT_TYPE + " = ? AND (" + COL_MSG_OPD_ID + " = ? OR " + COL_RECEIVER_ID + " = ?)", new String[]{"opd", String.valueOf(targetId), String.valueOf(targetId)});
+            } else {
+                db.delete(TABLE_MESSAGES, COL_MSG_CHAT_TYPE + " = ? AND (" + COL_SENDER_ID + " = ? OR " + COL_RECEIVER_ID + " = ?)", new String[]{"personal", String.valueOf(targetId), String.valueOf(targetId)});
+            }
+        } catch (Exception ignored) {}
+    }
+
+    public void softDeleteGlobal(long messageId) {
+        try {
+            SQLiteDatabase db = getWritableDatabase();
+            ContentValues cv = new ContentValues();
+            cv.put(COL_IS_DELETED, 1);
+            cv.put(COL_IS_DELETED_GLOBAL, 1);
+            db.update(TABLE_MESSAGES, cv, COL_MSG_ID + " = ?", new String[]{String.valueOf(messageId)});
+        } catch (Exception ignored) {}
+    }
+
+    public void restoreMessage(long messageId) {
+        try {
+            SQLiteDatabase db = getWritableDatabase();
+            ContentValues cv = new ContentValues();
+            cv.put(COL_IS_DELETED, 0);
+            cv.put(COL_IS_DELETED_GLOBAL, 0);
+            cv.put(COL_DELETED_FOR_USERS, "");
+            db.update(TABLE_MESSAGES, cv, COL_MSG_ID + " = ?", new String[]{String.valueOf(messageId)});
+        } catch (Exception ignored) {}
     }
 
     public void markMessagesAsRead(String chatType, long targetId) {

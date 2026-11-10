@@ -18,6 +18,25 @@ public class ChatContactResponse {
     @SerializedName("opd_list")
     private List<OpdModel> opdList;
 
+    @SerializedName("terms_accepted")
+    private Boolean termsAccepted;
+
+    @SerializedName("is_terms_accepted")
+    private Boolean isTermsAccepted;
+
+    @SerializedName("chat_terms_accepted")
+    private Boolean chatTermsAccepted;
+
+    public Boolean getTermsAccepted() {
+        if (termsAccepted != null) return termsAccepted;
+        if (isTermsAccepted != null) return isTermsAccepted;
+        return chatTermsAccepted;
+    }
+
+    public void setTermsAccepted(Boolean termsAccepted) {
+        this.termsAccepted = termsAccepted;
+    }
+
     public boolean isStatus() {
         return status;
     }

@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/flCameraRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000">
+
+    <!-- CameraX Fullscreen Preview -->
+    <androidx.camera.view.PreviewView
+        android:id="@+id/viewFinder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:scaleType="fillCenter" />
+
+    <!-- Captured Review Container (Photo / Video Preview before Send) -->
+    <FrameLayout
+        android:id="@+id/flReviewContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#000000"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/ivPhotoReview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:contentDescription="Hasil Foto"
+            android:visibility="gone" />
+
+        <VideoView
+            android:id="@+id/vvVideoReview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/ivVideoReviewPlay"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_play_arrow"
+            android:background="@drawable/bg_circle_sahut_play_glass"
+            android:padding="12dp"
+            app:tint="#FFFFFF"
+            android:visibility="gone"
+            android:contentDescription="Putar Ulang Video"/>
+    </FrameLayout>
+
+    <!-- Shutter Flash Animation Overlay -->
+    <View
+        android:id="@+id/viewShutterFlash"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#FFFFFF"
+        android:alpha="0"
+        android:visibility="gone" />
+
+    <!-- Top Controls Bar -->
+    <RelativeLayout
+        android:id="@+id/rlTopControls"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:paddingHorizontal="16dp"
+        android:paddingTop="38dp"
+        android:paddingBottom="12dp">
+
+        <!-- Close / Cancel Button -->
+        <FrameLayout
+            android:id="@+id/flCameraClose"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/bg_circle_glass_button"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                android:id="@+id/ivCameraClose"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_close"
+                app:tint="#FFFFFF"
+                android:contentDescription="Tutup Kamera"/>
+        </FrameLayout>
+
+        <!-- Live Video Recording Timer Badge -->
+        <LinearLayout
+            android:id="@+id/llRecordingIndicator"
+            android:layout_width="wrap_content"
+            android:layout_height="34dp"
+            android:layout_centerInParent="true"
+            android:background="@drawable/bg_camera_mode_badge"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="14dp"
+            android:visibility="gone">
+
+            <View
+                android:id="@+id/viewRecordingDot"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:background="@drawable/bg_circle_red_dot" />
+
+            <TextView
+                android:id="@+id/tvRecordingTimer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="00:00"
+                android:textColor="#FFFFFF"
+                android:textSize="13sp"
+                android:fontFamily="monospace"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- Flash Toggle Button -->
+        <FrameLayout
+            android:id="@+id/flCameraFlash"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/bg_circle_glass_button"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                android:id="@+id/ivCameraFlash"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="center"
+                android:src="@drawable/flashof"
+                app:tint="#FFFFFF"
+                android:contentDescription="Flash Kamera"/>
+        </FrameLayout>
+    </RelativeLayout>
+
+    <!-- Bottom Controls Area -->
+    <LinearLayout
+        android:id="@+id/llBottomCameraArea"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:paddingBottom="36dp">
+
+        <!-- Mode Selector Switcher (FOTO / VIDEO) -->
+        <LinearLayout
+            android:id="@+id/llModeSelector"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:layout_marginBottom="24dp"
+            android:background="@drawable/bg_camera_mode_badge"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="6dp">
+
+            <TextView
+                android:id="@+id/tvModePhoto"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:paddingHorizontal="16dp"
+                android:text="FOTO"
+                android:textColor="#38BDF8"
+                android:textSize="12.5sp"
+                android:fontFamily="sans-serif-black"
+                android:clickable="true"
+                android:focusable="true"/>
+
+            <TextView
+                android:id="@+id/tvModeVideo"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:paddingHorizontal="16dp"
+                android:text="VIDEO"
+                android:textColor="#94A3B8"
+                android:textSize="12.5sp"
+                android:fontFamily="sans-serif-black"
+                android:clickable="true"
+                android:focusable="true"/>
+        </LinearLayout>
+
+        <!-- Live Camera Controls Container -->
+        <RelativeLayout
+            android:id="@+id/rlLiveCameraControls"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="28dp">
+
+            <!-- Switch Front / Back Camera Button -->
+            <FrameLayout
+                android:id="@+id/flBtnFlipCamera"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:background="@drawable/bg_circle_glass_button"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:id="@+id/ivCameraFlip"
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/flip"
+                    app:tint="#FFFFFF"
+                    android:contentDescription="Putar Kamera"/>
+            </FrameLayout>
+
+            <!-- Center Photo Shutter Button -->
+            <FrameLayout
+                android:id="@+id/flShutterPhoto"
+                android:layout_width="74dp"
+                android:layout_height="74dp"
+                android:layout_centerInParent="true"
+                android:background="@drawable/bg_shutter_outer_ring"
+                android:clickable="true"
+                android:focusable="true">
+
+                <View
+                    android:layout_width="58dp"
+                    android:layout_height="58dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/bg_shutter_inner_white" />
+            </FrameLayout>
+
+            <!-- Center Video Record Button -->
+            <FrameLayout
+                android:id="@+id/flRecordVideo"
+                android:layout_width="74dp"
+                android:layout_height="74dp"
+                android:layout_centerInParent="true"
+                android:background="@drawable/bg_shutter_outer_ring"
+                android:clickable="true"
+                android:focusable="true"
+                android:visibility="gone">
+
+                <View
+                    android:id="@+id/viewRecordInner"
+                    android:layout_width="58dp"
+                    android:layout_height="58dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/bg_shutter_inner_red" />
+            </FrameLayout>
+
+            <!-- Balance Spacer on Right -->
+            <View
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:visibility="invisible" />
+        </RelativeLayout>
+
+        <!-- Review / Confirmation Controls Container (Shown after capture) -->
+        <LinearLayout
+            android:id="@+id/llReviewActions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:paddingHorizontal="32dp"
+            android:visibility="gone">
+
+            <!-- Retake / Cancel Button -->
+            <LinearLayout
+                android:id="@+id/llBtnRetake"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true">
+
+                <FrameLayout
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:background="@drawable/bg_circle_glass_button">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_close"
+                        app:tint="#FFFFFF"
+                        android:contentDescription="Ulangi"/>
+                </FrameLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="Ulangi"
+                    android:textColor="#CBD5E1"
+                    android:textSize="12sp"
+                    android:fontFamily="sans-serif-bold"/>
+            </LinearLayout>
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <!-- Confirm & Send Button in SAHUT Blue -->
+            <LinearLayout
+                android:id="@+id/llBtnConfirmSend"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true">
+
+                <FrameLayout
+                    android:layout_width="58dp"
+                    android:layout_height="58dp"
+                    android:background="@drawable/bg_circle_sahut_blue"
+                    android:elevation="6dp">
+
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_send_line"
+                        app:tint="#FFFFFF"
+                        android:contentDescription="Kirim ke Chat"/>
+                </FrameLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="Kirim"
+                    android:textColor="#38BDF8"
+                    android:textSize="12.5sp"
+                    android:fontFamily="sans-serif-black"/>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+</FrameLayout>

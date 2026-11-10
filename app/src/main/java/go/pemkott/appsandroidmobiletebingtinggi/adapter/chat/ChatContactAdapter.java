@@ -25,6 +25,7 @@ public class ChatContactAdapter extends RecyclerView.Adapter<ChatContactAdapter.
 
     public interface OnContactClickListener {
         void onContactClick(ChatContact contact);
+        default void onContactLongClick(ChatContact contact) {}
     }
 
     private final Context context;
@@ -56,29 +57,40 @@ public class ChatContactAdapter extends RecyclerView.Adapter<ChatContactAdapter.
         holder.tvTitle.setText(item.getTitle());
         holder.tvSubtitle.setText(item.getSubtitle());
 
-        if (!TextUtils.isEmpty(item.getLastMessage())) {
-            holder.tvLastMsg.setText(item.getLastMessage());
-            holder.tvLastMsg.setVisibility(View.VISIBLE);
-        } else {
-            holder.tvLastMsg.setText("Belum ada pesan");
-            holder.tvLastMsg.setVisibility(View.VISIBLE);
-        }
+        String lastMsg = item.getLastMessage();
+        boolean hasActiveMsg = !TextUtils.isEmpty(lastMsg) 
+                && !"Tidak ada pesan".equalsIgnoreCase(lastMsg) 
+                && !"Belum ada pesan".equalsIgnoreCase(lastMsg);
 
-        if (!TextUtils.isEmpty(item.getLastTime())) {
-            holder.tvTime.setText(item.getLastTime());
-            holder.tvTime.setVisibility(View.VISIBLE);
-        } else {
-            holder.tvTime.setVisibility(View.GONE);
-        }
+        if (hasActiveMsg) {
+            holder.tvLastMsg.setText(lastMsg);
+            holder.tvLastMsg.setTextColor(android.graphics.Color.parseColor("#64748B"));
+            holder.tvLastMsg.setTypeface(null, android.graphics.Typeface.NORMAL);
+            holder.tvLastMsg.setVisibility(View.VISIBLE);
 
-        if (item.getUnreadCount() > 0) {
-            if (item.getUnreadCount() > 99) {
-                holder.tvUnreadBadge.setText("99+");
+            if (!TextUtils.isEmpty(item.getLastTime())) {
+                holder.tvTime.setText(item.getLastTime());
+                holder.tvTime.setVisibility(View.VISIBLE);
             } else {
-                holder.tvUnreadBadge.setText(String.valueOf(item.getUnreadCount()));
+                holder.tvTime.setVisibility(View.GONE);
             }
-            holder.tvUnreadBadge.setVisibility(View.VISIBLE);
+
+            if (item.getUnreadCount() > 0) {
+                if (item.getUnreadCount() > 99) {
+                    holder.tvUnreadBadge.setText("99+");
+                } else {
+                    holder.tvUnreadBadge.setText(String.valueOf(item.getUnreadCount()));
+                }
+                holder.tvUnreadBadge.setVisibility(View.VISIBLE);
+            } else {
+                holder.tvUnreadBadge.setVisibility(View.GONE);
+            }
         } else {
+            holder.tvLastMsg.setText("Tidak ada pesan");
+            holder.tvLastMsg.setTextColor(android.graphics.Color.parseColor("#94A3B8"));
+            holder.tvLastMsg.setTypeface(null, android.graphics.Typeface.ITALIC);
+            holder.tvLastMsg.setVisibility(View.VISIBLE);
+            holder.tvTime.setVisibility(View.GONE);
             holder.tvUnreadBadge.setVisibility(View.GONE);
         }
 
@@ -112,6 +124,13 @@ public class ChatContactAdapter extends RecyclerView.Adapter<ChatContactAdapter.
             if (listener != null) {
                 listener.onContactClick(item);
             }
+        });
+
+        holder.itemView.setOnLongClickListener(v -> {
+            if (listener != null) {
+                listener.onContactLongClick(item);
+            }
+            return true;
         });
     }
 
