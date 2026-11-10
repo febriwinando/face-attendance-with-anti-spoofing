@@ -1567,6 +1567,9 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
         TextView tvStatus = view.findViewById(R.id.tvAudioStatusSubtitle);
         ProgressBar pbLoading = view.findViewById(R.id.pbAudioLoading);
         go.pemkott.appsandroidmobiletebingtinggi.widget.AudioWaveformView waveformModal = view.findViewById(R.id.waveformAudioModal);
+        if (waveformModal != null) {
+            waveformModal.setWaveColors(Color.parseColor("#38BDF8"), Color.argb(120, 56, 189, 248));
+        }
         SeekBar sbProgress = view.findViewById(R.id.sbAudioProgress);
         TextView tvCurrentTime = view.findViewById(R.id.tvAudioCurrentTime);
         TextView tvTotalDuration = view.findViewById(R.id.tvAudioTotalDuration);

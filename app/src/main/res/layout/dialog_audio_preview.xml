@@ -7,24 +7,25 @@
     android:background="@drawable/bottom_sheet_bg"
     android:backgroundTint="#0F172A"
     android:paddingHorizontal="20dp"
-    android:paddingTop="16dp"
-    android:paddingBottom="24dp">
+    android:paddingTop="14dp"
+    android:paddingBottom="26dp">
 
-    <!-- Drag Handle -->
+    <!-- Top Drag Handle -->
     <com.google.android.material.card.MaterialCardView
-        android:layout_width="44dp"
-        android:layout_height="5dp"
+        android:layout_width="40dp"
+        android:layout_height="4dp"
         android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="14dp"
         app:cardBackgroundColor="#334155"
-        app:cardCornerRadius="2.5dp"
+        app:cardCornerRadius="2dp"
         app:cardElevation="0dp"
         app:strokeWidth="0dp" />
 
-    <!-- Top Bar: Title & Close -->
+    <!-- Top Header Bar: SAHUT Branding & Close Button -->
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="14dp">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -38,7 +39,7 @@
                 android:layout_height="wrap_content"
                 android:text="Pemutar Audio SAHUT"
                 android:textColor="#FFFFFF"
-                android:textSize="17sp"
+                android:textSize="16.5sp"
                 android:fontFamily="sans-serif-black"/>
 
             <TextView
@@ -46,11 +47,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:text="Pesan Suara / Lampiran Audio"
-                android:textColor="#94A3B8"
-                android:textSize="11.5sp"/>
+                android:text="Sarana Hubungan Terpadu • Pesan Suara"
+                android:textColor="#38BDF8"
+                android:textSize="11sp"
+                android:fontFamily="sans-serif-medium"/>
         </LinearLayout>
 
+        <!-- Close Button -->
         <FrameLayout
             android:id="@+id/flCloseAudioPreview"
             android:layout_width="36dp"
@@ -72,78 +75,86 @@
         </FrameLayout>
     </RelativeLayout>
 
-    <!-- Center Card: Audio Artwork & Waveform -->
+    <!-- Dedicated Audio Visualizer Card (SAHUT Blue Accent) -->
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         android:layout_marginBottom="12dp"
         app:cardCornerRadius="20dp"
         app:cardElevation="0dp"
         app:strokeWidth="1dp"
-        app:strokeColor="#1E293B"
-        app:cardBackgroundColor="#1E293B">
+        app:strokeColor="#2E38BDF8"
+        app:cardBackgroundColor="#162032">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp"
-            android:gravity="center">
+            android:paddingHorizontal="16dp"
+            android:paddingTop="14dp"
+            android:paddingBottom="16dp">
 
-            <!-- Artwork Badge -->
-            <FrameLayout
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:background="@drawable/bg_circle_glass_button">
-
-                <ImageView
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_mic"
-                    app:tint="#38BDF8"
-                    android:contentDescription="Audio Track"/>
-            </FrameLayout>
-
-            <TextView
-                android:id="@+id/tvAudioFileName"
+            <!-- Card Header: Audio Badge & Title -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:gravity="center"
-                android:text="Audio Lampiran"
-                android:textColor="#FFFFFF"
-                android:textSize="14.5sp"
-                android:fontFamily="sans-serif-bold"
-                android:maxLines="1"
-                android:ellipsize="middle"/>
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-            <!-- Buffering Spinner -->
-            <ProgressBar
-                android:id="@+id/pbAudioLoading"
-                android:layout_width="28dp"
-                android:layout_height="28dp"
-                android:indeterminateTint="#38BDF8"
-                android:layout_marginTop="8dp"
-                android:visibility="gone"/>
+                <FrameLayout
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/bg_circle_glass_button">
 
-            <!-- Voice Note Waveform Visualizer Inside Modal -->
+                    <ImageView
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_mic"
+                        app:tint="#38BDF8"
+                        android:contentDescription="Audio SAHUT"/>
+                </FrameLayout>
+
+                <TextView
+                    android:id="@+id/tvAudioFileName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginEnd="8dp"
+                    android:text="Pesan Suara SAHUT"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp"
+                    android:fontFamily="sans-serif-bold"
+                    android:maxLines="1"
+                    android:ellipsize="middle"/>
+
+                <!-- Buffering Spinner in SAHUT Blue -->
+                <ProgressBar
+                    android:id="@+id/pbAudioLoading"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:indeterminateTint="#38BDF8"
+                    android:visibility="gone"/>
+            </LinearLayout>
+
+            <!-- Dynamic Waveform & Equalizer Visualizer -->
             <go.pemkott.appsandroidmobiletebingtinggi.widget.AudioWaveformView
                 android:id="@+id/waveformAudioModal"
                 android:layout_width="match_parent"
-                android:layout_height="36dp"
+                android:layout_height="40dp"
                 android:layout_marginTop="12dp"
                 android:layout_marginBottom="4dp"/>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Progress SeekBar Row -->
+    <!-- Timeline Progress Row -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingHorizontal="4dp">
 
         <TextView
             android:id="@+id/tvAudioCurrentTime"
@@ -151,7 +162,7 @@
             android:layout_height="wrap_content"
             android:text="00:00"
             android:textColor="#38BDF8"
-            android:textSize="12sp"
+            android:textSize="11.5sp"
             android:fontFamily="monospace"
             android:textStyle="bold"/>
 
@@ -160,7 +171,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginHorizontal="6dp"
+            android:layout_marginHorizontal="8dp"
             android:progressTint="#38BDF8"
             android:thumbTint="#FFFFFF"
             android:max="100"/>
@@ -171,11 +182,11 @@
             android:layout_height="wrap_content"
             android:text="00:00"
             android:textColor="#94A3B8"
-            android:textSize="12sp"
+            android:textSize="11.5sp"
             android:fontFamily="monospace"/>
     </LinearLayout>
 
-    <!-- Controls Row -->
+    <!-- Bottom Controls Row: Speed, Replay, Central SAHUT Play Button, Forward, Download -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -198,7 +209,7 @@
             android:clickable="true"
             android:focusable="true"/>
 
-        <!-- Center Buttons -->
+        <!-- Center Controls Container -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -211,29 +222,32 @@
                 android:layout_width="38dp"
                 android:layout_height="38dp"
                 android:src="@drawable/ic_replay_10"
-                app:tint="#E2E8F0"
-                android:padding="4dp"
+                app:tint="#CBD5E1"
+                android:padding="5dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
                 android:contentDescription="Mundur 10 Detik"/>
 
-            <!-- Circular Play/Pause Button -->
+            <!-- Prominent Central Play/Pause Button in SAHUT Blue -->
             <FrameLayout
                 android:id="@+id/flAudioModalPlayPause"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
                 android:layout_marginHorizontal="18dp"
-                android:background="@drawable/bg_circle_solid_white"
+                android:background="@drawable/bg_circle_sahut_blue"
+                android:elevation="4dp"
                 android:clickable="true"
                 android:focusable="true">
 
                 <ImageView
                     android:id="@+id/ivAudioModalPlayPause"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
                     android:layout_gravity="center"
                     android:src="@drawable/ic_voice_play_rounded"
-                    app:tint="#0F172A"
-                    android:contentDescription="Putar / Jeda"/>
+                    app:tint="#FFFFFF"
+                    android:contentDescription="Putar / Jeda Audio"/>
             </FrameLayout>
 
             <ImageView
@@ -241,13 +255,15 @@
                 android:layout_width="38dp"
                 android:layout_height="38dp"
                 android:src="@drawable/ic_forward_10"
-                app:tint="#E2E8F0"
-                android:padding="4dp"
+                app:tint="#CBD5E1"
+                android:padding="5dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
                 android:contentDescription="Maju 10 Detik"/>
         </LinearLayout>
 
-        <!-- Download Action -->
+        <!-- Download Action Button -->
         <FrameLayout
             android:id="@+id/flAudioDownload"
             android:layout_width="36dp"
@@ -263,7 +279,7 @@
                 android:layout_gravity="center"
                 android:src="@drawable/ic_file_download"
                 app:tint="#FFFFFF"
-                android:contentDescription="Unduh Audio"/>
+                android:contentDescription="Unduh Berkas Audio"/>
         </FrameLayout>
     </LinearLayout>
 
