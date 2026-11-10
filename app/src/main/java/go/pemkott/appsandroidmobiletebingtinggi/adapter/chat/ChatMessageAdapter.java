@@ -13,8 +13,10 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -28,6 +30,7 @@ import java.util.Locale;
 
 import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatMessageItem;
+import go.pemkott.appsandroidmobiletebingtinggi.widget.AudioWaveformView;
 
 public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -79,6 +82,13 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private final Handler audioHandler = new Handler(Looper.getMainLooper());
     private Runnable audioProgressRunnable = null;
     private RecyclerView attachedRecyclerView = null;
+
+    // Inline Video Player Tracking state
+    private long currentPlayingVideoId = -1;
+    private VideoView currentVideoView = null;
+    private boolean isVideoPlaying = false;
+    private final Handler videoHandler = new Handler(Looper.getMainLooper());
+    private Runnable videoProgressRunnable = null;
 
     // Search Highlight Support (Telegram Style)
     private int highlightedPosition = -1;
@@ -187,80 +197,48 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             boolean isImage = isImageType(item.getMsgType(), item.getFileUrl());
             boolean isAudio = isAudioType(item.getMsgType(), item.getFileUrl());
 
-            // Image / Video attachment (Excluded if Audio)
-            if (!isAudio && (isImage || isVideo) && !TextUtils.isEmpty(item.getFileUrl())) {
+            // 1. Image Attachment (Exclusive for static pictures - opens Zoomable Modal)
+            if (isImage && !isVideo && !isAudio && !TextUtils.isEmpty(item.getFileUrl())) {
                 r.cvImageContainer.setVisibility(View.VISIBLE);
                 loadImageWithFallback(r.ivMessageImage, item.getFileUrl());
-                if (r.flVideoOverlay != null) {
-                    r.flVideoOverlay.setVisibility(isVideo ? View.VISIBLE : View.GONE);
-                }
-
                 r.cvImageContainer.setOnClickListener(v -> {
                     if (actionListener != null) {
-                        actionListener.onViewMedia(item.getFileUrl(), isVideo ? "video" : "image", item.getFileName());
+                        actionListener.onViewMedia(item.getFileUrl(), "image", item.getFileName());
                     }
                 });
             } else {
                 r.cvImageContainer.setVisibility(View.GONE);
-                if (r.flVideoOverlay != null) {
-                    r.flVideoOverlay.setVisibility(View.GONE);
-                }
             }
 
-            // Inline Telegram Audio Player
-            if (isAudio) {
-                r.cvAudioContainer.setVisibility(View.VISIBLE);
-                r.cvDocumentContainer.setVisibility(View.GONE);
-
-                boolean isThisPlaying = (currentPlayingId == item.getId() && isAudioPlaying);
-                boolean isThisPaused = (currentPlayingId == item.getId() && !isAudioPlaying && mediaPlayer != null);
-
-                if (isThisPlaying) {
-                    r.ivAudioPlayPause.setImageResource(R.drawable.ic_pause);
-                    try {
-                        int cur = mediaPlayer.getCurrentPosition();
-                        int dur = mediaPlayer.getDuration();
-                        r.sbAudioProgress.setProgress(dur > 0 ? (int) (((float) cur / dur) * 100) : 0);
-                        r.tvAudioDuration.setText(formatTime(cur) + " / " + formatTime(dur));
-                    } catch (Exception e) {
-                        r.tvAudioDuration.setText("00:00");
-                    }
-                } else if (isThisPaused) {
-                    r.ivAudioPlayPause.setImageResource(R.drawable.ic_play_arrow);
-                    try {
-                        int cur = mediaPlayer.getCurrentPosition();
-                        int dur = mediaPlayer.getDuration();
-                        r.sbAudioProgress.setProgress(dur > 0 ? (int) (((float) cur / dur) * 100) : 0);
-                        r.tvAudioDuration.setText(formatTime(cur) + " / " + formatTime(dur));
-                    } catch (Exception e) {
-                        r.tvAudioDuration.setText("00:00");
-                    }
-                } else {
-                    r.ivAudioPlayPause.setImageResource(R.drawable.ic_play_arrow);
-                    r.sbAudioProgress.setProgress(0);
-                    r.tvAudioDuration.setText("00:00");
-                }
-
-                r.ivAudioPlayPause.setOnClickListener(v -> handleAudioToggle(item, r.ivAudioPlayPause, r.sbAudioProgress, r.tvAudioDuration));
-                setupAudioSeekBar(r.sbAudioProgress, item.getId());
-
+            // 2. Inline Video Player (Played directly inside the chat item)
+            if (isVideo && !isAudio && !TextUtils.isEmpty(item.getFileUrl())) {
+                r.cvVideoContainer.setVisibility(View.VISIBLE);
+                bindVideoView(item, r);
             } else {
-                r.cvAudioContainer.setVisibility(View.GONE);
+                r.cvVideoContainer.setVisibility(View.GONE);
+            }
 
-                // Document attachment (Non-audio, non-image, non-video)
-                if (!TextUtils.isEmpty(item.getFileUrl()) && !isImage && !isVideo) {
-                    r.cvDocumentContainer.setVisibility(View.VISIBLE);
-                    r.tvDocumentName.setText(item.getFileName());
-                    if (r.ivDocumentIcon != null) {
-                        r.ivDocumentIcon.setImageResource(R.drawable.ic_document_scanner);
-                        r.ivDocumentIcon.setImageTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#FFFFFF")));
-                    }
-                    r.cvDocumentContainer.setOnClickListener(v -> {
-                        if (actionListener != null) actionListener.onViewMedia(item.getFileUrl(), "document", item.getFileName());
-                    });
-                } else {
-                    r.cvDocumentContainer.setVisibility(View.GONE);
+            // 3. Modern Capsule Voice Note Player (Audio waveform pill)
+            if (isAudio) {
+                r.llAudioContainer.setVisibility(View.VISIBLE);
+                bindAudioView(item, r);
+            } else {
+                r.llAudioContainer.setVisibility(View.GONE);
+            }
+
+            // 4. Document attachment (Non-audio, non-image, non-video)
+            if (!isAudio && !isImage && !isVideo && !TextUtils.isEmpty(item.getFileUrl())) {
+                r.cvDocumentContainer.setVisibility(View.VISIBLE);
+                r.tvDocumentName.setText(item.getFileName());
+                if (r.ivDocumentIcon != null) {
+                    r.ivDocumentIcon.setImageResource(R.drawable.ic_document_scanner);
+                    r.ivDocumentIcon.setImageTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#FFFFFF")));
                 }
+                r.cvDocumentContainer.setOnClickListener(v -> {
+                    if (actionListener != null) actionListener.onViewMedia(item.getFileUrl(), "document", item.getFileName());
+                });
+            } else {
+                r.cvDocumentContainer.setVisibility(View.GONE);
             }
 
             // Time & Checkmarks
@@ -273,8 +251,20 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 r.tvStatusCheck.setTextColor(Color.parseColor("#E2E8F0")); // Abu-abu muda single-check (terkirim belum dibaca)
             }
 
-            // Adjust padding & background for image-only messages and search highlight
-            boolean isMediaOnly = !isAudio && (isImage || isVideo) && TextUtils.isEmpty(item.getMessage());
+            // Adjust padding & background for image-only messages and voice note capsule
+            boolean hasRealCaption = !TextUtils.isEmpty(item.getMessage())
+                    && !"Pesan Suara".equalsIgnoreCase(item.getMessage().trim())
+                    && !"Voice Note".equalsIgnoreCase(item.getMessage().trim())
+                    && !"Audio".equalsIgnoreCase(item.getMessage().trim())
+                    && !item.getMessage().trim().toLowerCase().endsWith(".mp3")
+                    && !item.getMessage().trim().toLowerCase().endsWith(".m4a")
+                    && !item.getMessage().trim().toLowerCase().endsWith(".wav")
+                    && !item.getMessage().trim().toLowerCase().endsWith(".aac")
+                    && !item.getMessage().trim().toLowerCase().endsWith(".ogg")
+                    && !item.getMessage().trim().toLowerCase().endsWith(".opus")
+                    && (item.getFileName() == null || !item.getMessage().trim().equalsIgnoreCase(item.getFileName().trim()));
+            boolean isVoiceNoteOnly = isAudio && !hasRealCaption;
+            boolean isMediaOnly = (isImage && !isVideo && !isAudio && TextUtils.isEmpty(item.getMessage())) || isVoiceNoteOnly;
             if (r.llBubbleContainer != null) {
                 if (position == highlightedPosition) {
                     int pHoriz = (int) (12 * context.getResources().getDisplayMetrics().density);
@@ -290,6 +280,13 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     r.llBubbleContainer.setPadding(pHoriz, pVert, pHoriz, pVert);
                     r.llBubbleContainer.setBackgroundResource(R.drawable.chat_bubble_right_bg);
                 }
+            }
+
+            if (isVoiceNoteOnly) {
+                if (r.llTimeMetadata != null) r.llTimeMetadata.setVisibility(View.GONE);
+                if (r.tvMessage != null) r.tvMessage.setVisibility(View.GONE);
+            } else {
+                if (r.llTimeMetadata != null) r.llTimeMetadata.setVisibility(View.VISIBLE);
             }
 
             // Long Press Options
@@ -340,86 +337,66 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             boolean isImageLeft = isImageType(item.getMsgType(), item.getFileUrl());
             boolean isAudioLeft = isAudioType(item.getMsgType(), item.getFileUrl());
 
-            // Image / Video attachment (Excluded if Audio)
-            if (!isAudioLeft && (isImageLeft || isVideoLeft) && !TextUtils.isEmpty(item.getFileUrl())) {
+            // 1. Image Attachment (Exclusive for static pictures - opens Zoomable Modal)
+            if (isImageLeft && !isVideoLeft && !isAudioLeft && !TextUtils.isEmpty(item.getFileUrl())) {
                 l.cvImageContainer.setVisibility(View.VISIBLE);
                 loadImageWithFallback(l.ivMessageImage, item.getFileUrl());
-                if (l.flVideoOverlay != null) {
-                    l.flVideoOverlay.setVisibility(isVideoLeft ? View.VISIBLE : View.GONE);
-                }
-
                 l.cvImageContainer.setOnClickListener(v -> {
                     if (actionListener != null) {
-                        actionListener.onViewMedia(item.getFileUrl(), isVideoLeft ? "video" : "image", item.getFileName());
+                        actionListener.onViewMedia(item.getFileUrl(), "image", item.getFileName());
                     }
                 });
             } else {
                 l.cvImageContainer.setVisibility(View.GONE);
-                if (l.flVideoOverlay != null) {
-                    l.flVideoOverlay.setVisibility(View.GONE);
-                }
             }
 
-            // Inline Telegram Audio Player
-            if (isAudioLeft) {
-                l.cvAudioContainer.setVisibility(View.VISIBLE);
-                l.cvDocumentContainer.setVisibility(View.GONE);
-
-                boolean isThisPlaying = (currentPlayingId == item.getId() && isAudioPlaying);
-                boolean isThisPaused = (currentPlayingId == item.getId() && !isAudioPlaying && mediaPlayer != null);
-
-                if (isThisPlaying) {
-                    l.ivAudioPlayPause.setImageResource(R.drawable.ic_pause);
-                    try {
-                        int cur = mediaPlayer.getCurrentPosition();
-                        int dur = mediaPlayer.getDuration();
-                        l.sbAudioProgress.setProgress(dur > 0 ? (int) (((float) cur / dur) * 100) : 0);
-                        l.tvAudioDuration.setText(formatTime(cur) + " / " + formatTime(dur));
-                    } catch (Exception e) {
-                        l.tvAudioDuration.setText("00:00");
-                    }
-                } else if (isThisPaused) {
-                    l.ivAudioPlayPause.setImageResource(R.drawable.ic_play_arrow);
-                    try {
-                        int cur = mediaPlayer.getCurrentPosition();
-                        int dur = mediaPlayer.getDuration();
-                        l.sbAudioProgress.setProgress(dur > 0 ? (int) (((float) cur / dur) * 100) : 0);
-                        l.tvAudioDuration.setText(formatTime(cur) + " / " + formatTime(dur));
-                    } catch (Exception e) {
-                        l.tvAudioDuration.setText("00:00");
-                    }
-                } else {
-                    l.ivAudioPlayPause.setImageResource(R.drawable.ic_play_arrow);
-                    l.sbAudioProgress.setProgress(0);
-                    l.tvAudioDuration.setText("00:00");
-                }
-
-                l.ivAudioPlayPause.setOnClickListener(v -> handleAudioToggle(item, l.ivAudioPlayPause, l.sbAudioProgress, l.tvAudioDuration));
-                setupAudioSeekBar(l.sbAudioProgress, item.getId());
-
+            // 2. Inline Video Player (Played directly inside the chat item)
+            if (isVideoLeft && !isAudioLeft && !TextUtils.isEmpty(item.getFileUrl())) {
+                l.cvVideoContainer.setVisibility(View.VISIBLE);
+                bindVideoView(item, l);
             } else {
-                l.cvAudioContainer.setVisibility(View.GONE);
+                l.cvVideoContainer.setVisibility(View.GONE);
+            }
 
-                // Document attachment (Non-audio, non-image, non-video)
-                if (!TextUtils.isEmpty(item.getFileUrl()) && !isImageLeft && !isVideoLeft) {
-                    l.cvDocumentContainer.setVisibility(View.VISIBLE);
-                    l.tvDocumentName.setText(item.getFileName());
-                    if (l.ivDocumentIcon != null) {
-                        l.ivDocumentIcon.setImageResource(R.drawable.ic_document_scanner);
-                        l.ivDocumentIcon.setImageTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#DC2626")));
-                    }
-                    l.cvDocumentContainer.setOnClickListener(v -> {
-                        if (actionListener != null) actionListener.onViewMedia(item.getFileUrl(), "document", item.getFileName());
-                    });
-                } else {
-                    l.cvDocumentContainer.setVisibility(View.GONE);
+            // 3. Modern Capsule Voice Note Player (Audio waveform pill)
+            if (isAudioLeft) {
+                l.llAudioContainer.setVisibility(View.VISIBLE);
+                bindAudioView(item, l);
+            } else {
+                l.llAudioContainer.setVisibility(View.GONE);
+            }
+
+            // 4. Document attachment (Non-audio, non-image, non-video)
+            if (!isAudioLeft && !isImageLeft && !isVideoLeft && !TextUtils.isEmpty(item.getFileUrl())) {
+                l.cvDocumentContainer.setVisibility(View.VISIBLE);
+                l.tvDocumentName.setText(item.getFileName());
+                if (l.ivDocumentIcon != null) {
+                    l.ivDocumentIcon.setImageResource(R.drawable.ic_document_scanner);
+                    l.ivDocumentIcon.setImageTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#DC2626")));
                 }
+                l.cvDocumentContainer.setOnClickListener(v -> {
+                    if (actionListener != null) actionListener.onViewMedia(item.getFileUrl(), "document", item.getFileName());
+                });
+            } else {
+                l.cvDocumentContainer.setVisibility(View.GONE);
             }
 
             l.tvTime.setText(item.getCreatedAtFormatted());
 
-            // Adjust padding & background for image-only messages and search highlight
-            boolean isMediaOnlyLeft = !isAudioLeft && (isImageLeft || isVideoLeft) && TextUtils.isEmpty(item.getMessage());
+            // Adjust padding & background for image-only messages and voice note capsule
+            boolean hasRealCaptionLeft = !TextUtils.isEmpty(item.getMessage())
+                    && !"Pesan Suara".equalsIgnoreCase(item.getMessage().trim())
+                    && !"Voice Note".equalsIgnoreCase(item.getMessage().trim())
+                    && !"Audio".equalsIgnoreCase(item.getMessage().trim())
+                    && !item.getMessage().trim().toLowerCase().endsWith(".mp3")
+                    && !item.getMessage().trim().toLowerCase().endsWith(".m4a")
+                    && !item.getMessage().trim().toLowerCase().endsWith(".wav")
+                    && !item.getMessage().trim().toLowerCase().endsWith(".aac")
+                    && !item.getMessage().trim().toLowerCase().endsWith(".ogg")
+                    && !item.getMessage().trim().toLowerCase().endsWith(".opus")
+                    && (item.getFileName() == null || !item.getMessage().trim().equalsIgnoreCase(item.getFileName().trim()));
+            boolean isVoiceNoteOnlyLeft = isAudioLeft && !hasRealCaptionLeft;
+            boolean isMediaOnlyLeft = (isImageLeft && !isVideoLeft && !isAudioLeft && TextUtils.isEmpty(item.getMessage())) || isVoiceNoteOnlyLeft;
             if (l.llBubbleContainer != null) {
                 if (position == highlightedPosition) {
                     int pHoriz = (int) (12 * context.getResources().getDisplayMetrics().density);
@@ -437,6 +414,13 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 }
             }
 
+            if (isVoiceNoteOnlyLeft) {
+                if (l.tvTime != null) l.tvTime.setVisibility(View.GONE);
+                if (l.tvMessage != null) l.tvMessage.setVisibility(View.GONE);
+            } else {
+                if (l.tvTime != null) l.tvTime.setVisibility(View.VISIBLE);
+            }
+
             // Long Press Options
             l.itemView.setOnLongClickListener(v -> {
                 showOptionsDialog(item);
@@ -445,20 +429,451 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     }
 
-    private void handleAudioToggle(ChatMessageItem item, ImageView ivPlayPause, SeekBar sbProgress, TextView tvDuration) {
+    // =========================================================================
+    // INLINE VIDEO PLAYBACK HANDLERS
+    // =========================================================================
+
+    private void bindVideoView(ChatMessageItem item, RecyclerView.ViewHolder holder) {
+        VideoView vv = null;
+        ImageView ivThumb = null;
+        ProgressBar pbBuff = null;
+        ImageView ivPlayCenter = null;
+        ImageView ivPlayMini = null;
+        SeekBar sbProgress = null;
+        TextView tvDuration = null;
+        ImageView ivFullscreen = null;
+
+        if (holder instanceof RightViewHolder) {
+            RightViewHolder r = (RightViewHolder) holder;
+            vv = r.vvInlineVideo;
+            ivThumb = r.ivVideoThumbnail;
+            pbBuff = r.pbVideoBuffering;
+            ivPlayCenter = r.ivInlineVideoPlayCenter;
+            ivPlayMini = r.ivInlineVideoPlayMini;
+            sbProgress = r.sbInlineVideoProgress;
+            tvDuration = r.tvInlineVideoDuration;
+            ivFullscreen = r.ivInlineVideoFullscreen;
+        } else if (holder instanceof LeftViewHolder) {
+            LeftViewHolder l = (LeftViewHolder) holder;
+            vv = l.vvInlineVideo;
+            ivThumb = l.ivVideoThumbnail;
+            pbBuff = l.pbVideoBuffering;
+            ivPlayCenter = l.ivInlineVideoPlayCenter;
+            ivPlayMini = l.ivInlineVideoPlayMini;
+            sbProgress = l.sbInlineVideoProgress;
+            tvDuration = l.tvInlineVideoDuration;
+            ivFullscreen = l.ivInlineVideoFullscreen;
+        }
+
+        if (vv == null) return;
+
+        boolean isThisActive = (currentPlayingVideoId == item.getId());
+        String formattedUrl = formatMediaUrl(item.getFileUrl());
+
+        if (isThisActive && currentVideoView != null) {
+            if (isVideoPlaying) {
+                if (ivThumb != null) ivThumb.setVisibility(View.GONE);
+                if (ivPlayCenter != null) ivPlayCenter.setVisibility(View.GONE);
+                if (pbBuff != null) pbBuff.setVisibility(View.GONE);
+                if (ivPlayMini != null) ivPlayMini.setImageResource(R.drawable.ic_pause);
+            } else {
+                if (ivThumb != null) ivThumb.setVisibility(View.GONE);
+                if (ivPlayCenter != null) ivPlayCenter.setVisibility(View.VISIBLE);
+                if (pbBuff != null) pbBuff.setVisibility(View.GONE);
+                if (ivPlayMini != null) ivPlayMini.setImageResource(R.drawable.ic_play_arrow);
+            }
+            try {
+                int cur = currentVideoView.getCurrentPosition();
+                int dur = currentVideoView.getDuration();
+                if (sbProgress != null) sbProgress.setProgress(dur > 0 ? (int) (((float) cur / dur) * 100) : 0);
+                if (tvDuration != null) tvDuration.setText(formatTime(cur) + " / " + formatTime(dur));
+            } catch (Exception ignored) {}
+        } else {
+            if (ivThumb != null) {
+                ivThumb.setVisibility(View.VISIBLE);
+                loadVideoThumbnail(ivThumb, formattedUrl);
+            }
+            if (ivPlayCenter != null) ivPlayCenter.setVisibility(View.VISIBLE);
+            if (pbBuff != null) pbBuff.setVisibility(View.GONE);
+            if (ivPlayMini != null) ivPlayMini.setImageResource(R.drawable.ic_play_arrow);
+            if (sbProgress != null) sbProgress.setProgress(0);
+            if (tvDuration != null) tvDuration.setText("0:00");
+        }
+
+        if (ivPlayCenter != null) {
+            ivPlayCenter.setOnClickListener(v -> handleVideoToggle(item, holder));
+        }
+        if (ivPlayMini != null) {
+            ivPlayMini.setOnClickListener(v -> handleVideoToggle(item, holder));
+        }
+        if (ivFullscreen != null) {
+            ivFullscreen.setOnClickListener(v -> {
+                if (currentPlayingVideoId == item.getId()) {
+                    pauseVideo();
+                }
+                if (actionListener != null) {
+                    actionListener.onViewMedia(item.getFileUrl(), "video", item.getFileName());
+                }
+            });
+        }
+        if (sbProgress != null) {
+            setupVideoSeekBar(sbProgress, item.getId());
+        }
+    }
+
+    private void handleVideoToggle(ChatMessageItem item, RecyclerView.ViewHolder holder) {
         long msgId = item.getId();
+        stopAudio();
+
+        VideoView vv = null;
+        ImageView ivThumb = null;
+        ProgressBar pbBuff = null;
+        ImageView ivPlayCenter = null;
+        ImageView ivPlayMini = null;
+        SeekBar sbProgress = null;
+        TextView tvDuration = null;
+
+        if (holder instanceof RightViewHolder) {
+            RightViewHolder r = (RightViewHolder) holder;
+            vv = r.vvInlineVideo;
+            ivThumb = r.ivVideoThumbnail;
+            pbBuff = r.pbVideoBuffering;
+            ivPlayCenter = r.ivInlineVideoPlayCenter;
+            ivPlayMini = r.ivInlineVideoPlayMini;
+            sbProgress = r.sbInlineVideoProgress;
+            tvDuration = r.tvInlineVideoDuration;
+        } else if (holder instanceof LeftViewHolder) {
+            LeftViewHolder l = (LeftViewHolder) holder;
+            vv = l.vvInlineVideo;
+            ivThumb = l.ivVideoThumbnail;
+            pbBuff = l.pbVideoBuffering;
+            ivPlayCenter = l.ivInlineVideoPlayCenter;
+            ivPlayMini = l.ivInlineVideoPlayMini;
+            sbProgress = l.sbInlineVideoProgress;
+            tvDuration = l.tvInlineVideoDuration;
+        }
+
+        if (vv == null) return;
+
+        if (currentPlayingVideoId == msgId && currentVideoView != null) {
+            // Toggle play/pause for currently loaded video
+            try {
+                if (currentVideoView.isPlaying()) {
+                    currentVideoView.pause();
+                    isVideoPlaying = false;
+                    if (ivPlayMini != null) ivPlayMini.setImageResource(R.drawable.ic_play_arrow);
+                    if (ivPlayCenter != null) ivPlayCenter.setVisibility(View.VISIBLE);
+                    if (videoProgressRunnable != null) videoHandler.removeCallbacks(videoProgressRunnable);
+                } else {
+                    currentVideoView.start();
+                    isVideoPlaying = true;
+                    if (ivPlayMini != null) ivPlayMini.setImageResource(R.drawable.ic_pause);
+                    if (ivPlayCenter != null) ivPlayCenter.setVisibility(View.GONE);
+                    if (ivThumb != null) ivThumb.setVisibility(View.GONE);
+                    startVideoProgressTracker();
+                }
+            } catch (Exception e) {
+                stopVideo();
+            }
+            return;
+        }
+
+        // New video playback
+        stopVideo();
+        currentPlayingVideoId = msgId;
+        currentVideoView = vv;
+        isVideoPlaying = false;
+
+        if (ivPlayCenter != null) ivPlayCenter.setVisibility(View.GONE);
+        if (pbBuff != null) pbBuff.setVisibility(View.VISIBLE);
+        if (ivPlayMini != null) ivPlayMini.setImageResource(R.drawable.ic_play_arrow);
+
+        String playUrl = formatMediaUrl(item.getFileUrl());
+        if (TextUtils.isEmpty(playUrl)) {
+            if (pbBuff != null) pbBuff.setVisibility(View.GONE);
+            if (ivPlayCenter != null) ivPlayCenter.setVisibility(View.VISIBLE);
+            return;
+        }
+
+        try {
+            final VideoView targetVv = vv;
+            final ImageView targetThumb = ivThumb;
+            final ProgressBar targetPb = pbBuff;
+            final ImageView targetCenter = ivPlayCenter;
+            final ImageView targetMini = ivPlayMini;
+
+            targetVv.setVideoURI(Uri.parse(playUrl));
+            targetVv.setOnPreparedListener(mp -> {
+                if (currentPlayingVideoId == msgId) {
+                    if (targetPb != null) targetPb.setVisibility(View.GONE);
+                    if (targetThumb != null) targetThumb.setVisibility(View.GONE);
+                    if (targetCenter != null) targetCenter.setVisibility(View.GONE);
+                    if (targetMini != null) targetMini.setImageResource(R.drawable.ic_pause);
+
+                    mp.start();
+                    isVideoPlaying = true;
+                    startVideoProgressTracker();
+                }
+            });
+
+            targetVv.setOnCompletionListener(mp -> {
+                if (targetMini != null) targetMini.setImageResource(R.drawable.ic_play_arrow);
+                if (targetCenter != null) targetCenter.setVisibility(View.VISIBLE);
+                if (targetThumb != null) targetThumb.setVisibility(View.VISIBLE);
+                isVideoPlaying = false;
+                if (videoProgressRunnable != null) videoHandler.removeCallbacks(videoProgressRunnable);
+                currentPlayingVideoId = -1;
+            });
+
+            targetVv.setOnErrorListener((mp, what, extra) -> {
+                if (targetPb != null) targetPb.setVisibility(View.GONE);
+                if (targetCenter != null) targetCenter.setVisibility(View.VISIBLE);
+                if (targetThumb != null) targetThumb.setVisibility(View.VISIBLE);
+                if (targetMini != null) targetMini.setImageResource(R.drawable.ic_play_arrow);
+                stopVideo();
+                return true;
+            });
+
+        } catch (Exception e) {
+            stopVideo();
+        }
+    }
+
+    private void startVideoProgressTracker() {
+        if (videoProgressRunnable != null) {
+            videoHandler.removeCallbacks(videoProgressRunnable);
+        }
+        videoProgressRunnable = new Runnable() {
+            @Override
+            public void run() {
+                if (currentVideoView != null && isVideoPlaying && currentPlayingVideoId != -1) {
+                    try {
+                        int cur = currentVideoView.getCurrentPosition();
+                        int dur = currentVideoView.getDuration();
+                        int progress = dur > 0 ? (int) (((float) cur / dur) * 100) : 0;
+
+                        int pos = getPositionForMessageId(currentPlayingVideoId);
+                        if (pos != -1 && attachedRecyclerView != null) {
+                            RecyclerView.ViewHolder holder = attachedRecyclerView.findViewHolderForAdapterPosition(pos);
+                            if (holder instanceof RightViewHolder) {
+                                RightViewHolder r = (RightViewHolder) holder;
+                                r.sbInlineVideoProgress.setProgress(progress);
+                                r.tvInlineVideoDuration.setText(formatTime(cur) + " / " + formatTime(dur));
+                            } else if (holder instanceof LeftViewHolder) {
+                                LeftViewHolder l = (LeftViewHolder) holder;
+                                l.sbInlineVideoProgress.setProgress(progress);
+                                l.tvInlineVideoDuration.setText(formatTime(cur) + " / " + formatTime(dur));
+                            }
+                        }
+                        videoHandler.postDelayed(this, 250);
+                    } catch (Exception ignored) {}
+                }
+            }
+        };
+        videoHandler.post(videoProgressRunnable);
+    }
+
+    private void setupVideoSeekBar(SeekBar sb, long msgId) {
+        sb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser && currentPlayingVideoId == msgId && currentVideoView != null) {
+                    try {
+                        int duration = currentVideoView.getDuration();
+                        int targetPos = (int) (((float) progress / 100) * duration);
+                        currentVideoView.seekTo(targetPos);
+                    } catch (Exception ignored) {}
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {}
+        });
+    }
+
+    public void stopVideo() {
+        if (videoProgressRunnable != null) {
+            videoHandler.removeCallbacks(videoProgressRunnable);
+            videoProgressRunnable = null;
+        }
+        if (currentVideoView != null) {
+            try {
+                if (currentVideoView.isPlaying()) {
+                    currentVideoView.stopPlayback();
+                }
+            } catch (Exception ignored) {}
+            currentVideoView = null;
+        }
+        long prevId = currentPlayingVideoId;
+        currentPlayingVideoId = -1;
+        isVideoPlaying = false;
+        if (prevId != -1) {
+            int pos = getPositionForMessageId(prevId);
+            if (pos != -1) notifyItemChanged(pos);
+        }
+    }
+
+    public void pauseVideo() {
+        if (currentVideoView != null && isVideoPlaying) {
+            try {
+                currentVideoView.pause();
+                isVideoPlaying = false;
+                if (videoProgressRunnable != null) videoHandler.removeCallbacks(videoProgressRunnable);
+                int pos = getPositionForMessageId(currentPlayingVideoId);
+                if (pos != -1) notifyItemChanged(pos);
+            } catch (Exception ignored) {}
+        }
+    }
+
+    private void loadVideoThumbnail(ImageView imageView, String videoUrl) {
+        if (imageView == null || TextUtils.isEmpty(videoUrl)) return;
+        try {
+            Glide.with(context)
+                    .asBitmap()
+                    .load(videoUrl)
+                    .placeholder(R.drawable.ic_image)
+                    .error(R.drawable.ic_image)
+                    .into(imageView);
+        } catch (Exception ignored) {}
+    }
+
+    // =========================================================================
+    // CAPSULE VOICE NOTE (AUDIO) PLAYBACK HANDLERS
+    // =========================================================================
+
+    private void bindAudioView(ChatMessageItem item, RecyclerView.ViewHolder holder) {
+        FrameLayout flPlayPause = null;
+        ImageView ivPlayPause = null;
+        AudioWaveformView waveform = null;
+        TextView tvDuration = null;
+
+        if (holder instanceof RightViewHolder) {
+            RightViewHolder r = (RightViewHolder) holder;
+            flPlayPause = r.flAudioPlayPause;
+            ivPlayPause = r.ivAudioPlayPause;
+            waveform = r.waveformAudio;
+            tvDuration = r.tvAudioDuration;
+        } else if (holder instanceof LeftViewHolder) {
+            LeftViewHolder l = (LeftViewHolder) holder;
+            flPlayPause = l.flAudioPlayPause;
+            ivPlayPause = l.ivAudioPlayPause;
+            waveform = l.waveformAudio;
+            tvDuration = l.tvAudioDuration;
+        }
+
+        if (ivPlayPause == null || waveform == null || tvDuration == null) return;
+
+        boolean isThisPlaying = (currentPlayingId == item.getId() && isAudioPlaying);
+        boolean isThisPaused = (currentPlayingId == item.getId() && !isAudioPlaying && mediaPlayer != null);
+
+        if (isThisPlaying) {
+            ivPlayPause.setImageResource(R.drawable.ic_voice_pause_rounded);
+            waveform.setPlaying(true);
+            try {
+                int cur = mediaPlayer.getCurrentPosition();
+                int dur = mediaPlayer.getDuration();
+                waveform.setProgress(dur > 0 ? ((float) cur / dur) : 0f);
+                tvDuration.setText(formatTime(cur));
+            } catch (Exception e) {
+                tvDuration.setText("0:00");
+            }
+        } else if (isThisPaused) {
+            ivPlayPause.setImageResource(R.drawable.ic_voice_play_rounded);
+            waveform.setPlaying(false);
+            try {
+                int cur = mediaPlayer.getCurrentPosition();
+                int dur = mediaPlayer.getDuration();
+                waveform.setProgress(dur > 0 ? ((float) cur / dur) : 0f);
+                tvDuration.setText(formatTime(cur));
+            } catch (Exception e) {
+                tvDuration.setText("0:00");
+            }
+        } else {
+            ivPlayPause.setImageResource(R.drawable.ic_voice_play_rounded);
+            waveform.setPlaying(false);
+            waveform.setProgress(0f);
+            loadAudioDurationAsync(item, tvDuration);
+        }
+
+        final ImageView fIv = ivPlayPause;
+        final AudioWaveformView fWave = waveform;
+        final TextView fTv = tvDuration;
+
+        View.OnClickListener toggleClick = v -> handleAudioToggle(item, fIv, fWave, fTv);
+        if (flPlayPause != null) {
+            flPlayPause.setOnClickListener(toggleClick);
+        } else {
+            ivPlayPause.setOnClickListener(toggleClick);
+        }
+
+        if (holder instanceof RightViewHolder) {
+            ((RightViewHolder) holder).llAudioContainer.setOnClickListener(toggleClick);
+        } else if (holder instanceof LeftViewHolder) {
+            ((LeftViewHolder) holder).llAudioContainer.setOnClickListener(toggleClick);
+        }
+
+        setupAudioWaveformSeek(waveform, item.getId());
+    }
+
+    private final java.util.Map<Long, Integer> audioDurationCache = new java.util.concurrent.ConcurrentHashMap<>();
+
+    private void loadAudioDurationAsync(ChatMessageItem item, TextView tvDuration) {
+        if (item == null || TextUtils.isEmpty(item.getFileUrl())) {
+            tvDuration.setText("0:00");
+            return;
+        }
+        long msgId = item.getId();
+        if (audioDurationCache.containsKey(msgId)) {
+            int dur = audioDurationCache.get(msgId);
+            tvDuration.setText(formatTime(dur));
+            return;
+        }
+        tvDuration.setText("0:00");
+        new Thread(() -> {
+            try {
+                android.media.MediaMetadataRetriever mmr = new android.media.MediaMetadataRetriever();
+                String formattedUrl = formatMediaUrl(item.getFileUrl());
+                if (formattedUrl.startsWith("http://") || formattedUrl.startsWith("https://")) {
+                    mmr.setDataSource(formattedUrl, new java.util.HashMap<>());
+                } else {
+                    mmr.setDataSource(context, Uri.parse(formattedUrl));
+                }
+                String durStr = mmr.extractMetadata(android.media.MediaMetadataRetriever.METADATA_KEY_DURATION);
+                mmr.release();
+                if (durStr != null) {
+                    int dur = Integer.parseInt(durStr);
+                    audioDurationCache.put(msgId, dur);
+                    audioHandler.post(() -> {
+                        if (currentPlayingId != msgId && tvDuration != null) {
+                            tvDuration.setText(formatTime(dur));
+                        }
+                    });
+                }
+            } catch (Exception ignored) {}
+        }).start();
+    }
+
+    private void handleAudioToggle(ChatMessageItem item, ImageView ivPlayPause, AudioWaveformView waveform, TextView tvDuration) {
+        long msgId = item.getId();
+        stopVideo();
+
         if (currentPlayingId == msgId && mediaPlayer != null) {
             // Same message: toggle play/pause
             try {
                 if (mediaPlayer.isPlaying()) {
                     mediaPlayer.pause();
                     isAudioPlaying = false;
-                    ivPlayPause.setImageResource(R.drawable.ic_play_arrow);
+                    ivPlayPause.setImageResource(R.drawable.ic_voice_play_rounded);
+                    if (waveform != null) waveform.setPlaying(false);
                     if (audioProgressRunnable != null) audioHandler.removeCallbacks(audioProgressRunnable);
                 } else {
                     mediaPlayer.start();
                     isAudioPlaying = true;
-                    ivPlayPause.setImageResource(R.drawable.ic_pause);
+                    ivPlayPause.setImageResource(R.drawable.ic_voice_pause_rounded);
+                    if (waveform != null) waveform.setPlaying(true);
                     startProgressTracker();
                 }
             } catch (Exception e) {
@@ -471,13 +886,16 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         stopAudio();
         currentPlayingId = msgId;
         isAudioPlaying = false;
-        ivPlayPause.setImageResource(R.drawable.ic_play_arrow);
-        sbProgress.setProgress(0);
-        tvDuration.setText("Memuat...");
+        ivPlayPause.setImageResource(R.drawable.ic_voice_play_rounded);
+        if (waveform != null) {
+            waveform.setPlaying(false);
+            waveform.setProgress(0f);
+        }
+        tvDuration.setText("0:00");
 
-        String playUrl = formatAudioUrl(item.getFileUrl());
+        String playUrl = formatMediaUrl(item.getFileUrl());
         if (TextUtils.isEmpty(playUrl)) {
-            tvDuration.setText("Gagal: URL kosong");
+            tvDuration.setText("0:00");
             return;
         }
 
@@ -493,20 +911,30 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
             mediaPlayer.setOnPreparedListener(mp -> {
                 if (currentPlayingId == msgId) {
+                    try {
+                        int dur = mp.getDuration();
+                        audioDurationCache.put(msgId, dur);
+                    } catch (Exception ignored) {}
                     mp.start();
                     isAudioPlaying = true;
-                    ivPlayPause.setImageResource(R.drawable.ic_pause);
+                    ivPlayPause.setImageResource(R.drawable.ic_voice_pause_rounded);
+                    if (waveform != null) waveform.setPlaying(true);
                     startProgressTracker();
                 }
             });
 
             mediaPlayer.setOnCompletionListener(mp -> {
-                ivPlayPause.setImageResource(R.drawable.ic_play_arrow);
-                sbProgress.setProgress(0);
+                ivPlayPause.setImageResource(R.drawable.ic_voice_play_rounded);
+                if (waveform != null) {
+                    waveform.setPlaying(false);
+                    waveform.setProgress(0f);
+                }
                 try {
-                    tvDuration.setText("00:00 / " + formatTime(mp.getDuration()));
+                    int dur = mp.getDuration();
+                    audioDurationCache.put(msgId, dur);
+                    tvDuration.setText(formatTime(dur));
                 } catch (Exception ignored) {
-                    tvDuration.setText("00:00");
+                    tvDuration.setText("0:00");
                 }
                 isAudioPlaying = false;
                 if (audioProgressRunnable != null) audioHandler.removeCallbacks(audioProgressRunnable);
@@ -514,16 +942,18 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             });
 
             mediaPlayer.setOnErrorListener((mp, what, extra) -> {
-                tvDuration.setText("Gagal memutar");
-                ivPlayPause.setImageResource(R.drawable.ic_play_arrow);
+                tvDuration.setText("0:00");
+                ivPlayPause.setImageResource(R.drawable.ic_voice_play_rounded);
+                if (waveform != null) waveform.setPlaying(false);
                 stopAudio();
                 return true;
             });
 
             mediaPlayer.prepareAsync();
         } catch (Exception e) {
-            tvDuration.setText("Gagal memutar");
-            ivPlayPause.setImageResource(R.drawable.ic_play_arrow);
+            tvDuration.setText("0:00");
+            ivPlayPause.setImageResource(R.drawable.ic_voice_play_rounded);
+            if (waveform != null) waveform.setPlaying(false);
             stopAudio();
         }
     }
@@ -539,24 +969,30 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     try {
                         int currentPos = mediaPlayer.getCurrentPosition();
                         int duration = mediaPlayer.getDuration();
-                        int progress = duration > 0 ? (int) (((float) currentPos / duration) * 100) : 0;
+                        float progress = duration > 0 ? ((float) currentPos / duration) : 0f;
 
                         int pos = getPositionForMessageId(currentPlayingId);
                         if (pos != -1 && attachedRecyclerView != null) {
                             RecyclerView.ViewHolder holder = attachedRecyclerView.findViewHolderForAdapterPosition(pos);
                             if (holder instanceof RightViewHolder) {
                                 RightViewHolder r = (RightViewHolder) holder;
-                                r.sbAudioProgress.setProgress(progress);
-                                r.tvAudioDuration.setText(formatTime(currentPos) + " / " + formatTime(duration));
-                                r.ivAudioPlayPause.setImageResource(R.drawable.ic_pause);
+                                if (r.waveformAudio != null) {
+                                    r.waveformAudio.setPlaying(true);
+                                    r.waveformAudio.setProgress(progress);
+                                }
+                                if (r.tvAudioDuration != null) r.tvAudioDuration.setText(formatTime(currentPos));
+                                if (r.ivAudioPlayPause != null) r.ivAudioPlayPause.setImageResource(R.drawable.ic_voice_pause_rounded);
                             } else if (holder instanceof LeftViewHolder) {
                                 LeftViewHolder l = (LeftViewHolder) holder;
-                                l.sbAudioProgress.setProgress(progress);
-                                l.tvAudioDuration.setText(formatTime(currentPos) + " / " + formatTime(duration));
-                                l.ivAudioPlayPause.setImageResource(R.drawable.ic_pause);
+                                if (l.waveformAudio != null) {
+                                    l.waveformAudio.setPlaying(true);
+                                    l.waveformAudio.setProgress(progress);
+                                }
+                                if (l.tvAudioDuration != null) l.tvAudioDuration.setText(formatTime(currentPos));
+                                if (l.ivAudioPlayPause != null) l.ivAudioPlayPause.setImageResource(R.drawable.ic_voice_pause_rounded);
                             }
                         }
-                        audioHandler.postDelayed(this, 150);
+                        audioHandler.postDelayed(this, 100);
                     } catch (Exception ignored) {}
                 }
             }
@@ -564,24 +1000,15 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         audioHandler.post(audioProgressRunnable);
     }
 
-    private void setupAudioSeekBar(SeekBar sbProgress, long msgId) {
-        sbProgress.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (fromUser && currentPlayingId == msgId && mediaPlayer != null) {
-                    try {
-                        int duration = mediaPlayer.getDuration();
-                        int targetPos = (int) (((float) progress / 100) * duration);
-                        mediaPlayer.seekTo(targetPos);
-                    } catch (Exception ignored) {}
-                }
+    private void setupAudioWaveformSeek(AudioWaveformView waveform, long msgId) {
+        waveform.setOnSeekListener(progress -> {
+            if (currentPlayingId == msgId && mediaPlayer != null) {
+                try {
+                    int duration = mediaPlayer.getDuration();
+                    int targetPos = (int) (progress * duration);
+                    mediaPlayer.seekTo(targetPos);
+                } catch (Exception ignored) {}
             }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {}
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {}
         });
     }
 
@@ -609,6 +1036,19 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     public void releaseAudio() {
         stopAudio();
+        stopVideo();
+    }
+
+    @Override
+    public void onViewRecycled(@NonNull RecyclerView.ViewHolder holder) {
+        super.onViewRecycled(holder);
+        int pos = holder.getAdapterPosition();
+        if (pos != RecyclerView.NO_POSITION && pos < list.size()) {
+            ChatMessageItem item = list.get(pos);
+            if (item != null && currentPlayingVideoId == item.getId()) {
+                stopVideo();
+            }
+        }
     }
 
     private int getPositionForMessageId(long msgId) {
@@ -620,7 +1060,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         return -1;
     }
 
-    private String formatAudioUrl(String rawUrl) {
+    public String formatMediaUrl(String rawUrl) {
         if (TextUtils.isEmpty(rawUrl)) return "";
         String formatted = rawUrl.trim();
         String activeBaseUrl = go.pemkott.appsandroidmobiletebingtinggi.api.ServerConfig.getBaseUrl();
@@ -637,11 +1077,16 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         return formatted.replaceAll("(?<!:)/{2,}", "/");
     }
 
+    private String formatAudioUrl(String rawUrl) {
+        return formatMediaUrl(rawUrl);
+    }
+
     private String formatTime(int millis) {
         if (millis < 0) millis = 0;
-        int seconds = (millis / 1000) % 60;
-        int minutes = (millis / (1000 * 60)) % 60;
-        return String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
+        int totalSeconds = millis / 1000;
+        int seconds = totalSeconds % 60;
+        int minutes = totalSeconds / 60;
+        return String.format(Locale.getDefault(), "%d:%02d", minutes, seconds);
     }
 
     private void loadImageWithFallback(ImageView imageView, String primaryUrl) {
@@ -770,11 +1215,28 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         TextView tvDateHeader;
         LinearLayout llBubbleContainer;
         TextView tvSenderName, tvMessage, tvTime;
-        MaterialCardView cvReplyContainer, cvImageContainer, cvDocumentContainer, cvAudioContainer;
-        TextView tvReplySender, tvReplyMessage, tvDocumentName, tvAudioDuration;
-        ImageView ivMessageImage, ivDocumentIcon, ivAudioPlayPause;
-        SeekBar sbAudioProgress;
-        FrameLayout flVideoOverlay;
+        MaterialCardView cvReplyContainer, cvImageContainer, cvDocumentContainer;
+        TextView tvReplySender, tvReplyMessage, tvDocumentName;
+        ImageView ivMessageImage, ivDocumentIcon;
+
+        // Video Views
+        MaterialCardView cvVideoContainer;
+        VideoView vvInlineVideo;
+        ImageView ivVideoThumbnail;
+        ProgressBar pbVideoBuffering;
+        ImageView ivInlineVideoPlayCenter;
+        LinearLayout llInlineVideoControls;
+        ImageView ivInlineVideoPlayMini;
+        SeekBar sbInlineVideoProgress;
+        TextView tvInlineVideoDuration;
+        ImageView ivInlineVideoFullscreen;
+
+        // Audio Views (Capsule Voice Note)
+        LinearLayout llAudioContainer;
+        FrameLayout flAudioPlayPause;
+        ImageView ivAudioPlayPause;
+        AudioWaveformView waveformAudio;
+        TextView tvAudioDuration;
 
         public LeftViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -789,13 +1251,25 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             tvReplyMessage = itemView.findViewById(R.id.tvReplyMessage);
             cvImageContainer = itemView.findViewById(R.id.cvImageContainer);
             ivMessageImage = itemView.findViewById(R.id.ivMessageImage);
-            flVideoOverlay = itemView.findViewById(R.id.flVideoOverlay);
             cvDocumentContainer = itemView.findViewById(R.id.cvDocumentContainer);
             tvDocumentName = itemView.findViewById(R.id.tvDocumentName);
             ivDocumentIcon = itemView.findViewById(R.id.ivDocumentIcon);
-            cvAudioContainer = itemView.findViewById(R.id.cvAudioContainer);
+
+            cvVideoContainer = itemView.findViewById(R.id.cvVideoContainer);
+            vvInlineVideo = itemView.findViewById(R.id.vvInlineVideo);
+            ivVideoThumbnail = itemView.findViewById(R.id.ivVideoThumbnail);
+            pbVideoBuffering = itemView.findViewById(R.id.pbVideoBuffering);
+            ivInlineVideoPlayCenter = itemView.findViewById(R.id.ivInlineVideoPlayCenter);
+            llInlineVideoControls = itemView.findViewById(R.id.llInlineVideoControls);
+            ivInlineVideoPlayMini = itemView.findViewById(R.id.ivInlineVideoPlayMini);
+            sbInlineVideoProgress = itemView.findViewById(R.id.sbInlineVideoProgress);
+            tvInlineVideoDuration = itemView.findViewById(R.id.tvInlineVideoDuration);
+            ivInlineVideoFullscreen = itemView.findViewById(R.id.ivInlineVideoFullscreen);
+
+            llAudioContainer = itemView.findViewById(R.id.llAudioContainer);
+            flAudioPlayPause = itemView.findViewById(R.id.flAudioPlayPause);
             ivAudioPlayPause = itemView.findViewById(R.id.ivAudioPlayPause);
-            sbAudioProgress = itemView.findViewById(R.id.sbAudioProgress);
+            waveformAudio = itemView.findViewById(R.id.waveformAudio);
             tvAudioDuration = itemView.findViewById(R.id.tvAudioDuration);
         }
     }
@@ -805,11 +1279,29 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         TextView tvDateHeader;
         LinearLayout llBubbleContainer;
         TextView tvMessage, tvTime, tvStatusCheck;
-        MaterialCardView cvReplyContainer, cvImageContainer, cvDocumentContainer, cvAudioContainer;
-        TextView tvReplySender, tvReplyMessage, tvDocumentName, tvAudioDuration;
-        ImageView ivMessageImage, ivDocumentIcon, ivAudioPlayPause;
-        SeekBar sbAudioProgress;
-        FrameLayout flVideoOverlay;
+        LinearLayout llTimeMetadata;
+        MaterialCardView cvReplyContainer, cvImageContainer, cvDocumentContainer;
+        TextView tvReplySender, tvReplyMessage, tvDocumentName;
+        ImageView ivMessageImage, ivDocumentIcon;
+
+        // Video Views
+        MaterialCardView cvVideoContainer;
+        VideoView vvInlineVideo;
+        ImageView ivVideoThumbnail;
+        ProgressBar pbVideoBuffering;
+        ImageView ivInlineVideoPlayCenter;
+        LinearLayout llInlineVideoControls;
+        ImageView ivInlineVideoPlayMini;
+        SeekBar sbInlineVideoProgress;
+        TextView tvInlineVideoDuration;
+        ImageView ivInlineVideoFullscreen;
+
+        // Audio Views (Capsule Voice Note)
+        LinearLayout llAudioContainer;
+        FrameLayout flAudioPlayPause;
+        ImageView ivAudioPlayPause;
+        AudioWaveformView waveformAudio;
+        TextView tvAudioDuration;
 
         public RightViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -819,18 +1311,31 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             tvMessage = itemView.findViewById(R.id.tvMessage);
             tvTime = itemView.findViewById(R.id.tvTime);
             tvStatusCheck = itemView.findViewById(R.id.tvStatusCheck);
+            llTimeMetadata = itemView.findViewById(R.id.llTimeMetadata);
             cvReplyContainer = itemView.findViewById(R.id.cvReplyContainer);
             tvReplySender = itemView.findViewById(R.id.tvReplySender);
             tvReplyMessage = itemView.findViewById(R.id.tvReplyMessage);
             cvImageContainer = itemView.findViewById(R.id.cvImageContainer);
             ivMessageImage = itemView.findViewById(R.id.ivMessageImage);
-            flVideoOverlay = itemView.findViewById(R.id.flVideoOverlay);
             cvDocumentContainer = itemView.findViewById(R.id.cvDocumentContainer);
             tvDocumentName = itemView.findViewById(R.id.tvDocumentName);
             ivDocumentIcon = itemView.findViewById(R.id.ivDocumentIcon);
-            cvAudioContainer = itemView.findViewById(R.id.cvAudioContainer);
+
+            cvVideoContainer = itemView.findViewById(R.id.cvVideoContainer);
+            vvInlineVideo = itemView.findViewById(R.id.vvInlineVideo);
+            ivVideoThumbnail = itemView.findViewById(R.id.ivVideoThumbnail);
+            pbVideoBuffering = itemView.findViewById(R.id.pbVideoBuffering);
+            ivInlineVideoPlayCenter = itemView.findViewById(R.id.ivInlineVideoPlayCenter);
+            llInlineVideoControls = itemView.findViewById(R.id.llInlineVideoControls);
+            ivInlineVideoPlayMini = itemView.findViewById(R.id.ivInlineVideoPlayMini);
+            sbInlineVideoProgress = itemView.findViewById(R.id.sbInlineVideoProgress);
+            tvInlineVideoDuration = itemView.findViewById(R.id.tvInlineVideoDuration);
+            ivInlineVideoFullscreen = itemView.findViewById(R.id.ivInlineVideoFullscreen);
+
+            llAudioContainer = itemView.findViewById(R.id.llAudioContainer);
+            flAudioPlayPause = itemView.findViewById(R.id.flAudioPlayPause);
             ivAudioPlayPause = itemView.findViewById(R.id.ivAudioPlayPause);
-            sbAudioProgress = itemView.findViewById(R.id.sbAudioProgress);
+            waveformAudio = itemView.findViewById(R.id.waveformAudio);
             tvAudioDuration = itemView.findViewById(R.id.tvAudioDuration);
         }
     }

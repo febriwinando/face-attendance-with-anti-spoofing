@@ -36,7 +36,7 @@
         android:id="@+id/llBubbleContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:maxWidth="280dp"
+        android:maxWidth="300dp"
         android:background="@drawable/chat_bubble_right_bg"
         android:orientation="vertical"
         android:paddingHorizontal="10dp"
@@ -79,7 +79,7 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Image / Media Attachment Card -->
+        <!-- Image Attachment Card (Only for Photos/Images) -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cvImageContainer"
             android:layout_width="240dp"
@@ -97,15 +97,50 @@
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
                 android:contentDescription="Foto Media"/>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Inline Video Player Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cvVideoContainer"
+            android:layout_width="260dp"
+            android:layout_height="180dp"
+            android:layout_marginBottom="4dp"
+            app:cardCornerRadius="14dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp"
+            app:cardBackgroundColor="#000000"
+            android:visibility="gone">
 
             <FrameLayout
-                android:id="@+id/flVideoOverlay"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="#33000000"
-                android:visibility="gone">
+                android:layout_height="match_parent">
 
+                <VideoView
+                    android:id="@+id/vvInlineVideo"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center" />
+
+                <!-- Video Thumbnail Preview -->
                 <ImageView
+                    android:id="@+id/ivVideoThumbnail"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:contentDescription="Thumbnail Video" />
+
+                <!-- Buffering Progress -->
+                <ProgressBar
+                    android:id="@+id/pbVideoBuffering"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center"
+                    android:indeterminateTint="#FFFFFF"
+                    android:visibility="gone" />
+
+                <!-- Center Big Play Button Overlay -->
+                <ImageView
+                    android:id="@+id/ivInlineVideoPlayCenter"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:layout_gravity="center"
@@ -113,69 +148,110 @@
                     android:background="@drawable/bg_circle_play"
                     android:padding="8dp"
                     app:tint="#FFFFFF"
-                    android:contentDescription="Putar Video"/>
-            </FrameLayout>
-        </com.google.android.material.card.MaterialCardView>
+                    android:contentDescription="Putar Video" />
 
-        <!-- Telegram Style Audio Player Card (Right) -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cvAudioContainer"
-            android:layout_width="220dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"
-            app:cardCornerRadius="14dp"
-            app:cardElevation="0dp"
-            app:strokeWidth="0dp"
-            app:cardBackgroundColor="#20FFFFFF"
-            android:visibility="gone">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:padding="8dp">
-
-                <ImageView
-                    android:id="@+id/ivAudioPlayPause"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:src="@drawable/ic_play_arrow"
-                    android:background="@drawable/bg_circle_play_white"
-                    android:padding="6dp"
-                    app:tint="#FFFFFF"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:contentDescription="Putar Audio"/>
-
+                <!-- Bottom Controls Bar -->
                 <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="10dp"
-                    android:orientation="vertical">
+                    android:id="@+id/llInlineVideoControls"
+                    android:layout_width="match_parent"
+                    android:layout_height="36dp"
+                    android:layout_gravity="bottom"
+                    android:background="#99000000"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="8dp">
+
+                    <ImageView
+                        android:id="@+id/ivInlineVideoPlayMini"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_play_arrow"
+                        app:tint="#FFFFFF"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Play/Pause"/>
 
                     <SeekBar
-                        android:id="@+id/sbAudioProgress"
-                        android:layout_width="match_parent"
+                        android:id="@+id/sbInlineVideoProgress"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:paddingStart="0dp"
-                        android:paddingEnd="0dp"
-                        android:progressTint="#FFFFFF"
+                        android:layout_weight="1"
+                        android:paddingStart="4dp"
+                        android:paddingEnd="4dp"
+                        android:progressTint="#16A34A"
                         android:thumbTint="#FFFFFF"
                         android:max="100"/>
 
                     <TextView
-                        android:id="@+id/tvAudioDuration"
+                        android:id="@+id/tvInlineVideoDuration"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:text="0:00 / 0:00"
-                        android:textColor="#E2E8F0"
+                        android:layout_marginStart="4dp"
+                        android:text="00:00"
+                        android:textColor="#FFFFFF"
                         android:textSize="10sp"/>
+
+                    <ImageView
+                        android:id="@+id/ivInlineVideoFullscreen"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginStart="6dp"
+                        android:padding="2dp"
+                        android:src="@drawable/ic_fullscreen_expand"
+                        app:tint="#FFFFFF"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Layar Penuh"/>
                 </LinearLayout>
-            </LinearLayout>
+            </FrameLayout>
         </com.google.android.material.card.MaterialCardView>
+
+        <!-- Modern Capsule Voice Note Player (Right) -->
+        <LinearLayout
+            android:id="@+id/llAudioContainer"
+            android:layout_width="285dp"
+            android:layout_height="58dp"
+            android:layout_marginBottom="4dp"
+            android:background="@drawable/bg_voice_note_pill_blue"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="9dp"
+            android:paddingEnd="18dp"
+            android:visibility="gone">
+
+            <FrameLayout
+                android:id="@+id/flAudioPlayPause"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:background="@drawable/bg_circle_solid_white"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:id="@+id/ivAudioPlayPause"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_voice_play_rounded"
+                    app:tint="#1D9BF0"
+                    android:contentDescription="Putar Audio"/>
+            </FrameLayout>
+
+            <go.pemkott.appsandroidmobiletebingtinggi.widget.AudioWaveformView
+                android:id="@+id/waveformAudio"
+                android:layout_width="0dp"
+                android:layout_height="34dp"
+                android:layout_weight="1"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="14dp" />
+
+            <TextView
+                android:id="@+id/tvAudioDuration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0:00"
+                android:textColor="#FFFFFF"
+                android:textSize="13.5sp"
+                android:fontFamily="sans-serif-bold" />
+        </LinearLayout>
 
         <!-- Document Attachment Card -->
         <com.google.android.material.card.MaterialCardView
@@ -227,6 +303,7 @@
             android:textSize="14sp"/>
 
         <LinearLayout
+            android:id="@+id/llTimeMetadata"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"

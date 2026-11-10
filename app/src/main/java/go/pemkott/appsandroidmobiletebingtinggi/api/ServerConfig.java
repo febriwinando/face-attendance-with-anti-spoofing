@@ -7,7 +7,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.MyApplication;
 
 public class ServerConfig {
 
-    public static final String DEFAULT_HOST = "http://192.168.1.6:8000/";
+    public static final String DEFAULT_HOST = "http://172.15.1.35:8000/";
     private static final String PREF_NAME = "server_config_prefs";
     private static final String KEY_CUSTOM_HOST = "custom_base_host";
 

@@ -1,50 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/rlFullImageRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="#0F172A">
+    android:background="#050811">
 
-    <!-- Top Action Bar (Identik dengan Header Halaman Lainnya) -->
+    <!-- Edge-to-Edge Zoomable Image View -->
+    <go.pemkott.appsandroidmobiletebingtinggi.widget.ZoomableImageView
+        android:id="@+id/ivFullImagePreview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:clickable="true"
+        android:focusable="true"
+        android:contentDescription="Pratinjau Foto"/>
+
+    <!-- Loading Indicator -->
+    <ProgressBar
+        android:id="@+id/pbImagePreview"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="center"
+        android:indeterminateTint="#38BDF8"/>
+
+    <!-- Floating Frosted Glass Top Header -->
     <LinearLayout
         android:id="@+id/llTopBarPreview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#FFFFFF"
-        android:elevation="2dp"
+        android:layout_gravity="top"
+        android:layout_marginHorizontal="14dp"
+        android:layout_marginTop="40dp"
+        android:background="@drawable/bg_floating_glass_header"
+        android:elevation="6dp"
         android:orientation="horizontal"
-        android:paddingHorizontal="16dp"
-        android:paddingTop="36dp"
-        android:paddingBottom="12dp"
+        android:paddingHorizontal="14dp"
+        android:paddingVertical="10dp"
         android:gravity="center_vertical">
 
-        <ImageView
-            android:id="@+id/ivCloseImagePreview"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
-            android:src="@drawable/ic_arrow_back"
-            app:tint="#0F172A"
-            android:background="?attr/selectableItemBackgroundBorderless"
+        <FrameLayout
+            android:id="@+id/flCloseImagePreview"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:background="@drawable/bg_circle_glass_button"
             android:clickable="true"
-            android:focusable="true"
-            android:contentDescription="Kembali"/>
+            android:focusable="true">
+
+            <ImageView
+                android:id="@+id/ivCloseImagePreview"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_arrow_back"
+                app:tint="#FFFFFF"
+                android:contentDescription="Kembali"/>
+        </FrameLayout>
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginStart="14dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="8dp"
             android:orientation="vertical">
 
             <TextView
                 android:id="@+id/tvPreviewTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Pratinjau Gambar"
-                android:textColor="#0F172A"
-                android:textSize="18sp"
+                android:text="Pratinjau Foto SAHUT"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp"
                 android:fontFamily="sans-serif-black"
                 android:maxLines="1"
                 android:ellipsize="end"/>
@@ -54,51 +81,68 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:text="Foto Lampiran Kedinasan"
-                android:textColor="#64748B"
-                android:textSize="12sp"
+                android:text="Cubit untuk zoom in/out • Ketuk untuk layar penuh"
+                android:textColor="#94A3B8"
+                android:textSize="11sp"
                 android:fontFamily="sans-serif"
                 android:maxLines="1"
                 android:ellipsize="end"/>
         </LinearLayout>
 
-        <ImageView
-            android:id="@+id/ivDownloadImage"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:padding="4dp"
-            android:src="@drawable/ic_file_download"
-            app:tint="#0F172A"
-            android:background="?attr/selectableItemBackgroundBorderless"
+        <FrameLayout
+            android:id="@+id/flDownloadImage"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:background="@drawable/bg_circle_glass_button"
             android:clickable="true"
-            android:focusable="true"
-            android:contentDescription="Unduh Gambar"/>
+            android:focusable="true">
+
+            <ImageView
+                android:id="@+id/ivDownloadImage"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_file_download"
+                app:tint="#FFFFFF"
+                android:contentDescription="Unduh Gambar"/>
+        </FrameLayout>
     </LinearLayout>
 
-    <!-- Main Media View (Centered Full Image Container) -->
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:background="#0B0F19">
+    <!-- Floating Glass Bottom Bar for Quick Actions (Reset Zoom & Info) -->
+    <LinearLayout
+        android:id="@+id/llBottomImageBar"
+        android:layout_width="wrap_content"
+        android:layout_height="44dp"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="28dp"
+        android:background="@drawable/bg_floating_glass_card"
+        android:elevation="6dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="16dp">
 
-        <ImageView
-            android:id="@+id/ivFullImagePreview"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:scaleType="fitCenter"
+        <TextView
+            android:id="@+id/tvResetZoom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_pill_speed_badge"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="4dp"
+            android:text="1:1 Reset Zoom"
+            android:textColor="#38BDF8"
+            android:textSize="11.5sp"
+            android:fontFamily="sans-serif-bold"
             android:clickable="true"
-            android:focusable="true"
-            android:contentDescription="Pratinjau Gambar"/>
+            android:focusable="true"/>
 
-        <!-- Loading Indicator -->
-        <ProgressBar
-            android:id="@+id/pbImagePreview"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            android:layout_gravity="center"
-            android:indeterminateTint="#16A34A"/>
-    </FrameLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="14dp"
+            android:text="Foto SAHUT Kedinasan"
+            android:textColor="#E2E8F0"
+            android:textSize="11.5sp"
+            android:fontFamily="sans-serif-medium"/>
+    </LinearLayout>
 
-</LinearLayout>
+</FrameLayout>

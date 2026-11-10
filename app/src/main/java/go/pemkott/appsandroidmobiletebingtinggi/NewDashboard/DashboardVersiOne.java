@@ -304,6 +304,9 @@ public class DashboardVersiOne extends AppCompatActivity {
 
         ImageView ivChatDashboard = findViewById(R.id.ivChatDashboard);
         if (ivChatDashboard != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                ivChatDashboard.setTooltipText("SAHUT (Sarana Hubungan Terpadu)");
+            }
             ivChatDashboard.setOnClickListener(v -> {
                 startActivity(new Intent(DashboardVersiOne.this, go.pemkott.appsandroidmobiletebingtinggi.chat.ChatListActivity.class));
             });

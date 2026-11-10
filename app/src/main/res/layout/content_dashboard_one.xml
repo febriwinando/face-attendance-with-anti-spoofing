@@ -68,7 +68,7 @@
                     android:background="@drawable/chat_input_bg"
                     android:clickable="true"
                     android:focusable="true"
-                    android:contentDescription="Chat"/>
+                    android:contentDescription="SAHUT (Sarana Hubungan Terpadu)"/>
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/ciUser"

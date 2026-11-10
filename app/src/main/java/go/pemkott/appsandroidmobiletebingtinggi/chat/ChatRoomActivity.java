@@ -234,7 +234,7 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
             });
         }
 
-        tvRoomTitle.setText(title != null ? title : "Chat");
+        tvRoomTitle.setText(title != null ? title : "SAHUT");
         tvRoomSubtitle.setText(subtitle != null ? subtitle : "");
 
         FrameLayout flOpdHeaderContainer = findViewById(R.id.flOpdHeaderContainer);
@@ -583,6 +583,7 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
 
         View cardCamera = view.findViewById(R.id.cardOptionCamera);
         View cardPhoto = view.findViewById(R.id.cardOptionPhoto);
+        View cardVideo = view.findViewById(R.id.cardOptionVideo);
         View cardAudio = view.findViewById(R.id.cardOptionAudio);
         View cardDoc = view.findViewById(R.id.cardOptionDoc);
 
@@ -597,6 +598,13 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
             cardPhoto.setOnClickListener(v -> {
                 dialog.dismiss();
                 filePickerLauncher.launch("image/*");
+            });
+        }
+
+        if (cardVideo != null) {
+            cardVideo.setOnClickListener(v -> {
+                dialog.dismiss();
+                filePickerLauncher.launch("video/*");
             });
         }
 
@@ -625,9 +633,9 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
             String fileName = getFileNameFromUri(uri);
             String lowerFileName = fileName.toLowerCase();
 
-            boolean isImage = mimeType.startsWith("image/") || lowerFileName.endsWith(".jpg") || lowerFileName.endsWith(".jpeg") || lowerFileName.endsWith(".png") || lowerFileName.endsWith(".webp") || lowerFileName.endsWith(".heic");
-            boolean isVideo = mimeType.startsWith("video/") || lowerFileName.endsWith(".mp4") || lowerFileName.endsWith(".mkv") || lowerFileName.endsWith(".mov") || lowerFileName.endsWith(".3gp") || lowerFileName.endsWith(".avi") || lowerFileName.endsWith(".webm");
-            boolean isAudio = mimeType.startsWith("audio/") || lowerFileName.endsWith(".mp3") || lowerFileName.endsWith(".wav") || lowerFileName.endsWith(".m4a") || lowerFileName.endsWith(".aac") || lowerFileName.endsWith(".ogg") || lowerFileName.endsWith(".opus") || lowerFileName.endsWith(".amr");
+            boolean isImage = (mimeType != null && mimeType.startsWith("image/")) || lowerFileName.endsWith(".jpg") || lowerFileName.endsWith(".jpeg") || lowerFileName.endsWith(".png") || lowerFileName.endsWith(".webp") || lowerFileName.endsWith(".heic");
+            boolean isVideo = (mimeType != null && mimeType.startsWith("video/")) || lowerFileName.endsWith(".mp4") || lowerFileName.endsWith(".mkv") || lowerFileName.endsWith(".mov") || lowerFileName.endsWith(".3gp") || lowerFileName.endsWith(".avi") || lowerFileName.endsWith(".webm");
+            boolean isAudio = (mimeType != null && mimeType.startsWith("audio/")) || lowerFileName.endsWith(".mp3") || lowerFileName.endsWith(".wav") || lowerFileName.endsWith(".m4a") || lowerFileName.endsWith(".aac") || lowerFileName.endsWith(".ogg") || lowerFileName.endsWith(".opus") || lowerFileName.endsWith(".amr");
 
             File file = null;
             String msgTypeStr = "document";
@@ -638,9 +646,16 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
                 file = go.pemkott.appsandroidmobiletebingtinggi.utils.ChatMediaCompressor.compressImage(this, uri);
             } else if (isVideo) {
                 msgTypeStr = "video";
-                file = getFileFromUri(uri);
+                mimeType = "video/mp4";
+                file = go.pemkott.appsandroidmobiletebingtinggi.utils.ChatMediaCompressor.compressVideo(this, uri);
+                if (file == null || !file.exists()) {
+                    file = getFileFromUri(uri);
+                }
             } else if (isAudio) {
                 msgTypeStr = "audio";
+                if (mimeType == null || "application/octet-stream".equals(mimeType)) {
+                    mimeType = "audio/mp4";
+                }
                 file = getFileFromUri(uri);
             } else {
                 msgTypeStr = "document";
@@ -656,6 +671,22 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
                 return;
             }
 
+            if (isVideo && file.length() > 30 * 1024 * 1024) {
+                go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.showTopBanner(
+                        this, "Ukuran video melebihi batas maksimal (30MB)", go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.Type.ERROR
+                );
+                return;
+            }
+
+            String uploadFileName = fileName;
+            if (isVideo && !uploadFileName.contains(".")) {
+                uploadFileName = uploadFileName + ".mp4";
+            } else if (isImage && !uploadFileName.contains(".")) {
+                uploadFileName = uploadFileName + ".jpg";
+            } else if (isAudio && !uploadFileName.contains(".")) {
+                uploadFileName = uploadFileName + ".m4a";
+            }
+
             btnSendMessage.setEnabled(false);
             pbChatRoom.setVisibility(View.VISIBLE);
 
@@ -666,8 +697,9 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
             RequestBody replyToBody = RequestBody.create(MediaType.parse("text/plain"), activeReplyToId != null ? String.valueOf(activeReplyToId) : "");
 
             RequestBody fileReqBody = RequestBody.create(MediaType.parse(mimeType), file);
-            MultipartBody.Part filePart = MultipartBody.Part.createFormData("file", getFileNameFromUri(uri), fileReqBody);
+            MultipartBody.Part filePart = MultipartBody.Part.createFormData("file", uploadFileName, fileReqBody);
 
+            final boolean isVideoMsg = isVideo;
             HttpService api = RetroClient.getInstance(this).getApi2();
             api.sendChatMessageMultipart(chatTypeBody, targetIdBody, messageBody, msgTypeBody, replyToBody, filePart).enqueue(new Callback<SendMessageResponse>() {
                 @Override
@@ -677,6 +709,7 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
                     if (response.isSuccessful() && response.body() != null && response.body().isStatus()) {
                         ChatMessageItem newMsgItem = response.body().getData();
                         if (newMsgItem != null) {
+                            if (isVideoMsg) newMsgItem.setMsgType("video");
                             chatDb.insertMessage(newMsgItem);
                             adapter.addMessage(newMsgItem);
                             rvMessages.smoothScrollToPosition(adapter.getItemCount() - 1);
@@ -1106,7 +1139,7 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
         if (isVideo) {
             showVideoPlayerModal(url, fileName);
         } else if (isAudio) {
-            showAudioPlayerModal(url, fileName);
+            // Audio diputar langsung dari bubble percakapan dengan animasi spektrum bar, tidak perlu modal
         } else if (isImage) {
             showFullImageDialog(url, fileName);
         } else {
@@ -1188,52 +1221,69 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
                     android.view.WindowManager.LayoutParams.MATCH_PARENT,
                     android.view.WindowManager.LayoutParams.MATCH_PARENT
             );
-            dialog.getWindow().setBackgroundDrawableResource(android.R.color.white);
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
             androidx.core.view.WindowCompat.setDecorFitsSystemWindows(dialog.getWindow(), false);
             androidx.core.view.WindowInsetsControllerCompat insetsController =
                     new androidx.core.view.WindowInsetsControllerCompat(dialog.getWindow(), dialog.getWindow().getDecorView());
-            insetsController.setAppearanceLightStatusBars(true);
-            insetsController.setAppearanceLightNavigationBars(true);
+            insetsController.setAppearanceLightStatusBars(false);
+            insetsController.setAppearanceLightNavigationBars(false);
         }
 
         View llTopBar = dialog.findViewById(R.id.llTopBarPreview);
+        View llBottomBar = dialog.findViewById(R.id.llBottomImageBar);
         ImageView ivFull = dialog.findViewById(R.id.ivFullImagePreview);
+        View flClose = dialog.findViewById(R.id.flCloseImagePreview);
         ImageView ivClose = dialog.findViewById(R.id.ivCloseImagePreview);
+        View flDownload = dialog.findViewById(R.id.flDownloadImage);
+        ImageView ivDownload = dialog.findViewById(R.id.ivDownloadImage);
         ProgressBar pb = dialog.findViewById(R.id.pbImagePreview);
         TextView tvTitle = dialog.findViewById(R.id.tvPreviewTitle);
         TextView tvSubtitle = dialog.findViewById(R.id.tvPreviewSubtitle);
+        TextView tvResetZoom = dialog.findViewById(R.id.tvResetZoom);
 
         if (llTopBar != null) {
             androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(llTopBar, (v, insets) -> {
                 int statusBarHeight = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.statusBars()).top;
                 int topPadding = statusBarHeight > 0
-                        ? statusBarHeight + (int)(8 * getResources().getDisplayMetrics().density)
+                        ? statusBarHeight + (int)(10 * getResources().getDisplayMetrics().density)
                         : (int)(36 * getResources().getDisplayMetrics().density);
-                int bottomPadding = (int)(12 * getResources().getDisplayMetrics().density);
-                v.setPadding(v.getPaddingLeft(), topPadding, v.getPaddingRight(), bottomPadding);
+                v.setPadding(v.getPaddingLeft(), topPadding, v.getPaddingRight(), v.getPaddingBottom());
+                return insets;
+            });
+        }
+
+        if (llBottomBar != null) {
+            androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(llBottomBar, (v, insets) -> {
+                int navBarHeight = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.navigationBars()).bottom;
+                FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) v.getLayoutParams();
+                int baseMargin = (int)(24 * getResources().getDisplayMetrics().density);
+                lp.bottomMargin = baseMargin + navBarHeight;
+                v.setLayoutParams(lp);
                 return insets;
             });
         }
 
         if (tvTitle != null) {
-            if (!TextUtils.isEmpty(fileName)) {
-                tvTitle.setText(fileName);
-            } else {
-                tvTitle.setText("Pratinjau Gambar");
-            }
+            tvTitle.setText(!TextUtils.isEmpty(fileName) ? fileName : "Pratinjau Foto SAHUT");
         }
         if (tvSubtitle != null) {
-            tvSubtitle.setText("Foto Kedinasan");
+            tvSubtitle.setText("Cubit untuk memperbesar • Ketuk untuk layar penuh");
         }
 
-        if (ivFull != null && llTopBar != null) {
-            ivFull.setOnClickListener(v -> {
-                if (llTopBar.getVisibility() == View.VISIBLE) {
-                    llTopBar.setVisibility(View.GONE);
-                } else {
-                    llTopBar.setVisibility(View.VISIBLE);
-                }
-            });
+        Runnable toggleOverlays = () -> {
+            int newVis = (llTopBar != null && llTopBar.getVisibility() == View.VISIBLE) ? View.GONE : View.VISIBLE;
+            if (llTopBar != null) llTopBar.setVisibility(newVis);
+            if (llBottomBar != null) llBottomBar.setVisibility(newVis);
+        };
+
+        if (ivFull instanceof go.pemkott.appsandroidmobiletebingtinggi.widget.ZoomableImageView) {
+            ((go.pemkott.appsandroidmobiletebingtinggi.widget.ZoomableImageView) ivFull).setOnSingleTapListener(toggleOverlays::run);
+        } else if (ivFull != null) {
+            ivFull.setOnClickListener(v -> toggleOverlays.run());
+        }
+
+        if (tvResetZoom != null && ivFull instanceof go.pemkott.appsandroidmobiletebingtinggi.widget.ZoomableImageView) {
+            tvResetZoom.setOnClickListener(v -> ((go.pemkott.appsandroidmobiletebingtinggi.widget.ZoomableImageView) ivFull).resetZoom());
         }
 
         pb.setVisibility(View.VISIBLE);
@@ -1252,16 +1302,17 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
                     @Override
                     public void onLoadFailed(@androidx.annotation.Nullable android.graphics.drawable.Drawable errorDrawable) {
                         pb.setVisibility(View.GONE);
-                        Toast.makeText(ChatRoomActivity.this, "Gagal memuat gambar", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ChatRoomActivity.this, "Gagal memuat gambar dari server", Toast.LENGTH_SHORT).show();
                     }
                 });
 
-        ivClose.setOnClickListener(v -> dialog.dismiss());
+        View.OnClickListener dismissAction = v -> dialog.dismiss();
+        if (flClose != null) flClose.setOnClickListener(dismissAction);
+        if (ivClose != null) ivClose.setOnClickListener(dismissAction);
 
-        ImageView ivDownload = dialog.findViewById(R.id.ivDownloadImage);
-        if (ivDownload != null) {
-            ivDownload.setOnClickListener(v -> downloadMediaFile(formattedUrl, fileName, ".jpg"));
-        }
+        View.OnClickListener downloadAction = v -> downloadMediaFile(formattedUrl, fileName, ".jpg");
+        if (flDownload != null) flDownload.setOnClickListener(downloadAction);
+        if (ivDownload != null) ivDownload.setOnClickListener(downloadAction);
 
         dialog.show();
     }
@@ -1280,42 +1331,77 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
                     android.view.WindowManager.LayoutParams.MATCH_PARENT,
                     android.view.WindowManager.LayoutParams.MATCH_PARENT
             );
-            dialog.getWindow().setBackgroundDrawableResource(android.R.color.white);
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
             androidx.core.view.WindowCompat.setDecorFitsSystemWindows(dialog.getWindow(), false);
             androidx.core.view.WindowInsetsControllerCompat insetsController =
                     new androidx.core.view.WindowInsetsControllerCompat(dialog.getWindow(), dialog.getWindow().getDecorView());
-            insetsController.setAppearanceLightStatusBars(true);
-            insetsController.setAppearanceLightNavigationBars(true);
+            insetsController.setAppearanceLightStatusBars(false);
+            insetsController.setAppearanceLightNavigationBars(false);
         }
 
         View llTopBarVideo = dialog.findViewById(R.id.llTopBarVideo);
-        if (llTopBarVideo != null) {
-            androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(llTopBarVideo, (v, insets) -> {
-                int statusBarHeight = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.statusBars()).top;
-                int topPadding = statusBarHeight > 0
-                        ? statusBarHeight + (int)(8 * getResources().getDisplayMetrics().density)
-                        : (int)(36 * getResources().getDisplayMetrics().density);
-                int bottomPadding = (int)(12 * getResources().getDisplayMetrics().density);
-                v.setPadding(v.getPaddingLeft(), topPadding, v.getPaddingRight(), bottomPadding);
-                return insets;
-            });
-        }
-
+        View bottomControls = dialog.findViewById(R.id.llBottomControlVideo);
+        View flClose = dialog.findViewById(R.id.flCloseVideoPreview);
         ImageView ivClose = dialog.findViewById(R.id.ivCloseVideoPreview);
+        View flDownload = dialog.findViewById(R.id.flDownloadVideo);
+        ImageView ivDownload = dialog.findViewById(R.id.ivDownloadVideo);
         TextView tvTitle = dialog.findViewById(R.id.tvVideoTitle);
         VideoView vvPlayer = dialog.findViewById(R.id.vvVideoPlayer);
         ProgressBar pbLoading = dialog.findViewById(R.id.pbVideoLoading);
+        View flCenterPlayPause = dialog.findViewById(R.id.flCenterPlayPause);
         ImageView ivCenterPlayPause = dialog.findViewById(R.id.ivCenterPlayPause);
         SeekBar sbProgress = dialog.findViewById(R.id.sbVideoProgress);
         TextView tvCurrentTime = dialog.findViewById(R.id.tvVideoCurrentTime);
         TextView tvTotalDuration = dialog.findViewById(R.id.tvVideoTotalDuration);
+        View flBtnPlayPause = dialog.findViewById(R.id.flVideoBtnPlayPause);
         ImageView ivBtnPlayPause = dialog.findViewById(R.id.ivVideoBtnPlayPause);
         ImageView ivReplay10 = dialog.findViewById(R.id.ivVideoReplay10);
         ImageView ivForward10 = dialog.findViewById(R.id.ivVideoForward10);
-        View bottomControls = dialog.findViewById(R.id.llBottomControlVideo);
+        TextView tvVideoSpeed = dialog.findViewById(R.id.tvVideoSpeed);
+
+        if (llTopBarVideo != null) {
+            androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(llTopBarVideo, (v, insets) -> {
+                int statusBarHeight = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.statusBars()).top;
+                int topPadding = statusBarHeight > 0
+                        ? statusBarHeight + (int)(10 * getResources().getDisplayMetrics().density)
+                        : (int)(36 * getResources().getDisplayMetrics().density);
+                v.setPadding(v.getPaddingLeft(), topPadding, v.getPaddingRight(), v.getPaddingBottom());
+                return insets;
+            });
+        }
+
+        if (bottomControls != null) {
+            androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(bottomControls, (v, insets) -> {
+                int navBarHeight = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.navigationBars()).bottom;
+                FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) v.getLayoutParams();
+                int baseMargin = (int)(20 * getResources().getDisplayMetrics().density);
+                lp.bottomMargin = baseMargin + navBarHeight;
+                v.setLayoutParams(lp);
+                return insets;
+            });
+        }
 
         if (tvTitle != null) {
-            tvTitle.setText(!TextUtils.isEmpty(fileName) ? fileName : "Pemutar Video");
+            tvTitle.setText(!TextUtils.isEmpty(fileName) ? fileName : "Pemutar Video SAHUT");
+        }
+
+        final float[] speedOptions = {1.0f, 1.25f, 1.5f, 2.0f};
+        final int[] speedIndex = {0};
+        final android.media.MediaPlayer[] activeMediaPlayer = {null};
+
+        if (tvVideoSpeed != null) {
+            tvVideoSpeed.setOnClickListener(v -> {
+                speedIndex[0] = (speedIndex[0] + 1) % speedOptions.length;
+                float spd = speedOptions[speedIndex[0]];
+                tvVideoSpeed.setText(spd == 1.0f ? "1.0x" : (spd == 1.25f ? "1.25x" : (spd == 1.5f ? "1.5x" : "2.0x")));
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M && activeMediaPlayer[0] != null) {
+                    try {
+                        android.media.PlaybackParams params = activeMediaPlayer[0].getPlaybackParams();
+                        params.setSpeed(spd);
+                        activeMediaPlayer[0].setPlaybackParams(params);
+                    } catch (Exception ignored) {}
+                }
+            });
         }
 
         Handler videoHandler = new Handler(Looper.getMainLooper());
@@ -1327,8 +1413,8 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
                 try {
                     if (vvPlayer != null && vvPlayer.isPlaying() && !isUserSeeking[0]) {
                         int currentPos = vvPlayer.getCurrentPosition();
-                        sbProgress.setProgress(currentPos);
-                        tvCurrentTime.setText(formatTime(currentPos));
+                        if (sbProgress != null) sbProgress.setProgress(currentPos);
+                        if (tvCurrentTime != null) tvCurrentTime.setText(formatTime(currentPos));
                     }
                 } catch (Exception ignored) {}
                 videoHandler.postDelayed(this, 300);
@@ -1338,26 +1424,34 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
         vvPlayer.setVideoURI(Uri.parse(formattedUrl));
 
         vvPlayer.setOnPreparedListener(mp -> {
-            pbLoading.setVisibility(View.GONE);
+            activeMediaPlayer[0] = mp;
+            if (pbLoading != null) pbLoading.setVisibility(View.GONE);
             int duration = vvPlayer.getDuration();
-            sbProgress.setMax(duration);
-            tvTotalDuration.setText(formatTime(duration));
+            if (sbProgress != null) sbProgress.setMax(duration);
+            if (tvTotalDuration != null) tvTotalDuration.setText(formatTime(duration));
             vvPlayer.start();
-            ivBtnPlayPause.setImageResource(R.drawable.ic_pause);
-            ivCenterPlayPause.setVisibility(View.GONE);
+            if (ivBtnPlayPause != null) ivBtnPlayPause.setImageResource(R.drawable.ic_pause);
+            if (flCenterPlayPause != null) flCenterPlayPause.setVisibility(View.GONE);
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M && speedOptions[speedIndex[0]] != 1.0f) {
+                try {
+                    android.media.PlaybackParams params = mp.getPlaybackParams();
+                    params.setSpeed(speedOptions[speedIndex[0]]);
+                    mp.setPlaybackParams(params);
+                } catch (Exception ignored) {}
+            }
             videoHandler.post(progressRunnable);
         });
 
         vvPlayer.setOnCompletionListener(mp -> {
-            ivBtnPlayPause.setImageResource(R.drawable.ic_play_arrow);
-            ivCenterPlayPause.setImageResource(R.drawable.ic_play_arrow);
-            ivCenterPlayPause.setVisibility(View.VISIBLE);
-            sbProgress.setProgress(vvPlayer.getDuration());
-            tvCurrentTime.setText(formatTime(vvPlayer.getDuration()));
+            if (ivBtnPlayPause != null) ivBtnPlayPause.setImageResource(R.drawable.ic_play_arrow);
+            if (ivCenterPlayPause != null) ivCenterPlayPause.setImageResource(R.drawable.ic_play_arrow);
+            if (flCenterPlayPause != null) flCenterPlayPause.setVisibility(View.VISIBLE);
+            if (sbProgress != null) sbProgress.setProgress(vvPlayer.getDuration());
+            if (tvCurrentTime != null) tvCurrentTime.setText(formatTime(vvPlayer.getDuration()));
         });
 
         vvPlayer.setOnErrorListener((mp, what, extra) -> {
-            pbLoading.setVisibility(View.GONE);
+            if (pbLoading != null) pbLoading.setVisibility(View.GONE);
             go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.showTopBanner(
                     ChatRoomActivity.this, "Gagal memutar video dari server", go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.Type.ERROR
             );
@@ -1368,75 +1462,82 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
             try {
                 if (vvPlayer.isPlaying()) {
                     vvPlayer.pause();
-                    ivBtnPlayPause.setImageResource(R.drawable.ic_play_arrow);
-                    ivCenterPlayPause.setImageResource(R.drawable.ic_play_arrow);
-                    ivCenterPlayPause.setVisibility(View.VISIBLE);
+                    if (ivBtnPlayPause != null) ivBtnPlayPause.setImageResource(R.drawable.ic_play_arrow);
+                    if (ivCenterPlayPause != null) ivCenterPlayPause.setImageResource(R.drawable.ic_play_arrow);
+                    if (flCenterPlayPause != null) flCenterPlayPause.setVisibility(View.VISIBLE);
                 } else {
                     vvPlayer.start();
-                    ivBtnPlayPause.setImageResource(R.drawable.ic_pause);
-                    ivCenterPlayPause.setVisibility(View.GONE);
+                    if (ivBtnPlayPause != null) ivBtnPlayPause.setImageResource(R.drawable.ic_pause);
+                    if (flCenterPlayPause != null) flCenterPlayPause.setVisibility(View.GONE);
                     videoHandler.post(progressRunnable);
                 }
             } catch (Exception ignored) {}
         };
 
-        ivBtnPlayPause.setOnClickListener(togglePlayPause);
-        ivCenterPlayPause.setOnClickListener(togglePlayPause);
+        if (flBtnPlayPause != null) flBtnPlayPause.setOnClickListener(togglePlayPause);
+        if (ivBtnPlayPause != null) ivBtnPlayPause.setOnClickListener(togglePlayPause);
+        if (flCenterPlayPause != null) flCenterPlayPause.setOnClickListener(togglePlayPause);
+        if (ivCenterPlayPause != null) ivCenterPlayPause.setOnClickListener(togglePlayPause);
 
         vvPlayer.setOnClickListener(v -> {
-            if (bottomControls.getVisibility() == View.VISIBLE) {
-                bottomControls.setVisibility(View.GONE);
-            } else {
-                bottomControls.setVisibility(View.VISIBLE);
-            }
+            int newVis = (bottomControls != null && bottomControls.getVisibility() == View.VISIBLE) ? View.GONE : View.VISIBLE;
+            if (bottomControls != null) bottomControls.setVisibility(newVis);
+            if (llTopBarVideo != null) llTopBarVideo.setVisibility(newVis);
         });
 
-        ivReplay10.setOnClickListener(v -> {
-            try {
-                int newPos = Math.max(0, vvPlayer.getCurrentPosition() - 10000);
-                vvPlayer.seekTo(newPos);
-                sbProgress.setProgress(newPos);
-                tvCurrentTime.setText(formatTime(newPos));
-            } catch (Exception ignored) {}
-        });
-
-        ivForward10.setOnClickListener(v -> {
-            try {
-                int newPos = Math.min(vvPlayer.getDuration(), vvPlayer.getCurrentPosition() + 10000);
-                vvPlayer.seekTo(newPos);
-                sbProgress.setProgress(newPos);
-                tvCurrentTime.setText(formatTime(newPos));
-            } catch (Exception ignored) {}
-        });
-
-        sbProgress.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (fromUser) {
-                    tvCurrentTime.setText(formatTime(progress));
-                }
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                isUserSeeking[0] = true;
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                isUserSeeking[0] = false;
+        if (ivReplay10 != null) {
+            ivReplay10.setOnClickListener(v -> {
                 try {
-                    vvPlayer.seekTo(seekBar.getProgress());
+                    int newPos = Math.max(0, vvPlayer.getCurrentPosition() - 10000);
+                    vvPlayer.seekTo(newPos);
+                    if (sbProgress != null) sbProgress.setProgress(newPos);
+                    if (tvCurrentTime != null) tvCurrentTime.setText(formatTime(newPos));
                 } catch (Exception ignored) {}
-            }
-        });
-
-        ivClose.setOnClickListener(v -> dialog.dismiss());
-
-        ImageView ivDownloadVideo = dialog.findViewById(R.id.ivDownloadVideo);
-        if (ivDownloadVideo != null) {
-            ivDownloadVideo.setOnClickListener(v -> downloadMediaFile(formattedUrl, fileName, ".mp4"));
+            });
         }
+
+        if (ivForward10 != null) {
+            ivForward10.setOnClickListener(v -> {
+                try {
+                    int newPos = Math.min(vvPlayer.getDuration(), vvPlayer.getCurrentPosition() + 10000);
+                    vvPlayer.seekTo(newPos);
+                    if (sbProgress != null) sbProgress.setProgress(newPos);
+                    if (tvCurrentTime != null) tvCurrentTime.setText(formatTime(newPos));
+                } catch (Exception ignored) {}
+            });
+        }
+
+        if (sbProgress != null) {
+            sbProgress.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    if (fromUser && tvCurrentTime != null) {
+                        tvCurrentTime.setText(formatTime(progress));
+                    }
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+                    isUserSeeking[0] = true;
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+                    isUserSeeking[0] = false;
+                    try {
+                        vvPlayer.seekTo(seekBar.getProgress());
+                    } catch (Exception ignored) {}
+                }
+            });
+        }
+
+        View.OnClickListener dismissAction = v -> dialog.dismiss();
+        if (flClose != null) flClose.setOnClickListener(dismissAction);
+        if (ivClose != null) ivClose.setOnClickListener(dismissAction);
+
+        View.OnClickListener downloadAction = v -> downloadMediaFile(formattedUrl, fileName, ".mp4");
+        if (flDownload != null) flDownload.setOnClickListener(downloadAction);
+        if (ivDownload != null) ivDownload.setOnClickListener(downloadAction);
 
         dialog.setOnDismissListener(d -> {
             videoHandler.removeCallbacks(progressRunnable);
@@ -1460,19 +1561,29 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
         View view = getLayoutInflater().inflate(R.layout.dialog_audio_preview, null);
         dialog.setContentView(view);
 
+        View flClose = view.findViewById(R.id.flCloseAudioPreview);
         ImageView ivClose = view.findViewById(R.id.ivCloseAudioPreview);
         TextView tvFileName = view.findViewById(R.id.tvAudioFileName);
         TextView tvStatus = view.findViewById(R.id.tvAudioStatusSubtitle);
         ProgressBar pbLoading = view.findViewById(R.id.pbAudioLoading);
+        go.pemkott.appsandroidmobiletebingtinggi.widget.AudioWaveformView waveformModal = view.findViewById(R.id.waveformAudioModal);
         SeekBar sbProgress = view.findViewById(R.id.sbAudioProgress);
         TextView tvCurrentTime = view.findViewById(R.id.tvAudioCurrentTime);
         TextView tvTotalDuration = view.findViewById(R.id.tvAudioTotalDuration);
-        com.google.android.material.floatingactionbutton.FloatingActionButton fabPlayPause = view.findViewById(R.id.fabAudioPlayPause);
+        View flPlayPause = view.findViewById(R.id.flAudioModalPlayPause);
+        ImageView ivPlayPause = view.findViewById(R.id.ivAudioModalPlayPause);
         ImageView ivReplay10 = view.findViewById(R.id.ivAudioReplay10);
         ImageView ivForward10 = view.findViewById(R.id.ivAudioForward10);
+        TextView tvSpeed = view.findViewById(R.id.tvAudioSpeed);
+        View flDownload = view.findViewById(R.id.flAudioDownload);
+        ImageView ivDownload = view.findViewById(R.id.ivAudioDownload);
 
-        tvFileName.setText(!TextUtils.isEmpty(fileName) ? fileName : "Berkas Audio");
-        tvStatus.setText("Menghubungkan ke server...");
+        if (tvFileName != null) {
+            tvFileName.setText(!TextUtils.isEmpty(fileName) ? fileName : "Berkas Audio");
+        }
+        if (tvStatus != null) {
+            tvStatus.setText("Menghubungkan ke server...");
+        }
 
         final android.media.MediaPlayer mediaPlayer = new android.media.MediaPlayer();
         final Handler audioHandler = new Handler(Looper.getMainLooper());
@@ -1484,107 +1595,164 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
                 try {
                     if (mediaPlayer.isPlaying() && !isUserSeeking[0]) {
                         int pos = mediaPlayer.getCurrentPosition();
-                        sbProgress.setProgress(pos);
-                        tvCurrentTime.setText(formatTime(pos));
+                        int dur = mediaPlayer.getDuration();
+                        if (sbProgress != null) sbProgress.setProgress(pos);
+                        if (tvCurrentTime != null) tvCurrentTime.setText(formatTime(pos));
+                        if (waveformModal != null) {
+                            waveformModal.setPlaying(true);
+                            waveformModal.setProgress(dur > 0 ? ((float) pos / dur) : 0f);
+                        }
                     }
                 } catch (Exception ignored) {}
-                audioHandler.postDelayed(this, 200);
+                audioHandler.postDelayed(this, 120);
             }
         };
 
+        final float[] audioSpeeds = {1.0f, 1.25f, 1.5f, 2.0f};
+        final int[] audioSpeedIdx = {0};
+        if (tvSpeed != null) {
+            tvSpeed.setOnClickListener(v -> {
+                audioSpeedIdx[0] = (audioSpeedIdx[0] + 1) % audioSpeeds.length;
+                float spd = audioSpeeds[audioSpeedIdx[0]];
+                tvSpeed.setText(spd == 1.0f ? "1.0x" : (spd == 1.25f ? "1.25x" : (spd == 1.5f ? "1.5x" : "2.0x")));
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                    try {
+                        android.media.PlaybackParams params = mediaPlayer.getPlaybackParams();
+                        params.setSpeed(spd);
+                        mediaPlayer.setPlaybackParams(params);
+                    } catch (Exception ignored) {}
+                }
+            });
+        }
+
         try {
+            if (pbLoading != null) pbLoading.setVisibility(View.VISIBLE);
             mediaPlayer.setAudioStreamType(android.media.AudioManager.STREAM_MUSIC);
             mediaPlayer.setDataSource(this, Uri.parse(formattedUrl));
             mediaPlayer.prepareAsync();
         } catch (Exception e) {
-            pbLoading.setVisibility(View.GONE);
-            tvStatus.setText("Gagal memuat sumber audio");
+            if (pbLoading != null) pbLoading.setVisibility(View.GONE);
+            if (tvStatus != null) tvStatus.setText("Gagal memuat sumber audio");
             Toast.makeText(this, "Gagal memutar audio: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
 
         mediaPlayer.setOnPreparedListener(mp -> {
-            pbLoading.setVisibility(View.GONE);
-            tvStatus.setText("Sedang memutar");
+            if (pbLoading != null) pbLoading.setVisibility(View.GONE);
+            if (tvStatus != null) tvStatus.setText("Sedang memutar");
             int dur = mp.getDuration();
-            sbProgress.setMax(dur);
-            tvTotalDuration.setText(formatTime(dur));
+            if (sbProgress != null) sbProgress.setMax(dur);
+            if (tvTotalDuration != null) tvTotalDuration.setText(formatTime(dur));
             mp.start();
-            fabPlayPause.setImageResource(R.drawable.ic_pause);
+            if (ivPlayPause != null) ivPlayPause.setImageResource(R.drawable.ic_voice_pause_rounded);
+            if (waveformModal != null) waveformModal.setPlaying(true);
             audioHandler.post(updateProgressRunnable);
         });
 
         mediaPlayer.setOnCompletionListener(mp -> {
-            fabPlayPause.setImageResource(R.drawable.ic_play_arrow);
-            tvStatus.setText("Selesai diputar");
-            sbProgress.setProgress(mediaPlayer.getDuration());
-            tvCurrentTime.setText(formatTime(mediaPlayer.getDuration()));
+            if (ivPlayPause != null) ivPlayPause.setImageResource(R.drawable.ic_voice_play_rounded);
+            if (tvStatus != null) tvStatus.setText("Selesai diputar");
+            if (waveformModal != null) {
+                waveformModal.setPlaying(false);
+                waveformModal.setProgress(0f);
+            }
+            if (sbProgress != null) sbProgress.setProgress(mediaPlayer.getDuration());
+            if (tvCurrentTime != null) tvCurrentTime.setText(formatTime(mediaPlayer.getDuration()));
         });
 
         mediaPlayer.setOnErrorListener((mp, what, extra) -> {
-            pbLoading.setVisibility(View.GONE);
-            tvStatus.setText("Terjadi kesalahan pemutaran");
+            if (pbLoading != null) pbLoading.setVisibility(View.GONE);
+            if (tvStatus != null) tvStatus.setText("Terjadi kesalahan pemutaran");
+            if (waveformModal != null) waveformModal.setPlaying(false);
             Toast.makeText(ChatRoomActivity.this, "Format audio tidak didukung atau server tidak merespons", Toast.LENGTH_SHORT).show();
             return true;
         });
 
-        fabPlayPause.setOnClickListener(v -> {
+        View.OnClickListener togglePlay = v -> {
             try {
                 if (mediaPlayer.isPlaying()) {
                     mediaPlayer.pause();
-                    fabPlayPause.setImageResource(R.drawable.ic_play_arrow);
-                    tvStatus.setText("Jeda");
+                    if (ivPlayPause != null) ivPlayPause.setImageResource(R.drawable.ic_voice_play_rounded);
+                    if (tvStatus != null) tvStatus.setText("Jeda");
+                    if (waveformModal != null) waveformModal.setPlaying(false);
                 } else {
                     mediaPlayer.start();
-                    fabPlayPause.setImageResource(R.drawable.ic_pause);
-                    tvStatus.setText("Sedang memutar");
+                    if (ivPlayPause != null) ivPlayPause.setImageResource(R.drawable.ic_voice_pause_rounded);
+                    if (tvStatus != null) tvStatus.setText("Sedang memutar");
+                    if (waveformModal != null) waveformModal.setPlaying(true);
                     audioHandler.post(updateProgressRunnable);
                 }
             } catch (Exception e) {
                 Toast.makeText(ChatRoomActivity.this, "Audio belum siap", Toast.LENGTH_SHORT).show();
             }
-        });
+        };
 
-        ivReplay10.setOnClickListener(v -> {
-            try {
-                int newPos = Math.max(0, mediaPlayer.getCurrentPosition() - 10000);
-                mediaPlayer.seekTo(newPos);
-                sbProgress.setProgress(newPos);
-                tvCurrentTime.setText(formatTime(newPos));
-            } catch (Exception ignored) {}
-        });
+        if (flPlayPause != null) flPlayPause.setOnClickListener(togglePlay);
+        if (ivPlayPause != null) ivPlayPause.setOnClickListener(togglePlay);
 
-        ivForward10.setOnClickListener(v -> {
-            try {
-                int newPos = Math.min(mediaPlayer.getDuration(), mediaPlayer.getCurrentPosition() + 10000);
-                mediaPlayer.seekTo(newPos);
-                sbProgress.setProgress(newPos);
-                tvCurrentTime.setText(formatTime(newPos));
-            } catch (Exception ignored) {}
-        });
-
-        sbProgress.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (fromUser) {
-                    tvCurrentTime.setText(formatTime(progress));
-                }
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                isUserSeeking[0] = true;
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                isUserSeeking[0] = false;
+        if (ivReplay10 != null) {
+            ivReplay10.setOnClickListener(v -> {
                 try {
-                    mediaPlayer.seekTo(seekBar.getProgress());
+                    int newPos = Math.max(0, mediaPlayer.getCurrentPosition() - 10000);
+                    mediaPlayer.seekTo(newPos);
+                    if (sbProgress != null) sbProgress.setProgress(newPos);
+                    if (tvCurrentTime != null) tvCurrentTime.setText(formatTime(newPos));
                 } catch (Exception ignored) {}
-            }
-        });
+            });
+        }
 
-        ivClose.setOnClickListener(v -> dialog.dismiss());
+        if (ivForward10 != null) {
+            ivForward10.setOnClickListener(v -> {
+                try {
+                    int newPos = Math.min(mediaPlayer.getDuration(), mediaPlayer.getCurrentPosition() + 10000);
+                    mediaPlayer.seekTo(newPos);
+                    if (sbProgress != null) sbProgress.setProgress(newPos);
+                    if (tvCurrentTime != null) tvCurrentTime.setText(formatTime(newPos));
+                } catch (Exception ignored) {}
+            });
+        }
+
+        if (sbProgress != null) {
+            sbProgress.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    if (fromUser && tvCurrentTime != null) {
+                        tvCurrentTime.setText(formatTime(progress));
+                    }
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+                    isUserSeeking[0] = true;
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+                    isUserSeeking[0] = false;
+                    try {
+                        mediaPlayer.seekTo(seekBar.getProgress());
+                    } catch (Exception ignored) {}
+                }
+            });
+        }
+
+        if (waveformModal != null) {
+            waveformModal.setOnSeekListener(progress -> {
+                try {
+                    int targetPos = (int) (progress * mediaPlayer.getDuration());
+                    mediaPlayer.seekTo(targetPos);
+                    if (sbProgress != null) sbProgress.setProgress(targetPos);
+                    if (tvCurrentTime != null) tvCurrentTime.setText(formatTime(targetPos));
+                } catch (Exception ignored) {}
+            });
+        }
+
+        View.OnClickListener dismissAction = v -> dialog.dismiss();
+        if (flClose != null) flClose.setOnClickListener(dismissAction);
+        if (ivClose != null) ivClose.setOnClickListener(dismissAction);
+
+        View.OnClickListener downloadAction = v -> downloadMediaFile(formattedUrl, fileName, ".mp3");
+        if (flDownload != null) flDownload.setOnClickListener(downloadAction);
+        if (ivDownload != null) ivDownload.setOnClickListener(downloadAction);
 
         dialog.setOnDismissListener(d -> {
             audioHandler.removeCallbacks(updateProgressRunnable);

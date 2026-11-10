@@ -430,16 +430,19 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
 
     private void showNotification(String title, String body, Map<String, String> dataMap) {
-        String channelId = "default_channel";
+        String type = dataMap != null ? dataMap.get("type") : null;
+        boolean isChat = "chat".equals(type) || (title != null && (title.toLowerCase().contains("pesan") || title.toLowerCase().contains("sahut") || title.toLowerCase().contains("chat")));
+
+        String channelId = isChat ? "channel_sahut_chat" : "default_channel";
         NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(
                     channelId,
-                    "Notifikasi Absensi",
+                    isChat ? "SAHUT (Sarana Hubungan Terpadu)" : "Notifikasi Absensi",
                     NotificationManager.IMPORTANCE_HIGH
             );
-            channel.setDescription("Notifikasi penting aplikasi absensi");
+            channel.setDescription(isChat ? "Pemberitahuan pesan masuk layanan SAHUT" : "Notifikasi penting aplikasi absensi");
             channel.enableVibration(true);
             channel.enableLights(true);
             if (manager != null) {
@@ -448,8 +451,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }
 
         android.content.Intent intent;
-        String type = dataMap != null ? dataMap.get("type") : null;
-        if ("chat".equals(type) || (title != null && title.toLowerCase().contains("pesan"))) {
+        if (isChat) {
             String targetIdStr = dataMap != null ? dataMap.get("target_id") : null;
             String chatType = dataMap != null ? dataMap.get("chat_type") : "personal";
             long targetId = 0;
@@ -461,7 +463,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 intent = new android.content.Intent(this, go.pemkott.appsandroidmobiletebingtinggi.chat.ChatRoomActivity.class);
                 intent.putExtra("target_id", targetId);
                 intent.putExtra("chat_type", chatType != null ? chatType : "personal");
-                intent.putExtra("title", title != null ? title : "Pesan Baru");
+                intent.putExtra("title", title != null ? title : "Pesan SAHUT");
             } else {
                 intent = new android.content.Intent(this, go.pemkott.appsandroidmobiletebingtinggi.chat.ChatListActivity.class);
             }

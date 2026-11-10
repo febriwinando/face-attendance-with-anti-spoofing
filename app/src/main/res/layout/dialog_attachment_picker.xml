@@ -143,14 +143,14 @@
                         android:layout_gravity="center"
                         android:src="@drawable/ic_image"
                         app:tint="@color/biru"
-                        android:contentDescription="Galeri"/>
+                        android:contentDescription="Galeri Foto"/>
                 </com.google.android.material.card.MaterialCardView>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
-                    android:text="Galeri Foto / Video"
+                    android:text="Galeri Foto"
                     android:textColor="@color/text_primary"
                     android:textSize="12sp"
                     android:fontFamily="sans-serif-bold"/>
@@ -169,13 +169,65 @@
         android:paddingVertical="4dp"
         android:weightSum="2">
 
+        <!-- Video Gallery Option Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardOptionVideo"
+            android:layout_width="0dp"
+            android:layout_height="105dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="6dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="3dp"
+            app:cardUseCompatPadding="true"
+            app:strokeWidth="1dp"
+            app:strokeColor="#E2E8F0"
+            app:cardBackgroundColor="#FFF1F2"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="8dp">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="0dp"
+                    app:cardBackgroundColor="#FFE4E6">
+
+                    <ImageView
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_videocam"
+                        app:tint="#E11D48"
+                        android:contentDescription="Video"/>
+                </com.google.android.material.card.MaterialCardView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="Kirim Video"
+                    android:textColor="@color/text_primary"
+                    android:textSize="12sp"
+                    android:fontFamily="sans-serif-bold"/>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
         <!-- Voice Note / Audio Option Card -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardOptionAudio"
             android:layout_width="0dp"
             android:layout_height="105dp"
             android:layout_weight="1"
-            android:layout_marginEnd="6dp"
+            android:layout_marginStart="6dp"
             app:cardCornerRadius="16dp"
             app:cardElevation="3dp"
             app:cardUseCompatPadding="true"
@@ -214,26 +266,35 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
-                    android:text="Pesan Suara (Audio)"
+                    android:text="Pesan Suara"
                     android:textColor="@color/text_primary"
                     android:textSize="12sp"
                     android:fontFamily="sans-serif-bold"/>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
+    </LinearLayout>
+
+    <!-- Option Cards Grid Row 3 (Document Full Width) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:clipToPadding="false"
+        android:clipChildren="false"
+        android:paddingVertical="4dp">
 
         <!-- Document Option Card -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardOptionDoc"
-            android:layout_width="0dp"
-            android:layout_height="105dp"
-            android:layout_weight="1"
-            android:layout_marginStart="6dp"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
             app:cardCornerRadius="16dp"
             app:cardElevation="3dp"
             app:cardUseCompatPadding="true"
             app:strokeWidth="1dp"
             app:strokeColor="#E2E8F0"
-            app:cardBackgroundColor="#FEF2F2"
+            app:cardBackgroundColor="#F8FAFC"
             android:clickable="true"
             android:focusable="true"
             android:foreground="?attr/selectableItemBackground">
@@ -241,38 +302,52 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:padding="8dp">
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp">
 
                 <com.google.android.material.card.MaterialCardView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    app:cardCornerRadius="20dp"
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
+                    app:cardCornerRadius="21dp"
                     app:cardElevation="0dp"
                     app:strokeWidth="0dp"
-                    app:cardBackgroundColor="#FEE2E2">
+                    app:cardBackgroundColor="#E2E8F0">
 
                     <ImageView
                         android:layout_width="22dp"
                         android:layout_height="22dp"
                         android:layout_gravity="center"
                         android:src="@drawable/ic_document_scanner"
-                        app:tint="#DC2626"
+                        app:tint="#475569"
                         android:contentDescription="Dokumen"/>
                 </com.google.android.material.card.MaterialCardView>
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:text="Dokumen / Berkas"
-                    android:textColor="@color/text_primary"
-                    android:textSize="12sp"
-                    android:fontFamily="sans-serif-bold"/>
+                    android:layout_weight="1"
+                    android:layout_marginStart="14dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Dokumen &amp; Berkas"
+                        android:textColor="@color/text_primary"
+                        android:textSize="13sp"
+                        android:fontFamily="sans-serif-bold"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="PDF, DOC, XLS, ZIP, dan berkas lainnya"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="11.5sp"/>
+                </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
-
     </LinearLayout>
 
 </LinearLayout>

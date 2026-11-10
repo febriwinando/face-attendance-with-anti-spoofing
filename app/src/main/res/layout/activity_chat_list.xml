@@ -28,15 +28,42 @@
             android:focusable="true"
             android:contentDescription="Kembali"/>
 
-        <TextView
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginStart="12dp"
-            android:text="Chats"
-            android:textColor="#0F172A"
-            android:textSize="26sp"
-            android:fontFamily="sans-serif-black"/>
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SAHUT"
+                android:textColor="#0F172A"
+                android:textSize="22sp"
+                android:fontFamily="sans-serif-black"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sarana Hubungan Terpadu"
+                android:textColor="#64748B"
+                android:textSize="11sp"
+                android:fontFamily="sans-serif-medium"/>
+        </LinearLayout>
+
+        <!-- Tombol Cari Percakapan (Disamping Tombol Sync) -->
+        <ImageView
+            android:id="@+id/ivSearchChatToggle"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:layout_marginEnd="14dp"
+            android:src="@drawable/one_search"
+            app:tint="#64748B"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="Cari Percakapan"/>
 
         <ImageView
             android:id="@+id/ivRefreshChatList"
@@ -64,74 +91,9 @@
             android:contentDescription="Mulai Chat Baru"/>
     </LinearLayout>
 
-    <!-- Special Monitoring Banner Button (Visible only for Monitoring NIP 199402092020121005) -->
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/cvMonitoringBanner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="6dp"
-        app:cardCornerRadius="14dp"
-        app:cardElevation="0dp"
-        app:strokeWidth="1dp"
-        app:strokeColor="#C7D2FE"
-        app:cardBackgroundColor="#EEF2FF"
-        android:visibility="gone"
-        android:clickable="true"
-        android:focusable="true">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="12dp">
-
-            <ImageView
-                android:layout_width="28dp"
-                android:layout_height="28dp"
-                android:src="@drawable/ic_document_scanner"
-                app:tint="#3730A3"
-                android:contentDescription="Monitoring"/>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="12dp"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Monitoring Sistem Percakapan"
-                    android:textColor="#3730A3"
-                    android:textSize="13sp"
-                    android:fontFamily="sans-serif-black"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="1dp"
-                    android:text="Pantau riwayat komunikasi dinas pegawai"
-                    android:textColor="#4338CA"
-                    android:textSize="11sp"
-                    android:fontFamily="sans-serif"/>
-            </LinearLayout>
-
-            <ImageView
-                android:layout_width="18dp"
-                android:layout_height="18dp"
-                android:src="@drawable/ic_arrow_back"
-                android:rotation="180"
-                app:tint="#3730A3"
-                android:contentDescription="Buka Monitoring"/>
-        </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
-
-    <!-- Search Box (Pill Style Like Image) -->
+    <!-- Search Box (Pill Style, Terbuka Saat Tombol Cari Dibuka) -->
     <LinearLayout
+        android:id="@+id/llSearchChatContainer"
         android:layout_width="match_parent"
         android:layout_height="44dp"
         android:layout_marginHorizontal="16dp"
@@ -140,27 +102,43 @@
         android:background="@drawable/bg_pill_input"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingHorizontal="14dp">
+        android:paddingHorizontal="14dp"
+        android:visibility="gone">
 
         <ImageView
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:src="@drawable/ic_search_location"
-            app:tint="#9CA3AF"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:src="@drawable/one_search"
+            app:tint="#94A3B8"
             android:contentDescription="Cari"/>
 
         <EditText
             android:id="@+id/etSearchChat"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_weight="1"
             android:layout_marginStart="10dp"
             android:background="@null"
-            android:hint="Search"
+            android:hint="Cari percakapan atau nama pegawai..."
             android:textColor="#0F172A"
-            android:textColorHint="#9CA3AF"
+            android:textColorHint="#94A3B8"
             android:textSize="14sp"
             android:fontFamily="sans-serif"
+            android:imeOptions="actionSearch"
+            android:singleLine="true"
             android:inputType="text"/>
+
+        <ImageView
+            android:id="@+id/ivClearSearchChat"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:src="@drawable/ic_close"
+            app:tint="#94A3B8"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:visibility="gone"
+            android:contentDescription="Hapus Pencarian"/>
     </LinearLayout>
 
     <!-- Filter Chips / Tabs (Horizontally Scrollable Like Image) -->
@@ -304,7 +282,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="Belum Ada Percakapan"
+                android:text="Belum Ada Percakapan di SAHUT"
                 android:textColor="#0F172A"
                 android:textSize="16sp"
                 android:fontFamily="sans-serif-black"/>
@@ -314,7 +292,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:gravity="center"
-                android:text="Mulai percakapan baru dengan menekan tombol (+) di atas."
+                android:text="Mulai hubungan komunikasi kedinasan dengan menekan tombol (+) di atas."
                 android:textColor="#64748B"
                 android:textSize="13sp"
                 android:fontFamily="sans-serif"/>
@@ -387,13 +365,13 @@
                 android:layout_height="22dp"
                 android:src="@drawable/ic_chat_bubble_outline"
                 app:tint="#16A34A"
-                android:contentDescription="Chats"/>
+                android:contentDescription="SAHUT"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
-                android:text="Chats"
+                android:text="SAHUT"
                 android:textColor="#16A34A"
                 android:textSize="11sp"
                 android:fontFamily="sans-serif-bold"/>

@@ -277,7 +277,7 @@ public class EmployeeSyncActivity extends AppCompatActivity {
         String currentUrl = ServerConfig.getBaseUrl();
 
         final EditText input = new EditText(this);
-        input.setHint("http://192.168.1.x:8000/ atau domain server");
+        input.setHint("http://172.15.1.35:8000/ atau domain server");
         input.setText(currentUrl);
         input.setPadding(40, 30, 40, 30);
         builder.setView(input);

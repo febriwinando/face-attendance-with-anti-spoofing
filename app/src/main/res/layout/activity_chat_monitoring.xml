@@ -39,7 +39,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Monitoring Obrolan Pegawai"
+                android:text="Monitoring SAHUT Pegawai"
                 android:textColor="#0F172A"
                 android:textSize="18sp"
                 android:fontFamily="sans-serif-black"/>
@@ -48,7 +48,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:text="Pengawasan Kedinasan Pemko Tebing Tinggi"
+                android:text="Sarana Hubungan Terpadu - Pengawasan Kepatuhan"
                 android:textColor="#16A34A"
                 android:textSize="12sp"
                 android:fontFamily="sans-serif-medium"/>

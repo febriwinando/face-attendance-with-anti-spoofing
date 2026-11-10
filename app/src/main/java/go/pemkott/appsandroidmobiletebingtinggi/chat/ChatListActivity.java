@@ -1,11 +1,14 @@
 package go.pemkott.appsandroidmobiletebingtinggi.chat;
 
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -14,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -44,6 +48,9 @@ public class ChatListActivity extends AppCompatActivity implements ChatContactAd
     private RecyclerView rvChatList;
     private ProgressBar pbChatList;
     private LinearLayout llEmptyChatState;
+    private View llSearchChatContainer;
+    private ImageView ivSearchChatToggle;
+    private ImageView ivClearSearchChat;
     private EditText etSearchChat;
     private View cvOpdFilterSelector;
     private TextView tvSelectedOpdFilterName;
@@ -70,10 +77,13 @@ public class ChatListActivity extends AppCompatActivity implements ChatContactAd
         chatDb = new ChatLocalDatabase(this);
 
         ImageView ivBack = findViewById(R.id.ivBackChatList);
+        ivSearchChatToggle = findViewById(R.id.ivSearchChatToggle);
         ImageView ivRefresh = findViewById(R.id.ivRefreshChatList);
         btnHeaderNewChat = findViewById(R.id.btnHeaderNewChat);
 
+        llSearchChatContainer = findViewById(R.id.llSearchChatContainer);
         etSearchChat = findViewById(R.id.etSearchChat);
+        ivClearSearchChat = findViewById(R.id.ivClearSearchChat);
         cvOpdFilterSelector = findViewById(R.id.cvOpdFilterSelector);
         tvSelectedOpdFilterName = findViewById(R.id.tvSelectedOpdFilterName);
         rvChatList = findViewById(R.id.rvChatList);
@@ -109,35 +119,24 @@ public class ChatListActivity extends AppCompatActivity implements ChatContactAd
             btnHeaderNewChat.setOnClickListener(v -> startActivity(new Intent(this, ChatContactPickerActivity.class)));
         }
 
-        MaterialCardView cvMonitoringBanner = findViewById(R.id.cvMonitoringBanner);
-
-        go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager session = new go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager(this);
-        go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper dbHelper = new go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper(this);
-
-        String myNip = "";
-        try {
-            android.database.Cursor cursor = dbHelper.getDataEmployee(session.getEmployeeId());
-            if (cursor != null && cursor.moveToFirst()) {
-                int nipIdx = cursor.getColumnIndex("nip");
-                if (nipIdx >= 0) myNip = cursor.getString(nipIdx);
-            }
-            if (cursor != null) cursor.close();
-        } catch (Exception ignored) {}
-
-        if (myNip == null || myNip.isEmpty()) {
-            myNip = session.getUsername();
-        }
-
-        boolean isMonitoringUser = "199402092020121005".equals(myNip)
-                || (myNip != null && myNip.contains("199402092020121005"))
-                || "199402092020121005".equals(session.getPegawaiId());
-
-        if (isMonitoringUser && cvMonitoringBanner != null) {
-            cvMonitoringBanner.setVisibility(View.VISIBLE);
-            cvMonitoringBanner.setOnClickListener(v -> startActivity(new Intent(this, ChatMonitoringActivity.class)));
-        }
-
         ivBack.setOnClickListener(v -> finish());
+
+        if (ivSearchChatToggle != null) {
+            ivSearchChatToggle.setOnClickListener(v -> toggleSearchBar());
+        }
+
+        if (ivClearSearchChat != null) {
+            ivClearSearchChat.setOnClickListener(v -> {
+                if (etSearchChat != null) {
+                    if (etSearchChat.getText().length() > 0) {
+                        etSearchChat.setText("");
+                    } else {
+                        toggleSearchBar();
+                    }
+                }
+            });
+        }
+
         ivRefresh.setOnClickListener(v -> {
             go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.showTopBanner(
                     this, "Menyinkronkan data chat dari server...", go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.Type.SYNC
@@ -157,11 +156,25 @@ public class ChatListActivity extends AppCompatActivity implements ChatContactAd
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (ivClearSearchChat != null) {
+                    ivClearSearchChat.setVisibility((s != null && s.length() > 0) ? View.VISIBLE : View.GONE);
+                }
                 filterList();
             }
 
             @Override
             public void afterTextChanged(Editable s) {}
+        });
+
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (llSearchChatContainer != null && llSearchChatContainer.getVisibility() == View.VISIBLE) {
+                    toggleSearchBar();
+                } else {
+                    finish();
+                }
+            }
         });
 
         // 1. Load local cached conversations instantly and sync in background
@@ -413,6 +426,48 @@ public class ChatListActivity extends AppCompatActivity implements ChatContactAd
         }
 
         showList(filtered);
+    }
+
+    private void toggleSearchBar() {
+        if (llSearchChatContainer == null) return;
+
+        if (llSearchChatContainer.getVisibility() == View.VISIBLE) {
+            llSearchChatContainer.setVisibility(View.GONE);
+            if (ivSearchChatToggle != null) {
+                ivSearchChatToggle.setColorFilter(Color.parseColor("#64748B"));
+            }
+            if (etSearchChat != null) {
+                etSearchChat.setText("");
+                hideKeyboard(etSearchChat);
+            }
+        } else {
+            llSearchChatContainer.setVisibility(View.VISIBLE);
+            if (ivSearchChatToggle != null) {
+                ivSearchChatToggle.setColorFilter(Color.parseColor("#16A34A"));
+            }
+            if (etSearchChat != null) {
+                etSearchChat.requestFocus();
+                showKeyboard(etSearchChat);
+            }
+        }
+    }
+
+    private void showKeyboard(View view) {
+        if (view == null) return;
+        view.postDelayed(() -> {
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
+            }
+        }, 150);
+    }
+
+    private void hideKeyboard(View view) {
+        if (view == null) return;
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 
     @Override

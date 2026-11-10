@@ -135,26 +135,31 @@ xmlns:dist="http://schemas.android.com/apk/distribution">
         android:configChanges="orientation|screenSize|screenLayout|keyboardHidden" />
     <activity
         android:name=".chat.ChatListActivity"
+        android:label="SAHUT (Sarana Hubungan Terpadu)"
         android:exported="false"
         android:windowSoftInputMode="adjustResize"
         android:configChanges="orientation|screenSize|screenLayout|keyboardHidden" />
     <activity
         android:name=".chat.ChatRoomActivity"
+        android:label="SAHUT"
         android:exported="false"
         android:windowSoftInputMode="adjustResize"
         android:configChanges="orientation|screenSize|screenLayout|keyboardHidden" />
     <activity
         android:name=".chat.ChatPrivacyActivity"
+        android:label="Pengaturan SAHUT"
         android:exported="false"
         android:windowSoftInputMode="adjustResize"
         android:configChanges="orientation|screenSize|screenLayout|keyboardHidden" />
     <activity
         android:name=".chat.ChatContactPickerActivity"
+        android:label="Kontak SAHUT"
         android:exported="false"
         android:windowSoftInputMode="adjustResize"
         android:configChanges="orientation|screenSize|screenLayout|keyboardHidden" />
     <activity
         android:name=".chat.ChatMonitoringActivity"
+        android:label="Monitoring SAHUT"
         android:exported="false"
         android:windowSoftInputMode="adjustResize"
         android:configChanges="orientation|screenSize|screenLayout|keyboardHidden" />

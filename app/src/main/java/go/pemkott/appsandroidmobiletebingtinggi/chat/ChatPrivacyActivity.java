@@ -1,5 +1,6 @@
 package go.pemkott.appsandroidmobiletebingtinggi.chat;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -19,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.gson.Gson;
 
@@ -32,6 +34,8 @@ import go.pemkott.appsandroidmobiletebingtinggi.adapter.chat.SearchableMultiSele
 import go.pemkott.appsandroidmobiletebingtinggi.api.HttpService;
 import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
 import go.pemkott.appsandroidmobiletebingtinggi.database.ChatLocalDatabase;
+import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
+import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
 import go.pemkott.appsandroidmobiletebingtinggi.model.OpdModel;
 import go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatContact;
 import go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatContactResponse;
@@ -83,6 +87,36 @@ public class ChatPrivacyActivity extends AppCompatActivity {
             );
             fetchPrivacyFromNetwork();
         });
+
+        // Khusus Monitoring Sistem: hanya tampil jika penggunanya adalah NIP 199402092020121005
+        MaterialCardView cvMonitoringSettingsCard = findViewById(R.id.cvMonitoringSettingsCard);
+        SessionManager session = new SessionManager(this);
+        DatabaseHelper dbHelper = new DatabaseHelper(this);
+
+        String myNip = "";
+        try {
+            android.database.Cursor cursor = dbHelper.getDataEmployee(session.getEmployeeId());
+            if (cursor != null && cursor.moveToFirst()) {
+                int nipIdx = cursor.getColumnIndex("nip");
+                if (nipIdx >= 0) myNip = cursor.getString(nipIdx);
+            }
+            if (cursor != null) cursor.close();
+        } catch (Exception ignored) {}
+
+        if (myNip == null || myNip.isEmpty()) {
+            myNip = session.getUsername();
+        }
+
+        boolean isMonitoringUser = "199402092020121005".equals(myNip)
+                || (myNip != null && myNip.contains("199402092020121005"))
+                || "199402092020121005".equals(session.getPegawaiId());
+
+        if (isMonitoringUser && cvMonitoringSettingsCard != null) {
+            cvMonitoringSettingsCard.setVisibility(View.VISIBLE);
+            cvMonitoringSettingsCard.setOnClickListener(v -> startActivity(new Intent(this, ChatMonitoringActivity.class)));
+        } else if (cvMonitoringSettingsCard != null) {
+            cvMonitoringSettingsCard.setVisibility(View.GONE);
+        }
 
         rgPrivacyMode = findViewById(R.id.rgPrivacyMode);
         rbPublic = findViewById(R.id.rbPublic);

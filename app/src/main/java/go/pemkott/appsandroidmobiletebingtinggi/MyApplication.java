@@ -20,8 +20,8 @@ public class MyApplication extends Application {
         // Always enable SSL certificate checking bypass for HTTPS local server (172.15.1.35:8443)
         SSLHelper.disableSSLCertificateChecking();
 
-        // Pastikan default host server selalu mengarah ke http://192.168.1.6:8000/
-        ServerConfig.setCustomBaseHost(ServerConfig.DEFAULT_HOST);
+        // Pastikan default host server selalu mengarah ke http://172.15.1.35:8000/
+        ServerConfig.setCustomBaseHost("http://172.15.1.35:8000/");
     }
 
     public static Context getAppContext() {
