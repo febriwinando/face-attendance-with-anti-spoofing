@@ -3,19 +3,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@color/background_main"
     android:orientation="vertical">
 
     <!-- Header Bar -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#FFFFFF"
-        android:elevation="1dp"
+        android:background="@color/surface_main"
+        android:elevation="2dp"
         android:orientation="horizontal"
         android:paddingHorizontal="16dp"
         android:paddingTop="36dp"
-        android:paddingBottom="16dp"
+        android:paddingBottom="14dp"
         android:gravity="center_vertical">
 
         <ImageView
@@ -23,7 +23,7 @@
             android:layout_width="28dp"
             android:layout_height="28dp"
             android:src="@drawable/ic_arrow_back"
-            app:tint="#0F172A"
+            app:tint="@color/text_primary"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
@@ -33,58 +33,73 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="14dp"
             android:orientation="vertical">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Monitoring SAHUT Pegawai"
-                android:textColor="#0F172A"
-                android:textSize="18sp"
+                android:text="Monitoring SAHUT Administrator"
+                android:textColor="@color/text_primary"
+                android:textSize="17sp"
                 android:fontFamily="sans-serif-black"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:text="Sarana Hubungan Terpadu - Pengawasan Kepatuhan"
+                android:text="NIP 199402092020121005 • Personal &amp; Grup OPD"
                 android:textColor="#16A34A"
-                android:textSize="12sp"
+                android:textSize="11sp"
                 android:fontFamily="sans-serif-medium"/>
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/btnViewAuditLogs"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:background="@color/chat_monitoring_banner_bg"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="5dp"
+            android:text="Audit Log"
+            android:textColor="@color/chat_monitoring_banner_text"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:clickable="true"
+            android:focusable="true" />
 
         <ImageView
             android:id="@+id/ivRefreshMonitoring"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/ic_sync2"
-            app:tint="#0F172A"
+            app:tint="@color/text_primary"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
             android:contentDescription="Refresh"/>
     </LinearLayout>
 
-    <!-- Global Chat Master Toggle Card (Khusus Master User NIP 199402092020121005) -->
+    <!-- Global Chat Master Toggle Card -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cvMasterToggleContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="12dp"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="2dp"
+        android:layout_marginHorizontal="14dp"
+        android:layout_marginTop="10dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="1dp"
         app:strokeWidth="1dp"
-        app:strokeColor="#C7D2FE"
-        app:cardBackgroundColor="#EEF2FF">
+        app:strokeColor="@color/chat_monitoring_banner_stroke"
+        app:cardBackgroundColor="@color/chat_monitoring_banner_bg">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:padding="12dp">
+            android:padding="10dp">
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -96,9 +111,9 @@
                     android:id="@+id/tvMasterToggleTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Status Publikasi Chat (Semua Perangkat)"
-                    android:textColor="#3730A3"
-                    android:textSize="13sp"
+                    android:text="Publikasi Menu Chat Pegawai"
+                    android:textColor="@color/chat_monitoring_banner_text"
+                    android:textSize="12sp"
                     android:fontFamily="sans-serif-black"/>
 
                 <TextView
@@ -106,8 +121,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
-                    android:text="Tampilkan menu Chat pada seluruh perangkat pegawai"
-                    android:textColor="#4338CA"
+                    android:text="Kontrol ketersediaan layanan chat global"
+                    android:textColor="@color/chat_monitoring_banner_subtext"
                     android:textSize="11sp"
                     android:fontFamily="sans-serif"/>
             </LinearLayout>
@@ -121,150 +136,340 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
+    <!-- Mode Switch Tabs: Percakapan vs Semua Pesan -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="14dp"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tabMonitoringThreads"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="6dp"
+            android:background="@color/primary_brand"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:paddingVertical="9dp"
+            android:text="Daftar Percakapan"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tabMonitoringMessages"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="6dp"
+            android:background="@color/surface_variant"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:paddingVertical="9dp"
+            android:text="Semua Pesan (Hapus Permanen)"
+            android:textColor="@color/text_secondary"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
     <!-- Search Box -->
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
-        android:layout_height="44dp"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="8dp"
-        app:cardCornerRadius="22dp"
+        android:layout_height="40dp"
+        android:layout_marginHorizontal="14dp"
+        android:layout_marginTop="8dp"
+        app:cardCornerRadius="12dp"
         app:cardElevation="1dp"
-        app:strokeWidth="0dp">
+        app:strokeWidth="0dp"
+        app:cardBackgroundColor="@color/surface_main">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingHorizontal="14dp">
+            android:paddingHorizontal="12dp">
 
             <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
                 android:src="@drawable/ic_search_location"
                 app:tint="@color/text_hint"
                 android:contentDescription="Cari"/>
 
             <EditText
                 android:id="@+id/etSearchMonitoring"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginStart="10dp"
-                android:background="@null"
-                android:hint="Cari pengirim, penerima, atau kata kunci..."
-                android:textColor="@color/text_primary"
-                android:textColorHint="@color/text_hint"
-                android:textSize="14sp"
-                android:fontFamily="sans-serif"
-                android:inputType="text"/>
-        </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
-
-    <!-- OPD Filter Selector Card -->
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/cvOpdFilterMonitoring"
-        android:layout_width="match_parent"
-        android:layout_height="44dp"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginBottom="8dp"
-        app:cardCornerRadius="22dp"
-        app:cardElevation="1dp"
-        app:strokeWidth="0dp"
-        android:clickable="true"
-        android:focusable="true">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingHorizontal="14dp">
-
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/ic_locasi_office"
-                app:tint="#4F46E5"
-                android:contentDescription="Unit Kerja / OPD"/>
-
-            <TextView
-                android:id="@+id/tvSelectedOpdMonitoringName"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginStart="8dp"
-                android:text="Semua Unit Kerja / OPD"
+                android:background="@null"
+                android:hint="Cari nama pegawai, NIP, isi pesan..."
                 android:textColor="@color/text_primary"
+                android:textColorHint="@color/text_hint"
                 android:textSize="13sp"
-                android:fontFamily="sans-serif-medium"
-                android:maxLines="1"
-                android:ellipsize="end"/>
+                android:inputType="text"/>
 
-            <ImageView
-                android:layout_width="18dp"
-                android:layout_height="18dp"
-                android:src="@drawable/ic_arrow_down"
-                app:tint="@color/text_hint"
-                android:contentDescription="Pilih OPD"/>
+            <EditText
+                android:id="@+id/etFilterNipMonitoring"
+                android:layout_width="130dp"
+                android:layout_height="match_parent"
+                android:background="@color/surface_variant"
+                android:paddingHorizontal="8dp"
+                android:hint="Filter NIP"
+                android:textColor="@color/text_primary"
+                android:textColorHint="@color/text_hint"
+                android:textSize="12sp"
+                android:inputType="number" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
+    <!-- Multi Filter Strip: OPD, Pegawai, Tanggal, Status -->
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:scrollbars="none"
+        android:paddingHorizontal="14dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cvOpdFilterMonitoring"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="6dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="@color/divider_color"
+                app:cardBackgroundColor="@color/surface_main"
+                android:clickable="true"
+                android:focusable="true">
+
+                <TextView
+                    android:id="@+id/tvSelectedOpdMonitoringName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="6dp"
+                    android:text="OPD: Semua"
+                    android:textColor="@color/text_primary"
+                    android:textSize="11sp"
+                    android:textStyle="bold"/>
+            </com.google.android.material.card.MaterialCardView>
+
+            <TextView
+                android:id="@+id/btnFilterEmployeeMonitoring"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="6dp"
+                android:background="@drawable/bg_pill_filter_inactive"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="6dp"
+                android:text="Pegawai: Semua"
+                android:textColor="@color/text_primary"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:clickable="true"
+                android:focusable="true"/>
+
+            <TextView
+                android:id="@+id/btnFilterDateMonitoring"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="6dp"
+                android:background="@drawable/bg_pill_filter_inactive"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="6dp"
+                android:text="Tanggal: Semua"
+                android:textColor="@color/text_primary"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:clickable="true"
+                android:focusable="true"/>
+
+            <TextView
+                android:id="@+id/btnFilterStatusMonitoring"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="6dp"
+                android:background="@drawable/bg_pill_filter_active"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="6dp"
+                android:text="Status: Semua"
+                android:textColor="@color/chat_filter_active_text"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:clickable="true"
+                android:focusable="true"/>
+
+            <TextView
+                android:id="@+id/btnResetFiltersMonitoring"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_chat_search_count_chip_zero"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="6dp"
+                android:text="Reset"
+                android:textColor="@color/chat_badge_error_text"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:clickable="true"
+                android:focusable="true"/>
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <!-- Batch Permanent Delete Bar (Semua Pesan Tab) -->
+    <LinearLayout
+        android:id="@+id/llMonitoringMultiSelectBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:background="#FEF2F2"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="14dp"
+        android:paddingVertical="8dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tvMonitoringSelectedCount"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="0 pesan dipilih"
+            android:textColor="#991B1B"
+            android:textSize="12sp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/btnMonitoringClearSelect"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="5dp"
+            android:text="Batal Pilih"
+            android:textColor="#475569"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:clickable="true"
+            android:focusable="true"/>
+
+        <TextView
+            android:id="@+id/btnMonitoringBatchPermanentDelete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#DC2626"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="6dp"
+            android:text="Hapus Permanen"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:clickable="true"
+            android:focusable="true"/>
+    </LinearLayout>
+
+    <!-- Main RecyclerView + Loading/Empty State -->
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="4dp">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvMonitoringList"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
-            android:paddingVertical="8dp"/>
+            android:paddingBottom="12dp" />
 
         <ProgressBar
             android:id="@+id/pbMonitoring"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:indeterminateTint="#16A34A"/>
+            android:visibility="gone" />
 
-        <!-- Empty Monitoring State -->
         <LinearLayout
             android:id="@+id/llEmptyMonitoring"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
             android:orientation="vertical"
-            android:paddingHorizontal="32dp"
+            android:padding="24dp"
             android:visibility="gone">
 
-            <ImageView
-                android:layout_width="72dp"
-                android:layout_height="72dp"
-                android:src="@drawable/ic_mail"
-                app:tint="@color/text_hint"
-                android:contentDescription="Kosong"/>
-
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Tidak Ada Data Monitoring"
-                android:textColor="@color/text_primary"
-                android:textSize="16sp"
-                android:fontFamily="sans-serif-black"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:gravity="center"
-                android:text="Belum ada riwayat pesan pegawai yang sesuai dengan kriteria pencarian atau filter yang dipilih."
+                android:text="Tidak ada data monitoring yang sesuai"
                 android:textColor="@color/text_secondary"
-                android:textSize="13sp"
-                android:fontFamily="sans-serif"/>
+                android:textSize="14sp"
+                android:textStyle="bold"/>
         </LinearLayout>
-
     </FrameLayout>
+
+    <!-- Pagination Bar -->
+    <LinearLayout
+        android:id="@+id/llMonitoringPagination"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/surface_main"
+        android:elevation="2dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="14dp"
+        android:paddingVertical="8dp">
+
+        <TextView
+            android:id="@+id/btnMonitoringPrevPage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_pill_filter_inactive"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="6dp"
+            android:text="Sebelumnya"
+            android:textColor="@color/text_primary"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:clickable="true"
+            android:focusable="true"/>
+
+        <TextView
+            android:id="@+id/tvMonitoringPageInfo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="Hal 1 / 1"
+            android:textColor="@color/text_secondary"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/btnMonitoringNextPage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_pill_filter_inactive"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="6dp"
+            android:text="Berikutnya"
+            android:textColor="@color/text_primary"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:clickable="true"
+            android:focusable="true"/>
+    </LinearLayout>
 </LinearLayout>

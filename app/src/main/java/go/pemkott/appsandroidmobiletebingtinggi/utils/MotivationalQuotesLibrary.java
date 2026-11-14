@@ -22,6 +22,7 @@ public class MotivationalQuotesLibrary {
         public String getAuthor() { return author; }
     }
 
+    private static final String DEFAULT_AUTHOR = "AKU";
     private static final List<Quote> QUOTES = new ArrayList<>();
 
     static {
@@ -417,6 +418,139 @@ public class MotivationalQuotesLibrary {
         QUOTES.add(new Quote(388, "Iman adalah penerang dalam kegelapan dan kompas saat kita kehilangan arah.", "Albert Einstein"));
         QUOTES.add(new Quote(389, "Cinta sejati adalah ketika kebahagiaan orang lain lebih penting daripada kebahagiaan Anda sendiri.", "H. Jackson Brown Jr."));
         QUOTES.add(new Quote(390, "Jagalah integritasmu bagai menjaga mata air kehidupan; sekali tercemar, butuh waktu lama untuk memulihkannya.", "Ir. Soekarno"));
+
+        // Quotes Tambahan: Nasihat, Kasih, Didikan, dan Pembentukan Karakter (391 - 495)
+        // 1. Nasihat dan Kebijaksanaan (391 - 400)
+        QUOTES.add(new Quote(391, "Jalan orang bodoh lurus dalam anggapannya sendiri, tetapi siapa mendengarkan nasihat, ia bijak.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(392, "Rancangan gagal kalau tidak ada pertimbangan, tetapi terlaksana kalau penasihat banyak.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(393, "Dengarkanlah nasihat dan terimalah didikan, supaya engkau menjadi bijak di masa depan.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(394, "Besi menajamkan besi, orang menajamkan sesamanya.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(395, "Setiap orang hendaklah cepat untuk mendengar, tetapi lambat untuk berkata-kata, dan juga lambat untuk marah.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(396, "Perkataan yang menyenangkan adalah seperti sarang madu, manis bagi hati dan obat bagi tulang-tulang.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(397, "Jikalau seseorang memberi jawab sebelum mendengar, itulah kebodohan dan kecelaannya.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(398, "Hati orang berpengertian memperoleh pengetahuan, dan telinga orang bijak menuntut pengetahuan.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(399, "Rancangan di dalam hati manusia itu seperti air yang dalam, tetapi orang yang pandai tahu menimbanya.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(400, "Mendengar hardikan orang berhikmat lebih baik dari pada mendengar nyanyian orang bodoh.", DEFAULT_AUTHOR));
+
+        // 2. Kasih dan Kepedulian (401 - 410)
+        QUOTES.add(new Quote(401, "Kasih itu sabar; kasih itu murah hati; ia tidak cemburu. Ia tidak memegahkan diri dan tidak sombong.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(402, "Kasih tidak melakukan yang tidak sopan dan tidak mencari keuntungan diri sendiri. Ia tidak pemarah dan tidak menyimpan kesalahan orang lain.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(403, "Kasih menutupi segala sesuatu, percaya segala sesuatu, mengharapkan segala sesuatu, sabar menanggung segala sesuatu.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(404, "Hendaklah kamu saling mengasihi sebagai saudara dan saling mendahului dalam memberi hormat.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(405, "Hendaklah kamu ramah seorang terhadap yang lain, penuh kasih mesra dan saling mengampuni.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(406, "Kebencian menimbulkan pertengkaran, tetapi kasih menutupi segala pelanggaran.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(407, "Tetapi yang terutama: kasihilah sungguh-sungguh seorang akan yang lain, sebab kasih menutupi banyak sekali dosa.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(408, "Bertolong-tolonganlah menanggung bebanmu! Demikianlah kamu memenuhi hukum kasih.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(409, "Marilah kita saling memperhatikan supaya kita saling mendorong dalam kasih dan dalam pekerjaan baik.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(410, "Segala sesuatu yang kamu kehendaki supaya orang perbuat kepadamu, perbuatlah demikian juga kepada mereka.", DEFAULT_AUTHOR));
+
+        // 3. Didikan dan Pendidikan Karakter (411 - 420)
+        QUOTES.add(new Quote(411, "Dengarkanlah didikan ayahmu, dan jangan menyia-nyiakan ajaran ibumu.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(412, "Janganlah engkau menolak didikan Tuhan, dan janganlah bosan akan peringatan-Nya. Karena Tuhan memberi ajaran kepada yang dikasihi-Nya, seperti seorang ayah kepada anak yang disayangi.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(413, "Berpeganglah pada didikan, janganlah melepaskannya, peliharalah dia, karena dialah hidupmu.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(414, "Siapa mengindahkan didikan, menuju jalan kehidupan, tetapi siapa mengabaikan teguran, tersesat.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(415, "Siapa mencintai didikan, mencintai pengetahuan; tetapi siapa membenci teguran, adalah dungu.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(416, "Anak yang bijak mendengarkan didikan ayahnya, tetapi seorang pencemooh tidak mendengarkan hardikan.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(417, "Orang bodoh menolak didikan ayahnya, tetapi siapa mengindahkan teguran adalah bijak.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(418, "Siapa mengabaikan didikan membuang dirinya sendiri, tetapi siapa mendengarkan teguran, memperoleh akal budi.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(419, "Didiklah orang muda menurut jalan yang patut baginya, maka pada masa tuanya pun ia tidak akan menyimpang dari pada jalan itu.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(420, "Memang tiap-tiap ganjaran pada waktu ia diberikan tidak mendatangkan sukacita, tetapi dukacita. Tetapi kemudian ia menghasilkan buah kebenaran yang memberikan damai kepada mereka yang dilatih olehnya.", DEFAULT_AUTHOR));
+
+        // 4. Kerajinan dan Tidak Malas (421 - 430)
+        QUOTES.add(new Quote(421, "Pergilah kepada semut, perhatikanlah lakunya dan jadilah bijak: biarpun tidak ada pemimpinnya, pengaturnya atau penguasanya, ia menyediakan rotinya di musim panas, dan mengumpulkan makanannya pada waktu panen.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(422, "Hai pemalas, berapa lama lagi engkau berbaring? Bilakah engkau akan bangun dari tidurmu? Tidur sebentar lagi, mengantuk sebentar lagi, melipat tangan sebentar lagi untuk tinggal berbaring — maka datanglah kemiskinan kepadamu seperti seorang penyerbu, dan kekurangan seperti orang yang bersenjata.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(423, "Tangan yang lamban membuat miskin, tetapi tangan orang rajin menjadikan kaya.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(424, "Tangan orang rajin memegang kekuasaan, tetapi kemalasan mengakibatkan kerja paksa.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(425, "Hati si pemalas penuh keinginan, tetapi sia-sia, sedangkan hati orang rajin diberi kelimpahan.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(426, "Dalam tiap jerih payah ada keuntungan, tetapi kata-kata belaka mendatangkan kekurangan saja.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(427, "Orang yang bermalas-malas dalam pekerjaannya sudah menjadi saudara dari si perusak.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(428, "Rancangan orang rajin semata-mata mendatangkan kelimpahan, tetapi setiap orang yang tergesa-gesa hanya akan mengalami kekurangan.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(429, "Janganlah hendaknya kerajinanmu kendor, biarlah semangatmu menyala-nyala dan layanilah Tuhan.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(430, "Apa pun juga yang kamu perbuat, perbuatlah dengan segenap hatimu seperti untuk Tuhan dan bukan untuk manusia.", DEFAULT_AUTHOR));
+
+        // 5. Kejujuran dan Integritas (431 - 438)
+        QUOTES.add(new Quote(431, "Siapa bersih kelakuannya, aman jalannya, tetapi siapa berliku-liku jalannya, akan diketahui.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(432, "Orang yang jujur dipimpin oleh ketulusannya, tetapi pengkhianat dirusak oleh kecurangannya.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(433, "Orang yang dusta bibirnya adalah kekejian bagi Tuhan, tetapi orang yang berlaku setia dikenan-Nya.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(434, "Timbangan dan neraca yang betul adalah kepunyaan Tuhan, segala batu timbangan di dalam pundi-pundi adalah buatan-Nya.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(435, "Orang benar yang bersih kelakuannya — berbahagialah keturunannya!", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(436, "Barangsiapa setia dalam perkara-perkara kecil, ia setia juga dalam perkara-perkara besar. Dan barangsiapa tidak benar dalam perkara-perkara kecil, ia tidak benar juga dalam perkara-perkara besar.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(437, "Karena itu buanglah dusta dan berkatalah benar seorang kepada yang lain, karena kita adalah sesama anggota.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(438, "Semua yang benar, semua yang mulia, semua yang adil, semua yang suci, semua yang manis, semua yang sedap didengar, semua yang disebut kebajikan dan patut dipuji, pikirkanlah semuanya itu.", DEFAULT_AUTHOR));
+
+        // 6. Kerendahan Hati dan Menghormati Sesama (439 - 445)
+        QUOTES.add(new Quote(439, "Jikalau keangkuhan tiba, tiba juga cemooh, tetapi hikmat ada pada orang yang rendah hati.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(440, "Takut akan Tuhan adalah didikan yang mendatangkan hikmat, dan kerendahan hati mendahului kehormatan.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(441, "Kecongkakan mendahului kehancuran, dan tinggi hati mendahului kejatuhan.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(442, "Dengan tidak mencari kepentingan sendiri atau puji-pujian yang sia-sia. Sebaliknya hendaklah dengan rendah hati yang seorang menganggap yang lain lebih utama dari pada dirinya sendiri.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(443, "Hendaklah kamu sehati sepikir dalam hidupmu bersama; janganlah kamu memikirkan perkara-perkara yang tinggi, tetapi arahkanlah dirimu kepada perkara-perkara yang sederhana. Janganlah menganggap dirimu pandai!", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(444, "Rendahkanlah dirimu seorang terhadap yang lain, sebab: Allah menentang orang yang congkak, tetapi mengasihani orang yang rendah hati.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(445, "Barangsiapa terbesar di antara kamu, hendaklah ia menjadi pelayanmu.", DEFAULT_AUTHOR));
+
+        // 7. Kesabaran dan Pengendalian Diri (446 - 453)
+        QUOTES.add(new Quote(446, "Orang yang sabar besar pengertiannya, tetapi siapa cepat marah membesarkan kebodohan.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(447, "Si pemarah membangkitkan pertengkaran, tetapi orang yang sabar memadamkan perbantahan.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(448, "Orang yang sabar melebihi seorang pahlawan, orang yang menguasai dirinya, melebihi orang yang merebut kota.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(449, "Akal budi membuat seseorang panjang sabar dan orang itu dipuji karena memaafkan pelanggaran.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(450, "Janganlah lekas-lekas marah dalam hati, karena amarah menetap dalam dada orang bodoh.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(451, "Buah kebaikan sejati ialah: kasih, sukacita, damai sejahtera, kesabaran, kemurahan, kebaikan, kesetiaan, kelemahlembutan, dan penguasaan diri. Tidak ada hukum yang menentang hal-hal itu.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(452, "Karena itu, sebagai orang-orang pilihan Allah yang dikuduskan dan dikasihi-Nya, kenakanlah belas kasihan, kemurahan, kerendahan hati, kelemahlembutan dan kesabaran.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(453, "Sebab amarah manusia tidak mengerjakan kebenaran di hadapan Allah.", DEFAULT_AUTHOR));
+
+        // 8. Pengampunan dan Perdamaian (454 - 460)
+        QUOTES.add(new Quote(454, "Berbahagialah orang yang membawa damai, karena mereka membawa ketenteraman bagi sesama.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(455, "Sedapat-dapatnya, kalau hal itu bergantung padamu, hiduplah dalam perdamaian dengan semua orang!", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(456, "Janganlah kamu kalah terhadap kejahatan, tetapi kalahkanlah kejahatan dengan kebaikan!", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(457, "Apabila kamu menjadi marah, janganlah kamu berbuat dosa: janganlah matahari terbenam, sebelum padam amarahmu.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(458, "Sabarlah kamu seorang terhadap yang lain, dan ampunilah seorang akan yang lain apabila yang seorang menaruh dendam terhadap yang lain, sama seperti Tuhan telah mengampuni kamu, kamu perbuat jugalah demikian.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(459, "Siapa menutupi pelanggaran, mengejar kasih, tetapi siapa membangkit-bangkit perkara, menceraikan sahabat yang karib.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(460, "Karena jikalau kamu mengampuni kesalahan orang, Tuhan Yang Maha Pengampun akan mengampuni kamu juga.", DEFAULT_AUTHOR));
+
+        // 9. Semangat dan Pantang Menyerah (461 - 467)
+        QUOTES.add(new Quote(461, "Janganlah kita jemu-jemu berbuat baik, karena apabila sudah datang waktunya, kita akan menuai, jika kita tidak menjadi lemah.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(462, "Segala sesuatu yang dijumpai tanganmu untuk dikerjakan, kerjakanlah itu sekuat tenaga.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(463, "Sebab tujuh kali orang benar jatuh, namun ia bangun kembali.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(464, "Segala perkara dapat kutanggung di dalam Dia yang memberi kekuatan kepadaku.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(465, "Janganlah jemu-jemu berbuat apa yang baik.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(466, "Berbahagialah orang yang bertahan dalam pencobaan, sebab apabila ia sudah tahan uji, ia akan menerima mahkota kehidupan yang dijanjikan Allah kepada barangsiapa yang mengasihi Dia.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(467, "Kesengsaraan itu menimbulkan ketekunan, dan ketekunan menimbulkan tahan uji dan tahan uji menimbulkan pengharapan.", DEFAULT_AUTHOR));
+
+        // 10. Tanggung Jawab dan Perbuatan Baik (468 - 475)
+        QUOTES.add(new Quote(468, "Demikianlah hendaknya terangmu bercahaya di depan orang, supaya mereka melihat perbuatanmu yang baik dan memuliakan Tuhan Yang Maha Esa.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(469, "Dan sebagaimana kamu kehendaki supaya orang perbuat kepadamu, perbuatlah juga demikian kepada mereka.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(470, "Karena itu, selama masih ada kesempatan bagi kita, marilah kita berbuat baik kepada semua orang, tetapi terutama kepada kawan-kawan kita seiman.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(471, "Dengan rela jalankanlah pelayananmu seperti orang-orang yang melayani Tuhan dan bukan manusia.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(472, "Dan segala sesuatu yang kamu lakukan dengan perkataan atau perbuatan, lakukanlah semuanya itu dengan tulus hati, sambil mengucap syukur kepada Allah.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(473, "Perhatikanlah, supaya jangan ada orang yang membalas jahat dengan jahat, tetapi usahakanlah senantiasa yang baik, terhadap kamu masing-masing dan terhadap semua orang.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(474, "Janganlah memfitnah, janganlah bertengkar, hendaklah selalu ramah dan bersikap lemah lembut terhadap semua orang.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(475, "Dan janganlah kamu lupa berbuat baik dan memberi bantuan, sebab korban-korban yang demikianlah yang berkenan kepada Allah.", DEFAULT_AUTHOR));
+
+        // 11. Syukur dan Berpikir Positif (476 - 481)
+        QUOTES.add(new Quote(476, "Hati yang gembira adalah obat yang manjur, tetapi semangat yang patah mengeringkan tulang.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(477, "Janganlah hendaknya kamu kuatir tentang apa pun juga, tetapi nyatakanlah dalam segala hal keinginanmu kepada Allah dalam doa dan permohonan dengan ucapan syukur.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(478, "Semua yang benar, semua yang mulia, semua yang disebut kebajikan dan patut dipuji, pikirkanlah semuanya itu.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(479, "Mengucap syukurlah dalam segala hal, sebab itulah yang dikehendaki Allah bagi kamu.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(480, "Inilah hari yang dijadikan Tuhan, marilah kita bersorak-sorak dan bersukacita karenanya!", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(481, "Hendaklah damai sejahtera memerintah dalam hatimu, karena untuk itulah kamu telah dipanggil menjadi satu kesatuan. Dan bersyukurlah.", DEFAULT_AUTHOR));
+
+        // 12. Kepemimpinan dan Kebijaksanaan dalam Bertindak (482 - 488)
+        QUOTES.add(new Quote(482, "Hati manusia memikir-mikirkan jalannya, tetapi Tuhanlah yang menentukan arah langkahnya.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(483, "Dengan keadilan seorang raja menegakkan negeri, tetapi siapa memungut pajak terlalu tinggi, meruntuhkannya.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(484, "Raja yang menghakimi orang lemah dengan adil, takhtanya tetap kokoh untuk selama-lamanya.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(485, "Hai manusia, telah diberitahukan kepadamu apa yang baik. Dan apakah yang dituntut Tuhan dari padamu: selain berlaku adil, mencintai kesetiaan, dan hidup dengan rendah hati di hadapan Allahmu?", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(486, "Barangsiapa ingin menjadi besar di antara kamu, hendaklah ia menjadi pelayanmu, dan barangsiapa ingin menjadi yang terkemuka di antara kamu, hendaklah ia menjadi hamba untuk semuanya.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(487, "Setiap orang yang kepadanya banyak diberi, dari padanya akan banyak dituntut, dan kepada siapa yang banyak dipercayakan, dari padanya akan lebih banyak lagi dituntut.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(488, "Tetapi hikmat yang dari atas adalah pertama-tama murni, selanjutnya pendamai, peramah, penurut, penuh belas kasihan dan buah-buah yang baik, tidak memihak dan tidak munafik.", DEFAULT_AUTHOR));
+
+        // 13. Motivasi dan Harapan (489 - 495)
+        QUOTES.add(new Quote(489, "Sebab Aku ini mengetahui rancangan-rancangan apa yang ada pada-Ku mengenai kamu, demikianlah firman Tuhan, yaitu rancangan damai sejahtera dan bukan rancangan kecelakaan, untuk memberikan kepadamu hari depan yang penuh harapan.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(490, "Serahkanlah hidupmu kepada Tuhan dan percayalah kepada-Nya, dan Ia akan bertindak.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(491, "Allah itu bagi kita tempat perlindungan dan kekuatan, sebagai penolong dalam kesesakan sangat terbukti.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(492, "Tetapi orang-orang yang menanti-nantikan Tuhan mendapat kekuatan baru: mereka seumpama rajawali yang naik terbang dengan kekuatan sayapnya; mereka berlari dan tidak menjadi lesu, mereka berjalan dan tidak menjadi lelah.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(493, "Kita tahu sekarang, bahwa Allah turut bekerja dalam segala sesuatu untuk mendatangkan kebaikan bagi mereka yang mengasihi Dia.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(494, "Sebab itu kami tidak tawar hati, tetapi meskipun manusia lahiriah kami semakin merosot, namun manusia batiniah kami dibaharui dari sehari ke sehari.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(495, "Akan hal ini aku yakin sepenuhnya, yaitu Ia, yang memulai pekerjaan yang baik di antara kamu, akan meneruskannya sampai pada akhirnya.", DEFAULT_AUTHOR));
+        QUOTES.add(new Quote(496, "Takut akan Tuhan adalah permulaan pengetahuan, tetapi orang bodoh menghina hikmat dan didikan.", DEFAULT_AUTHOR));
     }
 
     public static List<Quote> getAllQuotes() {
@@ -474,5 +608,17 @@ public class MotivationalQuotesLibrary {
     public static Quote getRandomQuote() {
         int randomIndex = (int) (Math.random() * QUOTES.size());
         return QUOTES.get(randomIndex);
+    }
+
+    public static Quote getRandomQuoteExcluding(int excludeId) {
+        if (QUOTES.size() <= 1) {
+            return QUOTES.get(0);
+        }
+        int randomIndex = (int) (Math.random() * QUOTES.size());
+        Quote candidate = QUOTES.get(randomIndex);
+        if (candidate.getId() == excludeId) {
+            candidate = QUOTES.get((randomIndex + 1) % QUOTES.size());
+        }
+        return candidate;
     }
 }

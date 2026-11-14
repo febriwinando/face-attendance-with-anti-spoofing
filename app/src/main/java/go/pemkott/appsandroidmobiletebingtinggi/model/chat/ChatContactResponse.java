@@ -27,6 +27,17 @@ public class ChatContactResponse {
     @SerializedName("chat_terms_accepted")
     private Boolean chatTermsAccepted;
 
+    @SerializedName("chat_enabled")
+    private Boolean chatEnabled;
+
+    public Boolean getChatEnabled() {
+        return chatEnabled;
+    }
+
+    public void setChatEnabled(Boolean chatEnabled) {
+        this.chatEnabled = chatEnabled;
+    }
+
     public Boolean getTermsAccepted() {
         if (termsAccepted != null) return termsAccepted;
         if (isTermsAccepted != null) return isTermsAccepted;

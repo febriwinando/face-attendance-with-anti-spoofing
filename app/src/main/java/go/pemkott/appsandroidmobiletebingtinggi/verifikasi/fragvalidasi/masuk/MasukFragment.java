@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -29,6 +30,7 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.imageview.ShapeableImageView;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -45,6 +47,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.model.ValidasiModel;
 import go.pemkott.appsandroidmobiletebingtinggi.pdf.ReadPdfActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.utils.NetworkUtil;
 import go.pemkott.appsandroidmobiletebingtinggi.verifikasi.ValidasiNewActivity;
+import go.pemkott.appsandroidmobiletebingtinggi.verifikasi.VerificationBatchHelper;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -59,8 +62,15 @@ public class MasukFragment extends Fragment {
     AdapterMasukKeduaFragment adapterMasukKeduaFragment;
     DatabaseHelper databaseHelper;
     String sEmployee_id, sToken, sVerifikator;
-    TextView tvv1, tvv2;
+    TextView tvv1, tvv2, tvKosongValidasi;
     ImageView ivBackValidasi;
+    View llBatchV1, llBatchV2;
+    CheckBox cbSelectAllV1, cbSelectAllV2;
+    MaterialButton btnBatchTerimaV1, btnBatchTolakV1, btnBatchTerimaV2, btnBatchTolakV2;
+    private int v1Count = 0;
+    private int v2Count = 0;
+    private boolean v1Loaded = false;
+    private boolean v2Loaded = false;
 
     SessionManager session;
     String userId;
@@ -79,7 +89,16 @@ public class MasukFragment extends Fragment {
         rvVerivikatorKedua = view.findViewById(R.id.rvVerivikatorKedua);
         tvv1 = view.findViewById(R.id.tvv1);
         tvv2 = view.findViewById(R.id.tvv2);
+        tvKosongValidasi = view.findViewById(R.id.tvKosongValidasi);
         ivBackValidasi = view.findViewById(R.id.ivBackValidasi);
+        llBatchV1 = view.findViewById(R.id.llBatchV1);
+        cbSelectAllV1 = view.findViewById(R.id.cbSelectAllV1);
+        btnBatchTerimaV1 = view.findViewById(R.id.btnBatchTerimaV1);
+        btnBatchTolakV1 = view.findViewById(R.id.btnBatchTolakV1);
+        llBatchV2 = view.findViewById(R.id.llBatchV2);
+        cbSelectAllV2 = view.findViewById(R.id.cbSelectAllV2);
+        btnBatchTerimaV2 = view.findViewById(R.id.btnBatchTerimaV2);
+        btnBatchTolakV2 = view.findViewById(R.id.btnBatchTolakV2);
 
         holderAPI = RetroClient.getInstance().getApi2();
 
@@ -147,13 +166,17 @@ public class MasukFragment extends Fragment {
                     return;
                 }
 
-                List<RekapMasukFragment> rekapServers = response.body();
-                if (rekapServers == null || rekapServers.isEmpty()){
+                List<RekapMasukFragment> rekapServers = response.body() != null ? response.body() : new ArrayList<>();
+                v1Loaded = true;
+                v1Count = rekapServers.size();
+                if (rekapServers.isEmpty()) {
                     tvv1.setVisibility(View.GONE);
-                }else{
+                } else {
+                    tvv1.setText("VERIFIKATOR PERTAMA (" + v1Count + ")");
                     tvv1.setVisibility(View.VISIBLE);
-
                 }
+                syncSectionCounters();
+
                 rvRekapMasukFragment.setLayoutManager(new LinearLayoutManager(getActivity()));
                 adapterMasukFragment = new AdapterMasukFragment(rekapServers, getActivity());
                 rvRekapMasukFragment.setAdapter(adapterMasukFragment);
@@ -163,11 +186,17 @@ public class MasukFragment extends Fragment {
                         viewDialogValidasi(data);
                     }
                 });
+                VerificationBatchHelper.bindSectionToolbar(
+                        getActivity(), llBatchV1, cbSelectAllV1, btnBatchTerimaV1, btnBatchTolakV1,
+                        adapterMasukFragment, holderAPI, "masuk", "1", createBatchCallback()
+                );
 
             }
 
             @Override
             public void onFailure(Call<List<RekapMasukFragment>> call, Throwable t) {
+                v1Loaded = true;
+                syncSectionCounters();
                 Toast.makeText(getContext(), "Error", Toast.LENGTH_SHORT).show();
             }
         });
@@ -192,12 +221,17 @@ public class MasukFragment extends Fragment {
                     return;
                 }
 
-                List<RekapMasukKeduaFragment> rekapMasukKeduaFragments = response.body();
-                if (rekapMasukKeduaFragments == null || rekapMasukKeduaFragments.isEmpty()) {
+                List<RekapMasukKeduaFragment> rekapMasukKeduaFragments = response.body() != null ? response.body() : new ArrayList<>();
+                v2Loaded = true;
+                v2Count = rekapMasukKeduaFragments.size();
+                if (rekapMasukKeduaFragments.isEmpty()) {
                     tvv2.setVisibility(View.GONE);
-                }else{
+                } else {
+                    tvv2.setText("VERIFIKATOR KEDUA (" + v2Count + ")");
                     tvv2.setVisibility(View.VISIBLE);
                 }
+                syncSectionCounters();
+
                 rvVerivikatorKedua.setLayoutManager(new LinearLayoutManager(getActivity()));
                 adapterMasukKeduaFragment = new AdapterMasukKeduaFragment(rekapMasukKeduaFragments, getActivity());
                 rvVerivikatorKedua.setAdapter(adapterMasukKeduaFragment);
@@ -207,6 +241,10 @@ public class MasukFragment extends Fragment {
                         viewDialogValidasiKedua(data);
                     }
                 });
+                VerificationBatchHelper.bindSectionToolbar(
+                        getActivity(), llBatchV2, cbSelectAllV2, btnBatchTerimaV2, btnBatchTolakV2,
+                        adapterMasukKeduaFragment, holderAPI, "masuk", "2", createBatchCallback()
+                );
 
                 dialogproses.dismiss();
 
@@ -214,6 +252,8 @@ public class MasukFragment extends Fragment {
 
             @Override
             public void onFailure(Call<List<RekapMasukKeduaFragment>> call, Throwable t) {
+                v2Loaded = true;
+                syncSectionCounters();
                 dialogproses.dismiss();
                 dialogView.viewNotifKosong(getActivity(), "Gagal terhubung ke server, mohon dicoba kembali", "");
 
@@ -222,6 +262,35 @@ public class MasukFragment extends Fragment {
 
         dialogproses.show();
 
+    }
+
+    private void syncSectionCounters() {
+        if (tvKosongValidasi != null) {
+            tvKosongValidasi.setVisibility(v1Loaded && v2Loaded && v1Count == 0 && v2Count == 0 ? View.VISIBLE : View.GONE);
+        }
+        if (getActivity() instanceof ValidasiNewActivity) {
+            ((ValidasiNewActivity) getActivity()).updateTabCounts(false, v1Count + v2Count);
+        }
+    }
+
+    private VerificationBatchHelper.BatchCallback createBatchCallback() {
+        return new VerificationBatchHelper.BatchCallback() {
+            @Override
+            public void onSuccess(String message) {
+                dataRekapServerV1(sEmployee_id);
+                dataRekapServerV2(sEmployee_id);
+                viewSuksesValidasi(message);
+            }
+
+            @Override
+            public void onError(String message, boolean fromServerSuccessFalse) {
+                if (fromServerSuccessFalse) {
+                    viewGagalValidasi(message);
+                } else {
+                    dialogView.viewNotifKosong(getActivity(), "Gagal melakukan verifikasi", message);
+                }
+            }
+        };
     }
 
 
@@ -395,15 +464,7 @@ public class MasukFragment extends Fragment {
             imageView.setVisibility(View.GONE);
             if (tagView != null) tagView.setVisibility(View.GONE);
         } else {
-            photoPath = photoPath.trim();
-            String fullPhotoUrl;
-            if (photoPath.startsWith("http://") || photoPath.startsWith("https://")) {
-                fullPhotoUrl = photoPath;
-            } else if (photoPath.startsWith("uploads-img-absensi/")) {
-                fullPhotoUrl = ServerConfig.getBaseUrl() + photoPath;
-            } else {
-                fullPhotoUrl = baseUrl + photoPath;
-            }
+            String fullPhotoUrl = ServerConfig.resolveUploadsAbsensiUrl(photoPath);
             imageView.setVisibility(View.VISIBLE);
             if (tagView != null) tagView.setVisibility(View.VISIBLE);
             Glide.with(this).load(fullPhotoUrl).placeholder(R.drawable.profil_pic).error(R.drawable.profil_pic).into(imageView);
@@ -416,15 +477,7 @@ public class MasukFragment extends Fragment {
             if (tagView != null) tagView.setVisibility(View.GONE);
             if (pdfButton != null) pdfButton.setVisibility(View.GONE);
         } else {
-            lampiranPath = lampiranPath.trim();
-            String fullLampiranUrl;
-            if (lampiranPath.startsWith("http://") || lampiranPath.startsWith("https://")) {
-                fullLampiranUrl = lampiranPath;
-            } else if (lampiranPath.startsWith("uploads-img-lampiran/")) {
-                fullLampiranUrl = ServerConfig.getBaseUrl() + lampiranPath;
-            } else {
-                fullLampiranUrl = ServerConfig.getUploadsLampiranUrl() + lampiranPath;
-            }
+            String fullLampiranUrl = ServerConfig.resolveUploadsLampiranUrl(lampiranPath);
 
             boolean isPdf = fullLampiranUrl.toLowerCase().endsWith(".pdf") || "pdf".equalsIgnoreCase(ekstensi);
             if (isPdf) {

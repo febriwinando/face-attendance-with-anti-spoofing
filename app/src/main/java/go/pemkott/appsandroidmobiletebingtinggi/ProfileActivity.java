@@ -310,7 +310,7 @@ public class ProfileActivity extends AppCompatActivity {
         } else {
 
             Glide.with(this)
-                    .load(ServerConfig.getStorageUrl() + "foto-pegawai/" + fotoProfile)
+                    .load(ServerConfig.resolveFotoPegawaiUrl(fotoProfile))
                     .signature(new ObjectKey(profileCacheBuster))
                     .placeholder(R.drawable.profilpics)
                     .error(R.drawable.profilpics)

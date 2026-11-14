@@ -3,14 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@color/background_main"
     android:orientation="vertical">
 
     <!-- Header Bar -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#FFFFFF"
+        android:background="@color/surface_main"
         android:elevation="1dp"
         android:orientation="horizontal"
         android:paddingHorizontal="16dp"
@@ -23,7 +23,7 @@
             android:layout_width="28dp"
             android:layout_height="28dp"
             android:src="@drawable/ic_arrow_back"
-            app:tint="#0F172A"
+            app:tint="@color/text_primary"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
@@ -40,7 +40,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Pengaturan SAHUT"
-                android:textColor="#0F172A"
+                android:textColor="@color/text_primary"
                 android:textSize="18sp"
                 android:fontFamily="sans-serif-black"/>
 
@@ -48,7 +48,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Sarana Hubungan Terpadu"
-                android:textColor="#64748B"
+                android:textColor="@color/text_secondary"
                 android:textSize="11sp"
                 android:fontFamily="sans-serif-medium"/>
         </LinearLayout>
@@ -58,7 +58,7 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/ic_sync2"
-            app:tint="#0F172A"
+            app:tint="@color/text_primary"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
@@ -85,8 +85,8 @@
                 app:cardCornerRadius="14dp"
                 app:cardElevation="0dp"
                 app:strokeWidth="1dp"
-                app:strokeColor="#C7D2FE"
-                app:cardBackgroundColor="#EEF2FF"
+                app:strokeColor="@color/chat_monitoring_banner_stroke"
+                app:cardBackgroundColor="@color/chat_monitoring_banner_bg"
                 android:visibility="gone"
                 android:clickable="true"
                 android:focusable="true">
@@ -102,14 +102,14 @@
                         android:layout_width="44dp"
                         android:layout_height="44dp"
                         android:background="@drawable/bg_circle_opd_badge"
-                        android:backgroundTint="#E0E7FF">
+                        android:backgroundTint="@color/chat_monitoring_banner_bg">
 
                         <ImageView
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:layout_gravity="center"
                             android:src="@drawable/ic_document_scanner"
-                            app:tint="#3730A3"
+                            app:tint="@color/chat_monitoring_banner_text"
                             android:contentDescription="Monitoring"/>
                     </FrameLayout>
 
@@ -124,7 +124,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Monitoring Sistem SAHUT"
-                            android:textColor="#3730A3"
+                            android:textColor="@color/chat_monitoring_banner_text"
                             android:textSize="14.5sp"
                             android:fontFamily="sans-serif-black"/>
 
@@ -133,7 +133,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
                             android:text="Sarana Hubungan Terpadu (NIP 199402092020121005)"
-                            android:textColor="#4338CA"
+                            android:textColor="@color/chat_monitoring_banner_subtext"
                             android:textSize="11.5sp"
                             android:fontFamily="sans-serif"/>
                     </LinearLayout>
@@ -143,7 +143,7 @@
                         android:layout_height="20dp"
                         android:src="@drawable/ic_arrow_back"
                         android:rotation="180"
-                        app:tint="#3730A3"
+                        app:tint="@color/chat_monitoring_banner_text"
                         android:contentDescription="Buka Monitoring"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -152,7 +152,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Siapa yang dapat melihat kontak &amp; mengirim pesan ke Anda?"
-                android:textColor="#1E293B"
+                android:textColor="@color/text_primary"
                 android:textSize="15sp"
                 android:textStyle="bold"
                 android:layout_marginBottom="12dp"/>
@@ -162,7 +162,8 @@
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="1dp"
-                app:strokeWidth="0dp">
+                app:strokeWidth="0dp"
+                app:cardBackgroundColor="@color/surface_main">
 
                 <RadioGroup
                     android:id="@+id/rgPrivacyMode"
@@ -175,7 +176,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Semua Pegawai (Publik)"
-                        android:textColor="#1E293B"
+                        android:textColor="@color/text_primary"
                         android:textSize="14sp"
                         android:paddingVertical="8dp"/>
 
@@ -184,7 +185,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Sembunyikan dari Semua (Sangat Privat)"
-                        android:textColor="#1E293B"
+                        android:textColor="@color/text_primary"
                         android:textSize="14sp"
                         android:paddingVertical="8dp"/>
 
@@ -193,7 +194,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Tampilkan Hanya ke Pegawai / OPD Terpilih"
-                        android:textColor="#1E293B"
+                        android:textColor="@color/text_primary"
                         android:textSize="14sp"
                         android:paddingVertical="8dp"/>
                 </RadioGroup>
@@ -215,7 +216,8 @@
                     android:layout_marginBottom="12dp"
                     app:cardCornerRadius="12dp"
                     app:cardElevation="1dp"
-                    app:strokeWidth="0dp">
+                    app:strokeWidth="0dp"
+                    app:cardBackgroundColor="@color/surface_main">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -227,7 +229,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Pegawai Terpilih"
-                            android:textColor="#1E293B"
+                            android:textColor="@color/text_primary"
                             android:textSize="14sp"
                             android:textStyle="bold"/>
 
@@ -235,7 +237,7 @@
                             android:id="@+id/tvSelectedEmployeesSummary"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:textColor="#64748B"
+                            android:textColor="@color/text_secondary"
                             android:textSize="13sp"
                             android:layout_marginTop="4dp"
                             android:text="Belum ada pegawai dipilih"/>
@@ -269,7 +271,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Unit Kerja / OPD Terpilih"
-                            android:textColor="#1E293B"
+                            android:textColor="@color/text_primary"
                             android:textSize="14sp"
                             android:textStyle="bold"/>
 
@@ -277,7 +279,7 @@
                             android:id="@+id/tvSelectedOpdSummary"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:textColor="#64748B"
+                            android:textColor="@color/text_secondary"
                             android:textSize="13sp"
                             android:layout_marginTop="4dp"
                             android:text="Belum ada OPD dipilih"/>
@@ -300,7 +302,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Laporan Dibaca (Centang Biru)"
-                android:textColor="#1E293B"
+                android:textColor="@color/text_primary"
                 android:textSize="15sp"
                 android:textStyle="bold"
                 android:layout_marginTop="20dp"
@@ -311,7 +313,8 @@
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="1dp"
-                app:strokeWidth="0dp">
+                app:strokeWidth="0dp"
+                app:cardBackgroundColor="@color/surface_main">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -330,7 +333,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:text="Kirim &amp; Tampilkan Tanda Dibaca"
-                            android:textColor="#1E293B"
+                            android:textColor="@color/text_primary"
                             android:textSize="14sp"
                             android:textStyle="bold"/>
 
@@ -346,7 +349,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:text="Jika dinonaktifkan, Anda tidak akan mengirim tanda telah membaca pesan orang lain, dan tidak akan melihat tanda centang biru pada pesan Anda."
-                        android:textColor="#64748B"
+                        android:textColor="@color/text_secondary"
                         android:textSize="12sp"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -356,7 +359,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Privasi Foto Profil"
-                android:textColor="#1E293B"
+                android:textColor="@color/text_primary"
                 android:textSize="15sp"
                 android:textStyle="bold"
                 android:layout_marginTop="20dp"
@@ -367,7 +370,8 @@
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="1dp"
-                app:strokeWidth="0dp">
+                app:strokeWidth="0dp"
+                app:cardBackgroundColor="@color/surface_main">
 
                 <RadioGroup
                     android:id="@+id/rgProfilePhotoPrivacy"
@@ -380,7 +384,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Semua Pegawai"
-                        android:textColor="#1E293B"
+                        android:textColor="@color/text_primary"
                         android:textSize="14sp"
                         android:paddingVertical="6dp"/>
 
@@ -389,7 +393,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Hanya Rekan Satu Unit Kerja (OPD)"
-                        android:textColor="#1E293B"
+                        android:textColor="@color/text_primary"
                         android:textSize="14sp"
                         android:paddingVertical="6dp"/>
 
@@ -398,7 +402,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Tidak Ada (Sembunyikan Semua)"
-                        android:textColor="#1E293B"
+                        android:textColor="@color/text_primary"
                         android:textSize="14sp"
                         android:paddingVertical="6dp"/>
                 </RadioGroup>
@@ -409,7 +413,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Kontak yang Diblokir"
-                android:textColor="#1E293B"
+                android:textColor="@color/text_primary"
                 android:textSize="15sp"
                 android:textStyle="bold"
                 android:layout_marginTop="20dp"
@@ -420,7 +424,8 @@
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="1dp"
-                app:strokeWidth="0dp">
+                app:strokeWidth="0dp"
+                app:cardBackgroundColor="@color/surface_main">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -433,7 +438,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Tidak ada kontak yang diblokir"
-                        android:textColor="#64748B"
+                        android:textColor="@color/text_secondary"
                         android:textSize="13sp"/>
 
                     <com.google.android.material.button.MaterialButton
@@ -444,9 +449,9 @@
                         android:text="Kelola Kontak Diblokir"
                         app:cornerRadius="8dp"
                         app:strokeWidth="1dp"
-                        app:strokeColor="#CBD5E1"
+                        app:strokeColor="@color/divider_color"
                         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                        android:textColor="#0F172A"/>
+                        android:textColor="@color/text_primary"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 

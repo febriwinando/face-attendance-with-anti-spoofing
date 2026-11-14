@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Locale;
 
 import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
+import go.pemkott.appsandroidmobiletebingtinggi.api.RetrofitBuilder;
 import go.pemkott.appsandroidmobiletebingtinggi.api.ServerConfig;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
@@ -118,7 +119,7 @@ public class EmployeeSyncActivity extends AppCompatActivity {
     }
 
     private void loadOpdList() {
-        RetroClient.getInstance().getApi2().getAdminOpdList().enqueue(new Callback<AdminOpdListResponse>() {
+        RetroClient.getInstance().getApi2().getOpdList().enqueue(new Callback<AdminOpdListResponse>() {
             @Override
             public void onResponse(Call<AdminOpdListResponse> call, Response<AdminOpdListResponse> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().isStatus()) {
@@ -277,7 +278,7 @@ public class EmployeeSyncActivity extends AppCompatActivity {
         String currentUrl = ServerConfig.getBaseUrl();
 
         final EditText input = new EditText(this);
-        input.setHint("http://172.15.1.35:8000/ atau domain server");
+        input.setHint(ServerConfig.DEFAULT_HOST + " atau domain server");
         input.setText(currentUrl);
         input.setPadding(40, 30, 40, 30);
         builder.setView(input);
@@ -285,8 +286,10 @@ public class EmployeeSyncActivity extends AppCompatActivity {
         builder.setPositiveButton("Simpan & Coba Lagi", (dialog, which) -> {
             String newHost = input.getText().toString().trim();
             if (!newHost.isEmpty()) {
-                session.saveServerHost(newHost);
+                ServerConfig.setCustomBaseHost(newHost);
+                session.saveServerHost(ServerConfig.getBaseUrl());
                 RetroClient.resetInstance();
+                RetrofitBuilder.resetClient();
                 tvSyncInfo.setText("Server diubah ke: " + ServerConfig.getBaseUrl());
                 loadOpdList();
                 fetchEmployeesFromApi();
@@ -319,7 +322,7 @@ public class EmployeeSyncActivity extends AppCompatActivity {
         TextView tvAlamatOpd = dialogDetail.findViewById(R.id.tvDetailAlamatOpd);
 
         String fotoUrl = (emp.getFoto() != null && !emp.getFoto().trim().isEmpty())
-                ? (ServerConfig.getBaseUrl() + "storage/" + emp.getFoto())
+                ? ServerConfig.resolveStorageUrl(emp.getFoto())
                 : null;
 
         if (tvEmpId != null) tvEmpId.setText("#" + emp.getId());
@@ -405,7 +408,7 @@ public class EmployeeSyncActivity extends AppCompatActivity {
             holder.tvKelompok.setText(item.getKelompok() != null ? item.getKelompok().toUpperCase(Locale.ROOT) : "PNS");
 
             if (item.getFoto() != null && !item.getFoto().trim().isEmpty()) {
-                String fotoUrl = ServerConfig.getBaseUrl() + "storage/" + item.getFoto();
+                String fotoUrl = ServerConfig.resolveStorageUrl(item.getFoto());
                 Glide.with(EmployeeSyncActivity.this)
                         .load(fotoUrl)
                         .placeholder(R.drawable.profil_pic)

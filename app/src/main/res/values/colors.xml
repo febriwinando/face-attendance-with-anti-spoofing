@@ -38,8 +38,28 @@
     <color name="font">#454545</color>
     <color name="font_highlight">#171717</color>
     <color name="abuabu_font">#87888c</color>
+    <color name="abuabu_tua">#475569</color>
     <color name="divider_color">#E0E0E0</color>
     <color name="biru_putih">#008DDA</color>
     <color name="abuabu">#E0E0E0</color>
     <color name="background_profil">#FBFBFB</color>
+
+    <!-- Chat Semantic Colors -->
+    <color name="chat_filter_active_bg">#E0F2FE</color>
+    <color name="chat_filter_active_text">#0869D8</color>
+    <color name="opd_badge_bg">#DCFCE7</color>
+    <color name="opd_badge_icon">#16A34A</color>
+    <color name="chat_badge_info_bg">#F0F9FF</color>
+    <color name="chat_badge_info_stroke">#BAE6FD</color>
+    <color name="chat_badge_error_bg">#FEE2E2</color>
+    <color name="chat_badge_error_stroke">#FECACA</color>
+    <color name="chat_badge_error_text">#DC2626</color>
+    <color name="chat_monitoring_banner_bg">#EEF2FF</color>
+    <color name="chat_monitoring_banner_stroke">#C7D2FE</color>
+    <color name="chat_monitoring_banner_text">#3730A3</color>
+    <color name="chat_monitoring_banner_subtext">#4338CA</color>
+    <color name="chat_reply_preview_bg">#E2E8F0</color>
+    <color name="chat_edit_preview_bg">#FEF3C7</color>
+    <color name="chat_edit_preview_title">#B45309</color>
+    <color name="chat_edit_preview_text">#78350F</color>
 </resources>

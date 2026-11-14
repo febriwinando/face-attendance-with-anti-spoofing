@@ -91,7 +91,9 @@ public class NetworkUtils {
      * @return boolean boolean
      */
     private static boolean isConnectionFast(int type, int subType) {
-        if (type == ConnectivityManager.TYPE_WIFI) {
+        if (type == ConnectivityManager.TYPE_WIFI
+                || type == ConnectivityManager.TYPE_ETHERNET
+                || type == ConnectivityManager.TYPE_VPN) {
             return true;
         } else if (type == ConnectivityManager.TYPE_MOBILE) {
             switch (subType) {
@@ -129,9 +131,15 @@ public class NetworkUtils {
                     return false; // ~25 kbps
                 case TelephonyManager.NETWORK_TYPE_LTE: // API level 11
                     return true; // ~ 10+ Mbps
+                case TelephonyManager.NETWORK_TYPE_IWLAN: // 18 - Wi-Fi calling / cellular offload
+                case 19: // TelephonyManager.NETWORK_TYPE_LTE_CA (4G+)
+                case TelephonyManager.NETWORK_TYPE_NR: // 20 - 5G NR
+                    return true;
 
-                // Unknown
+                // Unknown: beberapa device Android baru melaporkan UNKNOWN saat 4G/5G transition;
+                // jangan blokir jika sudah connected.
                 case TelephonyManager.NETWORK_TYPE_UNKNOWN:
+                    return true;
                 default:
                     return false;
             }

@@ -8,6 +8,8 @@ import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.SIMP
 import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.localeID;
 import static go.pemkott.appsandroidmobiletebingtinggi.utils.FileUtil.getDriveFilePath;
 
+import go.pemkott.appsandroidmobiletebingtinggi.utils.AttendanceNotificationHelper;
+
 import android.Manifest;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
@@ -700,7 +702,7 @@ public class IzinSakitShiftFinalActivity extends AppCompatActivity implements On
                 dialogproses.dismiss();
 
                 if (!response.isSuccessful()) {
-
+                    AttendanceNotificationHelper.notifyHttpFailure(IzinSakitShiftFinalActivity.this, "Izin Sakit Shift Masuk", response);
                     dialogView.viewNotifKosong(
                             IzinSakitShiftFinalActivity.this,
                             "Gagal mengisi absensi",
@@ -713,12 +715,15 @@ public class IzinSakitShiftFinalActivity extends AppCompatActivity implements On
 
                 ResponsePOJO data = response.body();
 
-                if (Objects.requireNonNull(response.body()).isStatus()){
+                if (data != null && data.isStatus()){
                     Log.d("Log Izin Sakit", "berhasil.");
                     databaseHelper.insertLog(sEmployeID, eOPD, rbTanggal, "Melakukan Pengajuan Izin Sakit (Masuk - Shift)", "Masuk");
+                    AttendanceNotificationHelper.notifySuccess(IzinSakitShiftFinalActivity.this, "Izin Sakit Shift Masuk", data.getRemarks());
                     dialogView.viewSukses(IzinSakitShiftFinalActivity.this, data.getRemarks());
                 }else {
-                    dialogView.viewNotifKosong(IzinSakitShiftFinalActivity.this, data.getRemarks(),"");
+                    String errRemarks = data != null ? data.getRemarks() : "Respon server tidak valid.";
+                    AttendanceNotificationHelper.notifyFailure(IzinSakitShiftFinalActivity.this, "Izin Sakit Shift Masuk", errRemarks);
+                    dialogView.viewNotifKosong(IzinSakitShiftFinalActivity.this, errRemarks,"");
                 }
 
             }
@@ -727,6 +732,7 @@ public class IzinSakitShiftFinalActivity extends AppCompatActivity implements On
             public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
                 dialogproses.dismiss();
                 Log.d("Log Izin Sakit", "error: "+t.getMessage());
+                AttendanceNotificationHelper.notifyNetworkFailure(IzinSakitShiftFinalActivity.this, "Izin Sakit Shift Masuk", t);
 
                 dialogView.viewNotifKosong(IzinSakitShiftFinalActivity.this, "Gagal mengisi absensi,", "silahkan coba kembali.");
             }
@@ -796,7 +802,7 @@ public class IzinSakitShiftFinalActivity extends AppCompatActivity implements On
                 dialogproses.dismiss();
 
                 if (!response.isSuccessful()) {
-
+                    AttendanceNotificationHelper.notifyHttpFailure(IzinSakitShiftFinalActivity.this, "Izin Sakit Shift Pulang", response);
                     dialogView.viewNotifKosong(
                             IzinSakitShiftFinalActivity.this,
                             "Gagal mengisi absensi",
@@ -807,12 +813,15 @@ public class IzinSakitShiftFinalActivity extends AppCompatActivity implements On
 
                 ResponsePOJO data = response.body();
 
-                if (Objects.requireNonNull(response.body()).isStatus()){
+                if (data != null && data.isStatus()){
                     Log.d("Log Izin Sakit", "berhasil.");
                     databaseHelper.insertLog(sEmployeID, eOPD, rbTanggal, "Melakukan Pengajuan Izin Sakit (Pulang - Shift)", "Pulang");
+                    AttendanceNotificationHelper.notifySuccess(IzinSakitShiftFinalActivity.this, "Izin Sakit Shift Pulang", data.getRemarks());
                     dialogView.viewSukses(IzinSakitShiftFinalActivity.this, data.getRemarks());
                 }else {
-                    dialogView.viewNotifKosong(IzinSakitShiftFinalActivity.this, data.getRemarks(),"");
+                    String errRemarks = data != null ? data.getRemarks() : "Respon server tidak valid.";
+                    AttendanceNotificationHelper.notifyFailure(IzinSakitShiftFinalActivity.this, "Izin Sakit Shift Pulang", errRemarks);
+                    dialogView.viewNotifKosong(IzinSakitShiftFinalActivity.this, errRemarks,"");
                 }
 
 
@@ -822,6 +831,7 @@ public class IzinSakitShiftFinalActivity extends AppCompatActivity implements On
             public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
                 dialogproses.dismiss();
                 Log.d("Log Izin Sakit", "error: "+t.getMessage());
+                AttendanceNotificationHelper.notifyNetworkFailure(IzinSakitShiftFinalActivity.this, "Izin Sakit Shift Pulang", t);
                 dialogView.viewNotifKosong(IzinSakitShiftFinalActivity.this, "Gagal mengisi absensi,", "silahkan coba kembali.");
             }
         });

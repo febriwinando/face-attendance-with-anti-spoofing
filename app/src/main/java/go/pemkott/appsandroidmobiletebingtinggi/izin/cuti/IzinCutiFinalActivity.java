@@ -12,6 +12,8 @@ import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.loca
 import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.makeDateString;
 import static go.pemkott.appsandroidmobiletebingtinggi.utils.FileUtil.getDriveFilePath;
 
+import go.pemkott.appsandroidmobiletebingtinggi.utils.AttendanceNotificationHelper;
+
 import android.Manifest;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
@@ -598,8 +600,7 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
                 dialogproses.dismiss();
 
                 if (!response.isSuccessful()) {
-
-
+                    AttendanceNotificationHelper.notifyHttpFailure(IzinCutiFinalActivity.this, "Izin Cuti", response);
                     dialogView.viewNotifKosong(
                             IzinCutiFinalActivity.this,
                             "Gagal mengisi absensi",
@@ -610,11 +611,14 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
 
                 ResponsePOJO data = response.body();
 
-                if (Objects.requireNonNull(response.body()).isStatus()){
+                if (data != null && data.isStatus()){
                     databaseHelper.insertLog(sEmployeID, eOPD, tanggal, "Melakukan Pengajuan Izin Cuti", "Cuti");
+                    AttendanceNotificationHelper.notifySuccess(IzinCutiFinalActivity.this, "Izin Cuti", data.getRemarks());
                     dialogView.viewSukses(IzinCutiFinalActivity.this, data.getRemarks());
                 }else {
-                    dialogView.viewNotifKosong(IzinCutiFinalActivity.this, data.getRemarks(),"");
+                    String errRemarks = data != null ? data.getRemarks() : "Respon server tidak valid.";
+                    AttendanceNotificationHelper.notifyFailure(IzinCutiFinalActivity.this, "Izin Cuti", errRemarks);
+                    dialogView.viewNotifKosong(IzinCutiFinalActivity.this, errRemarks,"");
                 }
 
             }
@@ -622,6 +626,7 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
             @Override
             public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
                 dialogproses.dismiss();
+                AttendanceNotificationHelper.notifyNetworkFailure(IzinCutiFinalActivity.this, "Izin Cuti", t);
                 dialogView.pesanError(IzinCutiFinalActivity.this);
             }
         });

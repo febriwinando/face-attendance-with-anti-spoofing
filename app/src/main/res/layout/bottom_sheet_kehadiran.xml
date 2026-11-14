@@ -36,7 +36,7 @@
             android:layout_weight="2"
             android:textAlignment="center"
             android:text="Data Masuk/Pulang Kantor"
-            android:textColor="#444"
+            android:textColor="@color/text_primary"
             android:textSize="18sp"
 
             android:id="@+id/titleDinasLuar"/>

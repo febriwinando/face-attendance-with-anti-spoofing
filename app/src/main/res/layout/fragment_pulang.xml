@@ -50,6 +50,20 @@
                     android:textSize="22sp" />
             </RelativeLayout>
 
+            <TextView
+                android:id="@+id/tvKosongValidasi"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:gravity="center"
+                android:padding="20dp"
+                android:fontFamily="sans-serif-medium"
+                android:text="Tidak ada data validasi pulang yang menunggu verifikasi."
+                android:textColor="@color/text_hint"
+                android:textSize="13sp"
+                android:visibility="gone"
+                tools:ignore="HardcodedText" />
+
             <!-- Verificator 1 Section Header -->
             <TextView
                 android:id="@+id/tvv1"
@@ -68,6 +82,59 @@
                 android:letterSpacing="0.05"
                 android:visibility="gone"
                 tools:visibility="visible" />
+
+            <LinearLayout
+                android:id="@+id/llBatchV1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="6dp"
+                android:layout_marginBottom="6dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <CheckBox
+                    android:id="@+id/cbSelectAllV1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:buttonTint="@color/primary_brand"
+                    android:fontFamily="sans-serif-bold"
+                    android:text="Pilih Semua"
+                    android:textColor="@color/text_primary"
+                    android:textSize="12sp"
+                    tools:ignore="HardcodedText" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnBatchTolakV1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:layout_marginEnd="6dp"
+                    android:backgroundTint="@color/merah"
+                    android:fontFamily="sans-serif-bold"
+                    android:minWidth="0dp"
+                    android:paddingHorizontal="12dp"
+                    android:text="Tolak"
+                    android:textColor="@color/white"
+                    android:textSize="11sp"
+                    app:cornerRadius="18dp"
+                    tools:ignore="HardcodedText" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnBatchTerimaV1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:backgroundTint="@color/hijau"
+                    android:fontFamily="sans-serif-bold"
+                    android:minWidth="0dp"
+                    android:paddingHorizontal="12dp"
+                    android:text="Terima"
+                    android:textColor="@color/white"
+                    android:textSize="11sp"
+                    app:cornerRadius="18dp"
+                    tools:ignore="HardcodedText" />
+            </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvRekapPulangragment"
@@ -94,6 +161,59 @@
                 android:letterSpacing="0.05"
                 android:visibility="gone"
                 tools:visibility="visible" />
+
+            <LinearLayout
+                android:id="@+id/llBatchV2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="6dp"
+                android:layout_marginBottom="6dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <CheckBox
+                    android:id="@+id/cbSelectAllV2"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:buttonTint="@color/brand_secondary"
+                    android:fontFamily="sans-serif-bold"
+                    android:text="Pilih Semua"
+                    android:textColor="@color/text_primary"
+                    android:textSize="12sp"
+                    tools:ignore="HardcodedText" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnBatchTolakV2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:layout_marginEnd="6dp"
+                    android:backgroundTint="@color/merah"
+                    android:fontFamily="sans-serif-bold"
+                    android:minWidth="0dp"
+                    android:paddingHorizontal="12dp"
+                    android:text="Tolak"
+                    android:textColor="@color/white"
+                    android:textSize="11sp"
+                    app:cornerRadius="18dp"
+                    tools:ignore="HardcodedText" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnBatchTerimaV2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:backgroundTint="@color/hijau"
+                    android:fontFamily="sans-serif-bold"
+                    android:minWidth="0dp"
+                    android:paddingHorizontal="12dp"
+                    android:text="Terima"
+                    android:textColor="@color/white"
+                    android:textSize="11sp"
+                    app:cornerRadius="18dp"
+                    tools:ignore="HardcodedText" />
+            </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvVerivikatorKedua"

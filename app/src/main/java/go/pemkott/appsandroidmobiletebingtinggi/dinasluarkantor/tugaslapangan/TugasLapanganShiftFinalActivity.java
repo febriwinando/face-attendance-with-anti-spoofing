@@ -10,6 +10,8 @@ import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.hari
 import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.localeID;
 import static go.pemkott.appsandroidmobiletebingtinggi.utils.FileUtil.getDriveFilePath;
 
+import go.pemkott.appsandroidmobiletebingtinggi.utils.AttendanceNotificationHelper;
+
 import android.Manifest;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
@@ -503,6 +505,7 @@ public class TugasLapanganShiftFinalActivity extends AppCompatActivity implement
                 dialogproses.dismiss();
                 if (llUpload != null) llUpload.setEnabled(true);
                 if (!response.isSuccessful()) {
+                    AttendanceNotificationHelper.notifyHttpFailure(TugasLapanganShiftFinalActivity.this, "Tugas Lapangan Shift Masuk", response);
                     dialogView.viewNotifKosong(TugasLapanganShiftFinalActivity.this, "Gagal mengisi absensi", "Silahkan coba kembali.");
                     return;
                 }
@@ -510,15 +513,19 @@ public class TugasLapanganShiftFinalActivity extends AppCompatActivity implement
                 if (data != null && data.isStatus()){
                     databaseHelper.insertLog(sEmployeID, eOPD, rbTanggal, "Melakukan Absen Tugas Lapangan (Masuk - Shift)", "Masuk");
                     hapusFileSementara();
+                    AttendanceNotificationHelper.notifySuccess(TugasLapanganShiftFinalActivity.this, "Tugas Lapangan Shift Masuk", data.getRemarks());
                     dialogView.viewSukses(TugasLapanganShiftFinalActivity.this, data.getRemarks());
-                }else if (data != null) {
-                    dialogView.viewNotifKosong(TugasLapanganShiftFinalActivity.this, data.getRemarks(),"");
+                }else {
+                    String errRemarks = data != null ? data.getRemarks() : "Respon server tidak valid.";
+                    AttendanceNotificationHelper.notifyFailure(TugasLapanganShiftFinalActivity.this, "Tugas Lapangan Shift Masuk", errRemarks);
+                    dialogView.viewNotifKosong(TugasLapanganShiftFinalActivity.this, errRemarks,"");
                 }
             }
             @Override
             public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
                 dialogproses.dismiss();
                 if (llUpload != null) llUpload.setEnabled(true);
+                AttendanceNotificationHelper.notifyNetworkFailure(TugasLapanganShiftFinalActivity.this, "Tugas Lapangan Shift Masuk", t);
                 dialogView.pesanError(TugasLapanganShiftFinalActivity.this);
             }
         });
@@ -571,6 +578,7 @@ public class TugasLapanganShiftFinalActivity extends AppCompatActivity implement
                 dialogproses.dismiss();
                 if (llUpload != null) llUpload.setEnabled(true);
                 if (!response.isSuccessful()) {
+                    AttendanceNotificationHelper.notifyHttpFailure(TugasLapanganShiftFinalActivity.this, "Tugas Lapangan Shift Pulang", response);
                     dialogView.viewNotifKosong(TugasLapanganShiftFinalActivity.this, "Gagal mengisi absensi", "Silahkan coba kembali.");
                     return;
                 }
@@ -578,15 +586,19 @@ public class TugasLapanganShiftFinalActivity extends AppCompatActivity implement
                 if (data != null && data.isStatus()){
                     databaseHelper.insertLog(sEmployeID, eOPD, rbTanggal, "Melakukan Absen Tugas Lapangan (Pulang - Shift)", "Pulang");
                     hapusFileSementara();
+                    AttendanceNotificationHelper.notifySuccess(TugasLapanganShiftFinalActivity.this, "Tugas Lapangan Shift Pulang", data.getRemarks());
                     dialogView.viewSukses(TugasLapanganShiftFinalActivity.this, data.getRemarks());
-                }else if (data != null) {
-                    dialogView.viewNotifKosong(TugasLapanganShiftFinalActivity.this, data.getRemarks(),"");
+                }else {
+                    String errRemarks = data != null ? data.getRemarks() : "Respon server tidak valid.";
+                    AttendanceNotificationHelper.notifyFailure(TugasLapanganShiftFinalActivity.this, "Tugas Lapangan Shift Pulang", errRemarks);
+                    dialogView.viewNotifKosong(TugasLapanganShiftFinalActivity.this, errRemarks,"");
                 }
             }
             @Override
             public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
                 dialogproses.dismiss();
                 if (llUpload != null) llUpload.setEnabled(true);
+                AttendanceNotificationHelper.notifyNetworkFailure(TugasLapanganShiftFinalActivity.this, "Tugas Lapangan Shift Pulang", t);
                 dialogView.pesanError(TugasLapanganShiftFinalActivity.this);
             }
         });

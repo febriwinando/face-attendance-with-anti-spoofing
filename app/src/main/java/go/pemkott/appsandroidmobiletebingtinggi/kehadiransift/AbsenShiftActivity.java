@@ -8,6 +8,8 @@ import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.SIMP
 import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.SIMPLE_FORMAT_TANGGAL;
 import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.localeID;
 
+import go.pemkott.appsandroidmobiletebingtinggi.utils.AttendanceNotificationHelper;
+
 import android.Manifest;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
@@ -87,6 +89,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.dialogview.DialogView;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.AmbilFoto;
 import go.pemkott.appsandroidmobiletebingtinggi.konstanta.Lokasi;
 import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
+import go.pemkott.appsandroidmobiletebingtinggi.utils.AttendanceGeofenceHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.utils.NetworkUtils;
 import go.pemkott.appsandroidmobiletebingtinggi.model.LocationViewModel;
 import go.pemkott.appsandroidmobiletebingtinggi.utils.WeatherUtil;
@@ -147,7 +150,9 @@ public class AbsenShiftActivity extends AppCompatActivity implements OnMapReadyC
     static ArrayList<String> latListExc = new ArrayList<>();
     static ArrayList<String> lngListExc = new ArrayList<>();
     final private int REQUEST_CODE_ASK_PERMISSIONS = 123;
-    double totalJarak;
+    double totalJarak = AttendanceGeofenceHelper.JARAK_TIDAK_VALID;
+    private AttendanceGeofenceHelper.DistanceResult lastDistanceResult = AttendanceGeofenceHelper.DistanceResult.notFound();
+    private boolean lokasiSiap = false;
     Date jamMasukDate, jamPulangDate, tagingTime;
     int mins;
     int minspulang;
@@ -439,9 +444,11 @@ public class AbsenShiftActivity extends AppCompatActivity implements OnMapReadyC
 
         Cursor koordinat = databaseHelper.getDataKoordinat(eOPD);
         if(koordinat != null) {
+            int latIdx = koordinat.getColumnIndex("LAT");
+            int lngIdx = koordinat.getColumnIndex("LNG");
             while (koordinat.moveToNext()) {
-                String latStr = koordinat.getString(3);
-                String lngStr = koordinat.getString(4);
+                String latStr = (latIdx != -1) ? koordinat.getString(latIdx) : null;
+                String lngStr = (lngIdx != -1) ? koordinat.getString(lngIdx) : null;
                 if (latStr != null && lngStr != null) {
                     latList.add(latStr);
                     lngList.add(lngStr);
@@ -455,9 +462,11 @@ public class AbsenShiftActivity extends AppCompatActivity implements OnMapReadyC
 
         Cursor koordinatExc = databaseHelper.getDataKoordinatEmp(sEmployId);
         if(koordinatExc != null) {
+            int latIdx = koordinatExc.getColumnIndex("LAT");
+            int lngIdx = koordinatExc.getColumnIndex("LNG");
             while (koordinatExc.moveToNext()) {
-                String latStr = koordinatExc.getString(3);
-                String lngStr = koordinatExc.getString(4);
+                String latStr = (latIdx != -1) ? koordinatExc.getString(latIdx) : null;
+                String lngStr = (lngIdx != -1) ? koordinatExc.getString(lngIdx) : null;
                 if (latStr != null && lngStr != null) {
                     latListExc.add(latStr);
                     lngListExc.add(lngStr);
@@ -466,7 +475,20 @@ public class AbsenShiftActivity extends AppCompatActivity implements OnMapReadyC
             koordinatExc.close();
         }
 
-        if (!latList.isEmpty() && !lngList.isEmpty()) {
+        if (!latListExc.isEmpty() && !lngListExc.isEmpty()) {
+            try {
+                String latStr = latListExc.get(0);
+                String lngStr = lngListExc.get(0);
+                if (latStr != null && lngStr != null) {
+                    defaultLocation = new LatLng(
+                            Double.parseDouble(latStr),
+                            Double.parseDouble(lngStr)
+                    );
+                }
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        } else if (!latList.isEmpty() && !lngList.isEmpty()) {
             try {
                 String latStr = latList.get(0);
                 String lngStr = lngList.get(0);
@@ -479,6 +501,11 @@ public class AbsenShiftActivity extends AppCompatActivity implements OnMapReadyC
             } catch (NumberFormatException e) {
                 e.printStackTrace();
             }
+        } else if (AttendanceGeofenceHelper.isValidCoordinateStrings(latOffice, lngOffice)) {
+            defaultLocation = new LatLng(
+                    Double.parseDouble(latOffice.trim()),
+                    Double.parseDouble(lngOffice.trim())
+            );
         }
     }
 
@@ -757,12 +784,37 @@ public class AbsenShiftActivity extends AppCompatActivity implements OnMapReadyC
                 return;
             }
 
+            if (!isInternetValid()) {
+                llUpload.setEnabled(true);
+                llUpload.setClickable(true);
+                llUpload.setAlpha(1.0f);
+                return;
+            }
+
+            if (!AttendanceGeofenceHelper.isValidCoordinate(latGMap, lngGMap)) {
+                dialogView.viewNotifKosong(
+                        AbsenShiftActivity.this,
+                        "Lokasi belum berhasil diperoleh.",
+                        "Mohon tunggu beberapa detik atau fokuskan lokasi."
+                );
+                llUpload.setEnabled(true);
+                llUpload.setClickable(true);
+                llUpload.setAlpha(1.0f);
+                return;
+            }
+
+            double radiusAbsensi = getRadiusAbsensi(eKelompok);
             if (eJabatan != null && eJabatan.equals("2")){
                 totalJarak = 1;
             }
 
-            if (totalJarak > 150){
-                dialogView.viewNotifKosong(AbsenShiftActivity.this, "Andah harus berada dilingkungan kantor untuk melakukan absensi.", "");
+            if ((eJabatan == null || !eJabatan.equals("2"))
+                    && !AttendanceGeofenceHelper.isWithinAttendanceRadius(totalJarak, radiusAbsensi)){
+                dialogView.viewNotifKosong(
+                        AbsenShiftActivity.this,
+                        "Anda harus berada dilingkungan kantor untuk melakukan absensi.",
+                        AttendanceGeofenceHelper.buildOutOfRadiusMessage(lastDistanceResult, radiusAbsensi)
+                );
                 llUpload.setEnabled(true);
                 llUpload.setClickable(true);
                 llUpload.setAlpha(1.0f);
@@ -921,27 +973,16 @@ public class AbsenShiftActivity extends AppCompatActivity implements OnMapReadyC
 
 
     }
-private static final double RADIUS_NORMAL = 150.0;
-    private static final double RADIUS_SENIN = 200.0;
-    private static final double JARAK_TIDAK_VALID = -1;
-private boolean isHariSenin() {
-    SimpleDateFormat sdf = new SimpleDateFormat("EEE", localeID);
-    String hari = sdf.format(new Date());
-    return "Sen".equals(hari) || "Mon".equals(hari);
-}
+    private static final double RADIUS_NORMAL = AttendanceGeofenceHelper.RADIUS_NORMAL;
+    private static final double RADIUS_SENIN = AttendanceGeofenceHelper.RADIUS_SENIN;
+    private static final double JARAK_TIDAK_VALID = AttendanceGeofenceHelper.JARAK_TIDAK_VALID;
+
+    private boolean isHariSenin() {
+        return AttendanceGeofenceHelper.isMondayNow();
+    }
+
     private double getRadiusAbsensi(String kelompok) {
-
-        // CT selalu 150
-        if ("ct".equalsIgnoreCase(kelompok)) {
-            return RADIUS_NORMAL;
-        }
-
-        // Pegawai
-        if (isHariSenin()) {
-            return RADIUS_SENIN;
-        }
-
-        return RADIUS_NORMAL;
+        return AttendanceGeofenceHelper.getRadiusAbsensi(kelompok);
     }
 
     private double cariJarakTerdekat(
@@ -950,37 +991,15 @@ private boolean isHariSenin() {
             double latUser,
             double lngUser
     ) {
-        if (latList == null || lngList == null || latList.isEmpty()) {
-            return JARAK_TIDAK_VALID;
-        }
-
-        double minJarak = Double.MAX_VALUE;
-
-        for (int i = 0; i < latList.size(); i++) {
-            String latStr = latList.get(i);
-            String lngStr = lngList.get(i);
-            if (latStr == null || lngStr == null) continue;
-
-            try {
-                double lat = Double.parseDouble(latStr);
-                double lng = Double.parseDouble(lngStr);
-
-                double jarak = getDistance(lat, lng, latUser, lngUser);
-                if (jarak < minJarak) {
-                    minJarak = jarak;
-                }
-            } catch (NumberFormatException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return minJarak;
+        AttendanceGeofenceHelper.DistanceResult result = AttendanceGeofenceHelper.findNearestDistance(
+                latList, lngList, latUser, lngUser, AttendanceGeofenceHelper.SOURCE_NONE
+        );
+        return result.found ? result.distanceMeters : JARAK_TIDAK_VALID;
     }
 
     private boolean isInternetValid() {
 
-        if (!NetworkUtils.isConnectedMobile(this)
-                && !NetworkUtils.isConnectedWifi(this)) {
+        if (!NetworkUtils.isConnected(this)) {
 
             dialogView.viewNotifKosong(
                     this,
@@ -1003,58 +1022,28 @@ private boolean isHariSenin() {
     }
 
     public void hitungJarakAbsensi() {
-
-        if (!isInternetValid()) return;
-
         double latUser = latGMap;
         double lngUser = lngGMap;
 
         rbLat = String.valueOf(latUser);
         rbLng = String.valueOf(lngUser);
 
-        double radius = getRadiusAbsensi(eKelompok);
-
-        // 1️⃣ Cek lokasi utama
-        double jarakUtama = cariJarakTerdekat(
-                latList, lngList, latUser, lngUser
+        AttendanceGeofenceHelper.DistanceResult result = AttendanceGeofenceHelper.resolveAttendanceDistance(
+                latListExc, lngListExc,
+                latList, lngList,
+                latOffice, lngOffice,
+                latUser, lngUser
         );
 
-        if (jarakUtama != JARAK_TIDAK_VALID && jarakUtama <= radius) {
-            totalJarak = jarakUtama;
-            return;
-        }
-
-        // 2️⃣ Cek lokasi exception
-        double jarakException = cariJarakTerdekat(
-                latListExc, lngListExc, latUser, lngUser
-        );
-
-        if (jarakException != JARAK_TIDAK_VALID && jarakException <= radius) {
-            totalJarak = jarakException;
-        } else {
-            totalJarak = JARAK_TIDAK_VALID;
-        }
+        lastDistanceResult = result;
+        totalJarak = result.found ? result.distanceMeters : JARAK_TIDAK_VALID;
     }
 
-
-
-
-
     private Double getDistance(Double latitudeTujuan, Double longitudeTujuan, Double latitudeUser, Double longitudeUser) {
-        /* VARIABLE */
-        double pi = 3.14159265358979;
-
-        Double R = 6371e3;
-
-        double latRad1 = latitudeTujuan * (pi / 180);
-        double latRad2 = latitudeUser * (pi / 180);
-        double deltaLatRad = (latitudeUser - latitudeTujuan) * (pi / 180);
-        double deltaLonRad = (longitudeUser - longitudeTujuan) * (pi / 180);
-
-        /* RUMUS HAVERSINE */
-        double a = Math.sin(deltaLatRad / 2) * Math.sin(deltaLatRad / 2) + Math.cos(latRad1) * Math.cos(latRad2) * Math.sin(deltaLonRad / 2) * Math.sin(deltaLonRad / 2);
-        Double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return R * c;
+        if (latitudeTujuan == null || longitudeTujuan == null || latitudeUser == null || longitudeUser == null) {
+            return JARAK_TIDAK_VALID;
+        }
+        return AttendanceGeofenceHelper.calculateDistanceMeters(latitudeTujuan, longitudeTujuan, latitudeUser, longitudeUser);
     }
 
     private MultipartBody.Part prepareFilePart(String partName, byte[] imageBytes) {
@@ -1121,59 +1110,13 @@ private boolean isHariSenin() {
         call.enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<ResponsePOJO> call, @NonNull Response<ResponsePOJO> response) {
-
-                if (!response.isSuccessful()) {
-                    try {
-                        if (response.errorBody() != null) {
-                            Log.e("ABSEN_SHIFT", "Gagal Masuk Pagi: " + response.errorBody().string());
-                        }
-                    } catch (Exception e) {
-                        Log.e("ABSEN_SHIFT", "Gagal baca error body", e);
-                    }
-
-                    dialogView.viewNotifKosong(AbsenShiftActivity.this, "Gagal mengisi absensi,", "HTTP " + response.code());
-                    dialogproses.dismiss();
-                    llUpload.setEnabled(true);
-                    llUpload.setClickable(true);
-                    llUpload.setAlpha(1.0f);
-                    return;
-                }
-
-                if (response.body().isStatus()) {
-                    String shiftLabel = (tipeshift != null && !tipeshift.isEmpty()) ? tipeshift.substring(0, 1).toUpperCase() + tipeshift.substring(1) : "";
-                    String logKegiatan = "Melakukan Absen Masuk " + shiftLabel + " (Shift)";
-                    databaseHelper.insertLog(sEmployId, eOPD, rbTanggal, logKegiatan, "Masuk");
-                    ResponsePOJO data = response.body();
-                    dialogproses.dismiss();
-                    dialogView.viewSukses(AbsenShiftActivity.this, data.getRemarks());
-
-                    // mulai hitung 30 detik
-
-                    autoCloseHandler.postDelayed(
-
-                            autoCloseRunnable,
-
-                            30000
-
-                    );
-
-                } else {
-                    dialogproses.dismiss();
-                    dialogView.viewNotifKosong(AbsenShiftActivity.this, response.body().getRemarks(), "");
-                    llUpload.setEnabled(true);
-                    llUpload.setClickable(true);
-                    llUpload.setAlpha(1.0f);
-                }
-
+                String shiftLabel = (tipeshift != null && !tipeshift.isEmpty()) ? tipeshift.substring(0, 1).toUpperCase() + tipeshift.substring(1) : "";
+                handleShiftUploadResponse(response, dialogproses, "Shift Masuk", "Melakukan Absen Masuk " + shiftLabel + " (Shift)", "Masuk");
             }
 
             @Override
             public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
-                dialogproses.dismiss();
-                dialogView.pesanError(AbsenShiftActivity.this);
-                llUpload.setEnabled(true);
-                llUpload.setClickable(true);
-                llUpload.setAlpha(1.0f);
+                handleShiftUploadFailure(dialogproses, "Shift Masuk", t);
             }
         });
 
@@ -1218,58 +1161,13 @@ private boolean isHariSenin() {
         call.enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<ResponsePOJO> call, @NonNull Response<ResponsePOJO> response) {
-
-                if (!response.isSuccessful()) {
-                    try {
-                        if (response.errorBody() != null) {
-                            Log.e("ABSEN_SHIFT", "Gagal Pulang Pagi: " + response.errorBody().string());
-                        }
-                    } catch (Exception e) {
-                        Log.e("ABSEN_SHIFT", "Gagal baca error body", e);
-                    }
-
-                    dialogView.viewNotifKosong(AbsenShiftActivity.this, "Gagal mengisi absensi,", "HTTP " + response.code());
-                    dialogproses.dismiss();
-                    llUpload.setEnabled(true);
-                    llUpload.setClickable(true);
-                    llUpload.setAlpha(1.0f);
-                    return;
-                }
-
-                if (response.body().isStatus()) {
-                    String shiftLabel = (tipeshift != null && !tipeshift.isEmpty()) ? tipeshift.substring(0, 1).toUpperCase() + tipeshift.substring(1) : "";
-                    String logKegiatan = "Melakukan Absen Pulang " + shiftLabel + " (Shift)";
-                    databaseHelper.insertLog(sEmployId, eOPD, rbTanggal, logKegiatan, "Pulang");
-                    ResponsePOJO data = response.body();
-                    dialogproses.dismiss();
-                    dialogView.viewSukses(AbsenShiftActivity.this, data.getRemarks());
-
-                    // mulai hitung 30 detik
-
-                    autoCloseHandler.postDelayed(
-
-                            autoCloseRunnable,
-
-                            30000
-
-                    );
-                } else {
-                    dialogproses.dismiss();
-                    dialogView.viewNotifKosong(AbsenShiftActivity.this, response.body().getRemarks(), "");
-                    llUpload.setEnabled(true);
-                    llUpload.setClickable(true);
-                    llUpload.setAlpha(1.0f);
-                }
-
+                String shiftLabel = (tipeshift != null && !tipeshift.isEmpty()) ? tipeshift.substring(0, 1).toUpperCase() + tipeshift.substring(1) : "";
+                handleShiftUploadResponse(response, dialogproses, "Shift Pulang", "Melakukan Absen Pulang " + shiftLabel + " (Shift)", "Pulang");
             }
 
             @Override
             public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
-                dialogproses.dismiss();
-                dialogView.pesanError(AbsenShiftActivity.this);
-                llUpload.setEnabled(true);
-                llUpload.setClickable(true);
-                llUpload.setAlpha(1.0f);
+                handleShiftUploadFailure(dialogproses, "Shift Pulang", t);
             }
         });
 
@@ -1340,59 +1238,13 @@ private boolean isHariSenin() {
         call.enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<ResponsePOJO> call, @NonNull Response<ResponsePOJO> response) {
-
-                if (!response.isSuccessful()) {
-                    try {
-                        if (response.errorBody() != null) {
-                            Log.e("ABSEN_SHIFT", "Gagal Masuk Malam: " + response.errorBody().string());
-                        }
-                    } catch (Exception e) {
-                        Log.e("ABSEN_SHIFT", "Gagal baca error body", e);
-                    }
-
-                    dialogView.viewNotifKosong(AbsenShiftActivity.this, "Gagal mengisi absensi,", "HTTP " + response.code());
-                    dialogproses.dismiss();
-                    llUpload.setEnabled(true);
-                    llUpload.setClickable(true);
-                    llUpload.setAlpha(1.0f);
-                    return;
-                }
-
-                if (response.body().isStatus()) {
-                    String shiftLabel = (tipeshift != null && !tipeshift.isEmpty()) ? tipeshift.substring(0, 1).toUpperCase() + tipeshift.substring(1) : "";
-                    String logKegiatan = "Melakukan Absen Masuk " + shiftLabel + " (Shift)";
-                    databaseHelper.insertLog(sEmployId, eOPD, rbTanggal, logKegiatan, "Masuk");
-                    ResponsePOJO data = response.body();
-                    dialogproses.dismiss();
-                    dialogView.viewSukses(AbsenShiftActivity.this, data.getRemarks());
-
-                    // mulai hitung 30 detik
-
-                    autoCloseHandler.postDelayed(
-
-                            autoCloseRunnable,
-
-                            30000
-
-                    );
-                } else {
-                    dialogproses.dismiss();
-
-                    dialogView.viewNotifKosong(AbsenShiftActivity.this, response.body().getRemarks(), "");
-                    llUpload.setEnabled(true);
-                    llUpload.setClickable(true);
-                    llUpload.setAlpha(1.0f);
-                }
-
+                String shiftLabel = (tipeshift != null && !tipeshift.isEmpty()) ? tipeshift.substring(0, 1).toUpperCase() + tipeshift.substring(1) : "";
+                handleShiftUploadResponse(response, dialogproses, "Shift Masuk Malam", "Melakukan Absen Masuk " + shiftLabel + " (Shift)", "Masuk");
             }
 
             @Override
             public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
-                dialogproses.dismiss();
-                dialogView.pesanError(AbsenShiftActivity.this);
-                llUpload.setEnabled(true);
-                llUpload.setClickable(true);
-                llUpload.setAlpha(1.0f);
+                handleShiftUploadFailure(dialogproses, "Shift Masuk Malam", t);
             }
         });
 
@@ -1441,63 +1293,65 @@ private boolean isHariSenin() {
         call.enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<ResponsePOJO> call, @NonNull Response<ResponsePOJO> response) {
-
-                if (!response.isSuccessful()) {
-                    try {
-                        if (response.errorBody() != null) {
-                            Log.e("ABSEN_SHIFT", "Gagal Pulang Malam: " + response.errorBody().string());
-                        }
-                    } catch (Exception e) {
-                        Log.e("ABSEN_SHIFT", "Gagal baca error body", e);
-                    }
-
-                    dialogView.viewNotifKosong(AbsenShiftActivity.this, "Gagal mengisi absensi,", "HTTP " + response.code());
-                    dialogproses.dismiss();
-                    llUpload.setEnabled(true);
-                    llUpload.setClickable(true);
-                    llUpload.setAlpha(1.0f);
-                    return;
-                }
-
-                if (response.body().isStatus()) {
-                    String shiftLabel = (tipeshift != null && !tipeshift.isEmpty()) ? tipeshift.substring(0, 1).toUpperCase() + tipeshift.substring(1) : "";
-                    String logKegiatan = "Melakukan Absen Pulang " + shiftLabel + " (Shift)";
-                    databaseHelper.insertLog(sEmployId, eOPD, rbTanggal, logKegiatan, "Pulang");
-                    ResponsePOJO data = response.body();
-                    dialogproses.dismiss();
-                    dialogView.viewSukses(AbsenShiftActivity.this, data.getRemarks());
-
-                    // mulai hitung 30 detik
-
-                    autoCloseHandler.postDelayed(
-
-                            autoCloseRunnable,
-
-                            30000
-
-                    );
-                } else {
-                    dialogproses.dismiss();
-
-                    dialogView.viewNotifKosong(AbsenShiftActivity.this, response.body().getRemarks(), "");
-                    llUpload.setEnabled(true);
-                    llUpload.setClickable(true);
-                    llUpload.setAlpha(1.0f);
-                }
-
+                String shiftLabel = (tipeshift != null && !tipeshift.isEmpty()) ? tipeshift.substring(0, 1).toUpperCase() + tipeshift.substring(1) : "";
+                handleShiftUploadResponse(response, dialogproses, "Shift Pulang Malam", "Melakukan Absen Pulang " + shiftLabel + " (Shift)", "Pulang");
             }
 
             @Override
             public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
-                dialogproses.dismiss();
-                dialogView.pesanError(AbsenShiftActivity.this);
-                llUpload.setEnabled(true);
-                llUpload.setClickable(true);
-                llUpload.setAlpha(1.0f);
+                handleShiftUploadFailure(dialogproses, "Shift Pulang Malam", t);
             }
         });
 
         dialogproses.show();
+    }
+
+    private void handleShiftUploadResponse(Response<ResponsePOJO> response, Dialog dialogproses, String attendanceLabel, String logKegiatan, String jenisLog) {
+        if (!response.isSuccessful()) {
+            String errRaw = null;
+            try {
+                if (response.errorBody() != null) {
+                    errRaw = response.errorBody().string();
+                    Log.e("ABSEN_SHIFT", "Gagal " + attendanceLabel + ": " + errRaw);
+                }
+            } catch (Exception e) {
+                Log.e("ABSEN_SHIFT", "Gagal baca error body", e);
+            }
+
+            AttendanceNotificationHelper.notifyHttpFailure(AbsenShiftActivity.this, attendanceLabel, response.code(), errRaw);
+            dialogView.viewNotifKosong(AbsenShiftActivity.this, "Gagal mengisi absensi,", "HTTP " + response.code());
+            dialogproses.dismiss();
+            llUpload.setEnabled(true);
+            llUpload.setClickable(true);
+            llUpload.setAlpha(1.0f);
+            return;
+        }
+
+        ResponsePOJO data = response.body();
+        if (data != null && data.isStatus()) {
+            databaseHelper.insertLog(sEmployId, eOPD, rbTanggal, logKegiatan, jenisLog);
+            dialogproses.dismiss();
+            AttendanceNotificationHelper.notifySuccess(AbsenShiftActivity.this, attendanceLabel, data.getRemarks());
+            dialogView.viewSukses(AbsenShiftActivity.this, data.getRemarks());
+            autoCloseHandler.postDelayed(autoCloseRunnable, 30000);
+        } else {
+            dialogproses.dismiss();
+            String errRemarks = data != null ? data.getRemarks() : "Respon server tidak valid.";
+            AttendanceNotificationHelper.notifyFailure(AbsenShiftActivity.this, attendanceLabel, errRemarks);
+            dialogView.viewNotifKosong(AbsenShiftActivity.this, errRemarks, "");
+            llUpload.setEnabled(true);
+            llUpload.setClickable(true);
+            llUpload.setAlpha(1.0f);
+        }
+    }
+
+    private void handleShiftUploadFailure(Dialog dialogproses, String attendanceLabel, Throwable t) {
+        dialogproses.dismiss();
+        AttendanceNotificationHelper.notifyNetworkFailure(AbsenShiftActivity.this, attendanceLabel, t);
+        dialogView.pesanError(AbsenShiftActivity.this);
+        llUpload.setEnabled(true);
+        llUpload.setClickable(true);
+        llUpload.setAlpha(1.0f);
     }
 
 
@@ -1550,13 +1404,44 @@ statusAbsen = true;
     }
 
     private void startLocationUpdates() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this, location -> {
+                if (location != null && !lokasiSiap) {
+                    applyLocationUpdate(location);
+                }
+            });
             fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
         }
     }
 
     private void stopLocationUpdates() {
         fusedLocationProviderClient.removeLocationUpdates(locationCallback);
+    }
+
+    private void applyLocationUpdate(@NonNull Location location) {
+        latGMap = location.getLatitude();
+        lngGMap = location.getLongitude();
+        lokasiSiap = true;
+
+        boolean isMock = mockLocationsEnabled || go.pemkott.appsandroidmobiletebingtinggi.utils.FakeGpsDetector.isFakeGps(AbsenShiftActivity.this, location);
+        if (isMock){
+            mock_location = 1;
+            rbFakeGPS ="1";
+        }else{
+            mock_location = 0;
+            rbFakeGPS ="0";
+        }
+
+        if (tvAkurasi != null) {
+            tvAkurasi.setText(String.format(localeID, "± %.0f m", location.getAccuracy()));
+        }
+
+        updateRealtimeInfo(location);
+
+        if (map != null) {
+            plotMarkers(location);
+        }
     }
 
     LocationCallback locationCallback = new LocationCallback() {
@@ -1566,60 +1451,38 @@ statusAbsen = true;
 
             Location location = locationResult.getLastLocation();
             if (location == null) return;
-
-            latGMap = location.getLatitude();
-            lngGMap = location.getLongitude();
-
-            boolean isMock = mockLocationsEnabled || go.pemkott.appsandroidmobiletebingtinggi.utils.FakeGpsDetector.isFakeGps(AbsenShiftActivity.this, location);
-            if (isMock){
-                mock_location = 1;
-                rbFakeGPS ="1";
-            }else{
-                mock_location = 0;
-                rbFakeGPS ="0";
-            }
-
-            if (tvAkurasi != null) {
-                tvAkurasi.setText(String.format(localeID, "± %.0f m", location.getAccuracy()));
-            }
-
-            updateRealtimeInfo(location);
-
-            if (map != null) {
-                plotMarkers(location);
-            }
+            applyLocationUpdate(location);
         }
     };
 
     private void updateRealtimeInfo(Location location) {
         if (location == null) return;
 
-        // 1. Update Jarak & Zona Aman
+        // 1. Update Jarak & Zona Aman (konsisten dengan hitungJarakAbsensi & prioritas server)
         double latUser = location.getLatitude();
         double lngUser = location.getLongitude();
 
         double radius = getRadiusAbsensi(eKelompok);
-        double jarakUtama = cariJarakTerdekat(latList, lngList, latUser, lngUser);
-        double jarakExc = cariJarakTerdekat(latListExc, lngListExc, latUser, lngUser);
+        AttendanceGeofenceHelper.DistanceResult result = AttendanceGeofenceHelper.resolveAttendanceDistance(
+                latListExc, lngListExc,
+                latList, lngList,
+                latOffice, lngOffice,
+                latUser, lngUser
+        );
 
-        double jarakTerdekat = JARAK_TIDAK_VALID;
-        if (jarakUtama != JARAK_TIDAK_VALID) jarakTerdekat = jarakUtama;
-        if (jarakExc != JARAK_TIDAK_VALID && (jarakTerdekat == JARAK_TIDAK_VALID || jarakExc < jarakTerdekat)) {
-            jarakTerdekat = jarakExc;
-        }
-
-        totalJarak = jarakTerdekat;
+        lastDistanceResult = result;
+        totalJarak = result.found ? result.distanceMeters : JARAK_TIDAK_VALID;
 
         if (tvJarak != null) {
-            if (jarakTerdekat != JARAK_TIDAK_VALID) {
-                tvJarak.setText(String.format(localeID, "Jarak: %.0f m", jarakTerdekat));
+            if (result.found) {
+                tvJarak.setText(String.format(localeID, "Jarak: %.0f m", totalJarak));
             } else {
                 tvJarak.setText("Jarak: -");
             }
         }
 
         if (cardSafeZone != null) {
-            if (jarakTerdekat != JARAK_TIDAK_VALID && jarakTerdekat <= radius) {
+            if (AttendanceGeofenceHelper.isWithinAttendanceRadius(totalJarak, radius)) {
                 cardSafeZone.setVisibility(View.VISIBLE);
             } else {
                 cardSafeZone.setVisibility(View.GONE);

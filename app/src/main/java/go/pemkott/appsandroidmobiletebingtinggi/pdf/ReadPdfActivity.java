@@ -101,14 +101,7 @@ public class ReadPdfActivity extends AppCompatActivity implements PdfViewerFragm
 
         if (currentPdfUrl != null && !currentPdfUrl.trim().isEmpty()) {
             go.pemkott.appsandroidmobiletebingtinggi.api.SSLHelper.disableSSLCertificateChecking();
-            String activeBaseUrl = go.pemkott.appsandroidmobiletebingtinggi.api.ServerConfig.getBaseUrl();
-            if (activeBaseUrl.endsWith("/")) activeBaseUrl = activeBaseUrl.substring(0, activeBaseUrl.length() - 1);
-            currentPdfUrl = currentPdfUrl.replaceAll("https?://(172\\.15\\.[0-9]+\\.[0-9]+|192\\.168\\.[0-9]+\\.[0-9]+|localhost|10\\.0\\.2\\.2)(:[0-9]+)?", activeBaseUrl);
-            currentPdfUrl = currentPdfUrl.replaceAll("https?://svr-absensi\\.tebingtinggikota\\.go\\.id(:[0-9]+)?", activeBaseUrl);
-            if (currentPdfUrl.startsWith("/")) {
-                currentPdfUrl = activeBaseUrl + currentPdfUrl;
-            }
-            currentPdfUrl = currentPdfUrl.replaceAll("(?<!:)/{2,}", "/");
+            currentPdfUrl = go.pemkott.appsandroidmobiletebingtinggi.api.ServerConfig.normalizeServerUrl(currentPdfUrl);
         }
 
         if (currentPdfUrl == null || currentPdfUrl.trim().isEmpty() || "null".equalsIgnoreCase(currentPdfUrl.trim())) {

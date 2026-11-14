@@ -17,7 +17,7 @@
         android:layout_height="5dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginBottom="18dp"
-        app:cardBackgroundColor="#CBD5E1"
+        app:cardBackgroundColor="@color/divider_color"
         app:cardCornerRadius="2.5dp"
         app:cardElevation="0dp"
         app:strokeWidth="0dp" />
@@ -64,8 +64,8 @@
             app:cardElevation="3dp"
             app:cardUseCompatPadding="true"
             app:strokeWidth="1dp"
-            app:strokeColor="#E2E8F0"
-            app:cardBackgroundColor="#ECFDF5"
+            app:strokeColor="@color/divider_color"
+            app:cardBackgroundColor="@color/surface_main"
             android:clickable="true"
             android:focusable="true"
             android:foreground="?attr/selectableItemBackground">
@@ -116,8 +116,8 @@
             app:cardElevation="3dp"
             app:cardUseCompatPadding="true"
             app:strokeWidth="1dp"
-            app:strokeColor="#E2E8F0"
-            app:cardBackgroundColor="#F0F7FF"
+            app:strokeColor="@color/divider_color"
+            app:cardBackgroundColor="@color/surface_main"
             android:clickable="true"
             android:focusable="true"
             android:foreground="?attr/selectableItemBackground">
@@ -180,8 +180,8 @@
             app:cardElevation="3dp"
             app:cardUseCompatPadding="true"
             app:strokeWidth="1dp"
-            app:strokeColor="#E2E8F0"
-            app:cardBackgroundColor="#FFF1F2"
+            app:strokeColor="@color/divider_color"
+            app:cardBackgroundColor="@color/surface_main"
             android:clickable="true"
             android:focusable="true"
             android:foreground="?attr/selectableItemBackground">
@@ -232,8 +232,8 @@
             app:cardElevation="3dp"
             app:cardUseCompatPadding="true"
             app:strokeWidth="1dp"
-            app:strokeColor="#E2E8F0"
-            app:cardBackgroundColor="#FAF5FF"
+            app:strokeColor="@color/divider_color"
+            app:cardBackgroundColor="@color/surface_main"
             android:clickable="true"
             android:focusable="true"
             android:foreground="?attr/selectableItemBackground">
@@ -293,8 +293,8 @@
             app:cardElevation="3dp"
             app:cardUseCompatPadding="true"
             app:strokeWidth="1dp"
-            app:strokeColor="#E2E8F0"
-            app:cardBackgroundColor="#F8FAFC"
+            app:strokeColor="@color/divider_color"
+            app:cardBackgroundColor="@color/surface_main"
             android:clickable="true"
             android:focusable="true"
             android:foreground="?attr/selectableItemBackground">
@@ -312,14 +312,14 @@
                     app:cardCornerRadius="21dp"
                     app:cardElevation="0dp"
                     app:strokeWidth="0dp"
-                    app:cardBackgroundColor="#E2E8F0">
+                    app:cardBackgroundColor="@color/surface_variant">
 
                     <ImageView
                         android:layout_width="22dp"
                         android:layout_height="22dp"
                         android:layout_gravity="center"
                         android:src="@drawable/ic_document_scanner"
-                        app:tint="#475569"
+                        app:tint="@color/text_primary"
                         android:contentDescription="Dokumen"/>
                 </com.google.android.material.card.MaterialCardView>
 

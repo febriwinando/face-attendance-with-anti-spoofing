@@ -74,6 +74,11 @@ public class AdminPengolahanAbsensiActivity extends AppCompatActivity {
     private Spinner spPosisiMasuk, spPosisiPulang;
     private TextView tvAdminOpdSelect, tvAdminPegawaiSelect;
     private EditText etTanggal, etAbsensiId, etJamMasuk, etKeterlambatan, etKetMasuk, etJamPulang;
+    private android.widget.CheckBox cbClearPulang;
+
+    private Presensi currentLoadedPresence = null;
+    private int loadedPosMasukIdx = 0;
+    private int loadedPosPulangIdx = 0;
 
     private ImageView iconFotoMasuk, iconLampiranMasuk, iconFotoPulang, iconLampiranPulang;
     private ImageView ivFotoMasukFinal, ivLampiranMasukFinal, ivFotoPulangFinal, ivLampiranPulangFinal;
@@ -165,6 +170,14 @@ public class AdminPengolahanAbsensiActivity extends AppCompatActivity {
 
         spPosisiPulang = findViewById(R.id.spAdminPengolahanPosisiPulang);
         etJamPulang = findViewById(R.id.etAdminPengolahanJamPulang);
+        cbClearPulang = findViewById(R.id.cbAdminClearPulang);
+
+        cbClearPulang.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            etJamPulang.setEnabled(!isChecked);
+            if (isChecked) {
+                etJamPulang.setText("");
+            }
+        });
 
         MaterialCardView cardPickFotoMasuk = findViewById(R.id.cardPickFotoMasuk);
         MaterialCardView cardPickLampiranMasuk = findViewById(R.id.cardPickLampiranMasuk);
@@ -205,14 +218,14 @@ public class AdminPengolahanAbsensiActivity extends AppCompatActivity {
         adapterPulang.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spPosisiPulang.setAdapter(adapterPulang);
 
-        // Date Picker & Defaults
+        // Date Picker & initial blank state until record is loaded
         etTanggal.setText(dateFormat.format(calendar.getTime()));
         etTanggal.setOnClickListener(v -> showDatePicker());
 
-        etJamMasuk.setText("07:30");
-        etKeterlambatan.setText("0");
-        etKetMasuk.setText("sesuai waktu");
-        etJamPulang.setText("16:30");
+        etJamMasuk.setText("");
+        etKeterlambatan.setText("");
+        etKetMasuk.setText("");
+        etJamPulang.setText("");
 
         // Load OPD List
         loadOpdList();
@@ -820,35 +833,60 @@ public class AdminPengolahanAbsensiActivity extends AppCompatActivity {
         });
     }
 
+    private String nullToEmpty(String s) {
+        return s == null ? "" : s.trim();
+    }
+
     private void bindPresensiToUI(Presensi p) {
+        currentLoadedPresence = p;
+        loadedPosMasukIdx = 0;
+        loadedPosPulangIdx = 0;
+
+        if (cbClearPulang != null) {
+            cbClearPulang.setChecked(false);
+        }
+        etJamPulang.setEnabled(true);
+
         if (p == null) {
             etAbsensiId.setText("");
+            etJamMasuk.setText("");
+            etKeterlambatan.setText("");
+            etKetMasuk.setText("");
+            etJamPulang.setText("");
+            spPosisiMasuk.setSelection(0);
+            spPosisiPulang.setSelection(0);
             resetMediaViews();
             return;
         }
 
         etAbsensiId.setText(p.getId() != null ? p.getId() : "");
-        if (p.getJam_masuk() != null) etJamMasuk.setText(p.getJam_masuk());
-        if (p.getKeterlambatan() != null) etKeterlambatan.setText(p.getKeterlambatan());
-        if (p.getKet_masuk() != null) etKetMasuk.setText(p.getKet_masuk());
-        if (p.getJam_pulang() != null) etJamPulang.setText(p.getJam_pulang());
+        etJamMasuk.setText(p.getJam_masuk() != null ? p.getJam_masuk() : "");
+        etKeterlambatan.setText(p.getKeterlambatan() != null ? p.getKeterlambatan() : "");
+        etKetMasuk.setText(p.getKet_masuk() != null ? p.getKet_masuk() : "");
+        etJamPulang.setText(p.getJam_pulang() != null ? p.getJam_pulang() : "");
 
         if (p.getPosisi_masuk() != null) {
             for (int i = 0; i < POSISI_VALUES_MASUK.length; i++) {
                 if (POSISI_VALUES_MASUK[i].equalsIgnoreCase(p.getPosisi_masuk())) {
                     spPosisiMasuk.setSelection(i);
+                    loadedPosMasukIdx = i;
                     break;
                 }
             }
+        } else {
+            spPosisiMasuk.setSelection(0);
         }
 
         if (p.getPosisi_pulang() != null) {
             for (int i = 0; i < POSISI_VALUES_PULANG.length; i++) {
                 if (POSISI_VALUES_PULANG[i].equalsIgnoreCase(p.getPosisi_pulang())) {
                     spPosisiPulang.setSelection(i);
+                    loadedPosPulangIdx = i;
                     break;
                 }
             }
+        } else {
+            spPosisiPulang.setSelection(0);
         }
 
         if (p.getPhototaging_masuk() != null && p.getPhototaging_masuk().length > 0) {
@@ -911,30 +949,98 @@ public class AdminPengolahanAbsensiActivity extends AppCompatActivity {
         llPdfPulang.setVisibility(View.GONE);
     }
 
+    private RequestBody prepareOptionalTextPart(String value) {
+        if (value == null) return null;
+        return RequestBody.create(MediaType.parse("text/plain"), value);
+    }
+
     private void submitPengolahan() {
         String idAbsensi = etAbsensiId.getText().toString().trim();
-        String jamMasuk = etJamMasuk.getText().toString().trim();
-        String keterlambatanStr = etKeterlambatan.getText().toString().trim();
-        String ketMasuk = etKetMasuk.getText().toString().trim();
-        String jamPulang = etJamPulang.getText().toString().trim();
+        String jamMasukRaw = etJamMasuk.getText().toString().trim();
+        String keterlambatanRaw = etKeterlambatan.getText().toString().trim();
+        String ketMasukRaw = etKetMasuk.getText().toString().trim();
+        boolean clearPulang = cbClearPulang != null && cbClearPulang.isChecked();
+        String jamPulangRaw = clearPulang ? "" : etJamPulang.getText().toString().trim();
 
-        int idxM = spPosisiMasuk.getSelectedItemPosition();
+        if (idAbsensi.isEmpty()) {
+            dialogView.viewNotifKosong(this, "Peringatan", "ID Absensi wajib diisi (cari presensi terlebih dahulu).");
+            return;
+        }
+
+        if (!jamMasukRaw.isEmpty() && !AdminFormHelper.isValidTime(jamMasukRaw, false)) {
+            dialogView.viewNotifKosong(this, "Format Jam Tidak Valid", "Format Jam Masuk harus HH:mm atau HH:mm:ss.");
+            return;
+        }
+
+        if (!clearPulang && !jamPulangRaw.isEmpty() && !AdminFormHelper.isValidTime(jamPulangRaw, false)) {
+            dialogView.viewNotifKosong(this, "Format Jam Tidak Valid", "Format Jam Pulang harus HH:mm atau HH:mm:ss.");
+            return;
+        }
+
+        Integer keterlambatanVal = null;
+        if (!keterlambatanRaw.isEmpty()) {
+            keterlambatanVal = AdminFormHelper.parseNonNegativeInt(keterlambatanRaw);
+            if (keterlambatanVal == null) {
+                dialogView.viewNotifKosong(this, "Peringatan", "Keterlambatan harus berupa bilangan bulat >= 0.");
+                return;
+            }
+        }
+
+        int idxM = Math.max(0, spPosisiMasuk.getSelectedItemPosition());
         String posisiMasuk = POSISI_VALUES_MASUK[idxM];
         String statusMasuk = STATUS_VALUES_MASUK[idxM];
         String validasiMasuk = "2";
 
-        int idxP = spPosisiPulang.getSelectedItemPosition();
+        int idxP = Math.max(0, spPosisiPulang.getSelectedItemPosition());
         String posisiPulang = POSISI_VALUES_PULANG[idxP];
         String statusPulang = STATUS_VALUES_PULANG[idxP];
         String validasiPulang = "2";
 
-        if (idAbsensi.isEmpty() || jamMasuk.isEmpty()) {
-            dialogView.viewNotifKosong(this, "Peringatan", "ID Absensi dan Jam Masuk wajib diisi.");
+        boolean includeMasuk;
+        boolean includePulang;
+        if (currentLoadedPresence != null && idAbsensi.equals(nullToEmpty(currentLoadedPresence.getId()))) {
+            boolean masukChanged = !jamMasukRaw.equals(nullToEmpty(currentLoadedPresence.getJam_masuk()))
+                    || !keterlambatanRaw.equals(nullToEmpty(currentLoadedPresence.getKeterlambatan()))
+                    || !ketMasukRaw.equals(nullToEmpty(currentLoadedPresence.getKet_masuk()))
+                    || idxM != loadedPosMasukIdx
+                    || fileFotoMasuk != null
+                    || fileLampiranMasuk != null;
+            boolean pulangChanged = clearPulang
+                    || !jamPulangRaw.equals(nullToEmpty(currentLoadedPresence.getJam_pulang()))
+                    || idxP != loadedPosPulangIdx
+                    || fileFotoPulang != null
+                    || fileLampiranPulang != null;
+            includeMasuk = masukChanged;
+            includePulang = pulangChanged;
+        } else {
+            includeMasuk = !jamMasukRaw.isEmpty()
+                    || keterlambatanVal != null
+                    || !ketMasukRaw.isEmpty()
+                    || fileFotoMasuk != null
+                    || fileLampiranMasuk != null;
+            includePulang = clearPulang
+                    || !jamPulangRaw.isEmpty()
+                    || fileFotoPulang != null
+                    || fileLampiranPulang != null;
+        }
+
+        if (!includeMasuk && !includePulang) {
+            dialogView.viewNotifKosong(this, "Peringatan", "Isi atau ubah minimal satu data Masuk atau Pulang sebelum menyimpan.");
             return;
         }
 
-        int keterlambatan = 0;
-        try { keterlambatan = Integer.parseInt(keterlambatanStr); } catch (Exception ignored) {}
+        String sendJamMasuk = (includeMasuk && !jamMasukRaw.isEmpty()) ? jamMasukRaw : null;
+        Integer sendKeterlambatan = includeMasuk ? keterlambatanVal : null;
+        String sendPosMasuk = includeMasuk ? posisiMasuk : null;
+        String sendStatMasuk = includeMasuk ? statusMasuk : null;
+        String sendValMasuk = includeMasuk ? validasiMasuk : null;
+        String sendKetMasuk = (includeMasuk && !ketMasukRaw.isEmpty()) ? ketMasukRaw : null;
+
+        String sendJamPulang = (!clearPulang && includePulang && !jamPulangRaw.isEmpty()) ? jamPulangRaw : null;
+        String sendPosPulang = (!clearPulang && includePulang) ? posisiPulang : null;
+        String sendStatPulang = (!clearPulang && includePulang) ? statusPulang : null;
+        String sendValPulang = (!clearPulang && includePulang) ? validasiPulang : null;
+        String sendClearPulang = clearPulang ? "1" : null;
 
         Dialog dialogProses = new Dialog(this, R.style.DialogStyle);
         dialogProses.setContentView(R.layout.view_proses);
@@ -945,8 +1051,18 @@ public class AdminPengolahanAbsensiActivity extends AppCompatActivity {
 
         if (fileFotoMasuk == null && fileFotoPulang == null && fileLampiranMasuk == null && fileLampiranPulang == null) {
             api.storePengolahanAbsensiAdmin(
-                    idAbsensi, jamMasuk, keterlambatan, posisiMasuk, statusMasuk, validasiMasuk, ketMasuk,
-                    jamPulang, posisiPulang, statusPulang, validasiPulang
+                    idAbsensi,
+                    sendJamMasuk,
+                    sendKeterlambatan,
+                    sendPosMasuk,
+                    sendStatMasuk,
+                    sendValMasuk,
+                    sendKetMasuk,
+                    sendJamPulang,
+                    sendPosPulang,
+                    sendStatPulang,
+                    sendValPulang,
+                    sendClearPulang
             ).enqueue(new Callback<ResponsePOJO>() {
                 @Override
                 public void onResponse(@NonNull Call<ResponsePOJO> call, @NonNull Response<ResponsePOJO> response) {
@@ -962,17 +1078,18 @@ public class AdminPengolahanAbsensiActivity extends AppCompatActivity {
             });
         } else {
             RequestBody bodyId = RequestBody.create(MediaType.parse("text/plain"), idAbsensi);
-            RequestBody bodyJamM = RequestBody.create(MediaType.parse("text/plain"), jamMasuk);
-            RequestBody bodyKetL = RequestBody.create(MediaType.parse("text/plain"), keterlambatanStr);
-            RequestBody bodyPosM = RequestBody.create(MediaType.parse("text/plain"), posisiMasuk);
-            RequestBody bodyStatM = RequestBody.create(MediaType.parse("text/plain"), statusMasuk);
-            RequestBody bodyValM = RequestBody.create(MediaType.parse("text/plain"), validasiMasuk);
-            RequestBody bodyKetM = RequestBody.create(MediaType.parse("text/plain"), ketMasuk);
+            RequestBody bodyJamM = prepareOptionalTextPart(sendJamMasuk);
+            RequestBody bodyKetL = prepareOptionalTextPart(sendKeterlambatan != null ? String.valueOf(sendKeterlambatan) : null);
+            RequestBody bodyPosM = prepareOptionalTextPart(sendPosMasuk);
+            RequestBody bodyStatM = prepareOptionalTextPart(sendStatMasuk);
+            RequestBody bodyValM = prepareOptionalTextPart(sendValMasuk);
+            RequestBody bodyKetM = prepareOptionalTextPart(sendKetMasuk);
 
-            RequestBody bodyJamP = RequestBody.create(MediaType.parse("text/plain"), jamPulang);
-            RequestBody bodyPosP = RequestBody.create(MediaType.parse("text/plain"), posisiPulang);
-            RequestBody bodyStatP = RequestBody.create(MediaType.parse("text/plain"), statusPulang);
-            RequestBody bodyValP = RequestBody.create(MediaType.parse("text/plain"), validasiPulang);
+            RequestBody bodyJamP = prepareOptionalTextPart(sendJamPulang);
+            RequestBody bodyPosP = prepareOptionalTextPart(sendPosPulang);
+            RequestBody bodyStatP = prepareOptionalTextPart(sendStatPulang);
+            RequestBody bodyValP = prepareOptionalTextPart(sendValPulang);
+            RequestBody bodyClearP = prepareOptionalTextPart(sendClearPulang);
 
             MultipartBody.Part partFotoM = prepareFilePart("fototaging_masuk", fileFotoMasuk, false);
             MultipartBody.Part partFotoP = prepareFilePart("fototaging_pulang", fileFotoPulang, false);
@@ -981,7 +1098,7 @@ public class AdminPengolahanAbsensiActivity extends AppCompatActivity {
 
             api.storePengolahanAbsensiAdminMultipart(
                     bodyId, bodyJamM, bodyKetL, bodyPosM, bodyStatM, bodyValM, bodyKetM,
-                    bodyJamP, bodyPosP, bodyStatP, bodyValP,
+                    bodyJamP, bodyPosP, bodyStatP, bodyValP, bodyClearP,
                     partFotoM, partFotoP, partLampM, partLampP
             ).enqueue(new Callback<ResponsePOJO>() {
                 @Override
@@ -1015,12 +1132,14 @@ public class AdminPengolahanAbsensiActivity extends AppCompatActivity {
         if (response.isSuccessful() && response.body() != null) {
             ResponsePOJO pojo = response.body();
             if (pojo.isStatus()) {
+                findPresenceForSelectedEmployeeSilently();
                 dialogView.viewSuksesNonFinish(AdminPengolahanAbsensiActivity.this, pojo.getRemarks() != null ? pojo.getRemarks() : "Data pengolahan absensi berhasil diubah!");
             } else {
                 dialogView.viewNotifKosong(AdminPengolahanAbsensiActivity.this, "Gagal Ubah", pojo.getRemarks() != null ? pojo.getRemarks() : "Gagal mengubah data absensi.");
             }
         } else {
-            dialogView.viewNotifKosong(AdminPengolahanAbsensiActivity.this, "Gagal Server", "HTTP " + response.code());
+            String err = AdminFormHelper.extractApiError(response, "HTTP " + response.code());
+            dialogView.viewNotifKosong(AdminPengolahanAbsensiActivity.this, "Gagal Server", err);
         }
     }
 

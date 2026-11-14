@@ -25,7 +25,7 @@
             android:background="@drawable/bg_chat_date_pill"
             android:paddingHorizontal="14dp"
             android:paddingVertical="4dp"
-            android:textColor="#475569"
+            android:textColor="@color/text_secondary"
             android:textSize="11sp"
             android:textStyle="bold"
             android:elevation="0.5dp"
@@ -47,7 +47,7 @@
             android:id="@+id/tvSenderName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#16A34A"
+            android:textColor="@color/opd_badge_icon"
             android:textSize="12sp"
             android:fontFamily="sans-serif-bold"
             android:layout_marginBottom="4dp"
@@ -91,9 +91,9 @@
             android:layout_marginBottom="6dp"
             app:cardCornerRadius="8dp"
             app:cardElevation="0dp"
-            app:strokeColor="#CBD5E1"
+            app:strokeColor="@color/divider_color"
             app:strokeWidth="1dp"
-            app:cardBackgroundColor="#F1F5F9"
+            app:cardBackgroundColor="@color/surface_main"
             android:visibility="gone">
 
             <LinearLayout
@@ -106,7 +106,7 @@
                     android:id="@+id/tvReplySender"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="#16A34A"
+                    android:textColor="@color/opd_badge_icon"
                     android:textSize="11sp"
                     android:textStyle="bold"/>
 
@@ -114,7 +114,7 @@
                     android:id="@+id/tvReplyMessage"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="#475569"
+                    android:textColor="@color/text_secondary"
                     android:textSize="11sp"
                     android:maxLines="2"
                     android:ellipsize="end"/>
@@ -130,7 +130,7 @@
             app:cardCornerRadius="14dp"
             app:cardElevation="0dp"
             app:strokeWidth="0dp"
-            app:cardBackgroundColor="#F1F5F9"
+            app:cardBackgroundColor="@color/surface_variant"
             android:visibility="gone">
 
             <ImageView
@@ -303,9 +303,9 @@
             android:layout_marginBottom="4dp"
             app:cardCornerRadius="10dp"
             app:cardElevation="0dp"
-            app:strokeColor="#E2E8F0"
+            app:strokeColor="@color/divider_color"
             app:strokeWidth="1dp"
-            app:cardBackgroundColor="#E2E8F0"
+            app:cardBackgroundColor="@color/surface_variant"
             android:visibility="gone">
 
             <LinearLayout
@@ -329,7 +329,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:textColor="#1E293B"
+                    android:textColor="@color/text_primary"
                     android:textSize="13sp"
                     android:textStyle="bold"
                     android:maxLines="1"
@@ -342,7 +342,7 @@
             android:id="@+id/tvMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#0F172A"
+            android:textColor="@color/text_primary"
             android:textSize="14sp"/>
 
         <TextView
@@ -351,7 +351,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:layout_marginTop="2dp"
-            android:textColor="#94A3B8"
+            android:textColor="@color/text_hint"
             android:textSize="10sp"/>
     </LinearLayout>
 </LinearLayout>

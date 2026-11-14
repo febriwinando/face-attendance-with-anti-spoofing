@@ -8,6 +8,8 @@ import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.SIMP
 import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.SIMPLE_FORMAT_TANGGAL;
 import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.localeID;
 
+import go.pemkott.appsandroidmobiletebingtinggi.utils.AttendanceNotificationHelper;
+
 import android.Manifest;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
@@ -663,7 +665,7 @@ public class KeperluanPribadiShiftFinalActivity extends AppCompatActivity  imple
                 dialogproses.dismiss();
 
                 if (!response.isSuccessful()) {
-
+                    AttendanceNotificationHelper.notifyHttpFailure(KeperluanPribadiShiftFinalActivity.this, "Keperluan Pribadi Shift Masuk", response);
                     dialogView.viewNotifKosong(
                             KeperluanPribadiShiftFinalActivity.this,
                             "Gagal mengisi absensi",
@@ -674,11 +676,14 @@ public class KeperluanPribadiShiftFinalActivity extends AppCompatActivity  imple
 
                 ResponsePOJO data = response.body();
 
-                if (Objects.requireNonNull(response.body()).isStatus()){
+                if (data != null && data.isStatus()){
                     databaseHelper.insertLog(sEmployeID, eOPD, rbTanggal, "Melakukan Pengajuan Keperluan Pribadi (Masuk - Shift)", "Masuk");
+                    AttendanceNotificationHelper.notifySuccess(KeperluanPribadiShiftFinalActivity.this, "Keperluan Pribadi Shift Masuk", data.getRemarks());
                     dialogView.viewSukses(KeperluanPribadiShiftFinalActivity.this, data.getRemarks());
                 }else {
-                    dialogView.viewNotifKosong(KeperluanPribadiShiftFinalActivity.this, data.getRemarks(),"");
+                    String errRemarks = data != null ? data.getRemarks() : "Respon server tidak valid.";
+                    AttendanceNotificationHelper.notifyFailure(KeperluanPribadiShiftFinalActivity.this, "Keperluan Pribadi Shift Masuk", errRemarks);
+                    dialogView.viewNotifKosong(KeperluanPribadiShiftFinalActivity.this, errRemarks,"");
                 }
 
             }
@@ -686,6 +691,7 @@ public class KeperluanPribadiShiftFinalActivity extends AppCompatActivity  imple
             @Override
             public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
                 dialogproses.dismiss();
+                AttendanceNotificationHelper.notifyNetworkFailure(KeperluanPribadiShiftFinalActivity.this, "Keperluan Pribadi Shift Masuk", t);
                 dialogView.pesanError(KeperluanPribadiShiftFinalActivity.this);
             }
         });
@@ -733,7 +739,7 @@ public class KeperluanPribadiShiftFinalActivity extends AppCompatActivity  imple
                 dialogproses.dismiss();
 
                 if (!response.isSuccessful()) {
-
+                    AttendanceNotificationHelper.notifyHttpFailure(KeperluanPribadiShiftFinalActivity.this, "Keperluan Pribadi Shift Pulang", response);
                     dialogView.viewNotifKosong(
                             KeperluanPribadiShiftFinalActivity.this,
                             "Gagal mengisi absensi",
@@ -744,11 +750,14 @@ public class KeperluanPribadiShiftFinalActivity extends AppCompatActivity  imple
 
                 ResponsePOJO data = response.body();
 
-                if (Objects.requireNonNull(response.body()).isStatus()){
+                if (data != null && data.isStatus()){
                     databaseHelper.insertLog(sEmployeID, eOPD, rbTanggal, "Melakukan Pengajuan Keperluan Pribadi (Pulang - Shift)", "Pulang");
+                    AttendanceNotificationHelper.notifySuccess(KeperluanPribadiShiftFinalActivity.this, "Keperluan Pribadi Shift Pulang", data.getRemarks());
                     dialogView.viewSukses(KeperluanPribadiShiftFinalActivity.this, data.getRemarks());
                 }else {
-                    dialogView.viewNotifKosong(KeperluanPribadiShiftFinalActivity.this, data.getRemarks(),"");
+                    String errRemarks = data != null ? data.getRemarks() : "Respon server tidak valid.";
+                    AttendanceNotificationHelper.notifyFailure(KeperluanPribadiShiftFinalActivity.this, "Keperluan Pribadi Shift Pulang", errRemarks);
+                    dialogView.viewNotifKosong(KeperluanPribadiShiftFinalActivity.this, errRemarks,"");
                 }
 
             }
@@ -756,6 +765,7 @@ public class KeperluanPribadiShiftFinalActivity extends AppCompatActivity  imple
             @Override
             public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
                 dialogproses.dismiss();
+                AttendanceNotificationHelper.notifyNetworkFailure(KeperluanPribadiShiftFinalActivity.this, "Keperluan Pribadi Shift Pulang", t);
                 dialogView.pesanError(KeperluanPribadiShiftFinalActivity.this);
             }
         });

@@ -66,6 +66,8 @@ public class AdminLokasiPegawaiActivity extends AppCompatActivity implements OnM
 
     private List<EmployeesData> masterEmployees = new ArrayList<>();
     private EmployeesData selectedEmployee = null;
+    private String selectedEmployeeLabel = null;
+    private boolean usingDefaultFallbackLocation = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -166,7 +168,35 @@ public class AdminLokasiPegawaiActivity extends AppCompatActivity implements OnM
                 selectedEmployee = masterEmployees.get(which);
                 if (selectedEmployee != null) {
                     String label = selectedEmployee.getNama() + " (" + (selectedEmployee.getNip() != null ? selectedEmployee.getNip() : "ID #" + selectedEmployee.getId()) + ")";
+                    selectedEmployeeLabel = label;
                     etEmployeeId.setText(label);
+
+                    String dbLat = selectedEmployee.getLet();
+                    String dbLng = selectedEmployee.getLng();
+                    String dbAlamat = selectedEmployee.getAlamat();
+                    if (AdminFormHelper.isValidCoordinates(dbLat, dbLng)) {
+                        try {
+                            LatLng empLatLng = new LatLng(
+                                    Double.parseDouble(dbLat.trim()),
+                                    Double.parseDouble(dbLng.trim())
+                            );
+                            usingDefaultFallbackLocation = false;
+                            if (googleMap != null) {
+                                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(empLatLng, 17f));
+                            }
+                            if (locationMarker != null) {
+                                locationMarker.setPosition(empLatLng);
+                            }
+                            etLat.setText(dbLat.trim());
+                            etLng.setText(dbLng.trim());
+                            if (dbAlamat != null && !dbAlamat.trim().isEmpty()) {
+                                etAlamat.setText(dbAlamat.trim());
+                            } else {
+                                reverseGeocodeAddress(empLatLng);
+                            }
+                        } catch (NumberFormatException ignored) {
+                        }
+                    }
                 }
             }
         });
@@ -195,9 +225,14 @@ public class AdminLokasiPegawaiActivity extends AppCompatActivity implements OnM
 
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultTebingTinggi, 15f));
         updateSelectedLocation(defaultTebingTinggi, false);
+        usingDefaultFallbackLocation = true;
+        Toast.makeText(this, "Posisi awal di titik default Tebing Tinggi. Pilih GPS, cari lokasi, atau ketuk peta.", Toast.LENGTH_SHORT).show();
 
         // Click Map Listener
-        googleMap.setOnMapClickListener(latLng -> updateSelectedLocation(latLng, true));
+        googleMap.setOnMapClickListener(latLng -> {
+            usingDefaultFallbackLocation = false;
+            updateSelectedLocation(latLng, true);
+        });
 
         // Drag Marker Listener
         googleMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
@@ -209,6 +244,7 @@ public class AdminLokasiPegawaiActivity extends AppCompatActivity implements OnM
 
             @Override
             public void onMarkerDragEnd(@NonNull Marker marker) {
+                usingDefaultFallbackLocation = false;
                 updateSelectedLocation(marker.getPosition(), true);
             }
         });
@@ -245,6 +281,7 @@ public class AdminLokasiPegawaiActivity extends AppCompatActivity implements OnM
                         if (googleMap != null) {
                             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(searchLatLng, 17f));
                         }
+                        usingDefaultFallbackLocation = false;
                         updateSelectedLocation(searchLatLng, false);
                         Toast.makeText(AdminLokasiPegawaiActivity.this, "Lokasi ditemukan!", Toast.LENGTH_SHORT).show();
                     } else {
@@ -307,6 +344,7 @@ public class AdminLokasiPegawaiActivity extends AppCompatActivity implements OnM
                         if (googleMap != null) {
                             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 17f));
                         }
+                        usingDefaultFallbackLocation = false;
                         updateSelectedLocation(userLatLng, false);
                         Toast.makeText(AdminLokasiPegawaiActivity.this, "Koordinat presisi GPS berhasil didapatkan!", Toast.LENGTH_SHORT).show();
                     } else {
@@ -368,25 +406,41 @@ public class AdminLokasiPegawaiActivity extends AppCompatActivity implements OnM
             return;
         }
 
-        // Auto-resolve employee ID, NIP, and OPD ID
+        if (!AdminFormHelper.isValidCoordinates(lat, lng)) {
+            dialogView.viewNotifKosong(this, "Koordinat Tidak Valid", "Latitude harus antara -90 s/d 90 dan Longitude antara -180 s/d 180.");
+            return;
+        }
+
+        boolean stillAtDefaultPoint = usingDefaultFallbackLocation
+                && Math.abs(Double.parseDouble(lat) - defaultTebingTinggi.latitude) < 1e-6
+                && Math.abs(Double.parseDouble(lng) - defaultTebingTinggi.longitude) < 1e-6;
+        if (stillAtDefaultPoint) {
+            dialogView.viewNotifKosong(this, "Pilih Lokasi Sebenarnya", "Koordinat masih berada di titik default Tebing Tinggi. Pilih posisi di peta, cari alamat, atau ambil GPS terlebih dahulu.");
+            return;
+        }
+
+        // Resolve employee strictly from master list / selected item
         String targetEmpId = null;
         String targetNip = null;
         String targetOpdId = "0";
 
-        if (selectedEmployee != null) {
+        if (selectedEmployee != null && selectedEmployeeLabel != null && selectedEmployeeLabel.equals(inputEmp)) {
             targetEmpId = String.valueOf(selectedEmployee.getId());
             targetNip = selectedEmployee.getNip();
             targetOpdId = String.valueOf(selectedEmployee.getOpdId());
         } else {
-            // Search in masterEmployees
+            selectedEmployee = null;
+            selectedEmployeeLabel = null;
             if (masterEmployees != null) {
                 for (EmployeesData emp : masterEmployees) {
                     if (emp == null) continue;
                     String empIdStr = String.valueOf(emp.getId());
-                    String nipStr = emp.getNip() != null ? emp.getNip() : "";
-                    String namaStr = emp.getNama() != null ? emp.getNama() : "";
+                    String nipStr = emp.getNip() != null ? emp.getNip().trim() : "";
+                    String namaStr = emp.getNama() != null ? emp.getNama().trim() : "";
 
-                    if (inputEmp.equalsIgnoreCase(empIdStr) || inputEmp.equalsIgnoreCase(nipStr) || inputEmp.contains(namaStr) || inputEmp.contains(nipStr)) {
+                    if (inputEmp.equalsIgnoreCase(empIdStr)
+                            || (!nipStr.isEmpty() && inputEmp.equalsIgnoreCase(nipStr))
+                            || (!namaStr.isEmpty() && inputEmp.equalsIgnoreCase(namaStr))) {
                         targetEmpId = empIdStr;
                         targetNip = nipStr;
                         targetOpdId = String.valueOf(emp.getOpdId());
@@ -396,8 +450,10 @@ public class AdminLokasiPegawaiActivity extends AppCompatActivity implements OnM
             }
         }
 
-        if (targetEmpId == null) targetEmpId = inputEmp;
-        if (targetNip == null) targetNip = inputEmp;
+        if (targetEmpId == null) {
+            dialogView.viewNotifKosong(this, "Pegawai Tidak Ditemukan", "Pastikan memilih pegawai melalui tombol Pilih Pegawai atau memasukkan ID/NIP pegawai yang valid.");
+            return;
+        }
 
         Dialog dialogProses = new Dialog(this, R.style.DialogStyle);
         dialogProses.setContentView(R.layout.view_proses);
@@ -407,7 +463,7 @@ public class AdminLokasiPegawaiActivity extends AppCompatActivity implements OnM
         HttpService api = RetroClient.getInstance(this).getApi2();
         api.storeLokasiPegawaiAdmin(
                 targetEmpId,  // employee_id (Primary Key integer)
-                targetNip,    // nip
+                targetNip != null ? targetNip : "",
                 targetEmpId,  // pegawai_id
                 targetEmpId,  // id_pegawai
                 targetOpdId,  // opd_id
@@ -426,12 +482,14 @@ public class AdminLokasiPegawaiActivity extends AppCompatActivity implements OnM
                 if (response.isSuccessful() && response.body() != null) {
                     ResponsePOJO pojo = response.body();
                     if (pojo.isStatus()) {
+                        loadMasterEmployees();
                         dialogView.viewSuksesNonFinish(AdminLokasiPegawaiActivity.this, pojo.getRemarks() != null ? pojo.getRemarks() : "Lokasi pegawai berhasil disimpan!");
                     } else {
                         dialogView.viewNotifKosong(AdminLokasiPegawaiActivity.this, "Gagal Simpan", pojo.getRemarks() != null ? pojo.getRemarks() : "Gagal menyimpan lokasi.");
                     }
                 } else {
-                    dialogView.viewNotifKosong(AdminLokasiPegawaiActivity.this, "Gagal Server", "HTTP " + response.code());
+                    String err = AdminFormHelper.extractApiError(response, "HTTP " + response.code());
+                    dialogView.viewNotifKosong(AdminLokasiPegawaiActivity.this, "Gagal Server", err);
                 }
             }
 

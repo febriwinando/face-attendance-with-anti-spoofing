@@ -27,7 +27,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.provider.Settings;
 import android.util.Log;
 
 import androidx.work.Constraints;
@@ -42,6 +41,7 @@ import java.util.List;
 
 import go.pemkott.appsandroidmobiletebingtinggi.camerax.CameraXTanpaDetectionAcitvity;
 import go.pemkott.appsandroidmobiletebingtinggi.model.EmployeesData;
+import go.pemkott.appsandroidmobiletebingtinggi.utils.FcmTokenHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.worker.LogSyncWorker;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
@@ -559,6 +559,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                                       String nip, String nama, String email, String no_hp, String kelompok, String s_jabatan,
                                       String eselon, String jabatan, String nama_opd, String alamat, String lat, String lng, String foto, String bataswaktu, String sift){
         SQLiteDatabase db = this.getWritableDatabase();
+        if (id != null && !id.trim().isEmpty()) {
+            db.delete(EMPLOYEE, E_ID + " = ?", new String[]{id.trim()});
+        }
 
         ContentValues contentValues = new ContentValues();
         contentValues.put(E_ID, id);
@@ -631,6 +634,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public boolean insertDataKoordinat(String id, String id_opd, String alamat, String lat, String lng){
+        if (!go.pemkott.appsandroidmobiletebingtinggi.utils.AttendanceGeofenceHelper.isValidCoordinateStrings(lat, lng)) {
+            return false;
+        }
         SQLiteDatabase db = this.getWritableDatabase();
         if (id != null && !id.isEmpty()) {
             db.delete(KOORDINAT, K_ID + " = ?", new String[]{id});
@@ -639,24 +645,28 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(K_ID, id);
         contentValues.put(K_OPD_ID, id_opd);
         contentValues.put(K_ALAMAT, alamat);
-        contentValues.put(K_LAT, lat);
-        contentValues.put(K_LNG, lng);
+        contentValues.put(K_LAT, lat.trim());
+        contentValues.put(K_LNG, lng.trim());
 
         long result = db.insert(KOORDINAT, null, contentValues);
         return result != -1;
     }
 
     public boolean insertDataKoordinatEmployee(String id, String ide, String alamat, String lat, String lng){
+        if (ide == null || ide.trim().isEmpty()
+                || !go.pemkott.appsandroidmobiletebingtinggi.utils.AttendanceGeofenceHelper.isValidCoordinateStrings(lat, lng)) {
+            return false;
+        }
         SQLiteDatabase db = this.getWritableDatabase();
         if (id != null && !id.isEmpty()) {
             db.delete(KOORDINAT_E, KE_ID + " = ?", new String[]{id});
         }
         ContentValues contentValues = new ContentValues();
         contentValues.put(KE_ID, id);
-        contentValues.put(KE_EMP_ID, ide);
+        contentValues.put(KE_EMP_ID, ide.trim());
         contentValues.put(KE_ALAMAT, alamat);
-        contentValues.put(KE_LAT, lat);
-        contentValues.put(KE_LNG, lng);
+        contentValues.put(KE_LAT, lat.trim());
+        contentValues.put(KE_LNG, lng.trim());
 
         long result = db.insert(KOORDINAT_E, null, contentValues);
         return result != -1;
@@ -740,23 +750,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public Cursor getDataKoordinat(String idOPD){
-        SQLiteDatabase db = this.getWritableDatabase();
-        if (idOPD != null && !idOPD.trim().isEmpty()) {
-            Cursor res = db.rawQuery("SELECT * FROM " + KOORDINAT + " WHERE " + K_OPD_ID + " = '" + idOPD + "'", null);
-            if (res.getCount() > 0) return res;
-            res.close();
+        SQLiteDatabase db = this.getReadableDatabase();
+        if (idOPD == null || idOPD.trim().isEmpty()) {
+            return db.rawQuery("SELECT * FROM " + KOORDINAT + " WHERE 1 = 0", null);
         }
-        return db.rawQuery("SELECT * FROM " + KOORDINAT, null);
+        return db.rawQuery("SELECT * FROM " + KOORDINAT + " WHERE " + K_OPD_ID + " = ?", new String[]{idOPD.trim()});
     }
 
     public Cursor getDataKoordinatEmp(String idE){
-        SQLiteDatabase db = this.getWritableDatabase();
-        if (idE != null && !idE.trim().isEmpty()) {
-            Cursor res = db.rawQuery("SELECT * FROM " + KOORDINAT_E + " WHERE EMPLOYEID = '" + idE + "'", null);
-            if (res.getCount() > 0) return res;
-            res.close();
+        SQLiteDatabase db = this.getReadableDatabase();
+        if (idE == null || idE.trim().isEmpty()) {
+            return db.rawQuery("SELECT * FROM " + KOORDINAT_E + " WHERE 1 = 0", null);
         }
-        return db.rawQuery("SELECT * FROM " + KOORDINAT_E, null);
+        return db.rawQuery("SELECT * FROM " + KOORDINAT_E + " WHERE " + KE_EMP_ID + " = ?", new String[]{idE.trim()});
     }
 
     public Cursor getKegiatanIzin(){
@@ -941,10 +947,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         ContentValues cv = new ContentValues();
 
-        String androidId = Settings.Secure.getString(
-                mContext.getContentResolver(),
-                Settings.Secure.ANDROID_ID
-        );
+        String androidId = FcmTokenHelper.getDeviceId(mContext);
 
         String namaPegawai = "-";
         String namaOpd = "-";

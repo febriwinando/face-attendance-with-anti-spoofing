@@ -19,6 +19,7 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -84,6 +85,18 @@ public class ChatListActivity extends AppCompatActivity implements ChatContactAd
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager session =
+                new go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager(this);
+        String myNip = session.getNip();
+        boolean isMonitoringOfficer = "199402092020121005".equals(myNip);
+
+        if (!isMonitoringOfficer && !session.isChatGlobalEnabled()) {
+            Toast.makeText(this, "Layanan chat saat ini dinonaktifkan oleh Administrator.", Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+
         go.pemkott.appsandroidmobiletebingtinggi.utils.WindowUtil.applyDashboardStyle(this);
         setContentView(R.layout.activity_chat_list);
 
@@ -209,19 +222,21 @@ public class ChatListActivity extends AppCompatActivity implements ChatContactAd
         api.getChatTermsStatus().enqueue(new Callback<go.pemkott.appsandroidmobiletebingtinggi.model.chat.SendMessageResponse>() {
             @Override
             public void onResponse(Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.SendMessageResponse> call, Response<go.pemkott.appsandroidmobiletebingtinggi.model.chat.SendMessageResponse> response) {
-                if (response.isSuccessful() && response.body() != null && response.body().isStatus()) {
-                    session.setChatTermsAccepted(true);
-                    if (chatTermsDialog != null && chatTermsDialog.isShowing()) {
-                        chatTermsDialog.dismiss();
+                if (response.isSuccessful() && response.body() != null) {
+                    if (response.body().isStatus()) {
+                        session.setChatTermsAccepted(true);
+                        if (chatTermsDialog != null && chatTermsDialog.isShowing()) {
+                            chatTermsDialog.dismiss();
+                        }
+                        return;
                     }
-                    return;
+                    displayChatTermsDialog(session);
                 }
-                displayChatTermsDialog(session);
             }
 
             @Override
             public void onFailure(Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.SendMessageResponse> call, Throwable t) {
-                displayChatTermsDialog(session);
+                // Sinkronisasi lanjutan akan ditangani oleh fetchContactsFromNetwork jika koneksi kembali pulih
             }
         });
     }
@@ -255,24 +270,58 @@ public class ChatListActivity extends AppCompatActivity implements ChatContactAd
             });
 
             btnAccept.setOnClickListener(v -> {
-                session.setChatTermsAccepted(true);
-                if (chatTermsDialog != null && chatTermsDialog.isShowing()) {
-                    chatTermsDialog.dismiss();
+                btnAccept.setEnabled(false);
+                if (btnAccept instanceof TextView) {
+                    ((TextView) btnAccept).setText("Menyimpan...");
                 }
 
-                // Kirim dan simpan persetujuan secara permanen ke database website
+                // Kirim dan pastikan persetujuan benar-benar tersimpan ke database website
                 HttpService api = RetroClient.getInstance(this).getApi2();
                 api.acceptChatTerms(1).enqueue(new Callback<go.pemkott.appsandroidmobiletebingtinggi.model.chat.SendMessageResponse>() {
                     @Override
-                    public void onResponse(Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.SendMessageResponse> call, Response<go.pemkott.appsandroidmobiletebingtinggi.model.chat.SendMessageResponse> response) {}
+                    public void onResponse(Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.SendMessageResponse> call, Response<go.pemkott.appsandroidmobiletebingtinggi.model.chat.SendMessageResponse> response) {
+                        if (isFinishing() || isDestroyed()) {
+                            return;
+                        }
+                        if (response.isSuccessful() && response.body() != null && response.body().isStatus()) {
+                            session.setChatTermsAccepted(true);
+                            if (chatTermsDialog != null && chatTermsDialog.isShowing()) {
+                                chatTermsDialog.dismiss();
+                            }
+                            go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.showTopBanner(
+                                    ChatListActivity.this,
+                                    "Persetujuan Syarat & Ketentuan berhasil disimpan",
+                                    go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.Type.SUCCESS
+                            );
+                        } else {
+                            btnAccept.setEnabled(true);
+                            if (btnAccept instanceof TextView) {
+                                ((TextView) btnAccept).setText("Setuju & Lanjutkan");
+                            }
+                            go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.showTopBanner(
+                                    ChatListActivity.this,
+                                    "Gagal menyimpan persetujuan ke server. Silakan coba lagi.",
+                                    go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.Type.ERROR
+                            );
+                        }
+                    }
 
                     @Override
-                    public void onFailure(Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.SendMessageResponse> call, Throwable t) {}
+                    public void onFailure(Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.SendMessageResponse> call, Throwable t) {
+                        if (isFinishing() || isDestroyed()) {
+                            return;
+                        }
+                        btnAccept.setEnabled(true);
+                        if (btnAccept instanceof TextView) {
+                            ((TextView) btnAccept).setText("Setuju & Lanjutkan");
+                        }
+                        go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.showTopBanner(
+                                ChatListActivity.this,
+                                "Koneksi gagal saat menyimpan persetujuan ke server.",
+                                go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.Type.ERROR
+                        );
+                    }
                 });
-
-                go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.showTopBanner(
-                        this, "Persetujuan Syarat & Ketentuan berhasil disimpan", go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.Type.SUCCESS
-                );
             });
         }
 
@@ -365,8 +414,7 @@ public class ChatListActivity extends AppCompatActivity implements ChatContactAd
     }
 
     private void loadLocalContacts() {
-        boolean isSuperAdmin = ChatLocalDatabase.isSuperAdminUser(this);
-        List<ChatContact> localContacts = chatDb.getRecentConversations(isSuperAdmin);
+        List<ChatContact> localContacts = chatDb.getRecentConversations(false);
         if (localContacts != null && !localContacts.isEmpty()) {
             listPegawai = localContacts;
             filterList();
@@ -385,26 +433,45 @@ public class ChatListActivity extends AppCompatActivity implements ChatContactAd
             public void onResponse(Call<ChatContactResponse> call, Response<ChatContactResponse> response) {
                 pbChatList.setVisibility(View.GONE);
                 if (response.isSuccessful() && response.body() != null && response.body().isStatus()) {
+                    go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager session =
+                            new go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager(ChatListActivity.this);
+                    String myNip = session.getNip();
+                    boolean isMonitoringOfficer = "199402092020121005".equals(myNip);
+
+                    Boolean chatEnabled = response.body().getChatEnabled();
+                    if (Boolean.FALSE.equals(chatEnabled)) {
+                        session.saveChatGlobalEnabled(false);
+                        if (!isMonitoringOfficer) {
+                            Toast.makeText(ChatListActivity.this, "Layanan chat saat ini dinonaktifkan oleh Administrator.", Toast.LENGTH_LONG).show();
+                            finish();
+                            return;
+                        }
+                    } else if (Boolean.TRUE.equals(chatEnabled)) {
+                        session.saveChatGlobalEnabled(true);
+                    }
+
                     listPegawai = response.body().getPegawai();
                     listOpd = response.body().getOpdList();
 
-                    // Cek jika database website mengembalikan status persetujuan terms_accepted = true
+                    // Sinkronkan status persetujuan Syarat & Ketentuan langsung dari database server
                     Boolean termsAccepted = response.body().getTermsAccepted();
-                    if (Boolean.TRUE.equals(termsAccepted)) {
-                        go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager session =
-                                new go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager(ChatListActivity.this);
-                        session.setChatTermsAccepted(true);
-                        if (chatTermsDialog != null && chatTermsDialog.isShowing()) {
-                            chatTermsDialog.dismiss();
+                    if (termsAccepted != null) {
+                        if (Boolean.TRUE.equals(termsAccepted)) {
+                            session.setChatTermsAccepted(true);
+                            if (chatTermsDialog != null && chatTermsDialog.isShowing()) {
+                                chatTermsDialog.dismiss();
+                            }
+                        } else {
+                            session.setChatTermsAccepted(false);
+                            displayChatTermsDialog(session);
                         }
                     }
 
                     chatDb.saveContacts(listPegawai);
-                    boolean isSuperAdmin = ChatLocalDatabase.isSuperAdminUser(ChatListActivity.this);
                     for (ChatContact c : listPegawai) {
-                        chatDb.syncLastMessageFromLocal(c.getChatType(), c.getTargetId(), isSuperAdmin);
+                        chatDb.syncLastMessageFromLocal(c.getChatType(), c.getTargetId(), false);
                     }
-                    List<ChatContact> syncedContacts = chatDb.getRecentConversations(isSuperAdmin);
+                    List<ChatContact> syncedContacts = chatDb.getRecentConversations(false);
                     if (syncedContacts != null) {
                         listPegawai = syncedContacts;
                     }
@@ -441,27 +508,30 @@ public class ChatListActivity extends AppCompatActivity implements ChatContactAd
         activeTabFilter = mode;
         if (tvFilterAll == null || tvFilterUnread == null || tvFilterOpd == null) return;
 
+        int activeTextColor = ContextCompat.getColor(this, R.color.chat_filter_active_text);
+        int inactiveTextColor = ContextCompat.getColor(this, R.color.text_secondary);
+
         if ("all".equals(mode)) {
             tvFilterAll.setBackgroundResource(R.drawable.bg_pill_filter_active);
-            tvFilterAll.setTextColor(android.graphics.Color.parseColor("#0869D8"));
+            tvFilterAll.setTextColor(activeTextColor);
             tvFilterUnread.setBackgroundResource(R.drawable.bg_pill_filter_inactive);
-            tvFilterUnread.setTextColor(android.graphics.Color.parseColor("#64748B"));
+            tvFilterUnread.setTextColor(inactiveTextColor);
             tvFilterOpd.setBackgroundResource(R.drawable.bg_pill_filter_inactive);
-            tvFilterOpd.setTextColor(android.graphics.Color.parseColor("#64748B"));
+            tvFilterOpd.setTextColor(inactiveTextColor);
         } else if ("unread".equals(mode)) {
             tvFilterAll.setBackgroundResource(R.drawable.bg_pill_filter_inactive);
-            tvFilterAll.setTextColor(android.graphics.Color.parseColor("#64748B"));
+            tvFilterAll.setTextColor(inactiveTextColor);
             tvFilterUnread.setBackgroundResource(R.drawable.bg_pill_filter_active);
-            tvFilterUnread.setTextColor(android.graphics.Color.parseColor("#0869D8"));
+            tvFilterUnread.setTextColor(activeTextColor);
             tvFilterOpd.setBackgroundResource(R.drawable.bg_pill_filter_inactive);
-            tvFilterOpd.setTextColor(android.graphics.Color.parseColor("#64748B"));
+            tvFilterOpd.setTextColor(inactiveTextColor);
         } else if ("opd".equals(mode)) {
             tvFilterAll.setBackgroundResource(R.drawable.bg_pill_filter_inactive);
-            tvFilterAll.setTextColor(android.graphics.Color.parseColor("#64748B"));
+            tvFilterAll.setTextColor(inactiveTextColor);
             tvFilterUnread.setBackgroundResource(R.drawable.bg_pill_filter_inactive);
-            tvFilterUnread.setTextColor(android.graphics.Color.parseColor("#64748B"));
+            tvFilterUnread.setTextColor(inactiveTextColor);
             tvFilterOpd.setBackgroundResource(R.drawable.bg_pill_filter_active);
-            tvFilterOpd.setTextColor(android.graphics.Color.parseColor("#0869D8"));
+            tvFilterOpd.setTextColor(activeTextColor);
         }
         filterList();
     }
@@ -512,7 +582,7 @@ public class ChatListActivity extends AppCompatActivity implements ChatContactAd
         if (llSearchChatContainer.getVisibility() == View.VISIBLE) {
             llSearchChatContainer.setVisibility(View.GONE);
             if (ivSearchChatToggle != null) {
-                ivSearchChatToggle.setColorFilter(Color.parseColor("#64748B"));
+                ivSearchChatToggle.setColorFilter(ContextCompat.getColor(this, R.color.text_secondary));
             }
             if (etSearchChat != null) {
                 etSearchChat.setText("");
@@ -521,7 +591,7 @@ public class ChatListActivity extends AppCompatActivity implements ChatContactAd
         } else {
             llSearchChatContainer.setVisibility(View.VISIBLE);
             if (ivSearchChatToggle != null) {
-                ivSearchChatToggle.setColorFilter(Color.parseColor("#0869D8"));
+                ivSearchChatToggle.setColorFilter(ContextCompat.getColor(this, R.color.primary_brand));
             }
             if (etSearchChat != null) {
                 etSearchChat.requestFocus();
@@ -567,54 +637,46 @@ public class ChatListActivity extends AppCompatActivity implements ChatContactAd
     @Override
     public void onContactLongClick(ChatContact contact) {
         if (contact == null) return;
-        String[] options = new String[]{
-                "Buka Obrolan",
-                "Hapus Obrolan (Hanya dari Perangkat Ini)"
-        };
 
+        go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatMessageItem latestMsg =
+                chatDb.getLatestVisibleMessageForContact(contact.getChatType(), contact.getTargetId());
+
+        List<String> optList = new ArrayList<>();
+        optList.add("Buka Obrolan");
+        if (latestMsg != null) {
+            optList.add("Hapus Pesan Terakhir");
+        }
+        optList.add("Hapus Percakapan");
+
+        String[] options = optList.toArray(new String[0]);
         new androidx.appcompat.app.AlertDialog.Builder(this)
                 .setTitle(contact.getTitle())
                 .setItems(options, (dialog, which) -> {
-                    if (which == 0) {
+                    String selected = options[which];
+                    if ("Buka Obrolan".equals(selected)) {
                         onContactClick(contact);
-                    } else if (which == 1) {
-                        confirmClearChatFromList(contact);
+                    } else if ("Hapus Pesan Terakhir".equals(selected) && latestMsg != null) {
+                        ChatDeletionUiHelper.showScopePickerThenDeleteSingle(
+                                this,
+                                chatDb,
+                                latestMsg,
+                                contact.getChatType(),
+                                contact.getTargetId(),
+                                this::loadLocalContacts,
+                                this::fetchContactsFromNetwork
+                        );
+                    } else if ("Hapus Percakapan".equals(selected)) {
+                        ChatDeletionUiHelper.showClearConversationFlow(
+                                this,
+                                chatDb,
+                                contact.getChatType(),
+                                contact.getTargetId(),
+                                this::loadLocalContacts
+                        );
                     }
                 })
                 .setNegativeButton("Batal", null)
                 .show();
-    }
-
-    private void confirmClearChatFromList(ChatContact contact) {
-        String msg = "opd".equals(contact.getChatType())
-                ? "Apakah Anda yakin ingin membersihkan obrolan grup ini dari perangkat Anda? Anggota grup OPD lainnya tetap dapat melihat riwayat obrolan."
-                : "Apakah Anda yakin ingin membersihkan obrolan ini dari perangkat Anda? Pegawai lawan bicara tetap dapat melihat obrolan.";
-
-        new androidx.appcompat.app.AlertDialog.Builder(this)
-                .setTitle("Hapus Obrolan")
-                .setMessage(msg)
-                .setPositiveButton("Hapus", (dialog, which) -> {
-                    executeClearChatFromList(contact);
-                })
-                .setNegativeButton("Batal", null)
-                .show();
-    }
-
-    private void executeClearChatFromList(ChatContact contact) {
-        HttpService api = RetroClient.getInstance(this).getApi2();
-        api.clearConversationHistory(contact.getTargetId(), contact.getChatType(), "for_me").enqueue(new Callback<go.pemkott.appsandroidmobiletebingtinggi.model.chat.SendMessageResponse>() {
-            @Override
-            public void onResponse(Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.SendMessageResponse> call, Response<go.pemkott.appsandroidmobiletebingtinggi.model.chat.SendMessageResponse> response) {}
-            @Override
-            public void onFailure(Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.SendMessageResponse> call, Throwable t) {}
-        });
-
-        chatDb.softClearConversation(contact.getChatType(), contact.getTargetId());
-        boolean isSuperAdmin = ChatLocalDatabase.isSuperAdminUser(this);
-        chatDb.syncLastMessageFromLocal(contact.getChatType(), contact.getTargetId(), isSuperAdmin);
-
-        loadLocalContacts();
-        Toast.makeText(this, "Obrolan telah dibersihkan dari perangkat Anda", Toast.LENGTH_SHORT).show();
     }
 
     @Override

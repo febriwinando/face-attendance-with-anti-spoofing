@@ -24,7 +24,7 @@
             android:id="@+id/tvBlockedName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="#0F172A"
+            android:textColor="@color/text_primary"
             android:textSize="14sp"
             android:fontFamily="sans-serif-bold"/>
 
@@ -32,7 +32,7 @@
             android:id="@+id/tvBlockedOpd"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="#64748B"
+            android:textColor="@color/text_secondary"
             android:textSize="12sp"
             android:layout_marginTop="2dp"/>
     </LinearLayout>

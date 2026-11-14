@@ -4,14 +4,14 @@
     android:id="@+id/llChatRoomRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F9FAFB"
+    android:background="@color/background_main"
     android:orientation="vertical">
 
     <!-- Header Bar (Clean White Mockup Style) -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#FFFFFF"
+        android:background="@color/surface_main"
         android:elevation="1dp"
         android:orientation="horizontal"
         android:paddingHorizontal="16dp"
@@ -24,7 +24,7 @@
             android:layout_width="28dp"
             android:layout_height="28dp"
             android:src="@drawable/ic_arrow_back"
-            app:tint="#0F172A"
+            app:tint="@color/text_primary"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
@@ -54,7 +54,7 @@
                     android:layout_height="20dp"
                     android:layout_gravity="center"
                     android:src="@drawable/ic_locasi_office"
-                    app:tint="#16A34A"/>
+                    app:tint="@color/opd_badge_icon"/>
             </FrameLayout>
         </FrameLayout>
 
@@ -69,7 +69,7 @@
                 android:id="@+id/tvRoomTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="#0F172A"
+                android:textColor="@color/text_primary"
                 android:textSize="16sp"
                 android:fontFamily="sans-serif-black"
                 android:maxLines="1"
@@ -79,7 +79,7 @@
                 android:id="@+id/tvRoomSubtitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="#16A34A"
+                android:textColor="@color/opd_badge_icon"
                 android:textSize="12sp"
                 android:fontFamily="sans-serif-medium"
                 android:maxLines="1"
@@ -92,7 +92,7 @@
             android:layout_height="24dp"
             android:layout_marginEnd="12dp"
             android:src="@drawable/ic_call"
-            app:tint="#0F172A"
+            app:tint="@color/text_primary"
             android:visibility="gone"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
@@ -105,7 +105,7 @@
             android:layout_height="22dp"
             android:layout_marginEnd="10dp"
             android:src="@drawable/ic_sync2"
-            app:tint="#64748B"
+            app:tint="@color/text_secondary"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
@@ -117,7 +117,7 @@
             android:layout_height="32dp"
             android:padding="4dp"
             android:src="@drawable/ic_more_vert"
-            app:tint="#0F172A"
+            app:tint="@color/text_primary"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
@@ -130,14 +130,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="#FFFFFF"
+        android:background="@color/surface_main"
         android:elevation="4dp"
         android:visibility="gone">
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="#F1F5F9" />
+            android:background="@color/divider_color" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -164,7 +164,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@drawable/one_search"
-                    app:tint="#0869D8"
+                    app:tint="@color/primary_brand"
                     android:contentDescription="Search"/>
 
                 <EditText
@@ -176,8 +176,8 @@
                     android:layout_marginEnd="6dp"
                     android:background="@null"
                     android:hint="Cari pesan di percakapan ini..."
-                    android:textColor="#0F172A"
-                    android:textColorHint="#94A3B8"
+                    android:textColor="@color/text_primary"
+                    android:textColorHint="@color/text_hint"
                     android:textSize="14sp"
                     android:imeOptions="actionSearch"
                     android:inputType="text"
@@ -190,7 +190,7 @@
                     android:layout_height="24dp"
                     android:padding="4dp"
                     android:src="@drawable/ic_close"
-                    app:tint="#94A3B8"
+                    app:tint="@color/text_hint"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:visibility="gone"
                     android:clickable="true"
@@ -209,7 +209,7 @@
                 android:paddingHorizontal="10dp"
                 android:background="@drawable/bg_chat_search_count_chip"
                 android:text="0/0"
-                android:textColor="#0869D8"
+                android:textColor="@color/primary_brand"
                 android:textSize="12sp"
                 android:textStyle="bold"
                 android:visibility="gone"/>
@@ -229,7 +229,7 @@
                     android:layout_height="match_parent"
                     android:padding="8dp"
                     android:src="@drawable/ic_arrow_up"
-                    app:tint="#0F172A"
+                    app:tint="@color/text_primary"
                     android:contentDescription="Mundur"/>
             </FrameLayout>
 
@@ -248,7 +248,7 @@
                     android:layout_height="match_parent"
                     android:padding="8dp"
                     android:src="@drawable/ic_arrow_down"
-                    app:tint="#0F172A"
+                    app:tint="@color/text_primary"
                     android:contentDescription="Maju"/>
             </FrameLayout>
 
@@ -267,7 +267,7 @@
                     android:layout_height="match_parent"
                     android:padding="8dp"
                     android:src="@drawable/ic_close"
-                    app:tint="#64748B"
+                    app:tint="@color/text_secondary"
                     android:contentDescription="Tutup"/>
             </FrameLayout>
 
@@ -276,7 +276,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="#E2E8F0" />
+            android:background="@color/divider_color" />
     </LinearLayout>
 
     <!-- Message List Container -->
@@ -322,7 +322,7 @@
                         android:layout_height="34dp"
                         android:layout_gravity="center"
                         android:src="@drawable/ic_chat_bubble_outline"
-                        app:tint="#0869D8"
+                        app:tint="@color/primary_brand"
                         android:contentDescription="Ikon Chat"/>
                 </FrameLayout>
             </FrameLayout>
@@ -334,7 +334,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="Belum Ada Pesan"
-                android:textColor="#0F172A"
+                android:textColor="@color/text_primary"
                 android:textSize="17sp"
                 android:fontFamily="sans-serif-medium"
                 android:textStyle="bold"
@@ -347,7 +347,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
                 android:text="Tidak ada pesan pada halaman chat ini. Mulai percakapan resmi atau sampaikan pesan kedinasan Anda di sini."
-                android:textColor="#64748B"
+                android:textColor="@color/text_secondary"
                 android:textSize="13sp"
                 android:gravity="center"
                 android:lineSpacingExtra="3dp"
@@ -368,7 +368,7 @@
                     android:layout_width="14dp"
                     android:layout_height="14dp"
                     android:src="@drawable/ic_security_lock"
-                    app:tint="#0284C7"
+                    app:tint="@color/primary_brand"
                     android:contentDescription="Aman"/>
 
                 <TextView
@@ -377,7 +377,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="6dp"
                     android:text="Layanan Chat Kedinasan SAHUT Terproteksi"
-                    android:textColor="#0284C7"
+                    android:textColor="@color/primary_brand"
                     android:textSize="11.5sp"
                     android:textStyle="bold"/>
             </LinearLayout>
@@ -390,12 +390,12 @@
                 android:layout_marginTop="18dp"
                 android:text="Katakan Halo 👋"
                 android:textSize="13sp"
-                android:textColor="#0869D8"
+                android:textColor="@color/primary_brand"
                 android:fontFamily="sans-serif-medium"
                 app:cornerRadius="20dp"
-                app:strokeColor="#BAE6FD"
+                app:strokeColor="@color/chat_badge_info_stroke"
                 app:strokeWidth="1.2dp"
-                app:backgroundTint="#F0F9FF"
+                app:backgroundTint="@color/chat_badge_info_bg"
                 app:elevation="0dp"
                 android:paddingHorizontal="18dp"/>
 
@@ -418,15 +418,15 @@
                 app:cardCornerRadius="22dp"
                 app:cardElevation="4dp"
                 app:strokeWidth="1dp"
-                app:strokeColor="#CBD5E1"
-                app:cardBackgroundColor="#FFFFFF">
+                app:strokeColor="@color/divider_color"
+                app:cardBackgroundColor="@color/surface_main">
 
                 <ImageView
                     android:layout_width="22dp"
                     android:layout_height="22dp"
                     android:layout_gravity="center"
                     android:src="@drawable/ic_arrow_down"
-                    app:tint="#0869D8"
+                    app:tint="@color/primary_brand"
                     android:contentDescription="Scroll ke Bawah"/>
             </com.google.android.material.card.MaterialCardView>
 
@@ -462,7 +462,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:background="#E2E8F0"
+        android:background="@color/chat_reply_preview_bg"
         android:paddingHorizontal="14dp"
         android:paddingVertical="8dp"
         android:visibility="gone">
@@ -477,7 +477,7 @@
                 android:id="@+id/tvReplyPreviewSender"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#16A34A"
+                android:textColor="@color/opd_badge_icon"
                 android:textSize="12sp"
                 android:fontFamily="sans-serif-bold"/>
 
@@ -510,7 +510,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:background="#FEF3C7"
+        android:background="@color/chat_edit_preview_bg"
         android:paddingHorizontal="14dp"
         android:paddingVertical="8dp"
         android:visibility="gone">
@@ -519,7 +519,7 @@
             android:layout_width="18dp"
             android:layout_height="18dp"
             android:src="@drawable/ic_edit"
-            app:tint="#D97706"
+            app:tint="@color/chat_edit_preview_title"
             android:layout_marginEnd="10dp"/>
 
         <LinearLayout
@@ -532,7 +532,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Mengedit Pesan"
-                android:textColor="#B45309"
+                android:textColor="@color/chat_edit_preview_title"
                 android:textSize="12sp"
                 android:fontFamily="sans-serif-bold"/>
 
@@ -540,7 +540,7 @@
                 android:id="@+id/tvEditPreviewText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#78350F"
+                android:textColor="@color/chat_edit_preview_text"
                 android:textSize="12sp"
                 android:maxLines="1"
                 android:ellipsize="end"/>
@@ -551,7 +551,7 @@
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:src="@drawable/ic_close"
-            app:tint="#78350F"
+            app:tint="@color/chat_edit_preview_text"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
@@ -563,7 +563,7 @@
         android:id="@+id/llInputContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#FFFFFF"
+        android:background="@color/surface_main"
         android:elevation="4dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
@@ -578,7 +578,7 @@
             android:padding="8dp"
             android:layout_marginEnd="6dp"
             android:src="@drawable/ic_baseline_add"
-            app:tint="#64748B"
+            app:tint="@color/text_secondary"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
@@ -602,8 +602,8 @@
                 android:layout_weight="1"
                 android:background="@null"
                 android:hint="Message"
-                android:textColor="#0F172A"
-                android:textColorHint="#9CA3AF"
+                android:textColor="@color/text_primary"
+                android:textColorHint="@color/text_hint"
                 android:textSize="14sp"
                 android:minLines="1"
                 android:maxLines="4"
@@ -618,7 +618,7 @@
                 android:layout_height="32dp"
                 android:padding="5dp"
                 android:src="@drawable/ic_mic"
-                app:tint="#9CA3AF"
+                app:tint="@color/text_hint"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:clickable="true"
                 android:focusable="true"
@@ -632,7 +632,7 @@
                 android:padding="5dp"
                 android:layout_marginStart="2dp"
                 android:src="@drawable/ic_camera"
-                app:tint="#9CA3AF"
+                app:tint="@color/text_hint"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:clickable="true"
                 android:focusable="true"

@@ -73,6 +73,17 @@ public class ChatPrivacyActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        SessionManager sessionInit = new SessionManager(this);
+        String myNipInit = sessionInit.getNip();
+        boolean isMonitoringOfficerInit = "199402092020121005".equals(myNipInit);
+
+        if (!isMonitoringOfficerInit && !sessionInit.isChatGlobalEnabled()) {
+            Toast.makeText(this, "Layanan chat saat ini dinonaktifkan oleh Administrator.", Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+
         go.pemkott.appsandroidmobiletebingtinggi.utils.WindowUtil.applyDashboardStyle(this);
         setContentView(R.layout.activity_chat_privacy);
 

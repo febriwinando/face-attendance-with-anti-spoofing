@@ -3,14 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@color/background_main"
     android:orientation="vertical">
 
     <!-- Header Bar (Clean White Style) -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#FFFFFF"
+        android:background="@color/surface_main"
         android:orientation="horizontal"
         android:paddingHorizontal="16dp"
         android:paddingTop="36dp"
@@ -22,7 +22,7 @@
             android:layout_width="26dp"
             android:layout_height="26dp"
             android:src="@drawable/ic_arrow_back"
-            app:tint="#0F172A"
+            app:tint="@color/text_primary"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
@@ -39,7 +39,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Kontak SAHUT"
-                android:textColor="#0F172A"
+                android:textColor="@color/text_primary"
                 android:textSize="18sp"
                 android:fontFamily="sans-serif-black"/>
 
@@ -47,7 +47,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Sarana Hubungan Terpadu"
-                android:textColor="#64748B"
+                android:textColor="@color/text_secondary"
                 android:textSize="11sp"
                 android:fontFamily="sans-serif-medium"/>
         </LinearLayout>
@@ -69,7 +69,7 @@
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:src="@drawable/ic_search_location"
-            app:tint="#9CA3AF"
+            app:tint="@color/text_hint"
             android:contentDescription="Cari"/>
 
         <EditText
@@ -79,8 +79,8 @@
             android:layout_marginStart="10dp"
             android:background="@null"
             android:hint="Cari nama atau NIP pegawai..."
-            android:textColor="#0F172A"
-            android:textColorHint="#9CA3AF"
+            android:textColor="@color/text_primary"
+            android:textColorHint="@color/text_hint"
             android:textSize="14sp"
             android:inputType="text"/>
     </LinearLayout>
@@ -96,9 +96,9 @@
         android:focusable="true"
         app:cardCornerRadius="20dp"
         app:cardElevation="0dp"
-        app:cardBackgroundColor="#F8FAFC"
+        app:cardBackgroundColor="@color/surface_variant"
         app:strokeWidth="1dp"
-        app:strokeColor="#E2E8F0">
+        app:strokeColor="@color/divider_color">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -124,14 +124,14 @@
                 android:fontFamily="sans-serif-medium"
                 android:maxLines="1"
                 android:text="Semua Unit Kerja / OPD"
-                android:textColor="#0F172A"
+                android:textColor="@color/text_primary"
                 android:textSize="13sp" />
 
             <ImageView
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:src="@drawable/ic_arrow_down"
-                app:tint="#94A3B8"
+                app:tint="@color/text_hint"
                 android:contentDescription="Pilih OPD" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
@@ -162,7 +162,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="Kontak tidak ditemukan"
-            android:textColor="#94A3B8"
+            android:textColor="@color/text_secondary"
             android:textSize="14sp"
             android:visibility="gone"/>
     </FrameLayout>

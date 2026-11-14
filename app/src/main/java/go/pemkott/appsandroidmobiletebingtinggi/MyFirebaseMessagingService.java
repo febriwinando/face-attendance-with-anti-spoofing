@@ -35,6 +35,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import go.pemkott.appsandroidmobiletebingtinggi.utils.AttendanceNotificationHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.utils.FcmTokenHelper;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
@@ -120,6 +121,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     return;
                 }
             }
+
+            if ("chat_sync".equalsIgnoreCase(dataMap.get("type"))) {
+                handleSilentChatSyncEvent(dataMap);
+                return;
+            }
         }
 
         String title = null;
@@ -160,8 +166,26 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             executeSyncLogic(finalCommand);
         }
 
-        // 6. Tampilkan notifikasi visual jika judul ada
+        // 6. Tampilkan notifikasi visual jika judul ada (lewati jika baru saja tampil via notifikasi lokal absensi)
         if (title != null) {
+            String fcmType = dataMap != null ? dataMap.get("type") : null;
+            String fcmOutcome = dataMap != null ? dataMap.get("outcome") : null;
+            boolean isAttendanceFcm = "absensi".equalsIgnoreCase(fcmType)
+                    || "absensi_gagal".equalsIgnoreCase(fcmType)
+                    || title.toLowerCase().startsWith("absensi berhasil")
+                    || title.toLowerCase().startsWith("absensi gagal");
+
+            if (isAttendanceFcm) {
+                if (fcmOutcome == null || fcmOutcome.trim().isEmpty()) {
+                    fcmOutcome = ("absensi_gagal".equalsIgnoreCase(fcmType) || title.toLowerCase().startsWith("absensi gagal"))
+                            ? AttendanceNotificationHelper.OUTCOME_FAILED
+                            : AttendanceNotificationHelper.OUTCOME_SUCCESS;
+                }
+                if (AttendanceNotificationHelper.shouldSuppressFcmAttendanceNotification(this, fcmOutcome)) {
+                    return;
+                }
+            }
+
             showNotification(title, body != null ? body : "", dataMap);
         }
     }
@@ -175,11 +199,14 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             executeRemoteLogout();
         } else if (lowerCommand.contains("lokasi")) {
             koordinat_e();
+            koordinat_opd();
         } else if (lowerCommand.contains("jadwal")) {
             stepTimetable();
-        } else if (lowerCommand.contains("kegiatan")) {
+        } else if (lowerCommand.contains("kegiatan") || lowerCommand.contains("agenda")) {
             stepKegiatan();
-        } else if (lowerCommand.contains("pegawai")) {
+        } else if (lowerCommand.contains("pegawai") || lowerCommand.contains("profil")) {
+            stepPegawai();
+        } else if (lowerCommand.contains("semua") || lowerCommand.contains("sync_all")) {
             stepPegawai();
         } else if (lowerCommand.contains("deteksiwajahenable") || lowerCommand.contains("wajah aktif")) {
             databaseHelper.updateCameraDetectionStatus(1);
@@ -256,6 +283,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
                     stepTimetable();
                     koordinat_e();
+                    koordinat_opd();
                     stepKegiatan();
 
                     // Refresh Dashboard UI if active
@@ -360,9 +388,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     @Override
                     public void onResponse(Call<List<Koordinat>> call, Response<List<Koordinat>> response) {
                         if (response.isSuccessful() && response.body() != null){
-                            databaseHelper.deleteDataKoordinatEmployeeAll();
+                            databaseHelper.deleteDataKoordinatEmployee(finalEmployeeId);
 
                             for (Koordinat koordinat : response.body()) {
+                                if (koordinat == null || "kosong".equalsIgnoreCase(koordinat.getStatus())) {
+                                    continue;
+                                }
                                 databaseHelper.insertDataKoordinatEmployee(koordinat.getId(), finalEmployeeId, koordinat.getAlamat(), koordinat.getLet(), koordinat.getLng());
                             }
                             // Refresh Dashboard UI jika aktif
@@ -375,6 +406,52 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     @Override
                     public void onFailure(Call<List<Koordinat>> call, Throwable t) {
                         Log.e("FCM_SERVICE", "koordinat_e Failed", t);
+                    }
+                });
+    }
+
+    private void koordinat_opd() {
+        HttpService api = RetroClient.getInstance().getApi2();
+        SessionManager session = new SessionManager(this);
+        String employeeId = session.getEmployeeId();
+        String token = session.getToken();
+
+        String opdId = "";
+        try (Cursor cursor = databaseHelper.getDataEmployee(employeeId)) {
+            if (cursor != null && cursor.moveToFirst()) {
+                int colIndex = cursor.getColumnIndex(ModelDataPagawai.E_OPD_ID);
+                if (colIndex != -1) {
+                    opdId = cursor.getString(colIndex);
+                }
+            }
+        } catch (Exception e) {
+            Log.e("FCM_SERVICE", "Error getting OPD ID for koordinat_opd", e);
+        }
+
+        if (opdId.isEmpty()) return;
+
+        final String targetOpdId = opdId;
+        String url = ServerConfig.getApiUrl() + "koordinat?opdid=" + targetOpdId;
+        api.getUrlKoordinat(url, "Bearer " + token,
+                        RequestBody.create("", MediaType.parse("application/json")))
+                .enqueue(new Callback<List<Koordinat>>() {
+                    @Override
+                    public void onResponse(Call<List<Koordinat>> call, Response<List<Koordinat>> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            databaseHelper.deleteDataKoordinatOPD(targetOpdId);
+                            for (Koordinat k : response.body()) {
+                                if (k == null || "kosong".equalsIgnoreCase(k.getStatus())) continue;
+                                databaseHelper.insertDataKoordinat(k.getId(), targetOpdId, k.getAlamat(), k.getLet(), k.getLng());
+                            }
+                            if (DashboardVersiOne.dashboardVersiOne != null) {
+                                DashboardVersiOne.dashboardVersiOne.refreshDashboardUI();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<Koordinat>> call, Throwable t) {
+                        Log.e("FCM_SERVICE", "koordinat_opd Failed", t);
                     }
                 });
     }
@@ -431,20 +508,65 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private void showNotification(String title, String body, Map<String, String> dataMap) {
         String type = dataMap != null ? dataMap.get("type") : null;
+        String outcome = dataMap != null ? dataMap.get("outcome") : null;
         boolean isChat = "chat".equals(type) || (title != null && (title.toLowerCase().contains("pesan") || title.toLowerCase().contains("sahut") || title.toLowerCase().contains("chat")));
 
-        String channelId = isChat ? "channel_sahut_chat" : "default_channel";
+        boolean isFailure = !isChat && (
+                "failed".equalsIgnoreCase(outcome)
+                || "absensi_gagal".equalsIgnoreCase(type)
+                || (title != null && (title.toLowerCase().contains("gagal") || title.toLowerCase().contains("error") || title.toLowerCase().contains("ditolak")))
+                || (body != null && (body.toLowerCase().contains("gagal diproses") || body.toLowerCase().contains("ditolak")))
+        );
+
+        String channelId;
+        android.net.Uri soundUri = null;
+
+        if (isChat) {
+            channelId = "channel_sahut_chat";
+        } else if (isFailure) {
+            channelId = AttendanceNotificationHelper.CHANNEL_ID_FAILURE;
+            soundUri = go.pemkott.appsandroidmobiletebingtinggi.utils.NotificationSoundHelper.getFailureSoundUri(this);
+            go.pemkott.appsandroidmobiletebingtinggi.utils.NotificationSoundHelper.playFailure(this);
+        } else {
+            channelId = AttendanceNotificationHelper.CHANNEL_ID_SUCCESS;
+            soundUri = go.pemkott.appsandroidmobiletebingtinggi.utils.NotificationSoundHelper.getSuccessSoundUri(this);
+            go.pemkott.appsandroidmobiletebingtinggi.utils.NotificationSoundHelper.playSuccess(this);
+        }
+
         NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            String channelName;
+            String channelDesc;
+
+            if (isChat) {
+                channelName = "SAHUT (Sarana Hubungan Terpadu)";
+                channelDesc = "Pemberitahuan pesan masuk layanan SAHUT";
+            } else if (isFailure) {
+                channelName = "Notifikasi Absensi Gagal";
+                channelDesc = "Pemberitahuan saat absensi atau permohonan dinas gagal";
+            } else {
+                channelName = "Notifikasi Absensi & Pembaruan Sistem";
+                channelDesc = "Pemberitahuan status absensi berhasil dan pembaruan data sistem";
+            }
+
             NotificationChannel channel = new NotificationChannel(
                     channelId,
-                    isChat ? "SAHUT (Sarana Hubungan Terpadu)" : "Notifikasi Absensi",
+                    channelName,
                     NotificationManager.IMPORTANCE_HIGH
             );
-            channel.setDescription(isChat ? "Pemberitahuan pesan masuk layanan SAHUT" : "Notifikasi penting aplikasi absensi");
+            channel.setDescription(channelDesc);
             channel.enableVibration(true);
             channel.enableLights(true);
+
+            if (soundUri != null) {
+                android.media.AudioAttributes audioAttributes = new android.media.AudioAttributes.Builder()
+                        .setContentType(android.media.AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                        .setUsage(android.media.AudioAttributes.USAGE_NOTIFICATION_EVENT)
+                        .build();
+                channel.setSound(soundUri, audioAttributes);
+            }
+
             if (manager != null) {
                 manager.createNotificationChannel(channel);
             }
@@ -493,20 +615,81 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         android.app.PendingIntent pendingIntent = android.app.PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent, flags);
 
-        Notification notification = new NotificationCompat.Builder(this, channelId)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
                 .setContentTitle(title)
                 .setContentText(body)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(body))
                 .setSmallIcon(R.drawable.logoabsensilogin)
                 .setPriority(NotificationCompat.PRIORITY_MAX)
-                .setDefaults(NotificationCompat.DEFAULT_ALL)
                 .setContentIntent(pendingIntent)
-                .setAutoCancel(true)
-                .build();
+                .setAutoCancel(true);
+
+        if (soundUri != null) {
+            builder.setSound(soundUri);
+        } else {
+            builder.setDefaults(NotificationCompat.DEFAULT_ALL);
+        }
+
+        Notification notification = builder.build();
 
         if (manager != null) {
             manager.notify((int) System.currentTimeMillis(), notification);
         }
     }
 
+    private void handleSilentChatSyncEvent(Map<String, String> dataMap) {
+        try {
+            String event = dataMap.get("event");
+            String chatType = dataMap.get("chat_type");
+            if (chatType == null || chatType.trim().isEmpty()) chatType = "personal";
+            long senderId = parseLongSafe(dataMap.get("sender_id"));
+            long receiverId = parseLongSafe(dataMap.get("receiver_id"));
+            long opdId = parseLongSafe(dataMap.get("opd_id"));
+            long singleMsgId = parseLongSafe(dataMap.get("message_id"));
+            String deletedBy = dataMap.get("deleted_by");
+
+            java.util.List<Long> ids = new java.util.ArrayList<>();
+            if (singleMsgId > 0) ids.add(singleMsgId);
+            String csvIds = dataMap.get("message_ids");
+            if (csvIds != null && !csvIds.trim().isEmpty()) {
+                for (String token : csvIds.split(",")) {
+                    long parsed = parseLongSafe(token);
+                    if (parsed > 0 && !ids.contains(parsed)) {
+                        ids.add(parsed);
+                    }
+                }
+            }
+
+            go.pemkott.appsandroidmobiletebingtinggi.database.ChatLocalDatabase localDb =
+                    new go.pemkott.appsandroidmobiletebingtinggi.database.ChatLocalDatabase(getApplicationContext());
+            if ("deleted_for_everyone".equalsIgnoreCase(event) || "conversation_deleted_for_everyone".equalsIgnoreCase(event)) {
+                for (Long id : ids) {
+                    localDb.softDeleteForEveryoneLocal(id, deletedBy != null ? deletedBy : "");
+                }
+            } else if ("permanent_delete".equalsIgnoreCase(event)) {
+                localDb.hardDeleteMessagesLocal(ids);
+            }
+
+            if (go.pemkott.appsandroidmobiletebingtinggi.chat.ChatRoomActivity.isChatRoomActive) {
+                go.pemkott.appsandroidmobiletebingtinggi.chat.ChatRoomActivity.notifySyncEventFromFCM(
+                        event, chatType, senderId, receiverId, opdId
+                );
+            }
+            if (go.pemkott.appsandroidmobiletebingtinggi.chat.ChatListActivity.isChatListActive) {
+                go.pemkott.appsandroidmobiletebingtinggi.chat.ChatListActivity.notifyIncomingMessageFromFCM();
+            }
+        } catch (Exception e) {
+            Log.e("FCM_SERVICE", "Gagal memproses silent chat sync: " + e.getMessage());
+        }
+    }
+
+    private long parseLongSafe(String raw) {
+        if (raw == null || raw.trim().isEmpty()) return 0L;
+        try {
+            return Long.parseLong(raw.trim());
+        } catch (Exception e) {
+            return 0L;
+        }
+    }
 
 }

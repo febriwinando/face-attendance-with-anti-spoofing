@@ -230,7 +230,14 @@ public class RekapAbsensActivity extends AppCompatActivity {
         callRekapAbsensi.enqueue(new Callback<List<RekapServer>>() {
             @Override
             public void onResponse(Call<List<RekapServer>> call, Response<List<RekapServer>> response) {
+                if (isFinishing() || isDestroyed()) {
+                    return;
+                }
+                if (dialogproses.isShowing()) {
+                    dialogproses.dismiss();
+                }
                 if (!response.isSuccessful()) {
+                    pesanError();
                     return;
                 }
 
@@ -239,11 +246,16 @@ public class RekapAbsensActivity extends AppCompatActivity {
                 rekapServerAdapter = new RekapServerAdapter(rekapServers, RekapAbsensActivity.this);
                 rvRekapServer.setAdapter(rekapServerAdapter);
                 rekapServerAdapter.setOnItemClickCallback(data -> viewPresensi(data));
-                dialogproses.dismiss();
             }
 
             @Override
             public void onFailure(Call<List<RekapServer>> call, Throwable t) {
+                if (isFinishing() || isDestroyed()) {
+                    return;
+                }
+                if (dialogproses.isShowing()) {
+                    dialogproses.dismiss();
+                }
                 pesanError();
 
             }
@@ -411,7 +423,7 @@ public class RekapAbsensActivity extends AppCompatActivity {
             tvTagFotoRekapMasuk.setVisibility(View.GONE);
         }else{
             Glide.with(this)
-                    .load( ServerConfig.getUploadsAbsensiUrl() + data.getPhoto_tagging_masuk())
+                    .load(ServerConfig.resolveUploadsAbsensiUrl(data.getPhoto_tagging_masuk()))
                     .into( ivValidasiRekapMasuk );
         }
 
@@ -419,10 +431,11 @@ public class RekapAbsensActivity extends AppCompatActivity {
             ivLampiranValidasiRekapMasuk.setVisibility(View.GONE);
             tvTagLampiranRekapMasuk.setVisibility(View.GONE);
         }else{
+            String lampiranMasukUrl = ServerConfig.resolveUploadsLampiranUrl(data.getLampiran_masuk());
             if ("img".equals(data.getEkstensi_masuk())){
 
                 Glide.with(this)
-                        .load( ServerConfig.getUploadsLampiranUrl() + data.getLampiran_masuk())
+                        .load(lampiranMasukUrl)
                         .into( ivLampiranValidasiRekapMasuk );
 
                 ivLampiranValidasiRekapMasuk.setVisibility(View.VISIBLE);
@@ -431,7 +444,7 @@ public class RekapAbsensActivity extends AppCompatActivity {
                 txtOpenPdfMasuk.setVisibility(View.VISIBLE);
                 txtOpenPdfMasuk.setOnClickListener(v -> {
                     Intent intent = new Intent(RekapAbsensActivity.this, ReadPdfActivity.class);
-                    intent.putExtra("PDF_URL", ServerConfig.getUploadsLampiranUrl()+data.getLampiran_masuk());
+                    intent.putExtra("PDF_URL", lampiranMasukUrl);
                     startActivity(intent);
                 });
             }
@@ -443,7 +456,7 @@ public class RekapAbsensActivity extends AppCompatActivity {
 
         }else{
             Glide.with(this)
-                    .load( ServerConfig.getUploadsAbsensiUrl() + data.getPhoto_tagging_pulang())
+                    .load(ServerConfig.resolveUploadsAbsensiUrl(data.getPhoto_tagging_pulang()))
                     .into( ivAktivitasRekapPulang );
         }
 
@@ -453,9 +466,10 @@ public class RekapAbsensActivity extends AppCompatActivity {
             tvTagLampiranRekapPulang.setVisibility(View.GONE);
 
         }else{
+            String lampiranPulangUrl = ServerConfig.resolveUploadsLampiranUrl(data.getLampiran_pulang());
             if ("img".equals(data.getEkstensi_pulang())){
                 Glide.with(this)
-                        .load( ServerConfig.getUploadsLampiranUrl() + data.getLampiran_pulang())
+                        .load(lampiranPulangUrl)
                         .into( ivLampiranRekapPulang );
                 ivLampiranRekapPulang.setVisibility(View.VISIBLE);
             }else{
@@ -463,7 +477,7 @@ public class RekapAbsensActivity extends AppCompatActivity {
                 txtOpenPdfPulang.setVisibility(View.VISIBLE);
                 txtOpenPdfPulang.setOnClickListener(v -> {
                     Intent intent = new Intent(RekapAbsensActivity.this, ReadPdfActivity.class);
-                    intent.putExtra("PDF_URL", ServerConfig.getUploadsLampiranUrl()+data.getLampiran_pulang());
+                    intent.putExtra("PDF_URL", lampiranPulangUrl);
                     startActivity(intent);
                 });
 

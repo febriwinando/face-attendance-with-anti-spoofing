@@ -31,6 +31,9 @@ public class LoginResponse {
     @SerializedName("message")
     private String message;
 
+    @SerializedName("chat_terms_accepted")
+    private boolean chatTermsAccepted;
+
     public User getUser() {
         return user;
     }
@@ -65,5 +68,9 @@ public class LoginResponse {
 
     public String getMessage() {
         return message;
+    }
+
+    public boolean isChatTermsAccepted() {
+        return chatTermsAccepted;
     }
 }

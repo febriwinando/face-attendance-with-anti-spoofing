@@ -112,27 +112,22 @@
             android:layout_marginTop="12dp"
             android:layout_marginBottom="10dp"/>
 
-        <!-- Bottom Action Row: Verifikasi Button -->
+        <!-- Bottom Action Row: Checkbox Pilih -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical|end"
+            android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnVerifikasiCard"
-                style="@style/Widget.Material3.Button.TonalButton"
+            <CheckBox
+                android:id="@+id/cbPilihValidasi"
                 android:layout_width="wrap_content"
-                android:layout_height="38dp"
-                android:paddingHorizontal="16dp"
-                android:text="Detail &amp; Verifikasi"
-                android:textColor="@color/primary_brand"
-                android:textSize="12sp"
+                android:layout_height="36dp"
+                android:buttonTint="@color/primary_brand"
                 android:fontFamily="sans-serif-bold"
-                app:cornerRadius="19dp"
-                app:icon="@drawable/ic_search_location"
-                app:iconTint="@color/primary_brand"
-                app:iconSize="16dp"
+                android:text="Pilih"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
                 tools:ignore="HardcodedText" />
 
         </LinearLayout>

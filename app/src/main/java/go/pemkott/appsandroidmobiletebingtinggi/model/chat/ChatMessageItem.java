@@ -54,12 +54,14 @@ public class ChatMessageItem {
     @SerializedName("created_at_ts")
     private long createdAtTs;
 
+    @com.google.gson.annotations.JsonAdapter(go.pemkott.appsandroidmobiletebingtinggi.api.FlexibleFlagIntAdapter.class)
     @SerializedName("is_deleted")
     private int isDeleted;
 
     @SerializedName("deleted_for_users")
     private String deletedForUsers;
 
+    @com.google.gson.annotations.JsonAdapter(go.pemkott.appsandroidmobiletebingtinggi.api.FlexibleFlagIntAdapter.class)
     @SerializedName("is_deleted_global")
     private int isDeletedGlobal;
 
@@ -131,22 +133,8 @@ public class ChatMessageItem {
         if (fileUrl == null || fileUrl.trim().isEmpty()) {
             return null;
         }
-        String url = fileUrl.trim();
-
-        String activeBaseUrl = go.pemkott.appsandroidmobiletebingtinggi.api.ServerConfig.getBaseUrl();
-        if (activeBaseUrl.endsWith("/")) activeBaseUrl = activeBaseUrl.substring(0, activeBaseUrl.length() - 1);
-
-        url = url.replaceAll("https?://(172\\.15\\.[0-9]+\\.[0-9]+|192\\.168\\.[0-9]+\\.[0-9]+|localhost|10\\.0\\.2\\.2)(:[0-9]+)?", activeBaseUrl);
-        url = url.replaceAll("https?://svr-absensi\\.tebingtinggikota\\.go\\.id(:[0-9]+)?", activeBaseUrl);
-
-        if (url.startsWith("/")) {
-            url = activeBaseUrl + url;
-        } else if (!url.startsWith("http://") && !url.startsWith("https://") && !url.startsWith("file://") && !url.startsWith("content://")) {
-            url = activeBaseUrl + "/" + url;
-        }
-
-        url = url.replaceAll("(?<!:)/{2,}", "/");
-        return url;
+        String normalized = go.pemkott.appsandroidmobiletebingtinggi.api.ServerConfig.normalizeServerUrl(fileUrl);
+        return (normalized == null || normalized.isEmpty()) ? null : normalized;
     }
 
     public void setFileUrl(String fileUrl) {
@@ -245,15 +233,97 @@ public class ChatMessageItem {
         this.isDeletedGlobal = isDeletedGlobal;
     }
 
+    @com.google.gson.annotations.SerializedName("read_at")
+    private String readAt;
+
+    @com.google.gson.annotations.JsonAdapter(go.pemkott.appsandroidmobiletebingtinggi.api.FlexibleFlagIntAdapter.class)
+    @com.google.gson.annotations.SerializedName("deleted_for_sender")
+    private int deletedForSender;
+
+    @com.google.gson.annotations.JsonAdapter(go.pemkott.appsandroidmobiletebingtinggi.api.FlexibleFlagIntAdapter.class)
+    @com.google.gson.annotations.SerializedName("deleted_for_receiver")
+    private int deletedForReceiver;
+
+    @com.google.gson.annotations.JsonAdapter(go.pemkott.appsandroidmobiletebingtinggi.api.FlexibleFlagIntAdapter.class)
+    @com.google.gson.annotations.SerializedName("deleted_for_everyone")
+    private int deletedForEveryone;
+
+    @com.google.gson.annotations.SerializedName("deleted_by")
+    private String deletedBy;
+
+    @com.google.gson.annotations.SerializedName("deleted_at")
+    private String deletedAt;
+
+    public String getReadAt() {
+        return readAt;
+    }
+
+    public void setReadAt(String readAt) {
+        this.readAt = readAt;
+    }
+
+    public int getDeletedForSender() {
+        return deletedForSender;
+    }
+
+    public void setDeletedForSender(int deletedForSender) {
+        this.deletedForSender = deletedForSender;
+    }
+
+    public int getDeletedForReceiver() {
+        return deletedForReceiver;
+    }
+
+    public void setDeletedForReceiver(int deletedForReceiver) {
+        this.deletedForReceiver = deletedForReceiver;
+    }
+
+    public int getDeletedForEveryone() {
+        return deletedForEveryone;
+    }
+
+    public void setDeletedForEveryone(int deletedForEveryone) {
+        this.deletedForEveryone = deletedForEveryone;
+    }
+
+    public String getDeletedBy() {
+        return deletedBy;
+    }
+
+    public void setDeletedBy(String deletedBy) {
+        this.deletedBy = deletedBy;
+    }
+
+    public String getDeletedAt() {
+        return deletedAt;
+    }
+
+    public void setDeletedAt(String deletedAt) {
+        this.deletedAt = deletedAt;
+    }
+
+    public boolean isDeletedForEveryone() {
+        return deletedForEveryone == 1 || isDeletedGlobal == 1;
+    }
+
     public boolean isDeletedGlobal() {
-        return isDeletedGlobal == 1;
+        return isDeletedGlobal == 1 || deletedForEveryone == 1;
+    }
+
+    public boolean canDeleteForEveryone() {
+        return isMe() && !isRead() && (readAt == null || readAt.trim().isEmpty()) && !isDeleted() && !isDeletedGlobal();
     }
 
     public boolean isDeletedForUser(String userId) {
-        if (isDeletedGlobal == 1 || isDeleted == 1) return true;
-        if (userId != null && !userId.isEmpty() && deletedForUsers != null && !deletedForUsers.isEmpty()) {
-            return deletedForUsers.contains("," + userId + ",") || deletedForUsers.contains(userId);
+        if (deletedForEveryone == 1 || isDeletedGlobal == 1) return true;
+        if (isMe() && (deletedForSender == 1 || isDeleted == 1)) return true;
+        if (!isMe() && "personal".equalsIgnoreCase(getChatType()) && deletedForReceiver == 1) return true;
+        if (userId != null && !userId.trim().isEmpty() && deletedForUsers != null && !deletedForUsers.trim().isEmpty()) {
+            String trimmed = userId.trim();
+            String padded = deletedForUsers.startsWith(",") ? deletedForUsers : "," + deletedForUsers;
+            if (!padded.endsWith(",")) padded = padded + ",";
+            return padded.contains("," + trimmed + ",");
         }
-        return false;
+        return isDeleted == 1;
     }
 }

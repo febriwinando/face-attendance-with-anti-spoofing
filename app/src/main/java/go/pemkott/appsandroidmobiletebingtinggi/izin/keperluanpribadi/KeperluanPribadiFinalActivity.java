@@ -9,6 +9,8 @@ import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.SIMP
 import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.hari;
 import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.localeID;
 
+import go.pemkott.appsandroidmobiletebingtinggi.utils.AttendanceNotificationHelper;
+
 import android.Manifest;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
@@ -509,7 +511,7 @@ public class KeperluanPribadiFinalActivity extends AppCompatActivity implements 
                 dialogproses.dismiss();
 
                 if (!response.isSuccessful()) {
-
+                    AttendanceNotificationHelper.notifyHttpFailure(KeperluanPribadiFinalActivity.this, "Keperluan Pribadi Masuk", response);
                     dialogView.viewNotifKosong(
                             KeperluanPribadiFinalActivity.this,
                             "Gagal mengisi absensi",
@@ -520,11 +522,14 @@ public class KeperluanPribadiFinalActivity extends AppCompatActivity implements 
 
                 ResponsePOJO data = response.body();
 
-                if (Objects.requireNonNull(response.body()).isStatus()){
+                if (data != null && data.isStatus()){
                     databaseHelper.insertLog(sEmployeID, eOPD, rbTanggal, "Melakukan Pengajuan Keperluan Pribadi (Masuk)", "Masuk");
+                    AttendanceNotificationHelper.notifySuccess(KeperluanPribadiFinalActivity.this, "Keperluan Pribadi Masuk", data.getRemarks());
                     dialogView.viewSukses(KeperluanPribadiFinalActivity.this, data.getRemarks());
                 }else {
-                    dialogView.viewNotifKosong(KeperluanPribadiFinalActivity.this, data.getRemarks(),"");
+                    String errRemarks = data != null ? data.getRemarks() : "Respon server tidak valid.";
+                    AttendanceNotificationHelper.notifyFailure(KeperluanPribadiFinalActivity.this, "Keperluan Pribadi Masuk", errRemarks);
+                    dialogView.viewNotifKosong(KeperluanPribadiFinalActivity.this, errRemarks,"");
                 }
 
             }
@@ -532,6 +537,7 @@ public class KeperluanPribadiFinalActivity extends AppCompatActivity implements 
             @Override
             public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
                 dialogproses.dismiss();
+                AttendanceNotificationHelper.notifyNetworkFailure(KeperluanPribadiFinalActivity.this, "Keperluan Pribadi Masuk", t);
                 dialogView.pesanError(KeperluanPribadiFinalActivity.this);
             }
         });
@@ -577,7 +583,7 @@ public class KeperluanPribadiFinalActivity extends AppCompatActivity implements 
                 dialogproses.dismiss();
 
                 if (!response.isSuccessful()) {
-
+                    AttendanceNotificationHelper.notifyHttpFailure(KeperluanPribadiFinalActivity.this, "Keperluan Pribadi Pulang", response);
                     dialogView.viewNotifKosong(
                             KeperluanPribadiFinalActivity.this,
                             "Gagal mengisi absensi",
@@ -588,11 +594,14 @@ public class KeperluanPribadiFinalActivity extends AppCompatActivity implements 
 
                 ResponsePOJO data = response.body();
 
-                if (Objects.requireNonNull(response.body()).isStatus()){
+                if (data != null && data.isStatus()){
                     databaseHelper.insertLog(sEmployeID, eOPD, rbTanggal, "Melakukan Pengajuan Keperluan Pribadi (Pulang)", "Pulang");
+                    AttendanceNotificationHelper.notifySuccess(KeperluanPribadiFinalActivity.this, "Keperluan Pribadi Pulang", data.getRemarks());
                     dialogView.viewSukses(KeperluanPribadiFinalActivity.this, data.getRemarks());
                 }else {
-                    dialogView.viewNotifKosong(KeperluanPribadiFinalActivity.this, data.getRemarks(),"");
+                    String errRemarks = data != null ? data.getRemarks() : "Respon server tidak valid.";
+                    AttendanceNotificationHelper.notifyFailure(KeperluanPribadiFinalActivity.this, "Keperluan Pribadi Pulang", errRemarks);
+                    dialogView.viewNotifKosong(KeperluanPribadiFinalActivity.this, errRemarks,"");
                 }
 
             }
@@ -600,6 +609,7 @@ public class KeperluanPribadiFinalActivity extends AppCompatActivity implements 
             @Override
             public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
                 dialogproses.dismiss();
+                AttendanceNotificationHelper.notifyNetworkFailure(KeperluanPribadiFinalActivity.this, "Keperluan Pribadi Pulang", t);
                 dialogView.pesanError(KeperluanPribadiFinalActivity.this);
             }
         });

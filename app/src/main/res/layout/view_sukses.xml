@@ -109,7 +109,7 @@
                     android:fontFamily="sans-serif-black"
                     android:textStyle="bold"
                     android:lineSpacingExtra="5dp"
-                    android:textColor="#0F172A"
+                    android:textColor="@color/text_primary"
                     android:textSize="16sp" />
 
                 <!-- Author Name (14sp Bold) -->

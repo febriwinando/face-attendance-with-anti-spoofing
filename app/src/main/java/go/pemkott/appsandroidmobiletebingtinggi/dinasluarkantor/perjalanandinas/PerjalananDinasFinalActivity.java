@@ -12,6 +12,8 @@ import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.loca
 import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.makeDateString;
 import static go.pemkott.appsandroidmobiletebingtinggi.utils.FileUtil.getDriveFilePath;
 
+import go.pemkott.appsandroidmobiletebingtinggi.utils.AttendanceNotificationHelper;
+
 import android.Manifest;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
@@ -1045,11 +1047,22 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
                 dialogproses.dismiss();
 
                 if (!response.isSuccessful()) {
+                    String errRaw = null;
                     try {
-                        Log.e("API_ERROR", response.errorBody().string());
+                        if (response.errorBody() != null) {
+                            errRaw = response.errorBody().string();
+                            Log.e("API_ERROR", errRaw);
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+
+                    AttendanceNotificationHelper.notifyHttpFailure(
+                            PerjalananDinasFinalActivity.this,
+                            "Perjalanan Dinas",
+                            response.code(),
+                            errRaw
+                    );
 
                     dialogView.viewNotifKosong(
                             PerjalananDinasFinalActivity.this,
@@ -1062,11 +1075,14 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
 
                 ResponsePOJO data = response.body();
 
-                if (Objects.requireNonNull(response.body()).isStatus()){
+                if (data != null && data.isStatus()){
                     databaseHelper.insertLog(sEmployeID, eOPD, tanggal, "Melakukan Absen Perjalanan Dinas", "Perjalanan Dinas");
+                    AttendanceNotificationHelper.notifySuccess(PerjalananDinasFinalActivity.this, "Perjalanan Dinas", data.getRemarks());
                     dialogView.viewSukses(PerjalananDinasFinalActivity.this, data.getRemarks());
                 }else {
-                    dialogView.viewNotifKosong(PerjalananDinasFinalActivity.this, data.getRemarks(),"");
+                    String errRemarks = data != null ? data.getRemarks() : "Respon server tidak valid.";
+                    AttendanceNotificationHelper.notifyFailure(PerjalananDinasFinalActivity.this, "Perjalanan Dinas", errRemarks);
+                    dialogView.viewNotifKosong(PerjalananDinasFinalActivity.this, errRemarks,"");
                 }
 
             }
@@ -1074,6 +1090,7 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
             @Override
             public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
                 dialogproses.dismiss();
+                AttendanceNotificationHelper.notifyNetworkFailure(PerjalananDinasFinalActivity.this, "Perjalanan Dinas", t);
 
                 dialogView.viewNotifKosong(PerjalananDinasFinalActivity.this, "Gagal mengisi absensi,", "silahkan coba kembali.");
             }

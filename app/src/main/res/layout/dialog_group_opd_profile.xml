@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:text="Profil Grup OPD"
-            android:textColor="#0F172A"
+            android:textColor="@color/text_primary"
             android:textSize="17sp"
             android:textStyle="bold"/>
 
@@ -41,7 +41,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_close"
             android:padding="6dp"
-            app:tint="#64748B"
+            app:tint="@color/text_secondary"
             android:contentDescription="Tutup"/>
     </RelativeLayout>
 
@@ -69,7 +69,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Grup OPD"
-            android:textColor="#0F172A"
+            android:textColor="@color/text_primary"
             android:textSize="16sp"
             android:textStyle="bold"
             android:gravity="center"
@@ -81,7 +81,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
             android:text="Grup Resmi Kedinasan OPD"
-            android:textColor="#16A34A"
+            android:textColor="@color/opd_badge_icon"
             android:textSize="12sp"
             android:textStyle="bold"/>
 
@@ -91,7 +91,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
             android:text="Grup koordinasi dan komunikasi kedinasan resmi untuk seluruh pegawai pada OPD terkait."
-            android:textColor="#64748B"
+            android:textColor="@color/text_secondary"
             android:textSize="12sp"
             android:gravity="center"/>
     </LinearLayout>
@@ -99,7 +99,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="#E2E8F0"/>
+        android:background="@color/divider_color"/>
 
     <!-- Search Member Box -->
     <LinearLayout
@@ -121,7 +121,7 @@
             android:layout_width="18dp"
             android:layout_height="18dp"
             android:src="@drawable/one_search"
-            app:tint="#94A3B8"/>
+            app:tint="@color/text_hint"/>
 
         <EditText
             android:id="@+id/etSearchGroupMembers"
@@ -130,8 +130,8 @@
             android:layout_marginStart="8dp"
             android:background="@null"
             android:hint="Cari nama atau NIP anggota..."
-            android:textColor="#0F172A"
-            android:textColorHint="#94A3B8"
+            android:textColor="@color/text_primary"
+            android:textColorHint="@color/text_hint"
             android:textSize="13sp"
             android:singleLine="true"
             android:imeOptions="actionSearch"/>
@@ -146,7 +146,7 @@
         android:paddingTop="4dp"
         android:paddingBottom="4dp"
         android:text="DAFTAR ANGGOTA PEGAWAI"
-        android:textColor="#94A3B8"
+        android:textColor="@color/text_hint"
         android:textSize="11sp"
         android:textStyle="bold"
         android:letterSpacing="0.05"/>
@@ -179,7 +179,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="Pegawai tidak ditemukan"
-            android:textColor="#94A3B8"
+            android:textColor="@color/text_hint"
             android:textSize="13sp"
             android:visibility="gone"/>
     </FrameLayout>

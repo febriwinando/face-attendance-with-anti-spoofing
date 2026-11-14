@@ -39,7 +39,9 @@ public class ValidasiNewActivity extends AppCompatActivity {
 
     private ViewPager2 viewPager;
     private CardView btnTabMasuk, btnTabPulang;
-    private TextView tvTabMasuk, tvTabPulang;
+    private TextView tvTabMasuk, tvTabPulang, tvSummaryVerifikasi;
+    private int countMasuk = 0;
+    private int countPulang = 0;
 
     public static AppCompatActivity validasi;
 
@@ -71,6 +73,8 @@ public class ValidasiNewActivity extends AppCompatActivity {
         btnTabPulang = findViewById(R.id.btnTabPulang);
         tvTabMasuk = findViewById(R.id.tvTabMasuk);
         tvTabPulang = findViewById(R.id.tvTabPulang);
+        tvSummaryVerifikasi = findViewById(R.id.tvSummaryVerifikasi);
+        renderCounts();
 
         // ViewPager2 Setup
         ValidasiPagerAdapter adapter = new ValidasiPagerAdapter(this);
@@ -96,6 +100,28 @@ public class ValidasiNewActivity extends AppCompatActivity {
     }
 
 
+
+    public void updateTabCounts(boolean isPulang, int count) {
+        if (isPulang) {
+            countPulang = Math.max(0, count);
+        } else {
+            countMasuk = Math.max(0, count);
+        }
+        renderCounts();
+    }
+
+    private void renderCounts() {
+        int total = countMasuk + countPulang;
+        if (tvTabMasuk != null) {
+            tvTabMasuk.setText("Validasi Masuk (" + countMasuk + ")");
+        }
+        if (tvTabPulang != null) {
+            tvTabPulang.setText("Validasi Pulang (" + countPulang + ")");
+        }
+        if (tvSummaryVerifikasi != null) {
+            tvSummaryVerifikasi.setText("Menunggu: " + total + " data • Masuk: " + countMasuk + " | Pulang: " + countPulang);
+        }
+    }
 
     private void navigateBack() {
         if (isTaskRoot()) {

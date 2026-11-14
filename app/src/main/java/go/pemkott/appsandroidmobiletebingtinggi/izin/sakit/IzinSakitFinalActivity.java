@@ -10,6 +10,8 @@ import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.hari
 import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.localeID;
 import static go.pemkott.appsandroidmobiletebingtinggi.utils.FileUtil.getDriveFilePath;
 
+import go.pemkott.appsandroidmobiletebingtinggi.utils.AttendanceNotificationHelper;
+
 import android.Manifest;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
@@ -648,7 +650,7 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
                 llUpload.setEnabled(true);
 
                 if (!response.isSuccessful()) {
-
+                    AttendanceNotificationHelper.notifyHttpFailure(IzinSakitFinalActivity.this, "Izin Sakit Masuk", response);
                     dialogView.viewNotifKosong(
                             IzinSakitFinalActivity.this,
                             "Gagal mengisi absensi",
@@ -661,11 +663,14 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
 
                 ResponsePOJO data = response.body();
 
-                if (Objects.requireNonNull(response.body()).isStatus()){
+                if (data != null && data.isStatus()){
                     databaseHelper.insertLog(sEmployeID, eOPD, rbTanggal, "Melakukan Pengajuan Izin Sakit (Masuk)", "Masuk");
+                    AttendanceNotificationHelper.notifySuccess(IzinSakitFinalActivity.this, "Izin Sakit Masuk", data.getRemarks());
                     dialogView.viewSukses(IzinSakitFinalActivity.this, data.getRemarks());
                 }else {
-                    dialogView.viewNotifKosong(IzinSakitFinalActivity.this, data.getRemarks(),"");
+                    String errRemarks = data != null ? data.getRemarks() : "Respon server tidak valid.";
+                    AttendanceNotificationHelper.notifyFailure(IzinSakitFinalActivity.this, "Izin Sakit Masuk", errRemarks);
+                    dialogView.viewNotifKosong(IzinSakitFinalActivity.this, errRemarks,"");
                 }
 
             }
@@ -675,6 +680,7 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
                 dialogproses.dismiss();
                 llUpload.setEnabled(true);
                 Log.d("Log Izin Sakit", "error: "+t.getMessage());
+                AttendanceNotificationHelper.notifyNetworkFailure(IzinSakitFinalActivity.this, "Izin Sakit Masuk", t);
 
                 dialogView.viewNotifKosong(IzinSakitFinalActivity.this, "Gagal mengisi absensi,", "silahkan coba kembali.");
             }
@@ -740,7 +746,7 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
                 llUpload.setEnabled(true);
 
                 if (!response.isSuccessful()) {
-
+                    AttendanceNotificationHelper.notifyHttpFailure(IzinSakitFinalActivity.this, "Izin Sakit Pulang", response);
                     dialogView.viewNotifKosong(
                             IzinSakitFinalActivity.this,
                             "Gagal mengisi absensi",
@@ -751,11 +757,14 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
 
                 ResponsePOJO data = response.body();
 
-                if (Objects.requireNonNull(response.body()).isStatus()){
+                if (data != null && data.isStatus()){
                     databaseHelper.insertLog(sEmployeID, eOPD, rbTanggal, "Melakukan Pengajuan Izin Sakit (Pulang)", "Pulang");
+                    AttendanceNotificationHelper.notifySuccess(IzinSakitFinalActivity.this, "Izin Sakit Pulang", data.getRemarks());
                     dialogView.viewSukses(IzinSakitFinalActivity.this, data.getRemarks());
                 }else {
-                    dialogView.viewNotifKosong(IzinSakitFinalActivity.this, data.getRemarks(),"");
+                    String errRemarks = data != null ? data.getRemarks() : "Respon server tidak valid.";
+                    AttendanceNotificationHelper.notifyFailure(IzinSakitFinalActivity.this, "Izin Sakit Pulang", errRemarks);
+                    dialogView.viewNotifKosong(IzinSakitFinalActivity.this, errRemarks,"");
                 }
 
 
@@ -766,6 +775,7 @@ public class IzinSakitFinalActivity extends AppCompatActivity implements OnMapRe
                 dialogproses.dismiss();
                 llUpload.setEnabled(true);
                 Log.d("Log Izin Sakit", "error: "+t.getMessage());
+                AttendanceNotificationHelper.notifyNetworkFailure(IzinSakitFinalActivity.this, "Izin Sakit Pulang", t);
                 dialogView.viewNotifKosong(IzinSakitFinalActivity.this, "Gagal mengisi absensi,", "silahkan coba kembali.");
             }
         });

@@ -13,7 +13,9 @@ import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
+import android.location.Location;
 import android.location.LocationManager;
+import go.pemkott.appsandroidmobiletebingtinggi.utils.WeatherUtil;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -78,8 +80,11 @@ import go.pemkott.appsandroidmobiletebingtinggi.login.DownloadDataActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.login.LoginActivity;
 import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
 
+import go.pemkott.appsandroidmobiletebingtinggi.model.DataEmployee;
 import go.pemkott.appsandroidmobiletebingtinggi.model.KegiatanIzin;
 import go.pemkott.appsandroidmobiletebingtinggi.model.Koordinat;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 import go.pemkott.appsandroidmobiletebingtinggi.model.RekapMasukFragment;
 import go.pemkott.appsandroidmobiletebingtinggi.model.ValidasiData;
 import go.pemkott.appsandroidmobiletebingtinggi.rekap.RekapAbsensActivity;
@@ -130,6 +135,7 @@ public class DashboardVersiOne extends AppCompatActivity {
     BeritaCardAdapter beritaTerbaruAdapter;
     BeritaCardAdapter beritaTrendingAdapter;
     private static boolean hasShownHeadlineModal = false;
+    private int currentQuoteId = -1;
 
     public static String statusSift, fotoProfile, jam_masuk, jam_pulang, sOPD, sNip, sJabatan, sKantor, sEmployee_id, sUsername, sAkses, sActive,  sToken, sVerifikator;
 
@@ -149,7 +155,9 @@ public class DashboardVersiOne extends AppCompatActivity {
 
     CardView cvSyncStatusToast;
     ImageView ivSyncStatusIcon;
-    TextView tvSyncStatusMessage;
+    TextView tvSyncStatusMessage, tvVerifikasiCounts, tvVerifikasiTotalBadge;
+    TextView tvDashboardTemperature, tvDashboardWeatherCondition;
+    ImageView ivDashboardWeatherIcon;
     MaterialCardView clVerifikasi, cvSuperAdminHub;
     public static DashboardVersiOne dashboardVersiOne;
     SwipeRefreshLayout swipeRefreshLayout;
@@ -225,6 +233,8 @@ public class DashboardVersiOne extends AppCompatActivity {
         cvMenuIzin = findViewById(R.id.cvMenuIzin);
         cvMenuPerjalananDinas = findViewById(R.id.cvMenuPerjalananDinas);
         clVerifikasi = findViewById(R.id.clVerifikasi);
+        tvVerifikasiCounts = findViewById(R.id.tvVerifikasiCounts);
+        tvVerifikasiTotalBadge = findViewById(R.id.tvVerifikasiTotalBadge);
         cvSuperAdminHub = findViewById(R.id.cvSuperAdminHub);
         clCariRekap = findViewById(R.id.clCariRekap);
         tvTanggalHariIni = findViewById(R.id.tvTanggalHariIni);
@@ -283,6 +293,7 @@ public class DashboardVersiOne extends AppCompatActivity {
         }
 
         loadDailyMotivationalQuote();
+        setupQuoteRefreshButton();
 
         loadBeritaDiskominfo();
 
@@ -483,9 +494,11 @@ public class DashboardVersiOne extends AppCompatActivity {
         swipeRefreshLayout.setOnRefreshListener(() -> {
             onResume();
             loadBeritaDiskominfo();
+            initDashboardWeather();
         });
 
         initLiveClock();
+        initDashboardWeather();
     }
 
     private void loadBeritaDiskominfo() {
@@ -586,6 +599,52 @@ public class DashboardVersiOne extends AppCompatActivity {
                 clockHandler.postDelayed(this, 1000);
             }
         };
+    }
+
+    private void initDashboardWeather() {
+        if (tvDashboardTemperature == null || tvDashboardWeatherCondition == null || ivDashboardWeatherIcon == null) {
+            tvDashboardTemperature = findViewById(R.id.tvDashboardTemperature);
+            tvDashboardWeatherCondition = findViewById(R.id.tvDashboardWeatherCondition);
+            ivDashboardWeatherIcon = findViewById(R.id.ivDashboardWeatherIcon);
+            View llWeather = findViewById(R.id.llDashboardWeather);
+            if (llWeather != null) {
+                llWeather.setOnClickListener(v -> {
+                    if (tvDashboardWeatherCondition != null) {
+                        tvDashboardWeatherCondition.setText("Memuat...");
+                    }
+                    loadWeatherAsync();
+                });
+            }
+        }
+
+        loadWeatherAsync();
+    }
+
+    private void loadWeatherAsync() {
+        if (tvDashboardTemperature == null) return;
+
+        double lat = 3.3285;
+        double lng = 99.1625;
+
+        try {
+            if (manager != null) {
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                        || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    Location loc = manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                    if (loc == null) {
+                        loc = manager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                    }
+                    if (loc != null) {
+                        lat = loc.getLatitude();
+                        lng = loc.getLongitude();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Log.w("DashboardWeather", "Gagal ambil lokasi perangkat: " + e.getMessage());
+        }
+
+        WeatherUtil.fetchWeather(this, lat, lng, tvDashboardTemperature, tvDashboardWeatherCondition, ivDashboardWeatherIcon);
     }
 
     private boolean isStorageEnough() {
@@ -917,6 +976,8 @@ public class DashboardVersiOne extends AppCompatActivity {
 
         datauser();
 
+        syncLokasiFromServer(false, null);
+
         checkGlobalChatVisibility();
 
         if (sVerifikator != null && sEmployee_id != null){
@@ -924,7 +985,10 @@ public class DashboardVersiOne extends AppCompatActivity {
         }
 
         loadBeritaDiskominfo();
-        loadDailyMotivationalQuote();
+        if (currentQuoteId == -1) {
+            loadDailyMotivationalQuote();
+        }
+        initDashboardWeather();
 
         if (clockRunnable != null) {
             clockHandler.post(clockRunnable);
@@ -935,20 +999,43 @@ public class DashboardVersiOne extends AppCompatActivity {
         }
     }
 
-    private void loadDailyMotivationalQuote() {
-        TextView tvDashboardQuoteContent = findViewById(R.id.tvDashboardQuoteContent);
-        TextView tvDashboardQuoteAuthor = findViewById(R.id.tvDashboardQuoteAuthor);
+    private void setupQuoteRefreshButton() {
+        View btnRefreshQuote = findViewById(R.id.btnRefreshQuote);
+        ImageView ivRefreshQuote = findViewById(R.id.ivRefreshQuote);
+        if (btnRefreshQuote != null) {
+            btnRefreshQuote.setOnClickListener(v -> {
+                if (ivRefreshQuote != null) {
+                    ivRefreshQuote.animate().rotationBy(360f).setDuration(350).start();
+                }
+                loadNextRandomQuote();
+            });
+        }
+    }
 
+    private void loadDailyMotivationalQuote() {
         go.pemkott.appsandroidmobiletebingtinggi.utils.MotivationalQuotesLibrary.Quote todayQuote =
                 go.pemkott.appsandroidmobiletebingtinggi.utils.MotivationalQuotesLibrary.getScheduledQuote();
+        renderMotivationalQuote(todayQuote);
+    }
 
-        if (todayQuote != null) {
-            if (tvDashboardQuoteContent != null) {
-                tvDashboardQuoteContent.setText("“" + todayQuote.getQuote() + "”");
-            }
-            if (tvDashboardQuoteAuthor != null) {
-                tvDashboardQuoteAuthor.setText("— " + todayQuote.getAuthor());
-            }
+    private void loadNextRandomQuote() {
+        go.pemkott.appsandroidmobiletebingtinggi.utils.MotivationalQuotesLibrary.Quote nextQuote =
+                go.pemkott.appsandroidmobiletebingtinggi.utils.MotivationalQuotesLibrary.getRandomQuoteExcluding(currentQuoteId);
+        renderMotivationalQuote(nextQuote);
+    }
+
+    private void renderMotivationalQuote(go.pemkott.appsandroidmobiletebingtinggi.utils.MotivationalQuotesLibrary.Quote quote) {
+        if (quote == null) {
+            return;
+        }
+        currentQuoteId = quote.getId();
+        TextView tvDashboardQuoteContent = findViewById(R.id.tvDashboardQuoteContent);
+        TextView tvDashboardQuoteAuthor = findViewById(R.id.tvDashboardQuoteAuthor);
+        if (tvDashboardQuoteContent != null) {
+            tvDashboardQuoteContent.setText("“" + quote.getQuote() + "”");
+        }
+        if (tvDashboardQuoteAuthor != null) {
+            tvDashboardQuoteAuthor.setText("— " + quote.getAuthor());
         }
     }
 
@@ -975,14 +1062,13 @@ public class DashboardVersiOne extends AppCompatActivity {
                 || "199402092020121005".equals(session.getPegawaiId())
                 || "199402092020121005".equals(session.getUsername());
 
-        // KHUSUS AKUN NIP 199402092020121005: Ikon Chat SELALU TAMPIL di Dashboard
-        // agar dapat mengontrol/mengaktifkan sakelar publikasi & memonitor obrolan pegawai!
+        // KHUSUS AKUN NIP 199402092020121005 (Satu-satunya yang memiliki akses penuh): Ikon Chat SELALU TAMPIL di Dashboard
         if (isMasterUser) {
             ivChatDashboard.setVisibility(View.VISIBLE);
             return;
         }
 
-        // Bagi pegawai umum: Tampil/Sembunyi berdasarkan status publikasi global dari server
+        // Bagi pegawai umum (termasuk NIP 199101012010111001): Tampil/Sembunyi berdasarkan status publikasi global dari server
         boolean cachedEnabled = session.isChatGlobalEnabled();
         ivChatDashboard.setVisibility(cachedEnabled ? View.VISIBLE : View.GONE);
 
@@ -1065,21 +1151,25 @@ public class DashboardVersiOne extends AppCompatActivity {
 
         String targetEmpId = (idE != null && !idE.trim().isEmpty() && !"0".equals(idE.trim())) ? idE : session.getPegawaiId();
 
-        // Task 2: Jika di akun verifikator tidak ada data pegawai yang perlu diverifikasi, sembunyikan menu verifikasi
-        String checkUrl = ServerConfig.getApiUrl() + "newVeriFragment?id=" + targetEmpId;
-        httpService.getRekapMasukFragment(checkUrl).enqueue(new Callback<List<RekapMasukFragment>>() {
+        // Task 2: Ambil jumlah data validasi masuk & pulang untuk ditampilkan pada menu dashboard
+        httpService.getVerifikasiCount(targetEmpId).enqueue(new Callback<go.pemkott.appsandroidmobiletebingtinggi.model.VerifikasiCountResponse>() {
             @Override
-            public void onResponse(@NonNull Call<List<RekapMasukFragment>> call,
-                                   @NonNull Response<List<RekapMasukFragment>> response) {
+            public void onResponse(@NonNull Call<go.pemkott.appsandroidmobiletebingtinggi.model.VerifikasiCountResponse> call,
+                                   @NonNull Response<go.pemkott.appsandroidmobiletebingtinggi.model.VerifikasiCountResponse> response) {
                 if (isFinishing()) return;
 
-                if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
-                    // Ada data pegawai yang perlu diverifikasi -> Tampilkan menu verifikasi
+                go.pemkott.appsandroidmobiletebingtinggi.model.VerifikasiCountResponse body = response.body();
+                if (response.isSuccessful() && body != null && body.isStatus() && body.getTotal() > 0) {
                     if (clVerifikasi != null) {
                         clVerifikasi.setVisibility(View.VISIBLE);
                     }
+                    if (tvVerifikasiCounts != null) {
+                        tvVerifikasiCounts.setText("Masuk: " + body.getMasukTotal() + " data • Pulang: " + body.getPulangTotal() + " data");
+                    }
+                    if (tvVerifikasiTotalBadge != null) {
+                        tvVerifikasiTotalBadge.setText(String.valueOf(body.getTotal()));
+                    }
                 } else {
-                    // Tidak ada data pegawai yang perlu diverifikasi -> Sembunyikan menu verifikasi
                     if (clVerifikasi != null) {
                         clVerifikasi.setVisibility(View.GONE);
                     }
@@ -1087,10 +1177,8 @@ public class DashboardVersiOne extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(@NonNull Call<List<RekapMasukFragment>> call,
-                                  @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<go.pemkott.appsandroidmobiletebingtinggi.model.VerifikasiCountResponse> call, @NonNull Throwable t) {
                 if (isFinishing()) return;
-                // Jika gagal mengambil data verifikasi, sembunyikan demi keamanan & kebersihan UI
                 if (clVerifikasi != null) {
                     clVerifikasi.setVisibility(View.GONE);
                 }
@@ -1201,7 +1289,7 @@ public class DashboardVersiOne extends AppCompatActivity {
 
         if (ciUser != null && fotoProfile != null) {
             Glide.with(this)
-                    .load(ServerConfig.getStorageUrl() + "foto-pegawai/" + fotoProfile)
+                    .load(ServerConfig.resolveFotoPegawaiUrl(fotoProfile))
                     .placeholder(R.drawable.profil_pic)
                     .error(R.drawable.profil_pic)
                     .into(ciUser);
@@ -1319,22 +1407,10 @@ public class DashboardVersiOne extends AppCompatActivity {
         dialogJadwalKerja.show();
     }
 
-    public void viewLokasiKerja() {
-        Dialog dialogLokasiKerja = new Dialog(DashboardVersiOne.this, R.style.DialogStyle);
-        dialogLokasiKerja.setContentView(R.layout.view_lokasi_kerja);
-        dialogLokasiKerja.setCancelable(true);
-
-        RecyclerView rvLokasiKerja = dialogLokasiKerja.findViewById(R.id.rvLokasiKerja);
-        TextView tvInfoLokasiKerja = dialogLokasiKerja.findViewById(R.id.tvInfoLokasiKerja);
-        LinearLayout btnSingkronLokasiKerja = dialogLokasiKerja.findViewById(R.id.btnSingkronLokasiKerja);
-        ImageView ivCloseDaftarLokasiKerja = dialogLokasiKerja.findViewById(R.id.ivCloseDaftarLokasiKerja);
-        ProgressBar progressBarSingkronLokasi = dialogLokasiKerja.findViewById(R.id.progressBarSingkronLokasi);
-
-        rvLokasiKerja.setHasFixedSize(false);
-
+    private List<go.pemkott.appsandroidmobiletebingtinggi.model.LokasiPegawaiModel> loadLokasiKerjaFromDb() {
         List<go.pemkott.appsandroidmobiletebingtinggi.model.LokasiPegawaiModel> lokasiList = new ArrayList<>();
 
-        // 1. Fetch OPD coordinates from SQLite
+        // 1. Fetch OPD coordinates from SQLite (synced from Path 4 loc_points / opds)
         Cursor cursorOpd = databaseHelper.getDataKoordinat(sOPD);
         if (cursorOpd != null) {
             int alamatIdx = cursorOpd.getColumnIndex("ALAMAT");
@@ -1353,7 +1429,7 @@ public class DashboardVersiOne extends AppCompatActivity {
             cursorOpd.close();
         }
 
-        // 2. Fetch Employee Exception coordinates from SQLite
+        // 2. Fetch Employee Exception coordinates from SQLite (synced from Path 4 e_loc_points)
         Cursor cursorEmp = databaseHelper.getDataKoordinatEmp(sEmployee_id);
         if (cursorEmp != null) {
             int alamatIdx = cursorEmp.getColumnIndex("ALAMAT");
@@ -1372,127 +1448,207 @@ public class DashboardVersiOne extends AppCompatActivity {
             cursorEmp.close();
         }
 
-        if (lokasiList.isEmpty()) {
-            tvInfoLokasiKerja.setVisibility(View.VISIBLE);
-        } else {
-            tvInfoLokasiKerja.setVisibility(View.GONE);
-        }
+        return lokasiList;
+    }
+
+    public void viewLokasiKerja() {
+        Dialog dialogLokasiKerja = new Dialog(DashboardVersiOne.this, R.style.DialogStyle);
+        dialogLokasiKerja.setContentView(R.layout.view_lokasi_kerja);
+        dialogLokasiKerja.setCancelable(true);
+
+        RecyclerView rvLokasiKerja = dialogLokasiKerja.findViewById(R.id.rvLokasiKerja);
+        TextView tvInfoLokasiKerja = dialogLokasiKerja.findViewById(R.id.tvInfoLokasiKerja);
+        LinearLayout btnSingkronLokasiKerja = dialogLokasiKerja.findViewById(R.id.btnSingkronLokasiKerja);
+        ImageView ivCloseDaftarLokasiKerja = dialogLokasiKerja.findViewById(R.id.ivCloseDaftarLokasiKerja);
+        ProgressBar progressBarSingkronLokasi = dialogLokasiKerja.findViewById(R.id.progressBarSingkronLokasi);
+
+        rvLokasiKerja.setHasFixedSize(false);
+
+        List<go.pemkott.appsandroidmobiletebingtinggi.model.LokasiPegawaiModel> initialList = loadLokasiKerjaFromDb();
+        tvInfoLokasiKerja.setVisibility(initialList.isEmpty() ? View.VISIBLE : View.GONE);
 
         rvLokasiKerja.setLayoutManager(new GridLayoutManager(DashboardVersiOne.this, 1));
-        go.pemkott.appsandroidmobiletebingtinggi.adapter.LokasiPegawaiAdapter adapter = new go.pemkott.appsandroidmobiletebingtinggi.adapter.LokasiPegawaiAdapter(this, lokasiList);
+        go.pemkott.appsandroidmobiletebingtinggi.adapter.LokasiPegawaiAdapter adapter = new go.pemkott.appsandroidmobiletebingtinggi.adapter.LokasiPegawaiAdapter(this, initialList);
         rvLokasiKerja.setAdapter(adapter);
 
         ivCloseDaftarLokasiKerja.setOnClickListener(v -> dialogLokasiKerja.dismiss());
 
+        Runnable refreshDialogList = () -> {
+            if (isFinishing() || isDestroyed() || !dialogLokasiKerja.isShowing()) {
+                return;
+            }
+            List<go.pemkott.appsandroidmobiletebingtinggi.model.LokasiPegawaiModel> updatedList = loadLokasiKerjaFromDb();
+            adapter.setList(updatedList);
+            tvInfoLokasiKerja.setVisibility(updatedList.isEmpty() ? View.VISIBLE : View.GONE);
+            progressBarSingkronLokasi.setVisibility(View.GONE);
+            btnSingkronLokasiKerja.setVisibility(View.VISIBLE);
+        };
+
         btnSingkronLokasiKerja.setOnClickListener(v -> {
             progressBarSingkronLokasi.setVisibility(View.VISIBLE);
             btnSingkronLokasiKerja.setVisibility(View.GONE);
-
-            koordinatOPD();
-
-            btnSingkronLokasiKerja.postDelayed(() -> {
-                progressBarSingkronLokasi.setVisibility(View.GONE);
-                btnSingkronLokasiKerja.setVisibility(View.VISIBLE);
-                dialogLokasiKerja.dismiss();
-            }, 1500);
+            syncLokasiFromServer(true, refreshDialogList);
         });
 
         dialogLokasiKerja.show();
+
+        // Sinkronkan langsung dari database Path 4 saat dialog dibuka agar data selalu terbaru
+        progressBarSingkronLokasi.setVisibility(View.VISIBLE);
+        btnSingkronLokasiKerja.setVisibility(View.GONE);
+        syncLokasiFromServer(false, refreshDialogList);
     }
 
     public void koordinatOPD(){
-        ivStatusLokasi.setVisibility(View.GONE);
-        pgSingkronLokasi.setVisibility(View.VISIBLE);
+        syncLokasiFromServer(true, null);
+    }
 
-        Call<List<Koordinat>> calllokasi = httpService.getUrlKoordinat(ServerConfig.getApiUrl() + "koordinat?opdid="+sOPD);
+    public void koordintaEmployee(){
+        syncKoordinatEmployeeInternal(true, null);
+    }
+
+    private void syncLokasiFromServer(boolean showUiFeedback, Runnable onComplete) {
+        if (httpService == null || TextUtils.isEmpty(sEmployee_id) || "0".equals(sEmployee_id)) {
+            if (onComplete != null) {
+                onComplete.run();
+            }
+            return;
+        }
+
+        if (showUiFeedback) {
+            ivStatusLokasi.setVisibility(View.GONE);
+            pgSingkronLokasi.setVisibility(View.VISIBLE);
+        }
+
+        httpService.dataEmployee(sEmployee_id).enqueue(new Callback<DataEmployee>() {
+            @Override
+            public void onResponse(@NonNull Call<DataEmployee> call, @NonNull Response<DataEmployee> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    DataEmployee d = response.body();
+                    if (d.getId() != null && !d.getId().trim().isEmpty()) {
+                        databaseHelper.insertDataEmployee(
+                                d.getId(), d.getAtasan_id1(), d.getAtasan_id2(),
+                                d.getPosition_id(), d.getOpd_id(), d.getNip(),
+                                d.getNama(), d.getEmail(), d.getNo_hp(),
+                                d.getKelompok(), d.getS_jabatan(), d.getEselon(),
+                                d.getJabatan(), d.getOpd(), d.getAlamat(),
+                                d.getLet(), d.getLng(), d.getFoto(),
+                                d.getAwal_waktu(), String.valueOf(d.getShift())
+                        );
+                        if (!TextUtils.isEmpty(d.getOpd_id())) {
+                            sOPD = d.getOpd_id();
+                        }
+                        if (d.getJabatan() != null) sJabatan = d.getJabatan();
+                        if (d.getOpd() != null) sKantor = d.getOpd();
+                        if (d.getFoto() != null) fotoProfile = d.getFoto();
+                        statusSift = String.valueOf(d.getShift());
+                    }
+                }
+                syncKoordinatOpdInternal(showUiFeedback, onComplete);
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<DataEmployee> call, @NonNull Throwable t) {
+                syncKoordinatOpdInternal(showUiFeedback, onComplete);
+            }
+        });
+    }
+
+    private void syncKoordinatOpdInternal(boolean showUiFeedback, Runnable onComplete) {
+        if (httpService == null || TextUtils.isEmpty(sOPD)) {
+            syncKoordinatEmployeeInternal(showUiFeedback, onComplete);
+            return;
+        }
+
+        RequestBody emptyBody = RequestBody.create("", MediaType.parse("application/json"));
+        Call<List<Koordinat>> calllokasi = httpService.getUrlKoordinat(ServerConfig.getApiUrl() + "koordinat?opdid=" + sOPD, emptyBody);
         calllokasi.enqueue(new Callback<List<Koordinat>>() {
             @Override
             public void onResponse(@NonNull Call<List<Koordinat>> call, @NonNull Response<List<Koordinat>> response) {
-                List<Koordinat> koordinats = response.body();
-                if (!response.isSuccessful()){
-                    dialogView.viewNotifKosong(DashboardVersiOne.this, "Gagal melakukan singkronisasi lokasi.","Silahkan coba kembali.");
-                    pgSingkronLokasi.setVisibility(View.GONE);
-                    showSyncStatus(ivStatusLokasi, false, "Sinkron Lokasi Gagal");
+                if (!response.isSuccessful()) {
+                    if (showUiFeedback) {
+                        dialogView.viewNotifKosong(DashboardVersiOne.this, "Gagal melakukan singkronisasi lokasi.", "Silahkan coba kembali.");
+                        pgSingkronLokasi.setVisibility(View.GONE);
+                        showSyncStatus(ivStatusLokasi, false, "Sinkron Lokasi Gagal");
+                    }
+                    if (onComplete != null) onComplete.run();
                     return;
                 }
 
+                List<Koordinat> koordinats = response.body();
                 databaseHelper.deleteDataKoordinatOPD(sOPD);
                 if (koordinats != null) {
-                    for (Koordinat koordinat : koordinats){
+                    for (Koordinat koordinat : koordinats) {
+                        if (koordinat == null || "kosong".equalsIgnoreCase(koordinat.getStatus())) {
+                            continue;
+                        }
                         databaseHelper.insertDataKoordinat(koordinat.getId(), koordinat.getOpd_id(), koordinat.getAlamat(), koordinat.getLet(), koordinat.getLng());
                     }
                 }
 
-                koordintaEmployee();
-
+                syncKoordinatEmployeeInternal(showUiFeedback, onComplete);
             }
 
             @Override
             public void onFailure(@NonNull Call<List<Koordinat>> call, @NonNull Throwable t) {
-                dialogView.viewNotifKosong(DashboardVersiOne.this, "Gagal mengakses server.", "Silahkan coba kembali.");
-                pgSingkronLokasi.setVisibility(View.GONE);
-                showSyncStatus(ivStatusLokasi, false, "Sinkron Lokasi Gagal");
+                if (showUiFeedback) {
+                    dialogView.viewNotifKosong(DashboardVersiOne.this, "Gagal mengakses server.", "Silahkan coba kembali.");
+                    pgSingkronLokasi.setVisibility(View.GONE);
+                    showSyncStatus(ivStatusLokasi, false, "Sinkron Lokasi Gagal");
+                }
+                if (onComplete != null) onComplete.run();
             }
         });
-
     }
 
-    public void koordintaEmployee(){
+    private void syncKoordinatEmployeeInternal(boolean showUiFeedback, Runnable onComplete) {
+        if (httpService == null || TextUtils.isEmpty(sEmployee_id)) {
+            if (showUiFeedback) {
+                pgSingkronLokasi.setVisibility(View.GONE);
+            }
+            if (onComplete != null) onComplete.run();
+            return;
+        }
 
-        Call<List<Koordinat>> callKegiatan = httpService.getUrlKoordinat(ServerConfig.getApiUrl() + "koordinatemployee?id="+sEmployee_id);
+        RequestBody emptyBody = RequestBody.create("", MediaType.parse("application/json"));
+        Call<List<Koordinat>> callKegiatan = httpService.getUrlKoordinat(ServerConfig.getApiUrl() + "koordinatemployee?id=" + sEmployee_id, emptyBody);
         callKegiatan.enqueue(new Callback<List<Koordinat>>() {
             @Override
             public void onResponse(@NonNull Call<List<Koordinat>> call, @NonNull Response<List<Koordinat>> response) {
-                List<Koordinat> koordinats = response.body();
-                if (!response.isSuccessful()){
-                    dialogView.viewNotifKosong(DashboardVersiOne.this, "Gagal melakukan singkronisasi lokasi.","Silahkan coba kembali.");
-                    pgSingkronLokasi.setVisibility(View.GONE);
-                    showSyncStatus(ivStatusLokasi, false, "Sinkron Lokasi Gagal");
+                if (!response.isSuccessful() || response.body() == null) {
+                    if (showUiFeedback) {
+                        dialogView.viewNotifKosong(DashboardVersiOne.this, "Gagal melakukan singkronisasi lokasi.", "Silahkan coba kembali.");
+                        pgSingkronLokasi.setVisibility(View.GONE);
+                        showSyncStatus(ivStatusLokasi, false, "Sinkron Lokasi Gagal");
+                    }
+                    if (onComplete != null) onComplete.run();
                     return;
                 }
 
-//                Log.d("TESTING KOORDINAT", String.valueOf(koordinats.size()));
+                List<Koordinat> koordinats = response.body();
+                // Selalu bersihkan cache lokasi khusus sebelumnya sebelum menulis hasil terbaru dari Path 4
+                databaseHelper.deleteDataKoordinatEmployee(sEmployee_id);
+                for (Koordinat koordinat : koordinats) {
+                    if (koordinat == null || "kosong".equalsIgnoreCase(koordinat.getStatus())) {
+                        continue;
+                    }
+                    databaseHelper.insertDataKoordinatEmployee(koordinat.getId(), sEmployee_id, koordinat.getAlamat(), koordinat.getLet(), koordinat.getLng());
+                }
 
-                if (koordinats == null || koordinats.isEmpty()) {
-
+                if (showUiFeedback) {
                     pgSingkronLokasi.setVisibility(View.GONE);
                     showSyncStatus(ivStatusLokasi, true, "Sinkron Lokasi Berhasil");
-                    return;
-
                 }
-                if ("kosong".equals(response.body().get(0).getStatus())){
-                    databaseHelper.deleteDataKoordinatEmployee(sEmployee_id);
-                }else{
-                    Cursor koorditaemplyeData = databaseHelper.getDataKoordinatEmp(sEmployee_id);
-                    if (koorditaemplyeData.getCount() == 0){
-                        for (Koordinat koordinat : koordinats){
-                            databaseHelper.insertDataKoordinatEmployee(koordinat.getId(), sEmployee_id, koordinat.getAlamat(), koordinat.getLet(), koordinat.getLng());
-
-                        }
-                    }else{
-                        Integer deleteKoordinatE = databaseHelper.deleteDataKoordinatEmployee(sEmployee_id);
-                        if (deleteKoordinatE > 0){
-
-                            for (Koordinat koordinat : koordinats){
-                                databaseHelper.insertDataKoordinatEmployee(koordinat.getId(), sEmployee_id, koordinat.getAlamat(), koordinat.getLet(), koordinat.getLng());
-                            }
-
-                        }
-                    }
-
-                }
-
-                pgSingkronLokasi.setVisibility(View.GONE);
-                showSyncStatus(ivStatusLokasi, true, "Sinkron Lokasi Berhasil");
+                if (onComplete != null) onComplete.run();
             }
 
             @Override
             public void onFailure(@NonNull Call<List<Koordinat>> call, @NonNull Throwable t) {
-
-                dialogView.viewNotifKosong(DashboardVersiOne.this, "Gagal mengakses server.", "Silahkan coba kembali.");
-                pgSingkronLokasi.setVisibility(View.GONE);
-                showSyncStatus(ivStatusLokasi, false, "Sinkron Lokasi Gagal");
-
+                if (showUiFeedback) {
+                    dialogView.viewNotifKosong(DashboardVersiOne.this, "Gagal mengakses server.", "Silahkan coba kembali.");
+                    pgSingkronLokasi.setVisibility(View.GONE);
+                    showSyncStatus(ivStatusLokasi, false, "Sinkron Lokasi Gagal");
+                }
+                if (onComplete != null) onComplete.run();
             }
         });
     }
@@ -1586,11 +1742,13 @@ public class DashboardVersiOne extends AppCompatActivity {
             }
 
             Glide.with(this)
-                    .load(ServerConfig.getStorageUrl() + "foto-pegawai/" + fotoProfile)
+                    .load(ServerConfig.resolveFotoPegawaiUrl(fotoProfile))
                     .placeholder(R.drawable.profil_pic)
                     .error(R.drawable.profil_pic)
                     .signature(new ObjectKey(System.currentTimeMillis()))
                     .into(ciUser);
+
+            initDashboardWeather();
         });
     }
 
@@ -1616,7 +1774,7 @@ public class DashboardVersiOne extends AppCompatActivity {
         }
 
         Glide.with(this)
-                .load(ServerConfig.getStorageUrl() + "foto-pegawai/" + fotoProfile)
+                .load(ServerConfig.resolveFotoPegawaiUrl(fotoProfile))
                 .placeholder(R.drawable.profil_pic)
                 .error(R.drawable.profil_pic)
                 .into(ciUser);

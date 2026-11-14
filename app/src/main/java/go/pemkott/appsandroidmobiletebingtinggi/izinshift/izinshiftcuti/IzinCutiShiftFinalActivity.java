@@ -11,6 +11,8 @@ import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.loca
 import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.makeDateString;
 import static go.pemkott.appsandroidmobiletebingtinggi.utils.FileUtil.getDriveFilePath;
 
+import go.pemkott.appsandroidmobiletebingtinggi.utils.AttendanceNotificationHelper;
+
 import android.Manifest;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
@@ -636,8 +638,7 @@ public class IzinCutiShiftFinalActivity extends AppCompatActivity implements OnM
                 dialogproses.dismiss();
 
                 if (!response.isSuccessful()) {
-
-
+                    AttendanceNotificationHelper.notifyHttpFailure(IzinCutiShiftFinalActivity.this, "Izin Cuti Shift", response);
                     dialogView.viewNotifKosong(
                             IzinCutiShiftFinalActivity.this,
                             "Gagal mengisi absensi",
@@ -648,11 +649,14 @@ public class IzinCutiShiftFinalActivity extends AppCompatActivity implements OnM
 
                 ResponsePOJO data = response.body();
 
-                if (Objects.requireNonNull(response.body()).isStatus()){
+                if (data != null && data.isStatus()){
                     databaseHelper.insertLog(sEmployeID, eOPD, rbTanggal, "Melakukan Pengajuan Izin Cuti (Shift)", "Cuti");
+                    AttendanceNotificationHelper.notifySuccess(IzinCutiShiftFinalActivity.this, "Izin Cuti Shift", data.getRemarks());
                     dialogView.viewSukses(IzinCutiShiftFinalActivity.this, data.getRemarks());
                 }else {
-                    dialogView.viewNotifKosong(IzinCutiShiftFinalActivity.this, data.getRemarks(),"");
+                    String errRemarks = data != null ? data.getRemarks() : "Respon server tidak valid.";
+                    AttendanceNotificationHelper.notifyFailure(IzinCutiShiftFinalActivity.this, "Izin Cuti Shift", errRemarks);
+                    dialogView.viewNotifKosong(IzinCutiShiftFinalActivity.this, errRemarks,"");
                 }
 
             }
@@ -660,6 +664,7 @@ public class IzinCutiShiftFinalActivity extends AppCompatActivity implements OnM
             @Override
             public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
                 dialogproses.dismiss();
+                AttendanceNotificationHelper.notifyNetworkFailure(IzinCutiShiftFinalActivity.this, "Izin Cuti Shift", t);
                 dialogView.pesanError(IzinCutiShiftFinalActivity.this);
             }
         });

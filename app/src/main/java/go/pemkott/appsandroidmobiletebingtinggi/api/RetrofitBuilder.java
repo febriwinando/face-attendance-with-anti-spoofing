@@ -14,8 +14,9 @@ public class RetrofitBuilder {
 
     private static Retrofit retrofit = null;
     private static Boolean lastBypassState = null;
+    private static String lastBaseUrl = null;
 
-    public static Retrofit getClient(Context context){
+    public static synchronized Retrofit getClient(Context context){
         Context appContext = context != null ? context.getApplicationContext() : MyApplication.getAppContext();
         boolean enableBypass = false;
         if (appContext != null) {
@@ -23,8 +24,11 @@ public class RetrofitBuilder {
             enableBypass = session.isSslBypassEnabled();
         }
 
-        if (retrofit == null || lastBypassState == null || lastBypassState != enableBypass) {
+        String currentApiUrl = ServerConfig.getApiUrl();
+        if (retrofit == null || lastBypassState == null || lastBypassState != enableBypass
+                || lastBaseUrl == null || !currentApiUrl.equals(lastBaseUrl)) {
             lastBypassState = enableBypass;
+            lastBaseUrl = currentApiUrl;
             OkHttpClient.Builder builder = enableBypass
                     ? SSLHelper.getUnsafeOkHttpClientBuilder()
                     : new OkHttpClient.Builder();
@@ -69,12 +73,18 @@ public class RetrofitBuilder {
                     .build();
 
             retrofit = new Retrofit.Builder()
-                    .baseUrl(ServerConfig.getApiUrl())
+                    .baseUrl(currentApiUrl)
                     .addConverterFactory(GsonConverterFactory.create())
                     .client(okHttpClient)
                     .build();
         }
         return retrofit;
+    }
+
+    public static synchronized void resetClient() {
+        retrofit = null;
+        lastBypassState = null;
+        lastBaseUrl = null;
     }
 
     public static Retrofit getClient(){

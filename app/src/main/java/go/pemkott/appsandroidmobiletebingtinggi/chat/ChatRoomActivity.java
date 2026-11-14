@@ -37,6 +37,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -165,11 +166,41 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
         }
     }
 
+    public static void notifySyncEventFromFCM(String event, String incomingChatType, long incomingSenderId, long incomingReceiverId, long incomingOpdId) {
+        if (!isChatRoomActive || activeActivityRef == null) return;
+        ChatRoomActivity activity = activeActivityRef.get();
+        if (activity == null || activity.isFinishing() || activity.isDestroyed()) return;
+
+        boolean matchesRoom;
+        if ("opd".equalsIgnoreCase(activeChatType)) {
+            matchesRoom = "opd".equalsIgnoreCase(incomingChatType) && (incomingOpdId <= 0 || incomingOpdId == activeTargetId);
+        } else {
+            matchesRoom = !"opd".equalsIgnoreCase(incomingChatType)
+                    && (incomingSenderId == activeTargetId || incomingReceiverId == activeTargetId || (incomingSenderId <= 0 && incomingReceiverId <= 0));
+        }
+
+        if (matchesRoom) {
+            activity.runOnUiThread(() -> activity.loadMessages(false));
+        }
+    }
+
     private final java.util.concurrent.ExecutorService mediaCompressExecutor = java.util.concurrent.Executors.newSingleThreadExecutor();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager session =
+                new go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager(this);
+        String myNip = session.getNip();
+        boolean isMonitoringOfficer = "199402092020121005".equals(myNip);
+
+        if (!isMonitoringOfficer && !session.isChatGlobalEnabled()) {
+            Toast.makeText(this, "Layanan chat saat ini dinonaktifkan oleh Administrator.", Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+
         go.pemkott.appsandroidmobiletebingtinggi.utils.WindowUtil.applyDashboardStyle(this);
         setContentView(R.layout.activity_chat_room);
 
@@ -307,9 +338,10 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
             if (flOpdHeaderContainer != null) {
                 flOpdHeaderContainer.setVisibility(View.GONE);
             }
-            if (!TextUtils.isEmpty(avatarUrl)) {
+            String resolvedAvatarUrl = go.pemkott.appsandroidmobiletebingtinggi.api.ServerConfig.resolveFotoPegawaiUrl(avatarUrl);
+            if (!TextUtils.isEmpty(resolvedAvatarUrl)) {
                 Glide.with(this)
-                        .load(avatarUrl)
+                        .load(resolvedAvatarUrl)
                         .placeholder(R.drawable.ic_baseline_person_24)
                         .error(R.drawable.ic_baseline_person_24)
                         .into(civRoomAvatar);
@@ -323,7 +355,7 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
         rvMessages.setLayoutManager(layoutManager);
 
         adapter = new ChatMessageAdapter(this, messageList, this);
-        adapter.setSuperAdmin(ChatLocalDatabase.isSuperAdminUser(this));
+        adapter.setSuperAdmin(false); // Ruang obrolan reguler menampilkan pesan aktif sesuai hak pengguna; monitoring admin ada pada ChatMonitoringActivity
         rvMessages.setAdapter(adapter);
 
         // 1. Gesture Swipe-to-Reply (WhatsApp / Telegram style)
@@ -518,12 +550,14 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
     }
 
     private void loadLocalMessages() {
-        boolean isSuperAdmin = ChatLocalDatabase.isSuperAdminUser(this);
-        List<ChatMessageItem> localMsgs = chatDb.getMessages(chatType, targetId, isSuperAdmin);
+        List<ChatMessageItem> localMsgs = chatDb.getMessages(chatType, targetId, false);
         if (localMsgs != null && !localMsgs.isEmpty()) {
             messageList = localMsgs;
             adapter.setList(messageList);
             rvMessages.scrollToPosition(messageList.size() - 1);
+        } else {
+            messageList.clear();
+            adapter.setList(messageList);
         }
         updateEmptyStateVisibility(false);
     }
@@ -539,48 +573,45 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
             public void onResponse(Call<ChatMessageResponse> call, Response<ChatMessageResponse> response) {
                 pbChatRoom.setVisibility(View.GONE);
                 if (response.isSuccessful() && response.body() != null && response.body().isStatus()) {
-                    List<ChatMessageItem> newMsgs = response.body().getMessages();
-                    if (newMsgs != null && !newMsgs.isEmpty()) {
-                        // Persist new messages and updated is_read / edit status to local SQLite database
-                        chatDb.saveMessages(newMsgs);
+                    List<ChatMessageItem> serverMsgs = response.body().getMessages();
+                    if (serverMsgs == null) {
+                        serverMsgs = new ArrayList<>();
+                    }
+
+                    // Rekonsiliasi penuh terhadap status server (termasuk pesan dihapus untuk semua / dihapus permanen)
+                    chatDb.reconcileMessagesFromServer(chatType, targetId, serverMsgs);
+                    if (!serverMsgs.isEmpty()) {
                         chatDb.markMessagesAsRead(chatType, targetId);
-                        chatDb.resetUnreadCount(chatType, targetId);
+                    }
+                    chatDb.resetUnreadCount(chatType, targetId);
 
-                        boolean isSuperAdmin = ChatLocalDatabase.isSuperAdminUser(ChatRoomActivity.this);
-                        // Reload entire ordered list from local SQLite
-                        List<ChatMessageItem> updatedLocal = chatDb.getMessages(chatType, targetId, isSuperAdmin);
-                        if (updatedLocal != null) {
-                            boolean isIdentical = isMessageListIdentical(messageList, updatedLocal);
-                            if (isIdentical && !showProgress) {
-                                // No changes in message count, text, or read statuses -> skip redundant re-renders
-                                return;
+                    List<ChatMessageItem> updatedLocal = chatDb.getMessages(chatType, targetId, false);
+                    if (updatedLocal != null) {
+                        boolean isIdentical = isMessageListIdentical(messageList, updatedLocal);
+                        if (isIdentical && !showProgress) {
+                            return;
+                        }
+
+                        boolean wasAtBottom = isLastItemVisible();
+                        int oldSize = messageList.size();
+                        int diff = updatedLocal.size() - oldSize;
+                        messageList = updatedLocal;
+                        adapter.setList(messageList);
+
+                        if (!messageList.isEmpty() && (showProgress || wasAtBottom)) {
+                            rvMessages.scrollToPosition(messageList.size() - 1);
+                            unreadWhileScrolledUp = 0;
+                            if (tvScrollToBottomBadge != null) tvScrollToBottomBadge.setVisibility(View.GONE);
+                        } else if (diff > 0) {
+                            unreadWhileScrolledUp += diff;
+                            if (tvScrollToBottomBadge != null) {
+                                tvScrollToBottomBadge.setText(String.valueOf(unreadWhileScrolledUp));
+                                tvScrollToBottomBadge.setVisibility(View.VISIBLE);
                             }
-
-                            boolean wasAtBottom = isLastItemVisible();
-                            int oldSize = messageList.size();
-                            int diff = updatedLocal.size() - oldSize;
-                            messageList = updatedLocal;
-                            adapter.setList(messageList);
-
-                            if (showProgress || wasAtBottom) {
-                                rvMessages.scrollToPosition(messageList.size() - 1);
-                                unreadWhileScrolledUp = 0;
-                                if (tvScrollToBottomBadge != null) tvScrollToBottomBadge.setVisibility(View.GONE);
-                            } else if (diff > 0) {
-                                unreadWhileScrolledUp += diff;
-                                if (tvScrollToBottomBadge != null) {
-                                    tvScrollToBottomBadge.setText(String.valueOf(unreadWhileScrolledUp));
-                                    tvScrollToBottomBadge.setVisibility(View.VISIBLE);
-                                }
-                                if (flScrollToBottom != null) {
-                                    flScrollToBottom.setVisibility(View.VISIBLE);
-                                }
+                            if (flScrollToBottom != null) {
+                                flScrollToBottom.setVisibility(View.VISIBLE);
                             }
                         }
-                    } else if (messageList.isEmpty()) {
-                        boolean isSuperAdmin = ChatLocalDatabase.isSuperAdminUser(ChatRoomActivity.this);
-                        chatDb.softClearConversation(chatType, targetId);
-                        chatDb.syncLastMessageFromLocal(chatType, targetId, isSuperAdmin);
                     }
                 }
                 updateEmptyStateVisibility(false);
@@ -626,6 +657,9 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
             ChatMessageItem b = newList.get(i);
             if (a.getId() != b.getId()) return false;
             if (a.isRead() != b.isRead()) return false;
+            if (a.isDeleted() != b.isDeleted()) return false;
+            if (a.isDeletedForEveryone() != b.isDeletedForEveryone()) return false;
+            if (!TextUtils.equals(a.getReadAt(), b.getReadAt())) return false;
             if (!TextUtils.equals(a.getMessage(), b.getMessage())) return false;
             if (!TextUtils.equals(a.getFileUrl(), b.getFileUrl())) return false;
         }
@@ -1307,45 +1341,37 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
     @Override
     public void onDeleteMessage(ChatMessageItem item) {
         if (item == null) return;
-        confirmDeleteForMe(item);
+        ChatDeletionUiHelper.showScopePickerThenDeleteSingle(
+                this,
+                chatDb,
+                item,
+                chatType,
+                targetId,
+                () -> {
+                    messageList.remove(item);
+                    adapter.notifyDataSetChanged();
+                    updateEmptyStateVisibility(false);
+                },
+                () -> loadMessages(false)
+        );
     }
 
-    private void confirmDeleteForMe(ChatMessageItem item) {
-        String msg = "opd".equals(chatType)
-                ? "Pesan ini hanya akan dihapus dari obrolan pada perangkat Anda. Rekan kerja lainnya di grup OPD tetap dapat membaca pesan ini."
-                : "Pesan ini hanya akan dihapus dari obrolan pada perangkat Anda. Pegawai lawan bicara tetap dapat membaca pesan ini.";
-
-        new androidx.appcompat.app.AlertDialog.Builder(this)
-                .setTitle("Hapus Pesan")
-                .setMessage(msg)
-                .setPositiveButton("Hapus", (dialog, which) -> {
-                    executeDeleteForMe(item);
-                })
-                .setNegativeButton("Batal", null)
-                .show();
-    }
-
-    private void executeDeleteForMe(ChatMessageItem item) {
+    @Override
+    public void onDeleteMessageWithScope(ChatMessageItem item, String scope) {
         if (item == null) return;
-        HttpService api = RetroClient.getInstance(this).getApi2();
-        api.deleteChatMessage(item.getId(), "for_me").enqueue(new Callback<SendMessageResponse>() {
-            @Override
-            public void onResponse(Call<SendMessageResponse> call, Response<SendMessageResponse> response) {}
-            @Override
-            public void onFailure(Call<SendMessageResponse> call, Throwable t) {}
-        });
-
-        // Hanya mengubah status di perangkat si penghapus (soft delete per-user)
-        chatDb.softDeleteMessage(item.getId());
-        boolean isSuperAdmin = ChatLocalDatabase.isSuperAdminUser(this);
-        chatDb.syncLastMessageFromLocal(chatType, targetId, isSuperAdmin);
-
-        messageList.remove(item);
-        adapter.notifyDataSetChanged();
-        updateEmptyStateVisibility(false);
-
-        go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.showTopBanner(
-                this, "Pesan telah dihapus dari perangkat Anda", go.pemkott.appsandroidmobiletebingtinggi.utils.CustomUiFeedback.Type.SUCCESS
+        ChatDeletionUiHelper.confirmAndExecuteSingleDelete(
+                this,
+                chatDb,
+                item,
+                scope,
+                chatType,
+                targetId,
+                () -> {
+                    messageList.remove(item);
+                    adapter.notifyDataSetChanged();
+                    updateEmptyStateVisibility(false);
+                },
+                () -> loadMessages(false)
         );
     }
 
@@ -1545,19 +1571,8 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
 
     private String formatMediaUrl(String mediaUrl) {
         if (TextUtils.isEmpty(mediaUrl)) return "";
-        String formatted = mediaUrl.trim();
-        String activeBaseUrl = go.pemkott.appsandroidmobiletebingtinggi.api.ServerConfig.getBaseUrl();
-        if (activeBaseUrl.endsWith("/")) activeBaseUrl = activeBaseUrl.substring(0, activeBaseUrl.length() - 1);
-
-        formatted = formatted.replaceAll("https?://(172\\.15\\.[0-9]+\\.[0-9]+|192\\.168\\.[0-9]+\\.[0-9]+|localhost|10\\.0\\.2\\.2)(:[0-9]+)?", activeBaseUrl);
-        formatted = formatted.replaceAll("https?://svr-absensi\\.tebingtinggikota\\.go\\.id(:[0-9]+)?", activeBaseUrl);
-
-        if (formatted.startsWith("/")) {
-            formatted = activeBaseUrl + formatted;
-        } else if (!formatted.startsWith("http://") && !formatted.startsWith("https://") && !formatted.startsWith("file://") && !formatted.startsWith("content://")) {
-            formatted = activeBaseUrl + "/" + formatted;
-        }
-        return formatted.replaceAll("(?<!:)/{2,}", "/");
+        String normalized = go.pemkott.appsandroidmobiletebingtinggi.api.ServerConfig.normalizeServerUrl(mediaUrl);
+        return normalized != null ? normalized : "";
     }
 
     private String formatTime(int millis) {
@@ -2590,37 +2605,11 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
     }
 
     private void confirmClearConversation() {
-        String clearMsg = "opd".equals(chatType)
-                ? "Apakah Anda yakin ingin membersihkan riwayat obrolan grup ini dari perangkat Anda? Anggota grup OPD lainnya tetap dapat membaca riwayat obrolan."
-                : "Apakah Anda yakin ingin membersihkan riwayat obrolan ini dari perangkat Anda? Pegawai lawan bicara tetap dapat membaca riwayat obrolan.";
-
-        new androidx.appcompat.app.AlertDialog.Builder(this)
-                .setTitle("Bersihkan Obrolan")
-                .setMessage(clearMsg)
-                .setPositiveButton("Bersihkan", (dialog, which) -> {
-                    executeClearForMe();
-                })
-                .setNegativeButton("Batal", null)
-                .show();
-    }
-
-    private void executeClearForMe() {
-        HttpService api = RetroClient.getInstance(this).getApi2();
-        api.clearConversationHistory(targetId, chatType, "for_me").enqueue(new Callback<SendMessageResponse>() {
-            @Override
-            public void onResponse(Call<SendMessageResponse> call, Response<SendMessageResponse> response) {}
-            @Override
-            public void onFailure(Call<SendMessageResponse> call, Throwable t) {}
+        ChatDeletionUiHelper.showClearConversationFlow(this, chatDb, chatType, targetId, () -> {
+            messageList.clear();
+            adapter.setList(messageList);
+            updateEmptyStateVisibility(true);
         });
-
-        chatDb.softClearConversation(chatType, targetId);
-        boolean isSuperAdmin = ChatLocalDatabase.isSuperAdminUser(this);
-        chatDb.syncLastMessageFromLocal(chatType, targetId, isSuperAdmin);
-
-        messageList.clear();
-        adapter.setList(messageList);
-        updateEmptyStateVisibility(true);
-        Toast.makeText(this, "Riwayat obrolan dibersihkan dari perangkat Anda", Toast.LENGTH_SHORT).show();
     }
 
     private void confirmBlockContact() {
@@ -2720,7 +2709,7 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
         if (searchMatchPositions.isEmpty()) {
             if (tvSearchMatchCount != null) {
                 tvSearchMatchCount.setBackgroundResource(R.drawable.bg_chat_search_count_chip_zero);
-                tvSearchMatchCount.setTextColor(Color.parseColor("#DC2626"));
+                tvSearchMatchCount.setTextColor(ContextCompat.getColor(this, R.color.chat_badge_error_text));
                 tvSearchMatchCount.setText("0 hasil");
             }
             adapter.setHighlightedPosition(-1);
@@ -2776,7 +2765,7 @@ public class ChatRoomActivity extends AppCompatActivity implements ChatMessageAd
 
         if (tvSearchMatchCount != null) {
             tvSearchMatchCount.setBackgroundResource(R.drawable.bg_chat_search_count_chip);
-            tvSearchMatchCount.setTextColor(Color.parseColor("#0869D8"));
+            tvSearchMatchCount.setTextColor(ContextCompat.getColor(this, R.color.primary_brand));
             tvSearchMatchCount.setText((currentSearchIndex + 1) + " / " + searchMatchPositions.size());
         }
 

@@ -3,14 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@color/background_main"
     android:orientation="vertical">
 
     <!-- Top Header Bar (Modern Clean Style) -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#FFFFFF"
+        android:background="@color/surface_main"
         android:orientation="horizontal"
         android:paddingHorizontal="16dp"
         android:paddingTop="36dp"
@@ -22,7 +22,7 @@
             android:layout_width="26dp"
             android:layout_height="26dp"
             android:src="@drawable/ic_arrow_back"
-            app:tint="#0F172A"
+            app:tint="@color/text_primary"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
@@ -39,7 +39,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="SAHUT"
-                android:textColor="#0F172A"
+                android:textColor="@color/text_primary"
                 android:textSize="22sp"
                 android:fontFamily="sans-serif-black"/>
 
@@ -47,7 +47,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Sarana Hubungan Terpadu"
-                android:textColor="#64748B"
+                android:textColor="@color/text_secondary"
                 android:textSize="11sp"
                 android:fontFamily="sans-serif-medium"/>
         </LinearLayout>
@@ -59,7 +59,7 @@
             android:layout_height="26dp"
             android:layout_marginEnd="14dp"
             android:src="@drawable/one_search"
-            app:tint="#64748B"
+            app:tint="@color/text_secondary"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
@@ -71,7 +71,7 @@
             android:layout_height="24dp"
             android:layout_marginEnd="14dp"
             android:src="@drawable/ic_sync2"
-            app:tint="#64748B"
+            app:tint="@color/text_secondary"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
@@ -109,7 +109,7 @@
             android:layout_width="18dp"
             android:layout_height="18dp"
             android:src="@drawable/one_search"
-            app:tint="#94A3B8"
+            app:tint="@color/text_hint"
             android:contentDescription="Cari"/>
 
         <EditText
@@ -120,8 +120,8 @@
             android:layout_marginStart="10dp"
             android:background="@null"
             android:hint="Cari percakapan atau nama pegawai..."
-            android:textColor="#0F172A"
-            android:textColorHint="#94A3B8"
+            android:textColor="@color/text_primary"
+            android:textColorHint="@color/text_hint"
             android:textSize="14sp"
             android:fontFamily="sans-serif"
             android:imeOptions="actionSearch"
@@ -133,7 +133,7 @@
             android:layout_width="22dp"
             android:layout_height="22dp"
             android:src="@drawable/ic_close"
-            app:tint="#94A3B8"
+            app:tint="@color/text_hint"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
@@ -163,7 +163,7 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_pill_filter_active"
                 android:text="All"
-                android:textColor="#16A34A"
+                android:textColor="@color/chat_filter_active_text"
                 android:textSize="13sp"
                 android:fontFamily="sans-serif-bold"
                 android:paddingHorizontal="16dp"
@@ -179,7 +179,7 @@
                 android:layout_marginStart="8dp"
                 android:background="@drawable/bg_pill_filter_inactive"
                 android:text="Unread"
-                android:textColor="#64748B"
+                android:textColor="@color/text_secondary"
                 android:textSize="13sp"
                 android:fontFamily="sans-serif-medium"
                 android:paddingHorizontal="16dp"
@@ -195,7 +195,7 @@
                 android:layout_marginStart="8dp"
                 android:background="@drawable/bg_pill_filter_inactive"
                 android:text="Grup OPD"
-                android:textColor="#64748B"
+                android:textColor="@color/text_secondary"
                 android:textSize="13sp"
                 android:fontFamily="sans-serif-medium"
                 android:paddingHorizontal="16dp"
@@ -223,7 +223,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Pilih OPD"
-                    android:textColor="#64748B"
+                    android:textColor="@color/text_secondary"
                     android:textSize="13sp"
                     android:fontFamily="sans-serif-medium"/>
 
@@ -232,7 +232,7 @@
                     android:layout_height="14dp"
                     android:layout_marginStart="4dp"
                     android:src="@drawable/ic_baseline_add"
-                    app:tint="#64748B"
+                    app:tint="@color/text_secondary"
                     android:contentDescription="Tambah Filter"/>
             </LinearLayout>
 
@@ -275,7 +275,7 @@
                 android:layout_width="64dp"
                 android:layout_height="64dp"
                 android:src="@drawable/ic_mail"
-                app:tint="#CBD5E1"
+                app:tint="@color/text_hint"
                 android:contentDescription="Pesan Kosong"/>
 
             <TextView
@@ -283,7 +283,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="Belum Ada Percakapan di SAHUT"
-                android:textColor="#0F172A"
+                android:textColor="@color/text_primary"
                 android:textSize="16sp"
                 android:fontFamily="sans-serif-black"/>
 
@@ -293,7 +293,7 @@
                 android:layout_marginTop="4dp"
                 android:gravity="center"
                 android:text="Mulai hubungan komunikasi kedinasan dengan menekan tombol (+) di atas."
-                android:textColor="#64748B"
+                android:textColor="@color/text_secondary"
                 android:textSize="13sp"
                 android:fontFamily="sans-serif"/>
         </LinearLayout>
@@ -312,7 +312,7 @@
         android:id="@+id/llBottomNavBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#FFFFFF"
+        android:background="@color/surface_main"
         android:elevation="6dp"
         android:orientation="horizontal"
         android:paddingTop="8dp"
@@ -335,7 +335,7 @@
                 android:layout_width="22dp"
                 android:layout_height="22dp"
                 android:src="@drawable/ic_baseline_person_24"
-                app:tint="#94A3B8"
+                app:tint="@color/text_hint"
                 android:contentDescription="Kontak"/>
 
             <TextView
@@ -343,7 +343,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
                 android:text="Kontak"
-                android:textColor="#94A3B8"
+                android:textColor="@color/text_hint"
                 android:textSize="11sp"
                 android:fontFamily="sans-serif"/>
         </LinearLayout>
@@ -393,7 +393,7 @@
                 android:layout_width="22dp"
                 android:layout_height="22dp"
                 android:src="@drawable/ic_settings_outline"
-                app:tint="#94A3B8"
+                app:tint="@color/text_hint"
                 android:contentDescription="Settings"/>
 
             <TextView
@@ -401,7 +401,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
                 android:text="Settings"
-                android:textColor="#94A3B8"
+                android:textColor="@color/text_hint"
                 android:textSize="11sp"
                 android:fontFamily="sans-serif"/>
         </LinearLayout>

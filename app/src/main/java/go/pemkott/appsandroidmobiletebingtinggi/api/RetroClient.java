@@ -7,6 +7,7 @@ import com.google.gson.GsonBuilder;
 
 import java.util.concurrent.TimeUnit;
 
+import go.pemkott.appsandroidmobiletebingtinggi.BuildConfig;
 import go.pemkott.appsandroidmobiletebingtinggi.MyApplication;
 import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
 import okhttp3.OkHttpClient;
@@ -19,16 +20,20 @@ public class RetroClient {
     private static RetroClient myClient;
     private final Retrofit retrofit;
     private final boolean isBypassMode;
+    private final String baseUrl;
 
-    private RetroClient(boolean enableBypass) {
+    private RetroClient(boolean enableBypass, String apiBaseUrl) {
         this.isBypassMode = enableBypass;
+        this.baseUrl = apiBaseUrl;
 
         HttpLoggingInterceptor logging =
                 new HttpLoggingInterceptor();
 
-        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+        logging.redactHeader("Authorization");
+        logging.redactHeader("Cookie");
+        logging.setLevel(BuildConfig.DEBUG ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
 
-        OkHttpClient.Builder builder = (enableBypass || !ServerConfig.getBaseUrl().contains("svr-absensi.tebingtinggikota.go.id") || ServerConfig.getBaseUrl().startsWith("https://"))
+        OkHttpClient.Builder builder = (BuildConfig.DEBUG && enableBypass)
                 ? SSLHelper.getUnsafeOkHttpClientBuilder()
                 : new OkHttpClient.Builder();
 
@@ -80,7 +85,7 @@ public class RetroClient {
                 .create();
 
         retrofit = new Retrofit.Builder()
-                .baseUrl(ServerConfig.getApiUrl())
+                .baseUrl(apiBaseUrl)
                 .client(okHttpClient)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
@@ -93,8 +98,9 @@ public class RetroClient {
             SessionManager session = new SessionManager(appContext);
             enableBypass = session.isSslBypassEnabled();
         }
-        if (myClient == null || myClient.isBypassMode != enableBypass) {
-            myClient = new RetroClient(enableBypass);
+        String currentApiUrl = ServerConfig.getApiUrl();
+        if (myClient == null || myClient.isBypassMode != enableBypass || !currentApiUrl.equals(myClient.baseUrl)) {
+            myClient = new RetroClient(enableBypass, currentApiUrl);
         }
         return myClient;
     }

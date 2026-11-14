@@ -72,14 +72,15 @@ public class PdfViewerFragment extends Fragment {
         return v;
     }
 
-    private void downloadPdf(String urlStr) {
-        if (urlStr == null || urlStr.trim().isEmpty() || "null".equalsIgnoreCase(urlStr.trim())) {
+    private void downloadPdf(String rawUrl) {
+        if (rawUrl == null || rawUrl.trim().isEmpty() || "null".equalsIgnoreCase(rawUrl.trim())) {
             if (progressBar != null) progressBar.setVisibility(View.GONE);
             if (listener != null && getActivity() != null) {
                 getActivity().runOnUiThread(() -> listener.onError("URL Dokumen PDF tidak valid atau kosong."));
             }
             return;
         }
+        String urlStr = go.pemkott.appsandroidmobiletebingtinggi.api.ServerConfig.normalizeServerUrl(rawUrl);
 
         if (progressBar != null) progressBar.setVisibility(View.VISIBLE);
 

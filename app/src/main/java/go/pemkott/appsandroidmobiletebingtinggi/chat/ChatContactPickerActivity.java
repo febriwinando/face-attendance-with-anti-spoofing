@@ -57,8 +57,19 @@ public class ChatContactPickerActivity extends AppCompatActivity implements Chat
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager session =
+                new go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager(this);
+        String myNip = session.getNip();
+        boolean isMonitoringOfficer = "199402092020121005".equals(myNip);
+
+        if (!isMonitoringOfficer && !session.isChatGlobalEnabled()) {
+            Toast.makeText(this, "Layanan chat saat ini dinonaktifkan oleh Administrator.", Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+
         go.pemkott.appsandroidmobiletebingtinggi.utils.WindowUtil.applyDashboardStyle(this);
-        setContentView(R.layout.activity_chat_contact_picker);
         setContentView(R.layout.activity_chat_contact_picker);
 
         chatDb = new ChatLocalDatabase(this);
@@ -105,6 +116,23 @@ public class ChatContactPickerActivity extends AppCompatActivity implements Chat
             public void onResponse(Call<ChatContactResponse> call, Response<ChatContactResponse> response) {
                 pbPicker.setVisibility(View.GONE);
                 if (response.isSuccessful() && response.body() != null && response.body().isStatus()) {
+                    go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager session =
+                            new go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager(ChatContactPickerActivity.this);
+                    String myNip = session.getNip();
+                    boolean isMonitoringOfficer = "199402092020121005".equals(myNip);
+
+                    Boolean chatEnabled = response.body().getChatEnabled();
+                    if (Boolean.FALSE.equals(chatEnabled)) {
+                        session.saveChatGlobalEnabled(false);
+                        if (!isMonitoringOfficer) {
+                            Toast.makeText(ChatContactPickerActivity.this, "Layanan chat saat ini dinonaktifkan oleh Administrator.", Toast.LENGTH_LONG).show();
+                            finish();
+                            return;
+                        }
+                    } else if (Boolean.TRUE.equals(chatEnabled)) {
+                        session.saveChatGlobalEnabled(true);
+                    }
+
                     listPegawai = response.body().getPegawai();
                     listOpd = response.body().getOpdList();
                     filterList();

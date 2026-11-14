@@ -1130,19 +1130,8 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     public String formatMediaUrl(String rawUrl) {
         if (TextUtils.isEmpty(rawUrl)) return "";
-        String formatted = rawUrl.trim();
-        String activeBaseUrl = go.pemkott.appsandroidmobiletebingtinggi.api.ServerConfig.getBaseUrl();
-        if (activeBaseUrl.endsWith("/")) activeBaseUrl = activeBaseUrl.substring(0, activeBaseUrl.length() - 1);
-
-        formatted = formatted.replaceAll("https?://(172\\.15\\.[0-9]+\\.[0-9]+|192\\.168\\.[0-9]+\\.[0-9]+|localhost|10\\.0\\.2\\.2)(:[0-9]+)?", activeBaseUrl);
-        formatted = formatted.replaceAll("https?://svr-absensi\\.tebingtinggikota\\.go\\.id(:[0-9]+)?", activeBaseUrl);
-
-        if (formatted.startsWith("/")) {
-            formatted = activeBaseUrl + formatted;
-        } else if (!formatted.startsWith("http://") && !formatted.startsWith("https://") && !formatted.startsWith("file://") && !formatted.startsWith("content://")) {
-            formatted = activeBaseUrl + "/" + formatted;
-        }
-        return formatted.replaceAll("(?<!:)/{2,}", "/");
+        String normalized = go.pemkott.appsandroidmobiletebingtinggi.api.ServerConfig.normalizeServerUrl(rawUrl);
+        return normalized != null ? normalized : "";
     }
 
     private String formatAudioUrl(String rawUrl) {
@@ -1161,19 +1150,12 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         if (TextUtils.isEmpty(primaryUrl) || imageView == null) return;
 
         try {
-            String activeBaseUrl = go.pemkott.appsandroidmobiletebingtinggi.api.ServerConfig.getBaseUrl();
-            if (activeBaseUrl.endsWith("/")) activeBaseUrl = activeBaseUrl.substring(0, activeBaseUrl.length() - 1);
-
-            String fallbackUrl = primaryUrl;
-            if (primaryUrl.contains(":8443")) {
-                fallbackUrl = primaryUrl.replace(":8443", ":8000").replace("https://", "http://");
-            } else if (primaryUrl.contains(":8000")) {
-                fallbackUrl = primaryUrl.replace(":8000", ":8443").replace("http://", "https://");
-            }
+            String normalizedPrimary = formatMediaUrl(primaryUrl);
+            if (TextUtils.isEmpty(normalizedPrimary)) return;
 
             Glide.with(context)
-                    .load(primaryUrl)
-                    .error(Glide.with(context).load(fallbackUrl).error(R.drawable.ic_image))
+                    .load(normalizedPrimary)
+                    .error(R.drawable.ic_image)
                     .placeholder(R.drawable.ic_image)
                     .into(imageView);
         } catch (Exception ignored) {}
@@ -1255,9 +1237,12 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             }
         }
 
-        // Hapus Pesan (Soft delete per-user - Bebas dari opsi hapus permanen di ruang chat)
-        if (!item.isDeleted()) {
-            options.add("Hapus Pesan");
+        // Hapus Pesan Logis (Tidak pernah ada opsi hapus permanen di halaman obrolan reguler)
+        if (!item.isDeleted() && !item.isDeletedForEveryone()) {
+            options.add("Hapus untuk Saya");
+            if (item.canDeleteForEveryone()) {
+                options.add("Hapus untuk Semua");
+            }
         }
 
         String[] optArray = options.toArray(new String[0]);
@@ -1273,8 +1258,10 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                         if (actionListener != null) actionListener.onCopyText(item.getMessage());
                     } else if ("Edit Pesan".equals(selected)) {
                         if (actionListener != null) actionListener.onEditMessage(item);
+                    } else if ("Hapus untuk Semua".equals(selected)) {
+                        if (actionListener != null) actionListener.onDeleteMessageWithScope(item, "for_everyone");
                     } else if ("Hapus Pesan".equals(selected) || "Hapus untuk Saya".equals(selected)) {
-                        if (actionListener != null) actionListener.onDeleteMessage(item);
+                        if (actionListener != null) actionListener.onDeleteMessageWithScope(item, "for_me");
                     }
                 })
                 .show();

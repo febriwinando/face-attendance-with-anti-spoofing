@@ -7,6 +7,10 @@ public class ValidasiModel {
     private boolean status;
     @SerializedName("message")
     private String message;
+    @SerializedName("processed_count")
+    private int processedCount;
+    @SerializedName("skipped_count")
+    private int skippedCount;
 
     public boolean isStatus() {
         return status;
@@ -22,5 +26,13 @@ public class ValidasiModel {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public int getProcessedCount() {
+        return processedCount;
+    }
+
+    public int getSkippedCount() {
+        return skippedCount;
     }
 }

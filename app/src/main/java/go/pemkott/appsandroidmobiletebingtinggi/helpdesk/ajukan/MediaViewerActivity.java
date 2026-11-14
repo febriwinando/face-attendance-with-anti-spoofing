@@ -46,8 +46,12 @@ public class MediaViewerActivity extends AppCompatActivity {
             return;
         }
 
-        String mimeType = null;
         String scheme = mediaUri.getScheme();
+        if ("http".equalsIgnoreCase(scheme) || "https".equalsIgnoreCase(scheme)) {
+            mediaUri = Uri.parse(go.pemkott.appsandroidmobiletebingtinggi.api.ServerConfig.normalizeServerUrl(mediaUri.toString()));
+            scheme = mediaUri.getScheme();
+        }
+        String mimeType = null;
         if ("content".equals(scheme)) {
             mimeType = getContentResolver().getType(mediaUri);
         } else if ("http".equals(scheme) || "https".equals(scheme)) {

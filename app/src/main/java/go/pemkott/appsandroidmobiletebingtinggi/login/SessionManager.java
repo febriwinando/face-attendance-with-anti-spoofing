@@ -124,11 +124,27 @@ public class SessionManager {
     // CHAT TERMS AGREEMENT
     // -------------------------
     public void setChatTermsAccepted(boolean accepted) {
-        prefs.edit().putBoolean("KEY_CHAT_TERMS_ACCEPTED", accepted).apply();
+        setChatTermsAccepted(getEmployeeId(), accepted);
+    }
+
+    public void setChatTermsAccepted(String employeeId, boolean accepted) {
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.remove("KEY_CHAT_TERMS_ACCEPTED");
+        if (employeeId != null && !employeeId.trim().isEmpty()) {
+            editor.putBoolean("KEY_CHAT_TERMS_ACCEPTED_" + employeeId.trim(), accepted);
+        }
+        editor.apply();
     }
 
     public boolean isChatTermsAccepted() {
-        return prefs.getBoolean("KEY_CHAT_TERMS_ACCEPTED", false);
+        return isChatTermsAccepted(getEmployeeId());
+    }
+
+    public boolean isChatTermsAccepted(String employeeId) {
+        if (employeeId == null || employeeId.trim().isEmpty()) {
+            return false;
+        }
+        return prefs.getBoolean("KEY_CHAT_TERMS_ACCEPTED_" + employeeId.trim(), false);
     }
 
     // -------------------------

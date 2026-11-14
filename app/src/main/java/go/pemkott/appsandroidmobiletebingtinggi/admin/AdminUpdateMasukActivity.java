@@ -397,12 +397,29 @@ public class AdminUpdateMasukActivity extends AppCompatActivity {
         String pegawaiInput = etPegawaiId.getText().toString().trim();
 
         int selectedIdx = spPosisiMasuk.getSelectedItemPosition();
+        if (selectedIdx < 0 || selectedIdx >= POSISI_VALUES.length) {
+            dialogView.viewNotifKosong(this, "Peringatan", "Pilih jenis absensi yang valid.");
+            return;
+        }
         String posisiMasuk = POSISI_VALUES[selectedIdx];
         String statusMasuk = STATUS_VALUES[selectedIdx];
         String validasiMasuk = "2";
 
         if (tanggal.isEmpty() || jamMasuk.isEmpty() || pegawaiInput.isEmpty()) {
             dialogView.viewNotifKosong(this, "Peringatan", "Tanggal, Jam Masuk, dan ID/NIP Pegawai wajib diisi.");
+            return;
+        }
+        if (!AdminFormHelper.isValidDate(tanggal)) {
+            dialogView.viewNotifKosong(this, "Peringatan", "Format tanggal harus YYYY-MM-DD yang valid.");
+            return;
+        }
+        if (!AdminFormHelper.isValidTime(jamMasuk, false)) {
+            dialogView.viewNotifKosong(this, "Peringatan", "Format jam masuk harus HH:mm atau HH:mm:ss.");
+            return;
+        }
+        Integer keterlambatan = AdminFormHelper.parseNonNegativeInt(keterlambatanStr);
+        if (keterlambatan == null) {
+            dialogView.viewNotifKosong(this, "Peringatan", "Keterlambatan harus berupa angka bulat >= 0.");
             return;
         }
 
@@ -427,10 +444,16 @@ public class AdminUpdateMasukActivity extends AppCompatActivity {
         HttpService api = RetroClient.getInstance(this).getApi2();
 
         if (fileFotoMasuk == null && fileLampiranMasuk == null) {
-            int keterlambatan = 0;
-            try { keterlambatan = Integer.parseInt(keterlambatanStr); } catch (Exception ignored) {}
-
-            api.updateDataMasukAdmin(tanggal, jamMasuk, keterlambatan, ketMasuk, pegawaiList)
+            api.updateDataMasukAdmin(
+                            tanggal,
+                            jamMasuk,
+                            keterlambatan,
+                            ketMasuk,
+                            posisiMasuk,
+                            statusMasuk,
+                            validasiMasuk,
+                            pegawaiList
+                    )
                     .enqueue(new Callback<ResponsePOJO>() {
                         @Override
                         public void onResponse(Call<ResponsePOJO> call, Response<ResponsePOJO> response) {
@@ -447,7 +470,7 @@ public class AdminUpdateMasukActivity extends AppCompatActivity {
         } else {
             RequestBody bodyTanggal = RequestBody.create(MediaType.parse("text/plain"), tanggal);
             RequestBody bodyMasuk = RequestBody.create(MediaType.parse("text/plain"), jamMasuk);
-            RequestBody bodyKeterlambatan = RequestBody.create(MediaType.parse("text/plain"), keterlambatanStr);
+            RequestBody bodyKeterlambatan = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(keterlambatan));
             RequestBody bodyKetMasuk = RequestBody.create(MediaType.parse("text/plain"), ketMasuk);
             RequestBody bodyPosisi = RequestBody.create(MediaType.parse("text/plain"), posisiMasuk);
             RequestBody bodyStatus = RequestBody.create(MediaType.parse("text/plain"), statusMasuk);
@@ -502,7 +525,8 @@ public class AdminUpdateMasukActivity extends AppCompatActivity {
                 dialogView.viewNotifKosong(AdminUpdateMasukActivity.this, "Gagal Update", pojo.getRemarks() != null ? pojo.getRemarks() : "Proses gagal dilakukan.");
             }
         } else {
-            dialogView.viewNotifKosong(AdminUpdateMasukActivity.this, "Gagal Server", "HTTP " + response.code());
+            String msg = AdminFormHelper.extractApiError(response, "HTTP " + response.code());
+            dialogView.viewNotifKosong(AdminUpdateMasukActivity.this, "Gagal Server", msg);
         }
     }
 }

@@ -60,8 +60,11 @@ import retrofit2.Response;
 public class AdminInsertMassalActivity extends AppCompatActivity {
 
     private EditText etTanggal, etNips, etCustomJam;
-    private CheckBox cbUpdateAl;
+    private CheckBox cbUpdateAl, cbOverwriteExisting;
     private TextView tvSummaryInfo, tvTabSubtitle, tvTabMode1, tvTabMode2, tvTabMode3;
+    private String lastPreviewSignature = null;
+    private String pendingPreviewSignature = null;
+    private int lastPreviewExecutableCount = -1;
     private TextView tvAdminInsertOpdSelect, tvNipCounter;
     private CardView btnTabMode1, btnTabMode2, btnTabMode3, cvSelectOpd, cvPreviewContainer;
     private LinearLayout llContainerMode2, llContainerMode3, llCustomJamBox;
@@ -102,6 +105,7 @@ public class AdminInsertMassalActivity extends AppCompatActivity {
         etTanggal = findViewById(R.id.etAdminInsertTanggal);
         etNips = findViewById(R.id.etAdminInsertNips);
         cbUpdateAl = findViewById(R.id.cbAdminUpdateAl);
+        cbOverwriteExisting = findViewById(R.id.cbAdminOverwriteExisting);
         tvSummaryInfo = findViewById(R.id.tvAdminInsertSummary);
         tvTabSubtitle = findViewById(R.id.tvTabSubtitle);
         tvNipCounter = findViewById(R.id.tvNipCounter);
@@ -292,6 +296,9 @@ public class AdminInsertMassalActivity extends AppCompatActivity {
 
         cvPreviewContainer.setVisibility(View.GONE);
         previewItemList.clear();
+        lastPreviewSignature = null;
+        pendingPreviewSignature = null;
+        lastPreviewExecutableCount = -1;
 
         if (mode == 1) {
             btnTabMode1.setCardBackgroundColor(surfaceMain);
@@ -300,6 +307,7 @@ public class AdminInsertMassalActivity extends AppCompatActivity {
 
             tvTabSubtitle.setText("MODE 1: INPUT PRESENSI MASSAL (MASUK & PULANG)");
             cbUpdateAl.setVisibility(View.VISIBLE);
+            if (cbOverwriteExisting != null) cbOverwriteExisting.setVisibility(View.GONE);
             llContainerMode2.setVisibility(View.GONE);
             llContainerMode3.setVisibility(View.GONE);
             tvSummaryInfo.setText("Metode 1: Mengisi jam masuk & pulang lengkap. Data alpha akan disesuaikan jika centang aktif.");
@@ -311,6 +319,7 @@ public class AdminInsertMassalActivity extends AppCompatActivity {
 
             tvTabSubtitle.setText("MODE 2: UPDATE KEHADIRAN SESUAI TIMETABLE");
             cbUpdateAl.setVisibility(View.GONE);
+            if (cbOverwriteExisting != null) cbOverwriteExisting.setVisibility(View.VISIBLE);
             llContainerMode2.setVisibility(View.VISIBLE);
             llContainerMode3.setVisibility(View.GONE);
             tvSummaryInfo.setText("Metode 2: Mengkoreksi jam presensi yang sudah tercatat di DB disesuaikan dengan jadwal Timetable/Shift.");
@@ -322,6 +331,7 @@ public class AdminInsertMassalActivity extends AppCompatActivity {
 
             tvTabSubtitle.setText("MODE 3: INPUT ABSEN KHUSUS (PARSIAL)");
             cbUpdateAl.setVisibility(View.GONE);
+            if (cbOverwriteExisting != null) cbOverwriteExisting.setVisibility(View.VISIBLE);
             llContainerMode2.setVisibility(View.GONE);
             llContainerMode3.setVisibility(View.VISIBLE);
             tvSummaryInfo.setText("Metode 3: Mengisi/memperbarui HANYA jam masuk ATAU HANYA jam pulang tanpa mengubah komponen jam lainnya.");
@@ -600,6 +610,24 @@ public class AdminInsertMassalActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    private String buildActionSignature(String tanggal, String nips) {
+        String normNips = nips.replaceAll("\\s+", " ").trim();
+        boolean overwriteExisting = cbOverwriteExisting != null && cbOverwriteExisting.isChecked();
+        if (activeMode == 1) {
+            return "1|" + tanggal + "|" + normNips + "|" + cbUpdateAl.isChecked();
+        } else if (activeMode == 2) {
+            String filterShift = rbShiftNon2.isChecked() ? "non_shift" : (rbShiftShift2.isChecked() ? "shift" : "all");
+            String updateTarget = rbTargetMasuk.isChecked() ? "masuk" : (rbTargetPulang.isChecked() ? "pulang" : "both");
+            return "2|" + selectedOpdId + "|" + tanggal + "|" + filterShift + "|" + updateTarget + "|" + normNips + "|" + overwriteExisting;
+        } else {
+            String jenisAbsen = rbJenisMasuk3.isChecked() ? "masuk" : "pulang";
+            String filterShift = rbShiftNon3.isChecked() ? "non_shift" : (rbShiftShift3.isChecked() ? "shift" : "all");
+            String jamMode = rbJamCustom.isChecked() ? "custom" : "timetable";
+            String customJam = etCustomJam.getText().toString().trim();
+            return "3|" + selectedOpdId + "|" + tanggal + "|" + jenisAbsen + "|" + filterShift + "|" + jamMode + "|" + customJam + "|" + normNips + "|" + overwriteExisting;
+        }
+    }
+
     private void previewMassal() {
         String tanggal = etTanggal.getText().toString().trim();
         String nips = etNips.getText().toString().trim();
@@ -609,11 +637,27 @@ public class AdminInsertMassalActivity extends AppCompatActivity {
             return;
         }
 
+        if (!AdminFormHelper.isValidDate(tanggal)) {
+            dialogView.viewNotifKosong(this, "Format Tanggal Salah", "Format tanggal harus YYYY-MM-DD yang valid.");
+            return;
+        }
+
         if ((activeMode == 2 || activeMode == 3) && (selectedOpdId == null || selectedOpdId.isEmpty())) {
             dialogView.viewNotifKosong(this, "Peringatan OPD", "Silakan pilih OPD terlebih dahulu untuk Mode " + activeMode + ".");
             showOpdSelectionDialog();
             return;
         }
+
+        if (activeMode == 3 && rbJamCustom.isChecked()) {
+            String customJam = etCustomJam.getText().toString().trim();
+            if (!AdminFormHelper.isValidTime(customJam, false)) {
+                dialogView.viewNotifKosong(this, "Jam Custom Tidak Valid", "Masukkan jam custom dengan format HH:mm (contoh 07:30).");
+                return;
+            }
+        }
+
+        pendingPreviewSignature = buildActionSignature(tanggal, nips);
+        boolean overwriteExisting = cbOverwriteExisting != null && cbOverwriteExisting.isChecked();
 
         Dialog dialogProses = new Dialog(this, R.style.DialogStyle);
         dialogProses.setContentView(R.layout.view_proses);
@@ -642,7 +686,7 @@ public class AdminInsertMassalActivity extends AppCompatActivity {
             String filterShift = rbShiftNon2.isChecked() ? "non_shift" : (rbShiftShift2.isChecked() ? "shift" : "all");
             String updateTarget = rbTargetMasuk.isChecked() ? "masuk" : (rbTargetPulang.isChecked() ? "pulang" : "both");
 
-            api.previewUpdateJadwal(selectedOpdId, tanggal, filterShift, updateTarget, nips).enqueue(new Callback<JsonObject>() {
+            api.previewUpdateJadwal(selectedOpdId, tanggal, filterShift, updateTarget, nips, overwriteExisting).enqueue(new Callback<JsonObject>() {
                 @Override
                 public void onResponse(@NonNull Call<JsonObject> call, @NonNull Response<JsonObject> response) {
                     dialogProses.dismiss();
@@ -662,7 +706,7 @@ public class AdminInsertMassalActivity extends AppCompatActivity {
             String jamMode = rbJamCustom.isChecked() ? "custom" : "timetable";
             String customJam = etCustomJam.getText().toString().trim();
 
-            api.previewParsial(selectedOpdId, tanggal, jenisAbsen, filterShift, jamMode, customJam, nips).enqueue(new Callback<JsonObject>() {
+            api.previewParsial(selectedOpdId, tanggal, jenisAbsen, filterShift, jamMode, customJam, nips, overwriteExisting).enqueue(new Callback<JsonObject>() {
                 @Override
                 public void onResponse(@NonNull Call<JsonObject> call, @NonNull Response<JsonObject> response) {
                     dialogProses.dismiss();
@@ -681,15 +725,23 @@ public class AdminInsertMassalActivity extends AppCompatActivity {
     private void handlePreviewResponse(Response<JsonObject> response) {
         if (response.isSuccessful() && response.body() != null) {
             JsonObject body = response.body();
-            String msg = "Preview berhasil diproses.";
+            StringBuilder msgBuilder = new StringBuilder();
             if (body.has("remarks") && !body.get("remarks").isJsonNull()) {
-                msg = body.get("remarks").getAsString();
+                msgBuilder.append(body.get("remarks").getAsString());
             } else if (body.has("message") && !body.get("message").isJsonNull()) {
-                msg = body.get("message").getAsString();
+                msgBuilder.append(body.get("message").getAsString());
+            } else {
+                msgBuilder.append("Preview berhasil diproses.");
             }
-            tvSummaryInfo.setText("Hasil Preview (Tab " + activeMode + "): " + msg);
+            if (body.has("fallback_count") && !body.get("fallback_count").isJsonNull() && body.get("fallback_count").getAsInt() > 0) {
+                msgBuilder.append(" (").append(body.get("fallback_count").getAsInt()).append(" memakai koordinat fallback default)");
+            }
+            if (body.has("warnings") && body.get("warnings").isJsonArray() && body.getAsJsonArray("warnings").size() > 0) {
+                msgBuilder.append("\nPeringatan: ").append(body.getAsJsonArray("warnings").get(0).getAsString());
+            }
 
             previewItemList.clear();
+            int executableCount = 0;
             if (body.has("items") && body.get("items").isJsonArray()) {
                 JsonArray arr = body.getAsJsonArray("items");
                 for (JsonElement el : arr) {
@@ -721,7 +773,9 @@ public class AdminInsertMassalActivity extends AppCompatActivity {
                         }
 
                         if (obj.has("can_execute") && !obj.get("can_execute").isJsonNull()) {
-                            item.setCanExecute(obj.get("can_execute").getAsBoolean());
+                            boolean canExec = obj.get("can_execute").getAsBoolean();
+                            item.setCanExecute(canExec);
+                            if (canExec) executableCount++;
                         }
                         if (obj.has("action_type") && !obj.get("action_type").isJsonNull()) {
                             item.setActionType(obj.get("action_type").getAsString());
@@ -735,18 +789,24 @@ public class AdminInsertMassalActivity extends AppCompatActivity {
                 }
             }
 
+            lastPreviewSignature = pendingPreviewSignature;
+            lastPreviewExecutableCount = executableCount;
+            tvSummaryInfo.setText("Hasil Preview (Tab " + activeMode + "): " + msgBuilder.toString() + "\nSiap dieksekusi: " + executableCount + " dari " + previewItemList.size() + " baris.");
+
             if (!previewItemList.isEmpty()) {
                 cvPreviewContainer.setVisibility(View.VISIBLE);
-                tvPreviewCountHeader.setText(previewItemList.size() + " Pegawai");
+                tvPreviewCountHeader.setText(executableCount + " Siap / " + previewItemList.size() + " Pegawai");
                 previewAdapter.notifyDataSetChanged();
             } else {
                 cvPreviewContainer.setVisibility(View.GONE);
             }
 
-            Toast.makeText(this, "Preview: " + previewItemList.size() + " data presensi dimuat.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Preview: " + previewItemList.size() + " data dimuat (" + executableCount + " siap dieksekusi).", Toast.LENGTH_SHORT).show();
         } else {
+            lastPreviewSignature = null;
+            lastPreviewExecutableCount = -1;
             cvPreviewContainer.setVisibility(View.GONE);
-            String errMessage = extractErrorMessageJsonObject(response);
+            String errMessage = AdminFormHelper.extractApiError(response, "HTTP " + response.code());
             dialogView.viewNotifKosong(AdminInsertMassalActivity.this, "Gagal Preview", errMessage);
         }
     }
@@ -760,11 +820,37 @@ public class AdminInsertMassalActivity extends AppCompatActivity {
             return;
         }
 
+        if (!AdminFormHelper.isValidDate(tanggal)) {
+            dialogView.viewNotifKosong(this, "Format Tanggal Salah", "Format tanggal harus YYYY-MM-DD yang valid.");
+            return;
+        }
+
         if ((activeMode == 2 || activeMode == 3) && (selectedOpdId == null || selectedOpdId.isEmpty())) {
             dialogView.viewNotifKosong(this, "Peringatan OPD", "Silakan pilih OPD terlebih dahulu untuk Mode " + activeMode + ".");
             showOpdSelectionDialog();
             return;
         }
+
+        if (activeMode == 3 && rbJamCustom.isChecked()) {
+            String customJam = etCustomJam.getText().toString().trim();
+            if (!AdminFormHelper.isValidTime(customJam, false)) {
+                dialogView.viewNotifKosong(this, "Jam Custom Tidak Valid", "Masukkan jam custom dengan format HH:mm (contoh 07:30).");
+                return;
+            }
+        }
+
+        String currentSignature = buildActionSignature(tanggal, nips);
+        if (lastPreviewSignature == null || !lastPreviewSignature.equals(currentSignature)) {
+            dialogView.viewNotifKosong(this, "Preview Diperlukan", "Data atau opsi berubah. Klik Preview terlebih dahulu sebelum mengeksekusi.");
+            return;
+        }
+
+        if (lastPreviewExecutableCount == 0) {
+            dialogView.viewNotifKosong(this, "Tidak Ada Data Siap Eksekusi", "Berdasarkan preview terakhir, 0 pegawai memenuhi syarat eksekusi.");
+            return;
+        }
+
+        boolean overwriteExisting = cbOverwriteExisting != null && cbOverwriteExisting.isChecked();
 
         Dialog dialogProses = new Dialog(this, R.style.DialogStyle);
         dialogProses.setContentView(R.layout.view_proses);
@@ -793,7 +879,7 @@ public class AdminInsertMassalActivity extends AppCompatActivity {
             String filterShift = rbShiftNon2.isChecked() ? "non_shift" : (rbShiftShift2.isChecked() ? "shift" : "all");
             String updateTarget = rbTargetMasuk.isChecked() ? "masuk" : (rbTargetPulang.isChecked() ? "pulang" : "both");
 
-            api.storeUpdateJadwal(selectedOpdId, tanggal, filterShift, updateTarget, nips).enqueue(new Callback<ResponsePOJO>() {
+            api.storeUpdateJadwal(selectedOpdId, tanggal, filterShift, updateTarget, nips, overwriteExisting).enqueue(new Callback<ResponsePOJO>() {
                 @Override
                 public void onResponse(@NonNull Call<ResponsePOJO> call, @NonNull Response<ResponsePOJO> response) {
                     dialogProses.dismiss();
@@ -813,7 +899,7 @@ public class AdminInsertMassalActivity extends AppCompatActivity {
             String jamMode = rbJamCustom.isChecked() ? "custom" : "timetable";
             String customJam = etCustomJam.getText().toString().trim();
 
-            api.storeParsial(selectedOpdId, tanggal, jenisAbsen, filterShift, jamMode, customJam, nips).enqueue(new Callback<ResponsePOJO>() {
+            api.storeParsial(selectedOpdId, tanggal, jenisAbsen, filterShift, jamMode, customJam, nips, overwriteExisting).enqueue(new Callback<ResponsePOJO>() {
                 @Override
                 public void onResponse(@NonNull Call<ResponsePOJO> call, @NonNull Response<ResponsePOJO> response) {
                     dialogProses.dismiss();
@@ -834,13 +920,15 @@ public class AdminInsertMassalActivity extends AppCompatActivity {
             ResponsePOJO pojo = response.body();
             String msg = pojo.getRemarks() != null ? pojo.getRemarks() : "Eksekusi absensi berhasil!";
             tvSummaryInfo.setText("Hasil Eksekusi (Tab " + activeMode + "): " + msg);
+            lastPreviewSignature = null;
+            lastPreviewExecutableCount = -1;
             if (pojo.isStatus()) {
                 dialogView.viewSuksesNonFinish(AdminInsertMassalActivity.this, msg);
             } else {
                 dialogView.viewNotifKosong(AdminInsertMassalActivity.this, "Gagal Eksekusi", msg);
             }
         } else {
-            String errMessage = extractErrorMessage(response);
+            String errMessage = AdminFormHelper.extractApiError(response, "HTTP " + response.code());
             dialogView.viewNotifKosong(AdminInsertMassalActivity.this, "Gagal Server", errMessage);
         }
     }

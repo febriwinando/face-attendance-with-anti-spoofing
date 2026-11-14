@@ -1,25 +1,14 @@
 package go.pemkott.appsandroidmobiletebingtinggi.verifikasi.fragvalidasi.masuk;
 
 import android.content.Context;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
-import androidx.recyclerview.widget.RecyclerView;
-
-import com.google.android.material.button.MaterialButton;
-
-import java.util.ArrayList;
 import java.util.List;
 
-import de.hdodenhof.circleimageview.CircleImageView;
 import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.model.RekapMasukFragment;
+import go.pemkott.appsandroidmobiletebingtinggi.verifikasi.BaseVerifikasiAdapter;
 
-public class AdapterMasukFragment extends RecyclerView.Adapter<AdapterMasukFragment.ListViewHolder> {
+public class AdapterMasukFragment extends BaseVerifikasiAdapter<RekapMasukFragment> {
 
     private OnItemClickCallback onItemClickCallback;
 
@@ -27,94 +16,54 @@ public class AdapterMasukFragment extends RecyclerView.Adapter<AdapterMasukFragm
         this.onItemClickCallback = callback;
     }
 
-    private final Context context;
-    private List<RekapMasukFragment> rekapServers;
-
     public AdapterMasukFragment(List<RekapMasukFragment> rekapServers, Context context) {
-        this.rekapServers = rekapServers != null ? rekapServers : new ArrayList<>();
-        this.context = context;
-    }
-
-    @NonNull
-    @Override
-    public ListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_validasi_new, parent, false);
-        return new ListViewHolder(view);
+        super(rekapServers);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ListViewHolder holder, int position) {
-        RekapMasukFragment item = rekapServers.get(position);
-
-        holder.tvNamaEmployee.setText(item.getNama() != null ? item.getNama() : "-");
-
-        String tgl = item.getTanggal() != null ? item.getTanggal() : "";
-        String jam = item.getJam_masuk() != null ? item.getJam_masuk() : "";
-        holder.tvTanggalJam.setText("📅 " + tgl + " • " + jam + " WIB");
-
-        String posisi = item.getPosisi_masuk();
-        String katName = "Presensi";
-        if ("tl-masuk".equals(posisi) || "tl-pulang".equals(posisi) || "tl".equals(posisi) || "luar".equals(posisi)) {
-            katName = "Tugas Lapangan";
-        } else if ("sk".equals(posisi)) {
-            katName = "Sakit";
-        } else if ("pd".equals(posisi)) {
-            katName = "Perjalanan Dinas";
-        } else if ("kp".equals(posisi)) {
-            katName = "Keperluan Pribadi";
-        } else if ("cuti".equals(posisi) || "ct".equals(posisi)) {
-            katName = "Cuti";
-        }
-
-        if (holder.tvStatus != null) {
-            holder.tvStatus.setText(katName);
-        }
-
-        String ket = item.getKet_masuk() != null && !item.getKet_masuk().trim().isEmpty() ? item.getKet_masuk().trim() : katName;
-        holder.tvAktivitas.setText("Keterangan: " + ket);
-
-        if (item.getValidasi_masuk() == 3 || item.getValidasi_masuk() == 4) {
-            holder.civPresensiReject.setVisibility(View.VISIBLE);
-            holder.civPresensi.setVisibility(View.GONE);
-        } else {
-            holder.civPresensi.setVisibility(View.VISIBLE);
-            holder.civPresensiReject.setVisibility(View.GONE);
-        }
-
-        if (holder.btnVerifikasi != null) {
-            holder.btnVerifikasi.setOnClickListener(v -> {
-                if (onItemClickCallback != null) onItemClickCallback.onItemClicked(item);
-            });
-        }
-
-        holder.cvValidasi.setOnClickListener(v -> {
-            if (onItemClickCallback != null) onItemClickCallback.onItemClicked(item);
-        });
+    protected int getItemLayoutRes() {
+        return R.layout.item_validasi_new;
     }
 
     @Override
-    public int getItemCount() {
-        return rekapServers != null ? rekapServers.size() : 0;
+    protected String extractId(RekapMasukFragment item) {
+        return item.getId();
     }
 
-    static class ListViewHolder extends RecyclerView.ViewHolder {
+    @Override
+    protected String extractNama(RekapMasukFragment item) {
+        return item.getNama();
+    }
 
-        TextView tvNamaEmployee, tvStatus, tvTanggalJam, tvAktivitas;
-        CardView cvValidasi;
-        CircleImageView civPresensiReject, civPresensi;
-        MaterialButton btnVerifikasi;
+    @Override
+    protected String extractTanggal(RekapMasukFragment item) {
+        return item.getTanggal();
+    }
 
-        public ListViewHolder(@NonNull View itemView) {
-            super(itemView);
+    @Override
+    protected String extractJam(RekapMasukFragment item) {
+        return item.getJam_masuk();
+    }
 
-            tvNamaEmployee = itemView.findViewById(R.id.tvNamaValidasi);
-            tvStatus = itemView.findViewById(R.id.txtSatusVerif);
-            tvTanggalJam = itemView.findViewById(R.id.tvTanggalJamValidasi);
-            tvAktivitas = itemView.findViewById(R.id.tvAktivitasValidasi);
-            cvValidasi = itemView.findViewById(R.id.cvValidasi);
-            civPresensiReject = itemView.findViewById(R.id.civPresensiReject);
-            civPresensi = itemView.findViewById(R.id.civPresensi);
-            btnVerifikasi = itemView.findViewById(R.id.btnVerifikasiCard);
+    @Override
+    protected String extractPosisi(RekapMasukFragment item) {
+        return item.getPosisi_masuk();
+    }
+
+    @Override
+    protected String extractKeterangan(RekapMasukFragment item) {
+        return item.getKet_masuk();
+    }
+
+    @Override
+    protected int extractValidasi(RekapMasukFragment item) {
+        return item.getValidasi_masuk();
+    }
+
+    @Override
+    protected void dispatchItemClick(RekapMasukFragment item) {
+        if (onItemClickCallback != null) {
+            onItemClickCallback.onItemClicked(item);
         }
     }
 

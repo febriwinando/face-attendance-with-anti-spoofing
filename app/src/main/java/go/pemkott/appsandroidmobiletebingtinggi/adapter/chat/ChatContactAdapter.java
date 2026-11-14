@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -64,7 +65,7 @@ public class ChatContactAdapter extends RecyclerView.Adapter<ChatContactAdapter.
 
         if (hasActiveMsg) {
             holder.tvLastMsg.setText(lastMsg);
-            holder.tvLastMsg.setTextColor(android.graphics.Color.parseColor("#64748B"));
+            holder.tvLastMsg.setTextColor(ContextCompat.getColor(context, R.color.text_secondary));
             holder.tvLastMsg.setTypeface(null, android.graphics.Typeface.NORMAL);
             holder.tvLastMsg.setVisibility(View.VISIBLE);
 
@@ -87,7 +88,7 @@ public class ChatContactAdapter extends RecyclerView.Adapter<ChatContactAdapter.
             }
         } else {
             holder.tvLastMsg.setText("Tidak ada pesan");
-            holder.tvLastMsg.setTextColor(android.graphics.Color.parseColor("#94A3B8"));
+            holder.tvLastMsg.setTextColor(ContextCompat.getColor(context, R.color.text_hint));
             holder.tvLastMsg.setTypeface(null, android.graphics.Typeface.ITALIC);
             holder.tvLastMsg.setVisibility(View.VISIBLE);
             holder.tvTime.setVisibility(View.GONE);

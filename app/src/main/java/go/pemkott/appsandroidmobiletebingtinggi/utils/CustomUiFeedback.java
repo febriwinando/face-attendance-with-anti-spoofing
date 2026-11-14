@@ -74,6 +74,9 @@ public class CustomUiFeedback {
             ivIcon.setImageResource(R.drawable.ic_sukses);
             ivIcon.setColorFilter(Color.parseColor("#15803D"));
 
+            // Putar nada notifikasi berhasil (volume 50%)
+            NotificationSoundHelper.playSuccess(activity);
+
         } else {
             card.setCardBackgroundColor(Color.parseColor("#FEF2F2"));
             card.setStrokeColor(Color.parseColor("#FECACA"));
@@ -85,6 +88,9 @@ public class CustomUiFeedback {
             ivIcon.setVisibility(View.VISIBLE);
             ivIcon.setImageResource(R.drawable.ic_emot_error);
             ivIcon.setColorFilter(Color.parseColor("#B91C1C"));
+
+            // Putar nada notifikasi gagal (volume 50%)
+            NotificationSoundHelper.playFailure(activity);
         }
 
         card.addView(content);

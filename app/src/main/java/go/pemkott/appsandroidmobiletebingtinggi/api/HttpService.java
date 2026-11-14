@@ -108,6 +108,23 @@ public interface HttpService {
     );
 
     @FormUrlEncoded
+    @POST("verifikasicount")
+    Call<go.pemkott.appsandroidmobiletebingtinggi.model.VerifikasiCountResponse> getVerifikasiCount(
+            @Field("id") String id
+    );
+
+    @FormUrlEncoded
+    @POST("validasibatch")
+    Call<ValidasiModel> validasiBatch(
+            @Field("ids[]") List<String> ids,
+            @Field("posisi") String posisi,
+            @Field("tahap") String tahap,
+            @Field("statusvalidasi") String statusvalidasi,
+            @Field("ctt") String ctt,
+            @Field("ipp") String ipp
+    );
+
+    @FormUrlEncoded
     @POST("login")
     Call<List<LoginResponse>> login(
             @Field("username") String username,
@@ -395,6 +412,9 @@ public interface HttpService {
             @Field("masuk") String masuk,
             @Field("keterlambatan") int keterlambatan,
             @Field("ket_masuk") String ket_masuk,
+            @Field("posisi_masuk") String posisi_masuk,
+            @Field("status_masuk") String status_masuk,
+            @Field("validasi_masuk") String validasi_masuk,
             @Field("pegawai[]") List<String> pegawai
     );
 
@@ -422,7 +442,8 @@ public interface HttpService {
             @Field("tanggal") String tanggal,
             @Field("filter_shift") String filterShift,
             @Field("update_target") String updateTarget,
-            @Field("nips") String nips
+            @Field("nips") String nips,
+            @Field("overwrite_existing") boolean overwriteExisting
     );
 
     @FormUrlEncoded
@@ -432,7 +453,8 @@ public interface HttpService {
             @Field("tanggal") String tanggal,
             @Field("filter_shift") String filterShift,
             @Field("update_target") String updateTarget,
-            @Field("nips") String nips
+            @Field("nips") String nips,
+            @Field("overwrite_existing") boolean overwriteExisting
     );
 
     @FormUrlEncoded
@@ -444,7 +466,8 @@ public interface HttpService {
             @Field("filter_shift") String filterShift,
             @Field("jam_mode") String jamMode,
             @Field("custom_jam") String customJam,
-            @Field("nips") String nips
+            @Field("nips") String nips,
+            @Field("overwrite_existing") boolean overwriteExisting
     );
 
     @FormUrlEncoded
@@ -456,7 +479,8 @@ public interface HttpService {
             @Field("filter_shift") String filterShift,
             @Field("jam_mode") String jamMode,
             @Field("custom_jam") String customJam,
-            @Field("nips") String nips
+            @Field("nips") String nips,
+            @Field("overwrite_existing") boolean overwriteExisting
     );
 
     @GET("v2/admin/insert-massal/pegawai-by-opd")
@@ -502,7 +526,7 @@ public interface HttpService {
     Call<ResponsePOJO> storePengolahanAbsensiAdmin(
             @Field("id_absensi") String id_absensi,
             @Field("jam_masuk") String jam_masuk,
-            @Field("keterlambatan") int keterlambatan,
+            @Field("keterlambatan") Integer keterlambatan,
             @Field("posisi_masuk") String posisi_masuk,
             @Field("status_masuk") String status_masuk,
             @Field("validasi_masuk") String validasi_masuk,
@@ -510,7 +534,8 @@ public interface HttpService {
             @Field("jam_pulang") String jam_pulang,
             @Field("posisi_pulang") String posisi_pulang,
             @Field("status_pulang") String status_pulang,
-            @Field("validasi_pulang") String validasi_pulang
+            @Field("validasi_pulang") String validasi_pulang,
+            @Field("clear_pulang") String clear_pulang
     );
 
     @Multipart
@@ -542,11 +567,15 @@ public interface HttpService {
             @Part("posisi_pulang") RequestBody posisi_pulang,
             @Part("status_pulang") RequestBody status_pulang,
             @Part("validasi_pulang") RequestBody validasi_pulang,
+            @Part("clear_pulang") RequestBody clear_pulang,
             @Part MultipartBody.Part fototaging_masuk,
             @Part MultipartBody.Part fototaging_pulang,
             @Part MultipartBody.Part lampiran_masuk,
             @Part MultipartBody.Part lampiran_pulang
     );
+
+    @GET("v2/opd-list")
+    Call<go.pemkott.appsandroidmobiletebingtinggi.model.AdminOpdListResponse> getOpdList();
 
     @GET("admin/opd-list")
     Call<go.pemkott.appsandroidmobiletebingtinggi.model.AdminOpdListResponse> getAdminOpdList();
@@ -659,6 +688,19 @@ public interface HttpService {
     );
 
     @FormUrlEncoded
+    @POST("chat/delete-for-everyone")
+    Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.SendMessageResponse> deleteChatMessageForEveryone(
+            @Field("message_id") long messageId
+    );
+
+    @FormUrlEncoded
+    @POST("chat/mark-read")
+    Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.SendMessageResponse> markChatMessagesRead(
+            @Field("target_id") long targetId,
+            @Field("chat_type") String chatType
+    );
+
+    @FormUrlEncoded
     @POST("chat/hard-delete-message")
     Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.SendMessageResponse> hardDeleteChatMessage(
             @Field("message_id") long messageId
@@ -705,6 +747,58 @@ public interface HttpService {
     Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatMonitoringResponse> getMonitoringConversations(
             @Query("search") String search,
             @Query("opd_id") String opdId
+    );
+
+    @GET("chat/monitoring-conversations")
+    Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatMonitoringResponse> getMonitoringConversations(
+            @Query("search") String search,
+            @Query("opd_id") String opdId,
+            @Query("employee_id") String employeeId,
+            @Query("nip") String nip,
+            @Query("date") String date,
+            @Query("status") String status,
+            @Query("chat_type") String chatType,
+            @Query("page") int page,
+            @Query("per_page") int perPage
+    );
+
+    @GET("chat/monitoring/messages")
+    Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatMonitoringMessagesResponse> getMonitoringMessages(
+            @Query("search") String search,
+            @Query("opd_id") String opdId,
+            @Query("employee_id") String employeeId,
+            @Query("nip") String nip,
+            @Query("date") String date,
+            @Query("status") String status,
+            @Query("chat_type") String chatType,
+            @Query("page") int page,
+            @Query("per_page") int perPage
+    );
+
+    @GET("chat/monitoring/conversation-detail")
+    Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatMonitoringMessagesResponse> getMonitoringConversationDetail(
+            @Query("chat_type") String chatType,
+            @Query("participant_a") long participantA,
+            @Query("participant_b") long participantB,
+            @Query("opd_id") long opdId,
+            @Query("status") String status,
+            @Query("search") String search,
+            @Query("page") int page,
+            @Query("per_page") int perPage
+    );
+
+    @FormUrlEncoded
+    @POST("chat/monitoring/permanent-delete")
+    Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.SendMessageResponse> permanentDeleteMonitoringMessages(
+            @Field("message_ids") String messageIdsCsv
+    );
+
+    @GET("chat/monitoring/audit-logs")
+    Call<go.pemkott.appsandroidmobiletebingtinggi.model.chat.ChatAuditLogsResponse> getMonitoringAuditLogs(
+            @Query("message_id") long messageId,
+            @Query("nip") String nip,
+            @Query("page") int page,
+            @Query("per_page") int perPage
     );
 
     @GET("chat/global-status")

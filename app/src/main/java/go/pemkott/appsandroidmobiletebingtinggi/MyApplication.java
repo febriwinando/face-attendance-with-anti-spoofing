@@ -17,11 +17,13 @@ public class MyApplication extends Application {
         instance = this;
         FirebaseApp.initializeApp(this);
 
-        // Always enable SSL certificate checking bypass for HTTPS local server (172.15.1.35:8443)
-        SSLHelper.disableSSLCertificateChecking();
+        if (BuildConfig.DEBUG) {
+            // Enable SSL certificate checking bypass only on debug builds for HTTPS local server
+            SSLHelper.disableSSLCertificateChecking();
+        }
 
-        // Pastikan default host server selalu mengarah ke http://172.15.1.35:8000/
-        ServerConfig.setCustomBaseHost("http://172.15.1.35:8000/");
+        // Pastikan default host server mengacu ke ServerConfig.DEFAULT_HOST (https://absensi.tebingtinggikota.go.id/)
+        ServerConfig.setCustomBaseHost(ServerConfig.DEFAULT_HOST);
     }
 
     public static Context getAppContext() {

@@ -165,7 +165,11 @@ public class ChatPrivacyResponse {
         }
 
         public String getAvatarUrl() {
-            return avatarUrl;
+            if (avatarUrl == null || avatarUrl.trim().isEmpty()) {
+                return null;
+            }
+            String normalized = go.pemkott.appsandroidmobiletebingtinggi.api.ServerConfig.resolveFotoPegawaiUrl(avatarUrl);
+            return (normalized == null || normalized.isEmpty()) ? null : normalized;
         }
 
         public void setAvatarUrl(String avatarUrl) {

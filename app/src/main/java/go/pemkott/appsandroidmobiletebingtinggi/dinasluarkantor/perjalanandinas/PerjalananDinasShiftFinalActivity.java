@@ -9,6 +9,8 @@ import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.hari
 import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.localeID;
 import static go.pemkott.appsandroidmobiletebingtinggi.utils.FileUtil.getDriveFilePath;
 
+import go.pemkott.appsandroidmobiletebingtinggi.utils.AttendanceNotificationHelper;
+
 import android.Manifest;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
@@ -519,22 +521,27 @@ public class PerjalananDinasShiftFinalActivity extends AppCompatActivity impleme
             public void onResponse(@NonNull Call<ResponsePOJO> call, @NonNull Response<ResponsePOJO> response) {
                 dialogproses.dismiss();
                 if (!response.isSuccessful()) {
+                    AttendanceNotificationHelper.notifyHttpFailure(PerjalananDinasShiftFinalActivity.this, "Perjalanan Dinas Shift", response);
                     dialogView.viewNotifKosong(PerjalananDinasShiftFinalActivity.this, "Gagal mengisi absensi", "Silahkan coba kembali.");
                     return;
                 }
 
                 ResponsePOJO data = response.body();
-                if (Objects.requireNonNull(response.body()).isStatus()){
+                if (data != null && data.isStatus()){
                     databaseHelper.insertLog(sEmployeID, eOPD, tanggal, "Melakukan Absen Perjalanan Dinas (Shift)", "Perjalanan Dinas");
+                    AttendanceNotificationHelper.notifySuccess(PerjalananDinasShiftFinalActivity.this, "Perjalanan Dinas Shift", data.getRemarks());
                     dialogView.viewSukses(PerjalananDinasShiftFinalActivity.this, data.getRemarks());
                 } else {
-                    dialogView.viewNotifKosong(PerjalananDinasShiftFinalActivity.this, data.getRemarks(),"");
+                    String errRemarks = data != null ? data.getRemarks() : "Respon server tidak valid.";
+                    AttendanceNotificationHelper.notifyFailure(PerjalananDinasShiftFinalActivity.this, "Perjalanan Dinas Shift", errRemarks);
+                    dialogView.viewNotifKosong(PerjalananDinasShiftFinalActivity.this, errRemarks,"");
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
                 dialogproses.dismiss();
+                AttendanceNotificationHelper.notifyNetworkFailure(PerjalananDinasShiftFinalActivity.this, "Perjalanan Dinas Shift", t);
                 dialogView.viewNotifKosong(PerjalananDinasShiftFinalActivity.this, "Gagal mengisi absensi,", "silahkan coba kembali.");
             }
         });

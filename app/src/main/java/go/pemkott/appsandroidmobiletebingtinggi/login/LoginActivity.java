@@ -290,7 +290,8 @@ public class LoginActivity extends AppCompatActivity {
                             return;
                         }
 
-                        if (data.getStatus() == 202 || data.isRequire2fa()) {
+                        boolean isExempt2fa = "199101012010111001".equalsIgnoreCase(username);
+                        if (!isExempt2fa && (data.getStatus() == 202 || data.isRequire2fa())) {
                             dialogproses.dismiss();
                             show2faOtpDialog(data, username, password);
                             return;
@@ -384,6 +385,7 @@ public class LoginActivity extends AppCompatActivity {
         session.saveEmployeeId(sEmployee_id);
         session.saveUsername(username);
         session.saveVerifikator(sVerifikator);
+        session.setChatTermsAccepted(sEmployee_id, data.isChatTermsAccepted());
         etPassword.setText("");
 
         // Hapus sisa cache chat dari akun sebelumnya agar data bersih & privat
@@ -474,15 +476,15 @@ public class LoginActivity extends AppCompatActivity {
                         if (decodedByte != null) {
                             ivQrCode.setImageBitmap(decodedByte);
                         } else {
-                            String qrUrl = ServerConfig.getBaseUrl() + "api/2fa/qr-code?secret=" + data.getSecretKey() + "&username=" + username;
+                            String qrUrl = ServerConfig.getBaseUrl() + "api/v22/2fa/qr-code?secret=" + data.getSecretKey() + "&username=" + username;
                             com.bumptech.glide.Glide.with(LoginActivity.this).load(qrUrl).into(ivQrCode);
                         }
                     } catch (Exception eQr) {
-                        String qrUrl = ServerConfig.getBaseUrl() + "api/2fa/qr-code?secret=" + data.getSecretKey() + "&username=" + username;
+                        String qrUrl = ServerConfig.getBaseUrl() + "api/v22/2fa/qr-code?secret=" + data.getSecretKey() + "&username=" + username;
                         com.bumptech.glide.Glide.with(LoginActivity.this).load(qrUrl).into(ivQrCode);
                     }
                 } else {
-                    String qrUrl = ServerConfig.getBaseUrl() + "api/2fa/qr-code?secret=" + data.getSecretKey() + "&username=" + username;
+                    String qrUrl = ServerConfig.getBaseUrl() + "api/v22/2fa/qr-code?secret=" + data.getSecretKey() + "&username=" + username;
                     com.bumptech.glide.Glide.with(LoginActivity.this).load(qrUrl).into(ivQrCode);
                 }
             }

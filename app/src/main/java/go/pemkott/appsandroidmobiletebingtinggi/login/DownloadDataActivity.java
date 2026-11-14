@@ -212,7 +212,11 @@ public class DownloadDataActivity extends AppCompatActivity {
                 }
 
                 executor.execute(() -> {
+                    db.deleteDataKoordinatOPDAll();
                     for (Koordinat k : res.body()) {
+                        if (k == null || "kosong".equalsIgnoreCase(k.getStatus())) {
+                            continue;
+                        }
                         db.insertDataKoordinat(
                                 k.getId(), k.getOpd_id(),
                                 k.getAlamat(), k.getLet(), k.getLng()
@@ -247,7 +251,11 @@ public class DownloadDataActivity extends AppCompatActivity {
                             }
 
                             executor.execute(() -> {
+                                db.deleteDataKoordinatEmployee(employeeId);
                                 for (Koordinat koordinat : response.body()) {
+                                    if (koordinat == null || "kosong".equalsIgnoreCase(koordinat.getStatus())) {
+                                        continue;
+                                    }
                                     db.insertDataKoordinatEmployee(koordinat.getId(), employeeId, koordinat.getAlamat(), koordinat.getLet(), koordinat.getLng());
                                 }
                                 runOnUiThread(() -> stepTimetable());

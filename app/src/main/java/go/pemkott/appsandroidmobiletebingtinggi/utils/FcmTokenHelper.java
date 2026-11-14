@@ -146,10 +146,7 @@ public class FcmTokenHelper {
         String idToSend = (employeeId != null && !employeeId.isEmpty() && !"0".equals(employeeId)) ? employeeId : pegawaiId;
         String token = session.getFcmToken();
 
-        String deviceId = "UNKNOWN";
-        try {
-            deviceId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
-        } catch (Exception ignored) {}
+        String deviceId = getDeviceId(context);
 
         RetroClient.getInstance(context)
                 .getApi()
@@ -169,7 +166,10 @@ public class FcmTokenHelper {
                 });
     }
 
-    private static String getDeviceId(Context context) {
+    /**
+     * Returns the device identifier safely, falling back to hardware info if SSAID cannot be read.
+     */
+    public static String getDeviceId(Context context) {
         String androidId = null;
         if (context != null) {
             try {

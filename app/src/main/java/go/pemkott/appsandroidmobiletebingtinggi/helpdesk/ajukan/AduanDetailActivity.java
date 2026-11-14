@@ -206,12 +206,13 @@ public class AduanDetailActivity extends AppCompatActivity {
         }
 
         LayoutInflater inflater = LayoutInflater.from(this);
-        String baseUrl = ServerConfig.getStorageUrl();
 
         for (String path : gambar) {
+            String fullUrl = ServerConfig.resolveStorageUrl(path);
+            if (fullUrl == null || fullUrl.isEmpty()) continue;
+
             View itemView = inflater.inflate(R.layout.item_image_detail, llMediaContainer, false);
             ImageView ivThumbnail = itemView.findViewById(R.id.ivThumbnailDetail);
-            String fullUrl = baseUrl + path;
 
             Glide.with(this).load(fullUrl).centerCrop().into(ivThumbnail);
 

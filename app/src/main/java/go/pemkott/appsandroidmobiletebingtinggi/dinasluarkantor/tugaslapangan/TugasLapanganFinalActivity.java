@@ -10,6 +10,8 @@ import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.hari
 import static go.pemkott.appsandroidmobiletebingtinggi.konstanta.TimeFormat.localeID;
 import static go.pemkott.appsandroidmobiletebingtinggi.utils.FileUtil.getDriveFilePath;
 
+import go.pemkott.appsandroidmobiletebingtinggi.utils.AttendanceNotificationHelper;
+
 import android.Manifest;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
@@ -597,7 +599,11 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
                 dialogproses.dismiss();
                 if (llUpload != null) llUpload.setEnabled(true);
                 if (!response.isSuccessful()) {
-
+                    AttendanceNotificationHelper.notifyHttpFailure(
+                            TugasLapanganFinalActivity.this,
+                            "Tugas Lapangan Masuk",
+                            response
+                    );
                     dialogView.viewNotifKosong(
                             TugasLapanganFinalActivity.this,
                             "Gagal mengisi absensi",
@@ -610,12 +616,15 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
 
                 ResponsePOJO data = response.body();
 
-                if (Objects.requireNonNull(response.body()).isStatus()){
+                if (data != null && data.isStatus()){
                     databaseHelper.insertLog(sEmployeID, eOPD, tanggal, "Melakukan Absen Tugas Lapangan (Masuk)", "Masuk");
                     hapusFileSementara();
+                    AttendanceNotificationHelper.notifySuccess(TugasLapanganFinalActivity.this, "Tugas Lapangan Masuk", data.getRemarks());
                     dialogView.viewSukses(TugasLapanganFinalActivity.this, data.getRemarks());
                 }else {
-                    dialogView.viewNotifKosong(TugasLapanganFinalActivity.this, data.getRemarks(),"");
+                    String errRemarks = data != null ? data.getRemarks() : "Respon server tidak valid.";
+                    AttendanceNotificationHelper.notifyFailure(TugasLapanganFinalActivity.this, "Tugas Lapangan Masuk", errRemarks);
+                    dialogView.viewNotifKosong(TugasLapanganFinalActivity.this, errRemarks,"");
                 }
 
 
@@ -626,6 +635,7 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
                 dialogproses.dismiss();
                 if (llUpload != null) llUpload.setEnabled(true);
                 Log.d("Absensi TL Log", "gagal: "+t.getMessage());
+                AttendanceNotificationHelper.notifyNetworkFailure(TugasLapanganFinalActivity.this, "Tugas Lapangan Masuk", t);
 
                 dialogView.pesanError(TugasLapanganFinalActivity.this);
 
@@ -719,7 +729,11 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
                 dialogproses.dismiss();
                 if (llUpload != null) llUpload.setEnabled(true);
                 if (!response.isSuccessful()) {
-
+                    AttendanceNotificationHelper.notifyHttpFailure(
+                            TugasLapanganFinalActivity.this,
+                            "Tugas Lapangan Pulang",
+                            response
+                    );
                     dialogView.viewNotifKosong(
                             TugasLapanganFinalActivity.this,
                             "Gagal mengisi absensi",
@@ -730,12 +744,15 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
 
                 ResponsePOJO data = response.body();
 
-                if (Objects.requireNonNull(response.body()).isStatus()){
+                if (data != null && data.isStatus()){
                     databaseHelper.insertLog(sEmployeID, eOPD, tanggal, "Melakukan Absen Tugas Lapangan (Pulang)", "Pulang");
                     hapusFileSementara();
+                    AttendanceNotificationHelper.notifySuccess(TugasLapanganFinalActivity.this, "Tugas Lapangan Pulang", data.getRemarks());
                     dialogView.viewSukses(TugasLapanganFinalActivity.this, data.getRemarks());
                 }else {
-                    dialogView.viewNotifKosong(TugasLapanganFinalActivity.this, data.getRemarks(),"");
+                    String errRemarks = data != null ? data.getRemarks() : "Respon server tidak valid.";
+                    AttendanceNotificationHelper.notifyFailure(TugasLapanganFinalActivity.this, "Tugas Lapangan Pulang", errRemarks);
+                    dialogView.viewNotifKosong(TugasLapanganFinalActivity.this, errRemarks,"");
                 }
 
 
@@ -745,6 +762,7 @@ public class TugasLapanganFinalActivity extends AppCompatActivity implements OnM
             public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
                 dialogproses.dismiss();
                 if (llUpload != null) llUpload.setEnabled(true);
+                AttendanceNotificationHelper.notifyNetworkFailure(TugasLapanganFinalActivity.this, "Tugas Lapangan Pulang", t);
                 dialogView.pesanError(TugasLapanganFinalActivity.this);
             }
         });

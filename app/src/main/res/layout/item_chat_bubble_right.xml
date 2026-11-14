@@ -25,7 +25,7 @@
             android:background="@drawable/bg_chat_date_pill"
             android:paddingHorizontal="14dp"
             android:paddingVertical="4dp"
-            android:textColor="#475569"
+            android:textColor="@color/text_secondary"
             android:textSize="11sp"
             android:textStyle="bold"
             android:elevation="0.5dp"
