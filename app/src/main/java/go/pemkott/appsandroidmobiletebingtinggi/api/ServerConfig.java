@@ -19,23 +19,11 @@ public class ServerConfig {
     public static String BASE_HOST = DEFAULT_HOST;
 
     public static void setCustomBaseHost(String host) {
-        if (host == null || host.trim().isEmpty()) {
-            BASE_HOST = DEFAULT_HOST;
-        } else {
-            String clean = host.trim();
-            if (!clean.startsWith("http://") && !clean.startsWith("https://")) {
-                clean = (clean.contains("172.15.") || clean.contains("192.168.") || clean.contains("localhost")
-                        || clean.contains("127.0.0.1") || clean.contains(":8000"))
-                        ? "http://" + clean
-                        : "https://" + clean;
-            }
-            if (!clean.endsWith("/")) clean += "/";
-            BASE_HOST = clean;
-        }
+        BASE_HOST = DEFAULT_HOST;
         Context ctx = MyApplication.getAppContext();
         if (ctx != null) {
             SharedPreferences sp = ctx.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-            sp.edit().putString(KEY_CUSTOM_HOST, BASE_HOST).apply();
+            sp.edit().putString(KEY_CUSTOM_HOST, DEFAULT_HOST).apply();
         }
     }
 
@@ -44,25 +32,12 @@ public class ServerConfig {
         if (ctx != null) {
             SharedPreferences sp = ctx.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
             String saved = sp.getString(KEY_CUSTOM_HOST, null);
-            if (saved != null && !saved.trim().isEmpty()) {
-                if (saved.contains("svr-absensi.tebingtinggikota.go.id")
-                        || saved.contains("172.15.1.65")
-                        || saved.contains(":8000")
-                        || saved.startsWith("http://absensi.tebingtinggikota.go.id")) {
-                    BASE_HOST = DEFAULT_HOST;
-                    sp.edit().putString(KEY_CUSTOM_HOST, DEFAULT_HOST).apply();
-                } else {
-                    BASE_HOST = saved;
-                }
-            } else {
-                BASE_HOST = DEFAULT_HOST;
+            if (saved == null || !DEFAULT_HOST.equals(saved)) {
+                sp.edit().putString(KEY_CUSTOM_HOST, DEFAULT_HOST).apply();
             }
         }
-        String url = BASE_HOST != null ? BASE_HOST.trim() : DEFAULT_HOST;
-        if (!url.endsWith("/")) {
-            return url + "/";
-        }
-        return url;
+        BASE_HOST = DEFAULT_HOST;
+        return DEFAULT_HOST;
     }
 
     public static String getApiUrl() {

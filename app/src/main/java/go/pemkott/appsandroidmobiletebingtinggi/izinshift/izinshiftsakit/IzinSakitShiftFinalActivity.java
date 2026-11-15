@@ -649,7 +649,7 @@ public class IzinSakitShiftFinalActivity extends AppCompatActivity implements On
     private RequestBody textPart(String value) {
         return RequestBody.create(
                 MediaType.parse("text/plain"),
-                value
+                value != null ? value : ""
         );
     }
 

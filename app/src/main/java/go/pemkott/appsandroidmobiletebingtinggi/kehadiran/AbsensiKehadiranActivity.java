@@ -399,7 +399,7 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
     private RequestBody textPart(String value) {
         return RequestBody.create(
                 MediaType.parse("text/plain"),
-                value
+                value != null ? value : ""
         );
     }
 
@@ -869,7 +869,7 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
                                     rbValid = "2";
                                     String eselon = "0";
 
-                                    if (eJabatan.equals("2")){
+                                    if ("2".equals(eJabatan)){
                                         rbJam = "07:30";
                                         rbKet = "sesuai waktu";
                                         rbPosisi = "masuk";
@@ -894,11 +894,11 @@ public class AbsensiKehadiranActivity extends AppCompatActivity implements OnMap
 
 
                                     String eselon = "0";
-                                    if (eJabatan.equals("2")){
+                                    if ("2".equals(eJabatan)){
                                         eselon = "2";
                                     }
 
-                                    if (eJabatan.equals("2")){
+                                    if ("2".equals(eJabatan)){
                                         rbJam = "07:30";
                                         rbKet = "sesuai waktu";
                                         rbPosisi = "pulang";

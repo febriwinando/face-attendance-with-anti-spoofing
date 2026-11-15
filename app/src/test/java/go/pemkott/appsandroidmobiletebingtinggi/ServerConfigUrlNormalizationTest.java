@@ -189,6 +189,11 @@ public class ServerConfigUrlNormalizationTest {
         ServerConfig.setCustomBaseHost("absensi.tebingtinggikota.go.id");
         assertEquals(TARGET_BASE, ServerConfig.getBaseUrl());
         assertEquals(TARGET_BASE + "api/v22/", ServerConfig.getApiUrl());
+
+        // Memastikan tidak ada host lain yang diizinkan selain https://absensi.tebingtinggikota.go.id/
+        ServerConfig.setCustomBaseHost("http://172.15.1.65:8000");
+        assertEquals(TARGET_BASE, ServerConfig.getBaseUrl());
+        assertEquals(TARGET_BASE + "api/v22/", ServerConfig.getApiUrl());
     }
 }
 

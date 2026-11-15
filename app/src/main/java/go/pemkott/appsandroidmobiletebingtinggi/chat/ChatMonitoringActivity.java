@@ -534,11 +534,21 @@ public class ChatMonitoringActivity extends AppCompatActivity
                             CustomUiFeedback.showTopBanner(
                                     ChatMonitoringActivity.this, response.body().getMessage(), CustomUiFeedback.Type.SUCCESS
                             );
+                        } else {
+                            switchMaster.setOnCheckedChangeListener(null);
+                            switchMaster.setChecked(!isChecked);
+                            switchMaster.setOnCheckedChangeListener(listenerHolder[0]);
+                            CustomUiFeedback.showTopBanner(
+                                    ChatMonitoringActivity.this, "Gagal mengubah status publikasi chat.", CustomUiFeedback.Type.ERROR
+                            );
                         }
                     }
 
                     @Override
                     public void onFailure(Call<ChatGlobalStatusResponse> call, Throwable t) {
+                        switchMaster.setOnCheckedChangeListener(null);
+                        switchMaster.setChecked(!isChecked);
+                        switchMaster.setOnCheckedChangeListener(listenerHolder[0]);
                         CustomUiFeedback.showTopBanner(
                                 ChatMonitoringActivity.this, "Gagal mengubah status global: " + t.getMessage(), CustomUiFeedback.Type.ERROR
                         );

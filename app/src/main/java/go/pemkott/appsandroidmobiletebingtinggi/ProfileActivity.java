@@ -337,7 +337,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private RequestBody textPart(String value) {
-        return RequestBody.create(MediaType.parse("text/plain"), value);
+        return RequestBody.create(MediaType.parse("text/plain"), value != null ? value : "");
     }
 
     public void dataEmployee(){

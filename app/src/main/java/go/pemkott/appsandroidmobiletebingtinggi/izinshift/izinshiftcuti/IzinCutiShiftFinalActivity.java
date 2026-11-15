@@ -521,7 +521,7 @@ public class IzinCutiShiftFinalActivity extends AppCompatActivity implements OnM
 
         periksaWaktu();
         hitungjarak();
-        if (eJabatan.equals("2")){
+        if ("2".equals(eJabatan)){
             rbValid = "2";
         }else{
             rbValid = "0";
@@ -529,31 +529,30 @@ public class IzinCutiShiftFinalActivity extends AppCompatActivity implements OnM
 
         if (dariTanggal == null || sampaiTanggal == null){
             dialogView.viewNotifKosong(IzinCutiShiftFinalActivity.this, "Rentang waktu masa cuti tidak boleh kosong.", "");
-
+            if (llUpload != null) llUpload.setEnabled(true);
+            return;
         }
-        else{
 
-            Date dateDariTgl = null, dateSampaiTgl = null;
-            try {
-                dateDariTgl = SIMPLE_FORMAT_TANGGAL.parse(dariTanggal);
-                dateSampaiTgl = SIMPLE_FORMAT_TANGGAL.parse(sampaiTanggal);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
+        Date dateDariTgl = null, dateSampaiTgl = null;
+        try {
+            dateDariTgl = SIMPLE_FORMAT_TANGGAL.parse(dariTanggal);
+            dateSampaiTgl = SIMPLE_FORMAT_TANGGAL.parse(sampaiTanggal);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
-
-            if (dateDariTgl.getTime() > dateSampaiTgl.getTime()){
-                dialogView.viewNotifKosong(this, "Perhatikan kembali rentang waktu yang anda pilih.", "Tidak boleh terbalik.");
-            }else{
-                kirimdata(rbValid, rbPosisi, rbStatus);
-            }
+        if (dateDariTgl != null && dateSampaiTgl != null && dateDariTgl.getTime() > dateSampaiTgl.getTime()){
+            dialogView.viewNotifKosong(this, "Perhatikan kembali rentang waktu yang anda pilih.", "Tidak boleh terbalik.");
+            if (llUpload != null) llUpload.setEnabled(true);
+        }else{
+            kirimdata(rbValid, rbPosisi, rbStatus);
         }
     }
 
     private RequestBody textPart(String value) {
         return RequestBody.create(
                 MediaType.parse("text/plain"),
-                value
+                value != null ? value : ""
         );
     }
 
@@ -575,7 +574,6 @@ public class IzinCutiShiftFinalActivity extends AppCompatActivity implements OnM
         dialogproses.setContentView(R.layout.view_proses);
         dialogproses.setCancelable(false);
 
-
         byte[] imageBytes = ambilFoto.compressToMax80KB(file);
         MultipartBody.Part fotoPart =
                 prepareFilePart("fototaging", imageBytes);
@@ -585,51 +583,44 @@ public class IzinCutiShiftFinalActivity extends AppCompatActivity implements OnM
         if ("pdf".equals(ekslampiran)) {
             lampiranPart =
                     prepareFilePart("lampiran", imageBytesDokumenPdf);
-            Log.d("TugasLapanganFinalActivity", "PDF");
+            Log.d("IzinCutiShiftFinalActivity", "PDF");
         } else {
             byte[] imageBytesLampiran =
                     ambilFoto.compressToMax80KB(filelampiran);
             lampiranPart =
                     prepareFilePart("lampiran", imageBytesLampiran);
-            Log.d("TugasLapanganFinalActivity", "JPG");
+            Log.d("IzinCutiShiftFinalActivity", "JPG");
         }
 
-
-//        Log.d("ABSEN_MASUK_PAGI", "===== REQUEST PARAMETER =====");
-//        Log.d("ABSEN_MASUK_PAGI", "tanggal      : " + String.valueOf(tanggal));
-//        Log.d("ABSEN_MASUK_PAGI", "posisi       : " + String.valueOf(posisi));
-//        Log.d("ABSEN_MASUK_PAGI", "status       : " + String.valueOf(status));
-//        Log.d("ABSEN_MASUK_PAGI", "lat          : " + String.valueOf(rbLat));
-//        Log.d("ABSEN_MASUK_PAGI", "lng          : " + String.valueOf(rbLng));
-//        Log.d("ABSEN_MASUK_PAGI", "eOPD         : " + String.valueOf(eOPD));
-//        Log.d("ABSEN_MASUK_PAGI", "jampegawai   : " + String.valueOf(dariTanggal));
-//        Log.d("ABSEN_MASUK_PAGI", "validasi     : " + String.valueOf(sampaiTanggal));
-//        Log.d("ABSEN_MASUK_PAGI", "rbFakeGPS    : " + String.valueOf(rbFakeGPS));
-//        Log.d("ABSEN_MASUK_PAGI", "masuksift    : " + String.valueOf(masuksift));
-//        Log.d("ABSEN_MASUK_PAGI", "pulangsift   : " + String.valueOf(pulangsift));
-//        Log.d("ABSEN_MASUK_PAGI", "inisialsift  : " + String.valueOf(inisialsift));
-//        Log.d("ABSEN_MASUK_PAGI", "tipesift     : " + String.valueOf(tipesift));
-//        Log.d("ABSEN_MASUK_PAGI", "idsift       : " + String.valueOf(idsift));
-//        Log.d("ABSEN_MASUK_PAGI", "fotoPart     : " + (fotoPart != null ? "ADA" : "NULL"));
-//        Log.d("ABSEN_MASUK_PAGI", "==============================");
-
+        String finalEmployeeId = sEmployeID != null ? sEmployeID : "";
+        String finalPosisi = (posisi != null && !posisi.isEmpty()) ? posisi : "ct";
+        String finalStatus = (status != null && !status.isEmpty()) ? status : "izin";
+        String finalLat = (rbLat != null && !rbLat.isEmpty()) ? rbLat : String.valueOf(latGMap);
+        String finalLng = (rbLng != null && !rbLng.isEmpty()) ? rbLng : String.valueOf(lngGMap);
+        String finalKet = (rbKet != null && !rbKet.isEmpty()) ? rbKet : "-";
+        String finalValid = (valid != null && !valid.isEmpty()) ? valid : "0";
+        String finalEkslampiran = (ekslampiran != null && !ekslampiran.isEmpty()) ? ekslampiran : "jpg";
+        String finalDariTanggal = dariTanggal != null ? dariTanggal : "";
+        String finalSampaiTanggal = sampaiTanggal != null ? sampaiTanggal : "";
+        String finalFakeGPS = rbFakeGPS != null ? rbFakeGPS : "0";
+        String finalTanggalSift = tanggalSift != null ? tanggalSift : "";
 
         Call<ResponsePOJO> call =
                 RetroClient.getInstance().getApi().uploadAbsenIzinCutiShift(
                         fotoPart,
-                        textPart(sEmployeID),
-                        textPart(posisi),
-                        textPart(status),
-                        textPart(rbLat),
-                        textPart(rbLng),
-                        textPart(rbKet),
-                        textPart(valid),
+                        textPart(finalEmployeeId),
+                        textPart(finalPosisi),
+                        textPart(finalStatus),
+                        textPart(finalLat),
+                        textPart(finalLng),
+                        textPart(finalKet),
+                        textPart(finalValid),
                         lampiranPart,
-                        textPart(ekslampiran),
-                        textPart(dariTanggal),
-                        textPart(sampaiTanggal),
-                        textPart(rbFakeGPS),
-                        textPart(tanggalSift)
+                        textPart(finalEkslampiran),
+                        textPart(finalDariTanggal),
+                        textPart(finalSampaiTanggal),
+                        textPart(finalFakeGPS),
+                        textPart(finalTanggalSift)
                 );
 
         call.enqueue(new Callback<ResponsePOJO>() {
@@ -638,6 +629,7 @@ public class IzinCutiShiftFinalActivity extends AppCompatActivity implements OnM
                 dialogproses.dismiss();
 
                 if (!response.isSuccessful()) {
+                    if (llUpload != null) llUpload.setEnabled(true);
                     AttendanceNotificationHelper.notifyHttpFailure(IzinCutiShiftFinalActivity.this, "Izin Cuti Shift", response);
                     dialogView.viewNotifKosong(
                             IzinCutiShiftFinalActivity.this,
@@ -654,6 +646,7 @@ public class IzinCutiShiftFinalActivity extends AppCompatActivity implements OnM
                     AttendanceNotificationHelper.notifySuccess(IzinCutiShiftFinalActivity.this, "Izin Cuti Shift", data.getRemarks());
                     dialogView.viewSukses(IzinCutiShiftFinalActivity.this, data.getRemarks());
                 }else {
+                    if (llUpload != null) llUpload.setEnabled(true);
                     String errRemarks = data != null ? data.getRemarks() : "Respon server tidak valid.";
                     AttendanceNotificationHelper.notifyFailure(IzinCutiShiftFinalActivity.this, "Izin Cuti Shift", errRemarks);
                     dialogView.viewNotifKosong(IzinCutiShiftFinalActivity.this, errRemarks,"");
@@ -664,6 +657,7 @@ public class IzinCutiShiftFinalActivity extends AppCompatActivity implements OnM
             @Override
             public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
                 dialogproses.dismiss();
+                if (llUpload != null) llUpload.setEnabled(true);
                 AttendanceNotificationHelper.notifyNetworkFailure(IzinCutiShiftFinalActivity.this, "Izin Cuti Shift", t);
                 dialogView.pesanError(IzinCutiShiftFinalActivity.this);
             }
@@ -717,6 +711,10 @@ public class IzinCutiShiftFinalActivity extends AppCompatActivity implements OnM
             latOffice = employe.getString(15);
             lngOffice = employe.getString(16);
         }
+
+        if (eOPD == null) eOPD = "0";
+        if (eKelompok == null) eKelompok = "0";
+        if (eJabatan == null) eJabatan = "0";
     }
 
     public void dataKegiatan(){
@@ -975,35 +973,37 @@ public class IzinCutiShiftFinalActivity extends AppCompatActivity implements OnM
     }
 
     public void periksaWaktu(){
-        try {
-            Date jam = SIMPLE_FORMAT_JAM.parse(masuksift);
-            Date pulang = SIMPLE_FORMAT_JAM.parse(pulangsift);
+        if (rbTanggal == null || rbTanggal.isEmpty()) {
+            rbTanggal = SIMPLE_FORMAT_TANGGAL.format(new Date());
+        }
+        rbStatus = "izin";
+        rbPosisi = "ct";
 
-            String jamTaging = SIMPLE_FORMAT_JAM_TAGING.format(new Date());
+        if (masuksift != null && pulangsift != null) {
+            try {
+                Date jam = SIMPLE_FORMAT_JAM.parse(masuksift);
+                Date pulang = SIMPLE_FORMAT_JAM.parse(pulangsift);
 
+                String jamTaging = SIMPLE_FORMAT_JAM_TAGING.format(new Date());
+                Date tagingTime = SIMPLE_FORMAT_JAM_TAGING.parse(jamTaging);
 
-            Date tagingTime = SIMPLE_FORMAT_JAM_TAGING.parse(jamTaging);
+                long millis = tagingTime.getTime() - jam.getTime();
+                int hours = (int) (millis / (1000 * 60 * 60));
+                mins = (int) ((millis / (1000 * 60)) % 60) + (hours * 60);
 
-            long millis = tagingTime.getTime() - jam.getTime();
-            int hours = (int) (millis / (1000 * 60 * 60));
-            mins = (int) ((millis / (1000 * 60)) % 60) + (hours * 60);
+                if (mins < 0){
+                    mins = 0;
+                }
 
-            if (mins < 0){
-                mins = 0;
+                long millispulang = pulang.getTime() - tagingTime.getTime();
+                int hourspulang = (int) (millispulang / (1000 * 60 * 60));
+                minspulang = (int) ((millispulang / (1000 * 60)) % 60) + (hourspulang * 60);
+
+                jamMasukPulang = Integer.parseInt(SIMPLE_FORMAT_JAM_MASUK_PULANG.format(new Date()));
+                menitMasukPulang = Integer.parseInt(SIMPLE_FORMAT_MENIT_MASUK_PULANG.format(new Date()));
+            }catch (Exception e){
+                e.printStackTrace();
             }
-
-            long millispulang = pulang.getTime() - tagingTime.getTime();
-            int hourspulang = (int) (millispulang / (1000 * 60 * 60));
-            minspulang = (int) ((millispulang / (1000 * 60)) % 60) + (hourspulang * 60);
-
-            jamMasukPulang = Integer.parseInt(SIMPLE_FORMAT_JAM_MASUK_PULANG.format(new Date()));
-            menitMasukPulang = Integer.parseInt(SIMPLE_FORMAT_MENIT_MASUK_PULANG.format(new Date()));
-
-            rbStatus = "izin";
-            rbPosisi = "ct";
-
-        }catch (Exception e){
-            e.printStackTrace();
         }
     }
 

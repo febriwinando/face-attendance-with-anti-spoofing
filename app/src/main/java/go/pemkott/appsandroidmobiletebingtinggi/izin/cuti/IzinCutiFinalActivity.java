@@ -473,7 +473,7 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
         periksaWaktu();
         hitungjarak();
 
-        if (eJabatan.equals("2")){
+        if ("2".equals(eJabatan)){
             rbValid = "2";
         }else{
             rbValid = "0";
@@ -481,31 +481,30 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
 
         if (dariTanggal == null || sampaiTanggal == null){
             dialogView.viewNotifKosong(IzinCutiFinalActivity.this, "Rentang waktu masa cuti tidak boleh kosong.", "");
-
+            if (llUpload != null) llUpload.setEnabled(true);
+            return;
         }
-        else{
 
-            Date dateDariTgl = null, dateSampaiTgl = null;
-            try {
-                dateDariTgl = SIMPLE_FORMAT_TANGGAL.parse(dariTanggal);
-                dateSampaiTgl = SIMPLE_FORMAT_TANGGAL.parse(sampaiTanggal);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
+        Date dateDariTgl = null, dateSampaiTgl = null;
+        try {
+            dateDariTgl = SIMPLE_FORMAT_TANGGAL.parse(dariTanggal);
+            dateSampaiTgl = SIMPLE_FORMAT_TANGGAL.parse(sampaiTanggal);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
-
-            if (dateDariTgl.getTime() > dateSampaiTgl.getTime()){
-                dialogView.viewNotifKosong(this, "Perhatikan kembali rentang waktu yang anda pilih.", "Tidak boleh terbalik.");
-            }else{
-                kirimdata(rbValid, rbPosisi, rbStatus);
-            }
+        if (dateDariTgl != null && dateSampaiTgl != null && dateDariTgl.getTime() > dateSampaiTgl.getTime()){
+            dialogView.viewNotifKosong(this, "Perhatikan kembali rentang waktu yang anda pilih.", "Tidak boleh terbalik.");
+            if (llUpload != null) llUpload.setEnabled(true);
+        }else{
+            kirimdata(rbValid, rbPosisi, rbStatus);
         }
     }
 
     private RequestBody textPart(String value) {
         return RequestBody.create(
                 MediaType.parse("text/plain"),
-                value
+                value != null ? value : ""
         );
     }
 
@@ -538,60 +537,56 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
         if ("pdf".equals(ekslampiran)) {
             lampiranPart =
                     prepareFilePart("lampiran", imageBytesDokumenPdf);
-            Log.d("TugasLapanganFinalActivity", "PDF");
+            Log.d("IzinCutiFinalActivity", "PDF");
         } else {
             byte[] imageBytesLampiran =
                     ambilFoto.compressToMax80KB(filelampiran);
             lampiranPart =
                     prepareFilePart("lampiran", imageBytesLampiran);
-            Log.d("TugasLapanganFinalActivity", "JPG");
+            Log.d("IzinCutiFinalActivity", "JPG");
         }
 
+        String finalEmployeeId = sEmployeID != null ? sEmployeID : "";
+        String finalPosisi = (posisi != null && !posisi.isEmpty()) ? posisi : "ct";
+        String finalStatus = (status != null && !status.isEmpty()) ? status : "izin";
+        String finalLat = (rbLat != null && !rbLat.isEmpty()) ? rbLat : String.valueOf(latGMap);
+        String finalLng = (rbLng != null && !rbLng.isEmpty()) ? rbLng : String.valueOf(lngGMap);
+        String finalKet = (rbKet != null && !rbKet.isEmpty()) ? rbKet : "-";
+        String finalValid = (valid != null && !valid.isEmpty()) ? valid : "0";
+        String finalEkslampiran = (ekslampiran != null && !ekslampiran.isEmpty()) ? ekslampiran : "jpg";
+        String finalDariTanggal = dariTanggal != null ? dariTanggal : "";
+        String finalSampaiTanggal = sampaiTanggal != null ? sampaiTanggal : "";
+        String finalFakeGPS = rbFakeGPS != null ? rbFakeGPS : "0";
+
         Log.e("IZIN_CUTI_UPLOAD", "========== MULAI UPLOAD ==========");
-        Log.e("IZIN_CUTI_UPLOAD", "sEmployeID   = " + sEmployeID);
-        Log.e("IZIN_CUTI_UPLOAD", "posisi       = " + posisi);
-        Log.e("IZIN_CUTI_UPLOAD", "status       = " + status);
-        Log.e("IZIN_CUTI_UPLOAD", "rbLat        = " + rbLat);
-        Log.e("IZIN_CUTI_UPLOAD", "rbLng        = " + rbLng);
-        Log.e("IZIN_CUTI_UPLOAD", "rbKet        = " + rbKet);
-        Log.e("IZIN_CUTI_UPLOAD", "valid        = " + valid);
-        Log.e("IZIN_CUTI_UPLOAD", "ekslampiran  = " + ekslampiran);
-        Log.e("IZIN_CUTI_UPLOAD", "dariTanggal  = " + dariTanggal);
-        Log.e("IZIN_CUTI_UPLOAD", "sampaiTanggal= " + sampaiTanggal);
-        Log.e("IZIN_CUTI_UPLOAD", "rbFakeGPS    = " + rbFakeGPS);
-
-        Log.e("IZIN_CUTI_UPLOAD", "fotoPart     = " +
-                (fotoPart != null ? "ADA" : "NULL"));
-
-        Log.e("IZIN_CUTI_UPLOAD", "lampiranPart = " +
-                (lampiranPart != null ? "ADA" : "NULL"));
-
-        Log.e("IZIN_CUTI_UPLOAD", "file         = " +
-                (file != null ? file.getAbsolutePath() : "NULL"));
-
-        Log.e("IZIN_CUTI_UPLOAD", "filelampiran = " +
-                (filelampiran != null ? filelampiran.getAbsolutePath() : "NULL"));
-
-        Log.e("IZIN_CUTI_UPLOAD", "imageBytes   = " +
-                (imageBytes != null ? imageBytes.length : "NULL"));
-
+        Log.e("IZIN_CUTI_UPLOAD", "sEmployeID   = " + finalEmployeeId);
+        Log.e("IZIN_CUTI_UPLOAD", "posisi       = " + finalPosisi);
+        Log.e("IZIN_CUTI_UPLOAD", "status       = " + finalStatus);
+        Log.e("IZIN_CUTI_UPLOAD", "rbLat        = " + finalLat);
+        Log.e("IZIN_CUTI_UPLOAD", "rbLng        = " + finalLng);
+        Log.e("IZIN_CUTI_UPLOAD", "rbKet        = " + finalKet);
+        Log.e("IZIN_CUTI_UPLOAD", "valid        = " + finalValid);
+        Log.e("IZIN_CUTI_UPLOAD", "ekslampiran  = " + finalEkslampiran);
+        Log.e("IZIN_CUTI_UPLOAD", "dariTanggal  = " + finalDariTanggal);
+        Log.e("IZIN_CUTI_UPLOAD", "sampaiTanggal= " + finalSampaiTanggal);
+        Log.e("IZIN_CUTI_UPLOAD", "rbFakeGPS    = " + finalFakeGPS);
         Log.e("IZIN_CUTI_UPLOAD", "=================================");
 
         Call<ResponsePOJO> call =
                 RetroClient.getInstance().getApi().uploadAbsenIzinCuti(
                         fotoPart,
-                        textPart(sEmployeID),
-                        textPart(posisi),
-                        textPart(status),
-                        textPart(rbLat),
-                        textPart(rbLng),
-                        textPart(rbKet),
-                        textPart(valid),
+                        textPart(finalEmployeeId),
+                        textPart(finalPosisi),
+                        textPart(finalStatus),
+                        textPart(finalLat),
+                        textPart(finalLng),
+                        textPart(finalKet),
+                        textPart(finalValid),
                         lampiranPart,
-                        textPart(ekslampiran),
-                        textPart(dariTanggal),
-                        textPart(sampaiTanggal),
-                        textPart(rbFakeGPS)
+                        textPart(finalEkslampiran),
+                        textPart(finalDariTanggal),
+                        textPart(finalSampaiTanggal),
+                        textPart(finalFakeGPS)
                 );
 
         call.enqueue(new Callback<ResponsePOJO>() {
@@ -600,6 +595,7 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
                 dialogproses.dismiss();
 
                 if (!response.isSuccessful()) {
+                    if (llUpload != null) llUpload.setEnabled(true);
                     AttendanceNotificationHelper.notifyHttpFailure(IzinCutiFinalActivity.this, "Izin Cuti", response);
                     dialogView.viewNotifKosong(
                             IzinCutiFinalActivity.this,
@@ -616,6 +612,7 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
                     AttendanceNotificationHelper.notifySuccess(IzinCutiFinalActivity.this, "Izin Cuti", data.getRemarks());
                     dialogView.viewSukses(IzinCutiFinalActivity.this, data.getRemarks());
                 }else {
+                    if (llUpload != null) llUpload.setEnabled(true);
                     String errRemarks = data != null ? data.getRemarks() : "Respon server tidak valid.";
                     AttendanceNotificationHelper.notifyFailure(IzinCutiFinalActivity.this, "Izin Cuti", errRemarks);
                     dialogView.viewNotifKosong(IzinCutiFinalActivity.this, errRemarks,"");
@@ -626,6 +623,7 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
             @Override
             public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
                 dialogproses.dismiss();
+                if (llUpload != null) llUpload.setEnabled(true);
                 AttendanceNotificationHelper.notifyNetworkFailure(IzinCutiFinalActivity.this, "Izin Cuti", t);
                 dialogView.pesanError(IzinCutiFinalActivity.this);
             }
@@ -675,7 +673,7 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
         if(tTimeTable.getCount() == 0){
             jamMasuk = null;
             jamPulang = null;
-            return;
+            timetableid = "0";
         }
 
         while (tTimeTable.moveToNext()) {
@@ -693,6 +691,11 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
             latOffice = employe.getString(15);
             lngOffice = employe.getString(16);
         }
+
+        if (timetableid == null) timetableid = "0";
+        if (eOPD == null) eOPD = "0";
+        if (eKelompok == null) eKelompok = "0";
+        if (eJabatan == null) eJabatan = "0";
     }
 
     public void dataKegiatan(){
@@ -933,35 +936,34 @@ public class IzinCutiFinalActivity extends AppCompatActivity implements OnMapRea
 
 
     public void periksaWaktu(){
-        try {
-            Date jam = SIMPLE_FORMAT_JAM.parse(jamMasuk);
-            Date pulang = SIMPLE_FORMAT_JAM.parse(jamPulang);
+        rbStatus = "izin";
+        rbPosisi = "ct";
 
-            jamTaging = SIMPLE_FORMAT_JAM_TAGING.format(new Date());
+        if (jamMasuk != null && jamPulang != null) {
+            try {
+                Date jam = SIMPLE_FORMAT_JAM.parse(jamMasuk);
+                Date pulang = SIMPLE_FORMAT_JAM.parse(jamPulang);
 
+                jamTaging = SIMPLE_FORMAT_JAM_TAGING.format(new Date());
+                Date tagingTime = SIMPLE_FORMAT_JAM_TAGING.parse(jamTaging);
 
-            Date tagingTime = SIMPLE_FORMAT_JAM_TAGING.parse(jamTaging);
+                long millis = tagingTime.getTime() - jam.getTime();
+                int hours = (int) (millis / (1000 * 60 * 60));
+                mins = (int) ((millis / (1000 * 60)) % 60) + (hours * 60);
 
-            long millis = tagingTime.getTime() - jam.getTime();
-            int hours = (int) (millis / (1000 * 60 * 60));
-            mins = (int) ((millis / (1000 * 60)) % 60) + (hours * 60);
+                if (mins < 0){
+                    mins = 0;
+                }
 
-            if (mins < 0){
-                mins = 0;
+                long millispulang = pulang.getTime() - tagingTime.getTime();
+                int hourspulang = (int) (millispulang / (1000 * 60 * 60));
+                minspulang = (int) ((millispulang / (1000 * 60)) % 60) + (hourspulang * 60);
+
+                jamMasukPulang = Integer.parseInt(SIMPLE_FORMAT_JAM_MASUK_PULANG.format(new Date()));
+                menitMasukPulang = Integer.parseInt(SIMPLE_FORMAT_MENIT_MASUK_PULANG.format(new Date()));
+            }catch (Exception e){
+                e.printStackTrace();
             }
-
-            long millispulang = pulang.getTime() - tagingTime.getTime();
-            int hourspulang = (int) (millispulang / (1000 * 60 * 60));
-            minspulang = (int) ((millispulang / (1000 * 60)) % 60) + (hourspulang * 60);
-
-            jamMasukPulang = Integer.parseInt(SIMPLE_FORMAT_JAM_MASUK_PULANG.format(new Date()));
-            menitMasukPulang = Integer.parseInt(SIMPLE_FORMAT_MENIT_MASUK_PULANG.format(new Date()));
-
-            rbStatus = "izin";
-            rbPosisi = "ct";
-
-        }catch (Exception e){
-            e.printStackTrace();
         }
     }
     byte[] imageBytesDokumenPdf;

@@ -148,40 +148,47 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             if (body == null) body = dataBody;
         }
 
-        // 5. Ambil keputusan perintah sinkronisasi
-        String finalCommand = null;
+        // 5. Ambil keputusan perintah sinkronisasi secara komprehensif
+        StringBuilder signalBuilder = new StringBuilder();
         if (dataMap != null && !dataMap.isEmpty()) {
-            finalCommand = dataMap.get("title");
-            if (finalCommand == null) finalCommand = dataMap.get("body");
-            if (finalCommand == null) finalCommand = dataMap.get("command");
+            String cmd = dataMap.get("command");
+            String syncType = dataMap.get("sync_type");
+            String dataTitle = dataMap.get("title");
+            String dataBody = dataMap.get("body");
+            if (cmd != null) signalBuilder.append(cmd).append(" ");
+            if (syncType != null) signalBuilder.append(syncType).append(" ");
+            if (dataTitle != null) signalBuilder.append(dataTitle).append(" ");
+            if (dataBody != null) signalBuilder.append(dataBody).append(" ");
         }
-        
-        if (finalCommand == null) {
-            finalCommand = title;
-        }
+        if (title != null) signalBuilder.append(title).append(" ");
+        if (body != null) signalBuilder.append(body);
 
-        if (finalCommand != null) {
-            finalCommand = finalCommand.trim();
-            Log.d("FCM_SERVICE", "Processing Final Command: " + finalCommand);
-            executeSyncLogic(finalCommand);
+        String rawSignals = signalBuilder.toString().trim();
+        if (!rawSignals.isEmpty()) {
+            Log.d("FCM_SERVICE", "Processing Final Command Signals: " + rawSignals);
+            executeSyncLogic(rawSignals);
         }
 
         // 6. Tampilkan notifikasi visual jika judul ada (lewati jika baru saja tampil via notifikasi lokal absensi)
         if (title != null) {
             String fcmType = dataMap != null ? dataMap.get("type") : null;
             String fcmOutcome = dataMap != null ? dataMap.get("outcome") : null;
-            boolean isAttendanceFcm = "absensi".equalsIgnoreCase(fcmType)
-                    || "absensi_gagal".equalsIgnoreCase(fcmType)
-                    || title.toLowerCase().startsWith("absensi berhasil")
-                    || title.toLowerCase().startsWith("absensi gagal");
+            String lowerTitle = title.toLowerCase();
 
-            if (isAttendanceFcm) {
+            // Hanya supres jika notifikasi ini benar-benar hasil scan kehadiran (bukan update pegawai/lokasi/jadwal)
+            boolean isAttendanceOutcomeFcm = lowerTitle.startsWith("absensi berhasil")
+                    || lowerTitle.startsWith("absensi gagal")
+                    || "absensi_sukses".equalsIgnoreCase(fcmType)
+                    || "absensi_gagal".equalsIgnoreCase(fcmType);
+
+            if (isAttendanceOutcomeFcm) {
                 if (fcmOutcome == null || fcmOutcome.trim().isEmpty()) {
-                    fcmOutcome = ("absensi_gagal".equalsIgnoreCase(fcmType) || title.toLowerCase().startsWith("absensi gagal"))
+                    fcmOutcome = ("absensi_gagal".equalsIgnoreCase(fcmType) || lowerTitle.startsWith("absensi gagal"))
                             ? AttendanceNotificationHelper.OUTCOME_FAILED
                             : AttendanceNotificationHelper.OUTCOME_SUCCESS;
                 }
                 if (AttendanceNotificationHelper.shouldSuppressFcmAttendanceNotification(this, fcmOutcome)) {
+                    Log.d("FCM_SERVICE", "Notifikasi visual FCM absensi disupres karena baru saja ditampilkan oleh helper lokal.");
                     return;
                 }
             }

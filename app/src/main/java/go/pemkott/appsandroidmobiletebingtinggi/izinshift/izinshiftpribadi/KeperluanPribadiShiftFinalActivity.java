@@ -441,7 +441,7 @@ public class KeperluanPribadiShiftFinalActivity extends AppCompatActivity  imple
         String rbStatus = "izin";
 
         String rbValid;
-        if (eJabatan.equals("2")){
+        if ("2".equals(eJabatan)){
             rbValid = "2";
         }else{
             rbValid = "0";
@@ -625,7 +625,7 @@ public class KeperluanPribadiShiftFinalActivity extends AppCompatActivity  imple
     private RequestBody textPart(String value) {
         return RequestBody.create(
                 MediaType.parse("text/plain"),
-                value
+                value != null ? value : ""
         );
     }
     public void kirimdataMasuk(String valid, String posisi, String status, String ketKehadiran, String jampegawai){
@@ -823,6 +823,10 @@ public class KeperluanPribadiShiftFinalActivity extends AppCompatActivity  imple
             lngOffice = employe.getString(16);
             batasWaktu = employe.getString(18);
         }
+
+        if (eOPD == null) eOPD = "0";
+        if (eKelompok == null) eKelompok = "0";
+        if (eJabatan == null) eJabatan = "0";
     }
 
 
@@ -935,44 +939,44 @@ public class KeperluanPribadiShiftFinalActivity extends AppCompatActivity  imple
     Date tagingTime;
 
     public void periksaWaktu(){
+        rbTanggal = SIMPLE_FORMAT_TANGGAL.format(new Date());
+        rbJam = SIMPLE_FORMAT_JAM.format(new Date());
 
-        try {
-            jamMasukDate = SIMPLE_FORMAT_JAM.parse(masuksift);
-            jamPulangDate = SIMPLE_FORMAT_JAM.parse(pulangsift);
+        if (masuksift != null && pulangsift != null) {
+            try {
+                jamMasukDate = SIMPLE_FORMAT_JAM.parse(masuksift);
+                jamPulangDate = SIMPLE_FORMAT_JAM.parse(pulangsift);
 
-            String jamTaging = SIMPLE_FORMAT_JAM_TAGING.format(new Date());
+                String jamTaging = SIMPLE_FORMAT_JAM_TAGING.format(new Date());
 
-            SimpleDateFormat df = new SimpleDateFormat("HH:mm", localeID);
-            Date d = df.parse(masuksift);
-            cal.setTime(d);
-            int minutesToSubtract = 0;
-            if (batasWaktu != null && !batasWaktu.trim().isEmpty()) {
-                try { minutesToSubtract = Integer.parseInt(batasWaktu.trim()); } catch (NumberFormatException ignored) {}
+                SimpleDateFormat df = new SimpleDateFormat("HH:mm", localeID);
+                Date d = df.parse(masuksift);
+                cal.setTime(d);
+                int minutesToSubtract = 0;
+                if (batasWaktu != null && !batasWaktu.trim().isEmpty()) {
+                    try { minutesToSubtract = Integer.parseInt(batasWaktu.trim()); } catch (NumberFormatException ignored) {}
+                }
+                cal.add(Calendar.MINUTE, -minutesToSubtract);
+                String newTime = df.format(cal.getTime());
+
+                tagingTime = SIMPLE_FORMAT_JAM_TAGING.parse(jamTaging);
+                dateBatasWaktu = SIMPLE_FORMAT_JAM_TAGING.parse(newTime);
+
+                long millis = tagingTime.getTime() - jamMasukDate.getTime();
+                int hours = (int) (millis / (1000 * 60 * 60));
+
+                mins = (int) ((millis / (1000 * 60)) % 60) + (hours * 60);
+                if (mins <= 0){
+                    mins = 0;
+                }
+
+                long millispulang = jamPulangDate.getTime() - tagingTime.getTime();
+                int hourspulang = (int) (millispulang / (1000 * 60 * 60));
+                minspulang = (int) ((millispulang / (1000 * 60)) % 60) + (hourspulang * 60);
+
+            }catch (Exception e){
+                e.printStackTrace();
             }
-            cal.add(Calendar.MINUTE, -minutesToSubtract);
-            String newTime = df.format(cal.getTime());
-
-            tagingTime = SIMPLE_FORMAT_JAM_TAGING.parse(jamTaging);
-            dateBatasWaktu = SIMPLE_FORMAT_JAM_TAGING.parse(newTime);
-
-            long millis = tagingTime.getTime() - jamMasukDate.getTime();
-            int hours = (int) (millis / (1000 * 60 * 60));
-
-            mins = (int) ((millis / (1000 * 60)) % 60) + (hours * 60);
-            if (mins <= 0){
-                mins = 0;
-            }
-
-            long millispulang = jamPulangDate.getTime() - tagingTime.getTime();
-            int hourspulang = (int) (millispulang / (1000 * 60 * 60));
-            minspulang = (int) ((millispulang / (1000 * 60)) % 60) + (hourspulang * 60);
-
-//            diff = hours + " jam :" + mins+" menit";
-
-            rbJam = SIMPLE_FORMAT_JAM.format(new Date());
-
-        }catch (Exception e){
-            e.printStackTrace();
         }
 
     }

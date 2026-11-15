@@ -491,6 +491,7 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
         if(tTimeTable.getCount() == 0){
             jamMasuk = null;
             jamPulang = null;
+            timetableid = "0";
         }
 
         while (tTimeTable.moveToNext()) {
@@ -498,6 +499,10 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
             hariIni = tTimeTable.getString(3);
             jamMasuk = tTimeTable.getString(5);
             jamPulang = tTimeTable.getString(6);
+        }
+
+        if (timetableid == null || timetableid.trim().isEmpty()) {
+            timetableid = "0";
         }
 
         Cursor employe = databaseHelper.getDataEmployee(sEmployeID);
@@ -895,37 +900,35 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
     }
 
     public void periksaWaktu(){
+        rbTanggal = SIMPLE_FORMAT_TANGGAL.format(new Date());
+        rbJam = SIMPLE_FORMAT_JAM.format(new Date());
+        rbStatus = "perjalanan dinas";
+        rbPosisi = "pd";
+
         try {
-            Date jam = SIMPLE_FORMAT_JAM.parse(jamMasuk);
-            Date pulang = SIMPLE_FORMAT_JAM.parse(jamPulang);
-
-            String jamTaging = SIMPLE_FORMAT_JAM_TAGING.format(new Date());
-
-
-            Date tagingTime = SIMPLE_FORMAT_JAM_TAGING.parse(jamTaging);
-
-            long millis = tagingTime.getTime() - jam.getTime();
-            int hours = (int) (millis / (1000 * 60 * 60));
-            mins = (int) ((millis / (1000 * 60)) % 60) + (hours * 60);
-
-            if (mins < 0){
-                mins = 0;
-            }
-
-            long millispulang = pulang.getTime() - tagingTime.getTime();
-            int hourspulang = (int) (millispulang / (1000 * 60 * 60));
-            minspulang = (int) ((millispulang / (1000 * 60)) % 60) + (hourspulang * 60);
-
-
-            rbTanggal = SIMPLE_FORMAT_TANGGAL.format(new Date());
-            rbJam = SIMPLE_FORMAT_JAM.format(new Date());
             jamMasukPulang = Integer.parseInt(SIMPLE_FORMAT_JAM_MASUK_PULANG.format(new Date()));
             menitMasukPulang = Integer.parseInt(SIMPLE_FORMAT_MENIT_MASUK_PULANG.format(new Date()));
 
-            rbStatus = "perjalanan dinas";
-            rbPosisi = "pd";
+            if (jamMasuk != null && jamPulang != null) {
+                Date jam = SIMPLE_FORMAT_JAM.parse(jamMasuk);
+                Date pulang = SIMPLE_FORMAT_JAM.parse(jamPulang);
+                String jamTaging = SIMPLE_FORMAT_JAM_TAGING.format(new Date());
+                Date tagingTime = SIMPLE_FORMAT_JAM_TAGING.parse(jamTaging);
 
-        }catch (Exception e){
+                if (jam != null && tagingTime != null) {
+                    long millis = tagingTime.getTime() - jam.getTime();
+                    int hours = (int) (millis / (1000 * 60 * 60));
+                    mins = (int) ((millis / (1000 * 60)) % 60) + (hours * 60);
+                    if (mins < 0) mins = 0;
+                }
+
+                if (pulang != null && tagingTime != null) {
+                    long millispulang = pulang.getTime() - tagingTime.getTime();
+                    int hourspulang = (int) (millispulang / (1000 * 60 * 60));
+                    minspulang = (int) ((millispulang / (1000 * 60)) % 60) + (hourspulang * 60);
+                }
+            }
+        } catch (Exception e){
             e.printStackTrace();
         }
     }
@@ -946,7 +949,7 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
         hitungjarak();
 
         String rbValid;
-        if (eJabatan.equals("2")){
+        if ("2".equals(eJabatan)){
             rbValid = "2";
         }else{
             rbValid = "0";
@@ -954,6 +957,7 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
 
         if (dariTanggal == null || sampaiTanggal == null){
             dialogView.viewNotifKosong(PerjalananDinasFinalActivity.this, "Rentang waktu Perjalanan Dinas tidak boleh kosong.", "");
+            if (llUpload != null) llUpload.setEnabled(true);
         }
         else{
 
@@ -965,8 +969,9 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
                 e.printStackTrace();
             }
 
-            if (Objects.requireNonNull(dateDariTgl).getTime() > Objects.requireNonNull(dateSampaiTgl).getTime()){
+            if (dateDariTgl == null || dateSampaiTgl == null || dateDariTgl.getTime() > dateSampaiTgl.getTime()){
                 dialogView.viewNotifKosong(this, "Perhatikan kembali rentang waktu yang anda pilih.", "Tidak boleh terbalik.");
+                if (llUpload != null) llUpload.setEnabled(true);
             }else{
                 kirimdata(rbValid, rbPosisi, rbStatus);
             }
@@ -977,7 +982,7 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
     private RequestBody textPart(String value) {
         return RequestBody.create(
                 MediaType.parse("text/plain"),
-                value
+                value != null ? value : ""
         );
     }
 
@@ -1019,26 +1024,42 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
                     prepareFilePart("lampiran", imageBytesLampiran);
         }
 
+        String finalJabatan = (eJabatan != null) ? eJabatan : "0";
+        String finalEmployeeId = (sEmployeID != null && !sEmployeID.trim().isEmpty()) ? sEmployeID : (session != null ? session.getEmployeeId() : "0");
+        String finalTimetableId = (timetableid != null && !timetableid.trim().isEmpty()) ? timetableid : "0";
+        String finalJam = (rbJam != null && !rbJam.trim().isEmpty()) ? rbJam : SIMPLE_FORMAT_JAM.format(new Date());
+        String finalPosisi = (posisi != null && !posisi.trim().isEmpty()) ? posisi : "pd";
+        String finalStatus = (status != null && !status.trim().isEmpty()) ? status : "perjalanan dinas";
+        String finalLat = (rbLat != null) ? rbLat : "0";
+        String finalLng = (rbLng != null) ? rbLng : "0";
+        String finalKet = (rbKet != null && !rbKet.trim().isEmpty()) ? rbKet : "Perjalanan Dinas";
+        String finalOPD = (eOPD != null) ? eOPD : "0";
+        String finalValid = (valid != null) ? valid : "0";
+        String finalEkslampiran = (ekslampiran != null) ? ekslampiran : "pdf";
+        String finalDari = (dariTanggal != null) ? dariTanggal : "";
+        String finalSampai = (sampaiTanggal != null) ? sampaiTanggal : "";
+        String finalFakeGps = (rbFakeGPS != null) ? rbFakeGPS : "0";
+
         Call<ResponsePOJO> call =
                 RetroClient.getInstance().getApi().uploadAbsenPerjalananDinas(
                         fotoPart,
-                        textPart(eJabatan),
-                        textPart(sEmployeID),
-                        textPart(timetableid),
-                        textPart(rbJam),
-                        textPart(posisi),
-                        textPart(status),
-                        textPart(rbLat),
-                        textPart(rbLng),
-                        textPart(rbKet),
+                        textPart(finalJabatan),
+                        textPart(finalEmployeeId),
+                        textPart(finalTimetableId),
+                        textPart(finalJam),
+                        textPart(finalPosisi),
+                        textPart(finalStatus),
+                        textPart(finalLat),
+                        textPart(finalLng),
+                        textPart(finalKet),
                         textPart(String.valueOf(0)),
-                        textPart(eOPD),
-                        textPart(valid),
+                        textPart(finalOPD),
+                        textPart(finalValid),
                         lampiranPart,
-                        textPart(ekslampiran),
-                        textPart(dariTanggal),
-                        textPart(sampaiTanggal),
-                        textPart(rbFakeGPS)
+                        textPart(finalEkslampiran),
+                        textPart(finalDari),
+                        textPart(finalSampai),
+                        textPart(finalFakeGps)
                 );
 
         call.enqueue(new Callback<ResponsePOJO>() {
@@ -1047,6 +1068,7 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
                 dialogproses.dismiss();
 
                 if (!response.isSuccessful()) {
+                    if (llUpload != null) llUpload.setEnabled(true);
                     String errRaw = null;
                     try {
                         if (response.errorBody() != null) {
@@ -1076,10 +1098,11 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
                 ResponsePOJO data = response.body();
 
                 if (data != null && data.isStatus()){
-                    databaseHelper.insertLog(sEmployeID, eOPD, tanggal, "Melakukan Absen Perjalanan Dinas", "Perjalanan Dinas");
+                    databaseHelper.insertLog(finalEmployeeId, finalOPD, tanggal, "Melakukan Absen Perjalanan Dinas", "Perjalanan Dinas");
                     AttendanceNotificationHelper.notifySuccess(PerjalananDinasFinalActivity.this, "Perjalanan Dinas", data.getRemarks());
                     dialogView.viewSukses(PerjalananDinasFinalActivity.this, data.getRemarks());
                 }else {
+                    if (llUpload != null) llUpload.setEnabled(true);
                     String errRemarks = data != null ? data.getRemarks() : "Respon server tidak valid.";
                     AttendanceNotificationHelper.notifyFailure(PerjalananDinasFinalActivity.this, "Perjalanan Dinas", errRemarks);
                     dialogView.viewNotifKosong(PerjalananDinasFinalActivity.this, errRemarks,"");
@@ -1090,6 +1113,7 @@ public class PerjalananDinasFinalActivity extends AppCompatActivity implements O
             @Override
             public void onFailure(@NonNull Call<ResponsePOJO> call, @NonNull Throwable t) {
                 dialogproses.dismiss();
+                if (llUpload != null) llUpload.setEnabled(true);
                 AttendanceNotificationHelper.notifyNetworkFailure(PerjalananDinasFinalActivity.this, "Perjalanan Dinas", t);
 
                 dialogView.viewNotifKosong(PerjalananDinasFinalActivity.this, "Gagal mengisi absensi,", "silahkan coba kembali.");

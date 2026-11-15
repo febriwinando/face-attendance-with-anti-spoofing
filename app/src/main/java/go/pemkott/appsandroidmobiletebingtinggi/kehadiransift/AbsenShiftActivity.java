@@ -1063,7 +1063,7 @@ public class AbsenShiftActivity extends AppCompatActivity implements OnMapReadyC
     private RequestBody textPart(String value) {
         return RequestBody.create(
                 MediaType.parse("text/plain"),
-                value
+                value != null ? value : ""
         );
     }
 

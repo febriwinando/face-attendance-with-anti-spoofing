@@ -442,7 +442,7 @@ public class PerjalananDinasShiftFinalActivity extends AppCompatActivity impleme
         hitungjarak();
 
         String rbValid;
-        if (eJabatan.equals("2")){
+        if ("2".equals(eJabatan)){
             rbValid = "2";
         }else{
             rbValid = "0";
@@ -450,26 +450,26 @@ public class PerjalananDinasShiftFinalActivity extends AppCompatActivity impleme
 
         if (dariTanggal == null || sampaiTanggal == null){
             dialogView.viewNotifKosong(PerjalananDinasShiftFinalActivity.this, "Rentang waktu Perjalanan Dinas tidak boleh kosong.", "");
+            return;
         }
-        else{
-            Date dateDariTgl = null, dateSampaiTgl = null;
-            try {
-                dateDariTgl = SIMPLE_FORMAT_TANGGAL.parse(dariTanggal);
-                dateSampaiTgl = SIMPLE_FORMAT_TANGGAL.parse(sampaiTanggal);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
 
-            if (Objects.requireNonNull(dateDariTgl).getTime() > Objects.requireNonNull(dateSampaiTgl).getTime()){
-                dialogView.viewNotifKosong(this, "Perhatikan kembali rentang waktu yang anda pilih.", "Tidak boleh terbalik.");
-            }else{
-                kirimdata(rbValid, "luar", "perjalanan dinas");
-            }
+        Date dateDariTgl = null, dateSampaiTgl = null;
+        try {
+            dateDariTgl = SIMPLE_FORMAT_TANGGAL.parse(dariTanggal);
+            dateSampaiTgl = SIMPLE_FORMAT_TANGGAL.parse(sampaiTanggal);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        if (dateDariTgl != null && dateSampaiTgl != null && dateDariTgl.getTime() > dateSampaiTgl.getTime()){
+            dialogView.viewNotifKosong(this, "Perhatikan kembali rentang waktu yang anda pilih.", "Tidak boleh terbalik.");
+        }else{
+            kirimdata(rbValid, "luar", "perjalanan dinas");
         }
     }
 
     private RequestBody textPart(String value) {
-        return RequestBody.create(MediaType.parse("text/plain"), value);
+        return RequestBody.create(MediaType.parse("text/plain"), value != null ? value : "");
     }
 
     private MultipartBody.Part prepareFilePart(String partName, byte[] imageBytes) {
@@ -495,25 +495,41 @@ public class PerjalananDinasShiftFinalActivity extends AppCompatActivity impleme
             lampiranPart = prepareFilePart("lampiran", imageBytesLampiran);
         }
 
+        String finalJabatan = eJabatan != null ? eJabatan : "0";
+        String finalEmployeeId = sEmployeID != null ? sEmployeID : "";
+        String finalIdShift = JadwalPerjalananDinasShiftActivity.idsift != null ? JadwalPerjalananDinasShiftActivity.idsift : "0";
+        String finalJam = (rbJam != null && !rbJam.isEmpty()) ? rbJam : SIMPLE_FORMAT_JAM.format(new Date());
+        String finalPosisi = (posisi != null && !posisi.isEmpty()) ? posisi : "luar";
+        String finalStatus = (status != null && !status.isEmpty()) ? status : "perjalanan dinas";
+        String finalLat = (rbLat != null && !rbLat.isEmpty()) ? rbLat : String.valueOf(latGMap);
+        String finalLng = (rbLng != null && !rbLng.isEmpty()) ? rbLng : String.valueOf(lngGMap);
+        String finalKet = (rbKet != null && !rbKet.isEmpty()) ? rbKet : "-";
+        String finalOPD = eOPD != null ? eOPD : "0";
+        String finalValid = (valid != null && !valid.isEmpty()) ? valid : "0";
+        String finalEkslampiran = (ekslampiran != null && !ekslampiran.isEmpty()) ? ekslampiran : "jpg";
+        String finalDariTanggal = dariTanggal != null ? dariTanggal : "";
+        String finalSampaiTanggal = sampaiTanggal != null ? sampaiTanggal : "";
+        String finalFakeGPS = rbFakeGPS != null ? rbFakeGPS : "0";
+
         Call<ResponsePOJO> call = RetroClient.getInstance().getApi().uploadAbsenPerjalananDinas(
                 fotoPart,
-                textPart(eJabatan),
-                textPart(sEmployeID),
-                textPart(JadwalPerjalananDinasShiftActivity.idsift),
-                textPart(rbJam),
-                textPart(posisi),
-                textPart(status),
-                textPart(rbLat),
-                textPart(rbLng),
-                textPart(rbKet),
-                textPart(String.valueOf(0)),
-                textPart(eOPD),
-                textPart(valid),
+                textPart(finalJabatan),
+                textPart(finalEmployeeId),
+                textPart(finalIdShift),
+                textPart(finalJam),
+                textPart(finalPosisi),
+                textPart(finalStatus),
+                textPart(finalLat),
+                textPart(finalLng),
+                textPart(finalKet),
+                textPart("0"),
+                textPart(finalOPD),
+                textPart(finalValid),
                 lampiranPart,
-                textPart(ekslampiran),
-                textPart(dariTanggal),
-                textPart(sampaiTanggal),
-                textPart(rbFakeGPS)
+                textPart(finalEkslampiran),
+                textPart(finalDariTanggal),
+                textPart(finalSampaiTanggal),
+                textPart(finalFakeGPS)
         );
 
         call.enqueue(new Callback<ResponsePOJO>() {
@@ -577,6 +593,10 @@ public class PerjalananDinasShiftFinalActivity extends AppCompatActivity impleme
             latOffice = employe.getString(15);
             lngOffice = employe.getString(16);
         }
+
+        if (eOPD == null) eOPD = "0";
+        if (eKelompok == null) eKelompok = "0";
+        if (eJabatan == null) eJabatan = "0";
     }
 
     public void dataKegiatan() {

@@ -368,7 +368,7 @@ public class TugasLapanganShiftFinalActivity extends AppCompatActivity implement
             periksaWaktu();
             hitungjarak();
 
-            String rbValid = eJabatan.equals("2") ? "2" : "0";
+            String rbValid = "2".equals(eJabatan) ? "2" : "0";
 
             selected = rgKehadiran.getCheckedRadioButtonId();
             radioSelectedKehadiran = findViewById(selected);
@@ -456,7 +456,7 @@ public class TugasLapanganShiftFinalActivity extends AppCompatActivity implement
     }
 
     private RequestBody textPart(String value) {
-        return RequestBody.create(MediaType.parse("text/plain"), value);
+        return RequestBody.create(MediaType.parse("text/plain"), value != null ? value : "");
     }
 
     public void kirimdataMasuk(String valid, String posisi, String status, String ketKehadiran, String jampegawai){
@@ -667,6 +667,10 @@ public class TugasLapanganShiftFinalActivity extends AppCompatActivity implement
             statushift = employe.getString(19);
             employe.close();
         }
+
+        if (timetableid == null) timetableid = "0";
+        if (eOPD == null) eOPD = "0";
+        if (eJabatan == null) eJabatan = "0";
     }
 
     public void dataKegiatan(){
@@ -809,29 +813,33 @@ public class TugasLapanganShiftFinalActivity extends AppCompatActivity implement
     }
 
     public void periksaWaktu(){
-        try {
-            jamMasukDate = SIMPLE_FORMAT_JAM.parse(jamMasuk);
-            jamPulangDate = SIMPLE_FORMAT_JAM.parse(jamPulang);
-            String jamTaging = SIMPLE_FORMAT_JAM_TAGING.format(new Date());
-            Date tagingTime = SIMPLE_FORMAT_JAM_TAGING.parse(jamTaging);
+        rbTanggal = SIMPLE_FORMAT_TANGGAL.format(new Date());
+        rbJam = SIMPLE_FORMAT_JAM.format(new Date());
 
-            SimpleDateFormat df = new SimpleDateFormat("HH:mm", localeID);
-            Date d = df.parse(jamMasuk);
-            cal.setTime(d);
-            int minutesToSubtract = 0;
-            if (batasWaktu != null && !batasWaktu.trim().isEmpty()) {
-                try { minutesToSubtract = Integer.parseInt(batasWaktu.trim()); } catch (NumberFormatException ignored) {}
+        if (jamMasuk != null && jamPulang != null) {
+            try {
+                jamMasukDate = SIMPLE_FORMAT_JAM.parse(jamMasuk);
+                jamPulangDate = SIMPLE_FORMAT_JAM.parse(jamPulang);
+                String jamTaging = SIMPLE_FORMAT_JAM_TAGING.format(new Date());
+                Date tagingTime = SIMPLE_FORMAT_JAM_TAGING.parse(jamTaging);
+
+                SimpleDateFormat df = new SimpleDateFormat("HH:mm", localeID);
+                Date d = df.parse(jamMasuk);
+                cal.setTime(d);
+                int minutesToSubtract = 0;
+                if (batasWaktu != null && !batasWaktu.trim().isEmpty()) {
+                    try { minutesToSubtract = Integer.parseInt(batasWaktu.trim()); } catch (NumberFormatException ignored) {}
+                }
+                cal.add(Calendar.MINUTE, -minutesToSubtract);
+                String newTime = df.format(cal.getTime());
+                dateBatasWaktu = SIMPLE_FORMAT_JAM_TAGING.parse(newTime);
+
+                long millis = tagingTime.getTime() - jamMasukDate.getTime();
+                mins = (int) ((millis / (1000 * 60)));
+                if (mins <= 0) mins = 0;
+            }catch (Exception e){
+                e.printStackTrace();
             }
-            cal.add(Calendar.MINUTE, -minutesToSubtract);
-            String newTime = df.format(cal.getTime());
-            dateBatasWaktu = SIMPLE_FORMAT_JAM_TAGING.parse(newTime);
-
-            long millis = tagingTime.getTime() - jamMasukDate.getTime();
-            mins = (int) ((millis / (1000 * 60)));
-            if (mins <= 0) mins = 0;
-            rbJam = SIMPLE_FORMAT_JAM.format(new Date());
-        }catch (Exception e){
-            e.printStackTrace();
         }
     }
 
