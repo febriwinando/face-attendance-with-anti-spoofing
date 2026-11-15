@@ -28,12 +28,13 @@ android {
         applicationId = "go.pemkott.appsandroidmobiletebingtinggi"
         minSdk = 24
         targetSdk = 36
-        versionCode = 246
+        versionCode = 247
         versionName = "3.1.1"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         ndk {
             abiFilters.addAll(setOf("armeabi-v7a", "arm64-v8a"))
+            debugSymbolLevel = "FULL"
         }
     }
 
@@ -49,6 +50,9 @@ android {
                 "proguard-rules.pro"
             )
             signingConfig = signingConfigs.getByName("release")
+            ndk {
+                debugSymbolLevel = "FULL"
+            }
         }
     }
 
