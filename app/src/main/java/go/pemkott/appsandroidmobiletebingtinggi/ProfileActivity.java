@@ -138,6 +138,7 @@ public class ProfileActivity extends AppCompatActivity {
             switchSslBypassProfile.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 session.saveSslBypass(isChecked);
                 RetroClient.resetInstance();
+                RetrofitBuilder.resetClient();
                 if (isChecked) {
                     SSLHelper.disableSSLCertificateChecking();
                 } else {

@@ -2,13 +2,17 @@ package go.pemkott.appsandroidmobiletebingtinggi.pdf;
 
 import android.app.Dialog;
 import android.app.DownloadManager;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -25,6 +29,11 @@ import androidx.core.view.WindowInsetsControllerCompat;
 import com.google.android.material.button.MaterialButton;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.utils.PdfViewerFragment;
@@ -164,6 +173,48 @@ public class ReadPdfActivity extends AppCompatActivity implements PdfViewerFragm
     }
 
     private void downloadPdfDocument() {
+        try {
+            File cachedPdf = new File(getCacheDir(), "file.pdf");
+            if (cachedPdf.exists() && cachedPdf.length() > 0) {
+                String fileName = "Dokumen_EAbsensi_" + System.currentTimeMillis() + ".pdf";
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    ContentValues values = new ContentValues();
+                    values.put(MediaStore.MediaColumns.DISPLAY_NAME, fileName);
+                    values.put(MediaStore.MediaColumns.MIME_TYPE, "application/pdf");
+                    values.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS);
+
+                    Uri uri = getContentResolver().insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values);
+                    if (uri != null) {
+                        try (InputStream in = new FileInputStream(cachedPdf);
+                             OutputStream out = getContentResolver().openOutputStream(uri)) {
+                            byte[] buffer = new byte[4096];
+                            int bytesRead;
+                            while ((bytesRead = in.read(buffer)) != -1) {
+                                out.write(buffer, 0, bytesRead);
+                            }
+                        }
+                        Toast.makeText(this, "Dokumen berhasil disimpan ke folder Download", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                } else {
+                    File dest = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName);
+                    try (InputStream in = new FileInputStream(cachedPdf);
+                         OutputStream out = new FileOutputStream(dest)) {
+                        byte[] buffer = new byte[4096];
+                        int bytesRead;
+                        while ((bytesRead = in.read(buffer)) != -1) {
+                            out.write(buffer, 0, bytesRead);
+                        }
+                    }
+                    Toast.makeText(this, "Dokumen berhasil disimpan ke: " + dest.getAbsolutePath(), Toast.LENGTH_LONG).show();
+                    return;
+                }
+            }
+        } catch (Exception e) {
+            Log.e("DOWNLOAD_PDF", "Gagal menyimpan PDF langsung dari cache, mencoba fallback DownloadManager", e);
+        }
+
         if (currentPdfUrl == null || currentPdfUrl.trim().isEmpty()) {
             Toast.makeText(this, "URL Dokumen tidak ditemukan.", Toast.LENGTH_SHORT).show();
             return;

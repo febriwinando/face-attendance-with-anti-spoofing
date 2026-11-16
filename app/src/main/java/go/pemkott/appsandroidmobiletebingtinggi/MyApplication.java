@@ -17,9 +17,11 @@ public class MyApplication extends Application {
         instance = this;
         FirebaseApp.initializeApp(this);
 
-        if (BuildConfig.DEBUG) {
-            // Enable SSL certificate checking bypass only on debug builds for HTTPS local server
+        SessionManager session = new SessionManager(this);
+        if (session.isSslBypassEnabled()) {
             SSLHelper.disableSSLCertificateChecking();
+        } else {
+            SSLHelper.restoreDefaultSSLCertificateChecking();
         }
 
         // Pastikan default host server mengacu ke ServerConfig.DEFAULT_HOST (https://absensi.tebingtinggikota.go.id/)

@@ -8,8 +8,10 @@ import android.util.Log;
 import android.view.View;
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.net.http.SslError;
 import android.webkit.CookieManager;
 import android.webkit.PermissionRequest;
+import android.webkit.SslErrorHandler;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
@@ -108,6 +110,16 @@ public class AdminWebActivity extends AppCompatActivity {
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
                 super.onReceivedError(view, errorCode, description, failingUrl);
                 Log.e("ADMIN_WEB", "Error loading page: " + description);
+            }
+
+            @Override
+            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+                SessionManager session = new SessionManager(AdminWebActivity.this);
+                if (session.isSslBypassEnabled()) {
+                    handler.proceed();
+                } else {
+                    super.onReceivedSslError(view, handler, error);
+                }
             }
         });
 

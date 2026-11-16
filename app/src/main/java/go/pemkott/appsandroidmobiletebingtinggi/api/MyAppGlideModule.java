@@ -19,6 +19,8 @@ import com.bumptech.glide.module.AppGlideModule;
 import java.io.IOException;
 import java.io.InputStream;
 
+import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
+
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -30,21 +32,44 @@ public final class MyAppGlideModule extends AppGlideModule {
 
     @Override
     public void registerComponents(@NonNull Context context, @NonNull Glide glide, @NonNull Registry registry) {
-        OkHttpClient client = SSLHelper.getUnsafeOkHttpClientBuilder().build();
-        registry.replace(GlideUrl.class, InputStream.class, new OkHttpUrlLoaderFactory(client));
+        registry.replace(GlideUrl.class, InputStream.class, new OkHttpUrlLoaderFactory(context.getApplicationContext()));
     }
 
     private static class OkHttpUrlLoaderFactory implements ModelLoaderFactory<GlideUrl, InputStream> {
-        private final OkHttpClient client;
+        private final Context context;
+        private static volatile OkHttpClient safeClient;
+        private static volatile OkHttpClient unsafeClient;
 
-        public OkHttpUrlLoaderFactory(OkHttpClient client) {
-            this.client = client;
+        public OkHttpUrlLoaderFactory(Context context) {
+            this.context = context;
+        }
+
+        private static OkHttpClient getClient(boolean bypass) {
+            if (bypass) {
+                if (unsafeClient == null) {
+                    synchronized (OkHttpUrlLoaderFactory.class) {
+                        if (unsafeClient == null) {
+                            unsafeClient = SSLHelper.getUnsafeOkHttpClientBuilder().build();
+                        }
+                    }
+                }
+                return unsafeClient;
+            } else {
+                if (safeClient == null) {
+                    synchronized (OkHttpUrlLoaderFactory.class) {
+                        if (safeClient == null) {
+                            safeClient = new OkHttpClient.Builder().build();
+                        }
+                    }
+                }
+                return safeClient;
+            }
         }
 
         @NonNull
         @Override
         public ModelLoader<GlideUrl, InputStream> build(@NonNull MultiModelLoaderFactory multiFactory) {
-            return new OkHttpUrlLoader(client);
+            return new OkHttpUrlLoader(context);
         }
 
         @Override
@@ -52,10 +77,10 @@ public final class MyAppGlideModule extends AppGlideModule {
     }
 
     private static class OkHttpUrlLoader implements ModelLoader<GlideUrl, InputStream> {
-        private final OkHttpClient client;
+        private final Context context;
 
-        public OkHttpUrlLoader(OkHttpClient client) {
-            this.client = client;
+        public OkHttpUrlLoader(Context context) {
+            this.context = context;
         }
 
         @Override
@@ -65,6 +90,8 @@ public final class MyAppGlideModule extends AppGlideModule {
 
         @Override
         public LoadData<InputStream> buildLoadData(@NonNull GlideUrl glideUrl, int width, int height, @NonNull Options options) {
+            boolean isBypass = new SessionManager(context).isSslBypassEnabled();
+            OkHttpClient client = OkHttpUrlLoaderFactory.getClient(isBypass);
             return new LoadData<>(glideUrl, new OkHttpStreamFetcher(client, glideUrl));
         }
     }

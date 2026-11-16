@@ -45,6 +45,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.api.HttpService;
 import go.pemkott.appsandroidmobiletebingtinggi.api.ResponsePOJO;
 import go.pemkott.appsandroidmobiletebingtinggi.api.RetroClient;
+import go.pemkott.appsandroidmobiletebingtinggi.api.RetrofitBuilder;
 import go.pemkott.appsandroidmobiletebingtinggi.api.SSLHelper;
 import go.pemkott.appsandroidmobiletebingtinggi.api.ServerConfig;
 import go.pemkott.appsandroidmobiletebingtinggi.database.DatabaseHelper;
@@ -122,6 +123,7 @@ public class LoginActivity extends AppCompatActivity {
             switchSslBypass.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 session.saveSslBypass(isChecked);
                 RetroClient.resetInstance();
+                RetrofitBuilder.resetClient();
                 if (isChecked) {
                     SSLHelper.disableSSLCertificateChecking();
                 } else {

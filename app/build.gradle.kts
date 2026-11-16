@@ -6,15 +6,13 @@ plugins {
 android {
     signingConfigs {
         getByName("debug") {
-            storeFile =
-                file("/Users/nebula/Documents/Aplikasi Android/Salinan FaceAntiSpoofingMobile-main - Dev 1/appstebingtinggi.jks")
+            storeFile = rootProject.file("appstebingtinggi.jks")
             storePassword = "123456"
             keyAlias = "key123456"
             keyPassword = "123456"
         }
         create("release") {
-            storeFile =
-                file("/Users/nebula/Documents/Aplikasi Android/Salinan FaceAntiSpoofingMobile-main - Dev 1/appstebingtinggi.jks")
+            storeFile = rootProject.file("appstebingtinggi.jks")
             storePassword = "123456"
             keyAlias = "key123456"
             keyPassword = "123456"

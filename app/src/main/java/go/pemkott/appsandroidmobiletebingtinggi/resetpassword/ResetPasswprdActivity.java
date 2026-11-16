@@ -7,6 +7,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.webkit.CookieManager;
+import android.net.http.SslError;
+import android.webkit.SslErrorHandler;
 import android.webkit.URLUtil;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -19,6 +21,7 @@ import androidx.core.app.ActivityCompat;
 
 import go.pemkott.appsandroidmobiletebingtinggi.R;
 import go.pemkott.appsandroidmobiletebingtinggi.api.ServerConfig;
+import go.pemkott.appsandroidmobiletebingtinggi.login.SessionManager;
 
 public class ResetPasswprdActivity extends AppCompatActivity {
 
@@ -84,6 +87,16 @@ public class ResetPasswprdActivity extends AppCompatActivity {
         {
             view.loadUrl(url);
             return true;
+        }
+
+        @Override
+        public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+            SessionManager session = new SessionManager(view.getContext());
+            if (session.isSslBypassEnabled()) {
+                handler.proceed();
+            } else {
+                super.onReceivedSslError(view, handler, error);
+            }
         }
     }
 }

@@ -33,7 +33,7 @@ public class RetroClient {
         logging.redactHeader("Cookie");
         logging.setLevel(BuildConfig.DEBUG ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
 
-        OkHttpClient.Builder builder = (BuildConfig.DEBUG && enableBypass)
+        OkHttpClient.Builder builder = enableBypass
                 ? SSLHelper.getUnsafeOkHttpClientBuilder()
                 : new OkHttpClient.Builder();
 
