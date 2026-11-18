@@ -9,7 +9,7 @@ import go.pemkott.appsandroidmobiletebingtinggi.MyApplication;
 
 public class ServerConfig {
 
-    public static final String DEFAULT_HOST = "https://absensi.tebingtinggikota.go.id/";
+    public static final String DEFAULT_HOST = "https://svr-absensi.tebingtinggikota.go.id/";
     private static final String PREF_NAME = "server_config_prefs";
     private static final String KEY_CUSTOM_HOST = "custom_base_host";
     private static final Pattern INTERNAL_HOST_PATTERN = Pattern.compile(
@@ -81,7 +81,7 @@ public class ServerConfig {
         }
 
         // PENTING: URL portal berita Diskominfo (https://diskominfo.tebingtinggikota.go.id/...)
-        // tidak boleh diubah/dinormalkan ke host server absensi (https://absensi.tebingtinggikota.go.id/).
+        // tidak boleh diubah/dinormalkan ke host server absensi (https://svr-absensi.tebingtinggikota.go.id/).
         if (trimmed.contains("diskominfo.tebingtinggikota.go.id") || trimmed.contains("/api/berita")) {
             return trimmed;
         }

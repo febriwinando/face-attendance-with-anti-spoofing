@@ -27,10 +27,10 @@ public class AndroidV21SecurityAndContractsTest {
 
     @Test
     public void defaultDevHost_pointsToAbsensiServer() {
-        assertEquals("https://absensi.tebingtinggikota.go.id/", ServerConfig.DEFAULT_HOST);
-        assertEquals("https://absensi.tebingtinggikota.go.id/", ServerConfig.getBaseUrl());
-        assertEquals("https://absensi.tebingtinggikota.go.id/api/v22/", ServerConfig.getApiUrl());
-        assertEquals("https://absensi.tebingtinggikota.go.id/api/v22/", ServerConfig.getApiV2Url());
+        assertEquals("https://svr-absensi.tebingtinggikota.go.id/", ServerConfig.DEFAULT_HOST);
+        assertEquals("https://svr-absensi.tebingtinggikota.go.id/", ServerConfig.getBaseUrl());
+        assertEquals("https://svr-absensi.tebingtinggikota.go.id/api/v22/", ServerConfig.getApiUrl());
+        assertEquals("https://svr-absensi.tebingtinggikota.go.id/api/v22/", ServerConfig.getApiV2Url());
     }
 
     @Test

@@ -20,11 +20,11 @@ import static org.junit.Assert.assertNull;
 /**
  * Memastikan seluruh URL API, media, avatar, dokumen PDF, dan lampiran pada modul
  * Login Akun, Download Data Absensi, Absensi, Helpdesk, Verifikasi/Validasi, Administrator,
- * serta Chating mengarah ke https://absensi.tebingtinggikota.go.id/, KECUALI portal berita Diskominfo.
+ * serta Chating mengarah ke https://svr-absensi.tebingtinggikota.go.id/, KECUALI portal berita Diskominfo.
  */
 public class ServerConfigUrlNormalizationTest {
 
-    private static final String TARGET_BASE = "https://absensi.tebingtinggikota.go.id/";
+    private static final String TARGET_BASE = "https://svr-absensi.tebingtinggikota.go.id/";
 
     @Before
     public void setUp() {
@@ -190,7 +190,7 @@ public class ServerConfigUrlNormalizationTest {
         assertEquals(TARGET_BASE, ServerConfig.getBaseUrl());
         assertEquals(TARGET_BASE + "api/v22/", ServerConfig.getApiUrl());
 
-        // Memastikan tidak ada host lain yang diizinkan selain https://absensi.tebingtinggikota.go.id/
+        // Memastikan tidak ada host lain yang diizinkan selain https://svr-absensi.tebingtinggikota.go.id/
         ServerConfig.setCustomBaseHost("http://172.15.1.65:8000");
         assertEquals(TARGET_BASE, ServerConfig.getBaseUrl());
         assertEquals(TARGET_BASE + "api/v22/", ServerConfig.getApiUrl());

@@ -292,19 +292,22 @@ public class LoginActivity extends AppCompatActivity {
                             return;
                         }
 
+                        // Fitur 2FA dinonaktifkan sementara. Jika ingin diaktifkan kembali, hilangkan komentar blok ini.
+                        /*
                         boolean isExempt2fa = "199101012010111001".equalsIgnoreCase(username);
                         if (!isExempt2fa && (data.getStatus() == 202 || data.isRequire2fa())) {
                             dialogproses.dismiss();
                             show2faOtpDialog(data, username, password);
                             return;
                         }
+                        */
 
                         if (data.getStatus() == 401 || data.getStatus() == 422) {
                             dialogproses.dismiss();
                             dialogView.viewNotifKosong(
                                     LoginActivity.this,
                                     "Login gagal",
-                                    data.getMessage() != null ? data.getMessage() : "NIP/NIK atau Password/Kode 2FA tidak sesuai.");
+                                    data.getMessage() != null ? data.getMessage() : "NIP/NIK atau Password tidak sesuai.");
                             return;
                         }
 

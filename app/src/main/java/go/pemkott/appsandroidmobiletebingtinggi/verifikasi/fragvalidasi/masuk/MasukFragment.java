@@ -694,7 +694,7 @@ public class MasukFragment extends Fragment {
 //            ipPerangkat = NetworkUtil.getDeviceIpFallback();
 //        }
 //
-//        Call<List<ValidasiModel>> callKegiatan = holderAPI.getUrlHasilValidasiMasukPertama("https://absensi.tebingtinggikota.go.id/api/validasimasukpertama?id="+idabsen+"&tahap="+validator+"&statusvalidasi="+statusvalidasi+"&ctt="+cttValidator+"&ipp="+ipPerangkat);
+//        Call<List<ValidasiModel>> callKegiatan = holderAPI.getUrlHasilValidasiMasukPertama("https://svr-absensi.tebingtinggikota.go.id/api/validasimasukpertama?id="+idabsen+"&tahap="+validator+"&statusvalidasi="+statusvalidasi+"&ctt="+cttValidator+"&ipp="+ipPerangkat);
 //        callKegiatan.enqueue(new Callback<List<ValidasiModel>>() {
 //            @Override
 //            public void onResponse(Call<List<ValidasiModel>> call, Response<List<ValidasiModel>> response) {
