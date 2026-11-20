@@ -8,7 +8,6 @@
     </base-config>
 
     <domain-config cleartextTrafficPermitted="true">
-        <domain includeSubdomains="true">svr-absensi.tebingtinggikota.go.id</domain>
         <domain includeSubdomains="true">absensi.tebingtinggikota.go.id</domain>
         <domain includeSubdomains="true">diskominfo.tebingtinggikota.go.id</domain>
         <domain includeSubdomains="true">tebingtinggikota.go.id</domain>

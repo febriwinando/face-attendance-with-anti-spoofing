@@ -20,11 +20,11 @@ import static org.junit.Assert.assertNull;
 /**
  * Memastikan seluruh URL API, media, avatar, dokumen PDF, dan lampiran pada modul
  * Login Akun, Download Data Absensi, Absensi, Helpdesk, Verifikasi/Validasi, Administrator,
- * serta Chating mengarah ke https://svr-absensi.tebingtinggikota.go.id/, KECUALI portal berita Diskominfo.
+ * serta Chating mengarah ke https://absensi.tebingtinggikota.go.id/, KECUALI portal berita Diskominfo.
  */
 public class ServerConfigUrlNormalizationTest {
 
-    private static final String TARGET_BASE = "https://svr-absensi.tebingtinggikota.go.id/";
+    private static final String TARGET_BASE = "https://absensi.tebingtinggikota.go.id/";
 
     @Before
     public void setUp() {
@@ -67,7 +67,7 @@ public class ServerConfigUrlNormalizationTest {
         );
         assertEquals(
                 TARGET_BASE + "storage/chat/video.mp4",
-                ServerConfig.normalizeServerUrl("https://svr-absensi.tebingtinggikota.go.id:8443/storage/chat/video.mp4", TARGET_BASE)
+                ServerConfig.normalizeServerUrl("https://absensi.tebingtinggikota.go.id:8443/storage/chat/video.mp4", TARGET_BASE)
         );
         assertEquals(
                 TARGET_BASE + "storage/helpdesk/lampiran.png",
@@ -178,7 +178,7 @@ public class ServerConfigUrlNormalizationTest {
         assertEquals(TARGET_BASE + "storage/chat/lampiran.pdf", monMsg.getFileUrl());
 
         ChatAuditLogItem audit = gson.fromJson(
-                "{\"file_url_snapshot\":\"https://svr-absensi.tebingtinggikota.go.id/storage/chat/snap.png\"}",
+                "{\"file_url_snapshot\":\"https://absensi.tebingtinggikota.go.id/storage/chat/snap.png\"}",
                 ChatAuditLogItem.class
         );
         assertEquals(TARGET_BASE + "storage/chat/snap.png", audit.getFileUrlSnapshot());
@@ -190,7 +190,7 @@ public class ServerConfigUrlNormalizationTest {
         assertEquals(TARGET_BASE, ServerConfig.getBaseUrl());
         assertEquals(TARGET_BASE + "api/v22/", ServerConfig.getApiUrl());
 
-        // Memastikan tidak ada host lain yang diizinkan selain https://svr-absensi.tebingtinggikota.go.id/
+        // Memastikan tidak ada host lain yang diizinkan selain https://absensi.tebingtinggikota.go.id/
         ServerConfig.setCustomBaseHost("http://172.15.1.65:8000");
         assertEquals(TARGET_BASE, ServerConfig.getBaseUrl());
         assertEquals(TARGET_BASE + "api/v22/", ServerConfig.getApiUrl());

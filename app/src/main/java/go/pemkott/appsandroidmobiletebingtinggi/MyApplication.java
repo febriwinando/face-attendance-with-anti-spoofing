@@ -24,7 +24,7 @@ public class MyApplication extends Application {
             SSLHelper.restoreDefaultSSLCertificateChecking();
         }
 
-        // Pastikan default host server mengacu ke ServerConfig.DEFAULT_HOST (https://svr-absensi.tebingtinggikota.go.id/)
+        // Pastikan default host server mengacu ke ServerConfig.DEFAULT_HOST (https://absensi.tebingtinggikota.go.id/)
         ServerConfig.setCustomBaseHost(ServerConfig.DEFAULT_HOST);
     }
 
